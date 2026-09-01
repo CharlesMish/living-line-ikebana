@@ -8,7 +8,7 @@
   "required": ["schemaVersion", "generatorVersion", "id", "seed", "rootBranchId", "branches", "organs"],
   "properties": {
     "schemaVersion": { "const": 1 },
-    "generatorVersion": { "const": "one-branch-v1" },
+    "generatorVersion": { "type": "string", "minLength": 1 },
     "id": { "type": "string", "minLength": 1 },
     "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
     "rootBranchId": { "type": "string", "minLength": 1 },

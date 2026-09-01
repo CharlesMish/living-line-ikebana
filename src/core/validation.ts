@@ -1,4 +1,5 @@
 import { ATTACHMENT_TOLERANCE, sampleBranch } from "./arcLength.ts";
+import { isSupportedGeneratorVersion } from "./materialCatalog.ts";
 import { dot, length, subtract, distance } from "./math.ts";
 import type { PlantGraph, ValidationIssue } from "./types.ts";
 
@@ -11,7 +12,9 @@ export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): Validat
   const branchKinds = new Set(["trunk", "lateral", "twig", "petiole", "pedicel"]);
   const organKinds = new Set(["leaf", "bloom", "bud"]);
   if (graph.schemaVersion !== 1) issue(issues, "schemaVersion", "must be 1");
-  if (graph.generatorVersion !== "one-branch-v1") issue(issues, "generatorVersion", "must be one-branch-v1");
+  if (!isSupportedGeneratorVersion(graph.generatorVersion)) {
+    issue(issues, "generatorVersion", "must be a supported generator version");
+  }
   if (!Number.isInteger(graph.seed) || graph.seed < 0 || graph.seed > 0xffffffff) {
     issue(issues, "seed", "must be a UInt32");
   }

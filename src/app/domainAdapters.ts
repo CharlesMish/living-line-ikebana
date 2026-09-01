@@ -8,6 +8,7 @@ import {
   successfulSeatIdentity,
   translatePendingGraph,
   translatePlantBase,
+  validatePlantGraph,
   type CutPlan,
   type PlantGraph,
   type Vec3,
@@ -84,6 +85,7 @@ export function createDomainAdapters(): TransactionAdapters<
         && expected.seed === reservation.seed
         && reservation.graph.id === reservation.plantId
         && reservation.graph.seed === reservation.seed
+        && validatePlantGraph(reservation.graph).length === 0
       );
     },
   };

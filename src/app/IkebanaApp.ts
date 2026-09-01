@@ -33,7 +33,12 @@ import {
   orbitCameraPose,
   type CameraPose,
 } from "./camera.ts";
-import { readExperimentConfig, urlForBendVariant, type BendVariant } from "./config.ts";
+import {
+  readExperimentConfig,
+  urlForBendVariant,
+  urlWithoutClearStudyData,
+  type BendVariant,
+} from "./config.ts";
 import {
   createDomainAdapters,
   type StudioContextMap,
@@ -53,7 +58,7 @@ import {
 } from "./metrics.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
-import { TelemetryStore, type PersistedTelemetry } from "./telemetry.ts";
+import { TelemetryStore, TELEMETRY_INSTRUMENT_VERSION, type PersistedTelemetry } from "./telemetry.ts";
 import { summarizeBendAcquisitions } from "./telemetrySummary.ts";
 import {
   createUIBindings,
@@ -170,8 +175,6 @@ declare global {
 
 const TOUCH_BEND_START = 0.24;
 const TOUCH_BEND_END = 0.72;
-/** Independent of telemetry's storageVersion; bump when what is recorded changes. */
-const TELEMETRY_INSTRUMENT_VERSION = "2" as const;
 
 export function placementInputFromIntersection(intersection: KenzanIntersection | null) {
   return intersection
@@ -240,8 +243,13 @@ export class IkebanaApp {
     this.root = root;
     this.bendVariant = this.config.bendVariant;
     // A fresh specimen (?fresh=1) never implies clearing study data; that is
-    // a distinct, explicit action (?clearStudyData=1). See config.ts.
-    if (this.config.clearStudyData) this.telemetryStore.clear();
+    // a distinct, explicit action (?clearStudyData=1). See config.ts. It is
+    // also one-shot: act on it once, then strip it from the URL so an
+    // ordinary reload of that same address never re-clears study data.
+    if (this.config.clearStudyData) {
+      this.telemetryStore.clear();
+      history.replaceState(null, "", urlWithoutClearStudyData());
+    }
     this.ui = createUIBindings({
       root,
       initialState: { bendVariant: uiVariant(this.bendVariant) },
@@ -296,6 +304,9 @@ export class IkebanaApp {
     if (this.disposed) return;
     this.disposed = true;
     this.interruptActive("system-interruption", false);
+    // Not the craft-critical commit path: a synchronous flush here is safe
+    // and reduces the chance of losing a just-buffered telemetry write.
+    this.telemetryStore.flush();
     this.abortController.abort();
     this.removeUIListener?.();
     this.removeUIListener = null;
@@ -357,16 +368,27 @@ export class IkebanaApp {
             reason: "commit",
           });
           // The committed botanical graph is the authority and must be
-          // attempted first. Study telemetry is a best-effort diagnostic
-          // layer recorded only afterward, and never allowed to block,
-          // delay, or fail this save (see resolvePendingAcquisition).
+          // attempted first. Study telemetry is subordinate: if the graph
+          // save fails (e.g. the shared per-origin quota is exhausted, in
+          // part by accumulated telemetry), telemetry yields storage —
+          // evict it and retry the graph save exactly once — before ever
+          // reporting a save failure to the tester.
           this.lastSaveSucceeded = this.store.save(
             event.document.successfulPlantOrdinal + 1,
             plantsToSave,
           );
           if (!this.lastSaveSucceeded) {
+            this.telemetryStore.clear();
+            this.lastSaveSucceeded = this.store.save(
+              event.document.successfulPlantOrdinal + 1,
+              plantsToSave,
+            );
+          }
+          if (!this.lastSaveSucceeded) {
             this.ui.setStatus("Could not save this change.", "warning");
           }
+          // Recorded only after the graph save (and any eviction/retry) has
+          // been fully attempted, and never allowed to block, delay, or fail it.
           this.resolvePendingAcquisition("committed");
         },
       },
@@ -397,6 +419,10 @@ export class IkebanaApp {
       }
       case "set-view": {
         this.interruptActive("view-command");
+        // Same context-boundary rule as posture/tool/variant: a canonical
+        // view change must not let a miss from the old view attach to a
+        // hit recorded after it.
+        this.metrics.resetAttempt();
         this.cameraIsFree = false;
         this.coordinator.commandView(command.view, canonicalCameraPose(command.view));
         this.ui.setState({ view: command.view });
@@ -901,10 +927,18 @@ export class IkebanaApp {
   };
 
   private onVisibilityChange = () => {
-    if (document.hidden) this.interruptActive("visibility-hidden", false);
+    if (document.hidden) {
+      this.interruptActive("visibility-hidden", false);
+      // Not the craft-critical commit path: safe to flush synchronously
+      // here so a buffered telemetry write isn't lost if the tab is closed.
+      this.telemetryStore.flush();
+    }
   };
 
-  private onPageHide = () => this.interruptActive("system-interruption", false);
+  private onPageHide = () => {
+    this.interruptActive("system-interruption", false);
+    this.telemetryStore.flush();
+  };
   private onViewportChanged = () => this.interruptActive("system-interruption", false);
   private onVisualViewportChanged = () => this.interruptActive("system-interruption", false);
 
@@ -1004,13 +1038,15 @@ export class IkebanaApp {
     const persisted = this.telemetryStore.load();
     return {
       schemaVersion: 1 as const,
-      /** Bump when recording/measurement semantics change, independent of storageVersion. */
+      // Same value as persisted.instrumentVersion: the export envelope never
+      // drifts from what is actually stored.
       instrumentVersion: TELEMETRY_INSTRUMENT_VERSION,
       privacyStatement:
-        "Generated locally on this device from this browser's local storage. " +
-        "Nothing is uploaded automatically; you chose to export this file, and it " +
-        "contains only acquisition/timing/outcome diagnostics for this study, never " +
-        "personal information.",
+        "Generated locally on this device from this browser's local storage. Nothing is " +
+        "uploaded automatically; you chose to export this file. It contains acquisition, " +
+        "timing, and outcome diagnostics for this study, including timestamps and a " +
+        "randomly generated session ID. It does not contain any direct identifier (name, " +
+        "email, account) or your arrangement's actual botanical content.",
       exportedAt: new Date().toISOString(),
       sessionId: this.sessionId,
       currentBendVariant: this.bendVariant,

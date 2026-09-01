@@ -29,5 +29,19 @@ export function urlForBendVariant(variant: BendVariant, current = new URL(window
   if (variant === "bead") next.searchParams.delete("bend");
   else next.searchParams.set("bend", "touch");
   next.searchParams.delete("fresh");
+  // clearStudyData is one-shot; it must never stick around into a URL a
+  // later variant switch (or any other replaceState) produces.
+  next.searchParams.delete("clearStudyData");
+  return next;
+}
+
+/**
+ * `?clearStudyData=1` is a one-shot command: after it has been acted on
+ * once, the app must strip it from the current URL (via `history.replaceState`)
+ * so an ordinary reload of that same address never re-clears study data.
+ */
+export function urlWithoutClearStudyData(current = new URL(window.location.href)): URL {
+  const next = new URL(current);
+  next.searchParams.delete("clearStudyData");
   return next;
 }

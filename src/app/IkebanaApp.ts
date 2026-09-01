@@ -250,6 +250,12 @@ export class IkebanaApp {
       this.telemetryStore.clear();
       history.replaceState(null, "", urlWithoutClearStudyData());
     }
+    // Prime (hydrate) telemetry now, during initialization, so the first
+    // real acquisition — inside a pointer interaction frame — never
+    // performs the one-time localStorage.getItem/JSON.parse/canonicalization
+    // pass itself. clear() above already leaves the cache primed (empty);
+    // this call is what primes it from storage on an ordinary load.
+    this.telemetryStore.prime();
     this.ui = createUIBindings({
       root,
       initialState: { bendVariant: uiVariant(this.bendVariant) },

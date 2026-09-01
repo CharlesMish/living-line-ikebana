@@ -8,8 +8,12 @@ const STORAGE_KEY = "ikebana-web-alpha:telemetry-v1";
  * it changes shape/meaning, independent of `storageVersion` (the container
  * format). A stored payload written by a different instrument version is
  * never trusted or partially merged with the current one — see `sanitize`.
+ * "4": persisted validation (cancelReason only with outcome "cancelled",
+ * canonical savedAt, oversized-raw/pre-write size rejection) and scheduling
+ * (task-boundary flush with generation-token cancellation, explicit
+ * priming) semantics changed.
  */
-export const TELEMETRY_INSTRUMENT_VERSION = "3";
+export const TELEMETRY_INSTRUMENT_VERSION = "4";
 
 /** Practical bound on phone-session growth; oldest records drop first. */
 const MAX_RECORDS_PER_VARIANT = 4000;
@@ -70,6 +74,13 @@ function isFiniteNonNegative(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
+/** Exactly the string shape `Date.prototype.toISOString()` produces. */
+const CANONICAL_ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
+function isCanonicalIsoDate(value: unknown): value is string {
+  return typeof value === "string" && CANONICAL_ISO_DATE_PATTERN.test(value) && !Number.isNaN(Date.parse(value));
+}
+
 /**
  * Validates, then reconstructs, one record as an allowlisted object — never
  * a pass-through of the parsed JSON. Undeclared/extra fields from a
@@ -82,11 +93,15 @@ function isFiniteNonNegative(value: unknown): value is number {
  *   final, non-null `outcome` and a finite, nonnegative `timeToAcquireMs`;
  * - miss invariants — a `"miss"` never carries an `outcome` or a timing;
  * - semantic combination rules — a hit requires an `operation`; camera may
- *   resolve only `released`/`cancelled`; graph edits (aim/bend/base/prune)
+ *   resolve only `released`/`cancelled`; a graph edit (aim/bend/base/prune)
  *   may resolve only `committed`/`cancelled`; only `insert` may resolve
- *   `declined`; only `insert` carries `materialId`/`inputMethod`, and it
- *   always carries both; a `cancelled` outcome always carries a reason; all
- *   timing values are finite and nonnegative.
+ *   `declined` (this layer cannot know whether a given insertion was
+ *   actually invalid — the production app alone is responsible for only
+ *   ever producing `declined` on an invalid release; see `IkebanaApp.ts`);
+ *   only `insert` carries `materialId`/`inputMethod`, and it always carries
+ *   both; `cancelReason` is only ever valid alongside `outcome ===
+ *   "cancelled"`, and a `cancelled` outcome always carries a nonempty one;
+ *   all timing values are finite and nonnegative.
  */
 function canonicalizeAcquisitionRecord(value: unknown, expectedVariant: BendVariant): AcquisitionRecord | null {
   if (!value || typeof value !== "object") return null;
@@ -105,6 +120,9 @@ function canonicalizeAcquisitionRecord(value: unknown, expectedVariant: BendVari
   if (record.materialId !== undefined && typeof record.materialId !== "string") return null;
   if (record.inputMethod !== undefined && !VALID_INPUT_METHODS.has(record.inputMethod as string)) return null;
   if (record.cancelReason !== undefined && typeof record.cancelReason !== "string") return null;
+  // cancelReason is only ever meaningful alongside a cancelled outcome —
+  // reject it outright on a miss (outcome null) or any other outcome.
+  if (record.cancelReason !== undefined && record.outcome !== "cancelled") return null;
 
   const operation = record.operation as AcquisitionRecord["operation"];
   const isInsert = operation === "insert";
@@ -183,7 +201,7 @@ function sanitize(value: unknown): PersistedTelemetry {
   if (
     !candidate
     || candidate.storageVersion !== 1
-    || typeof candidate.savedAt !== "string"
+    || !isCanonicalIsoDate(candidate.savedAt)
     || !candidate.variants
     || typeof candidate.variants !== "object"
   ) {
@@ -206,8 +224,12 @@ function sanitize(value: unknown): PersistedTelemetry {
   };
 }
 
-function byteLength(value: unknown): number {
-  return new TextEncoder().encode(JSON.stringify(value)).length;
+function byteLengthOfString(text: string): number {
+  return new TextEncoder().encode(text).length;
+}
+
+function byteLengthOfJson(value: unknown): number {
+  return byteLengthOfString(JSON.stringify(value));
 }
 
 function findGloballyOldestRecord(
@@ -234,7 +256,7 @@ function findGloballyOldestRecord(
  * acquisition's append stays cheap regardless of total history size.
  */
 function trimToByteBudget(payload: PersistedTelemetry): void {
-  while (byteLength(payload) > MAX_PAYLOAD_BYTES) {
+  while (byteLengthOfJson(payload) > MAX_PAYLOAD_BYTES) {
     const oldest = findGloballyOldestRecord(payload);
     if (!oldest) break; // nothing left to drop; this is as small as it gets.
     payload.variants[oldest.variant].acquisitions.splice(oldest.index, 1);
@@ -250,10 +272,25 @@ function trimToByteBudget(payload: PersistedTelemetry): void {
  * `append` only ever mutates a cheap in-memory cache and schedules a flush;
  * it never does a synchronous whole-history JSON.parse/stringify/setItem
  * itself, so the craft-critical commit path that calls it never blocks on
- * rewriting the entire telemetry history. The actual write — including the
- * 256 KiB size trim — happens in a deferred microtask (`flush`), which can
- * also be called directly and synchronously where that is safe (tests, or
- * app teardown), and always fails closed (never throws past this layer).
+ * rewriting the entire telemetry history. Call `prime()` once, during app
+ * initialization (after any one-shot `clearStudyData` handling), so that
+ * initial hydration — the one real `localStorage.getItem`/`JSON.parse`/
+ * per-record canonicalization pass — happens outside any interaction frame;
+ * every `append`/`load` after that reads only the in-memory cache.
+ *
+ * The actual write — including the 256 KiB size trim — happens in a flush
+ * scheduled to cross a task/render boundary (`setTimeout`, not a
+ * microtask): a microtask alone runs before the browser gets a chance to
+ * paint or do other work, so it does not actually relieve the current
+ * frame the way a task-boundary handoff does. `flush()` can also be called
+ * directly and synchronously where that is safe (tests, or app teardown —
+ * never the craft-critical commit path), and always fails closed (never
+ * throws past this layer). Every scheduled flush carries the generation it
+ * was scheduled under; `clear()` and `flush()` both advance the generation,
+ * so an obsolete callback that still manages to run (e.g. because some
+ * environment's timer cancellation is unreliable) recognizes itself as
+ * stale and is a no-op — it can never resurrect data a subsequent `clear()`
+ * removed, nor race a later, newer scheduled write.
  *
  * Only ever call `append` with a fully resolved record (a miss, or a hit
  * whose transaction has already committed, cancelled, declined, or — for
@@ -263,9 +300,19 @@ function trimToByteBudget(payload: PersistedTelemetry): void {
  */
 export class TelemetryStore {
   private cache: PersistedTelemetry | null = null;
-  private flushScheduled = false;
+  private scheduledHandle: ReturnType<typeof setTimeout> | null = null;
+  private generation = 0;
 
   constructor(private readonly key: string = STORAGE_KEY) {}
+
+  /**
+   * Forces hydration now. Call once during app initialization so the first
+   * real `append`/`load` never touches storage. Idempotent and safe to call
+   * more than once (a no-op once already primed).
+   */
+  prime(): void {
+    this.ensureCache();
+  }
 
   /** Always reflects the in-memory cache, including not-yet-flushed appends. */
   load(): PersistedTelemetry {
@@ -297,12 +344,13 @@ export class TelemetryStore {
 
   /**
    * Explicitly, synchronously wipes study data — never implied by an
-   * ordinary specimen reset. Cancels any not-yet-run scheduled flush so a
-   * stale write can't resurrect what was just cleared.
+   * ordinary specimen reset. Advances the generation and cancels any
+   * not-yet-run scheduled flush so a stale write can't resurrect what was
+   * just cleared, even if that flush somehow still runs.
    */
   clear(): void {
     this.cache = emptyTelemetry();
-    this.flushScheduled = false;
+    this.cancelScheduledFlush();
     try {
       localStorage.removeItem(this.key);
     } catch {
@@ -317,25 +365,50 @@ export class TelemetryStore {
    * non-critical teardown moments (visibility change, page hide).
    */
   flush(): boolean {
-    this.flushScheduled = false;
+    this.cancelScheduledFlush();
     return this.writeCacheToStorage();
   }
 
+  private cancelScheduledFlush(): void {
+    this.generation += 1;
+    if (this.scheduledHandle !== null) {
+      clearTimeout(this.scheduledHandle);
+      this.scheduledHandle = null;
+    }
+  }
+
+  /**
+   * Schedules a flush to run after the current task/render boundary — a
+   * macrotask (`setTimeout`), deliberately not a microtask. A microtask
+   * runs before the browser can paint or process other pending work, so it
+   * does not actually get this write off the interaction frame; a task
+   * boundary does.
+   */
   private scheduleFlush(): void {
-    if (this.flushScheduled) return;
-    this.flushScheduled = true;
-    queueMicrotask(() => {
-      if (!this.flushScheduled) return; // cancelled by clear()/an explicit flush() first.
-      this.flushScheduled = false;
+    if (this.scheduledHandle !== null) return; // already scheduled.
+    const scheduledGeneration = this.generation;
+    this.scheduledHandle = setTimeout(() => {
+      this.scheduledHandle = null;
+      // Stale: a clear()/flush() advanced the generation since this was
+      // scheduled. Never write — even if this callback still ran despite
+      // being "cancelled".
+      if (scheduledGeneration !== this.generation) return;
       this.writeCacheToStorage();
-    });
+    }, 0);
   }
 
   private writeCacheToStorage(): boolean {
     const cache = this.ensureCache();
     trimToByteBudget(cache);
+    const json = JSON.stringify(cache);
+    if (byteLengthOfString(json) > MAX_PAYLOAD_BYTES) {
+      // Trimming could not bring even the record-free envelope under the
+      // cap (a pathological savedAt/sessionId length, or a future bug).
+      // Never write an over-budget payload under any circumstance.
+      return false;
+    }
     try {
-      localStorage.setItem(this.key, JSON.stringify(cache));
+      localStorage.setItem(this.key, json);
       return true;
     } catch {
       // Best-effort: a full quota or a disabled storage API must never
@@ -353,6 +426,10 @@ export class TelemetryStore {
     try {
       const raw = localStorage.getItem(this.key);
       if (!raw) return emptyTelemetry();
+      // Reject an already-oversized raw payload before ever parsing it —
+      // whatever produced it did not respect MAX_PAYLOAD_BYTES, so it is
+      // never trusted, canonicalized, or partially hydrated.
+      if (byteLengthOfString(raw) > MAX_PAYLOAD_BYTES) return emptyTelemetry();
       return sanitize(JSON.parse(raw));
     } catch {
       return emptyTelemetry();

@@ -3,8 +3,24 @@ import type { AcquisitionRecord, TransactionOutcome } from "./metrics.ts";
 
 const STORAGE_KEY = "ikebana-web-alpha:telemetry-v1";
 
+/**
+ * Bumped when what `SessionMetrics` records or how `TelemetryStore` persists
+ * it changes shape/meaning, independent of `storageVersion` (the container
+ * format). A stored payload written by a different instrument version is
+ * never trusted or partially merged with the current one — see `sanitize`.
+ */
+export const TELEMETRY_INSTRUMENT_VERSION = "3";
+
 /** Practical bound on phone-session growth; oldest records drop first. */
 const MAX_RECORDS_PER_VARIANT = 4000;
+
+/**
+ * The complete persisted payload (both variants, every field) must always
+ * serialize under this many bytes. Enforced at flush time, not per-append,
+ * by dropping the globally oldest record (by wall-clock time, across both
+ * buckets) until it fits.
+ */
+const MAX_PAYLOAD_BYTES = 256 * 1024;
 
 const VALID_POSTURES = new Set(["arrange", "inspect"]);
 const VALID_TOOLS = new Set(["shape", "prune"]);
@@ -12,7 +28,16 @@ const VALID_RESULTS = new Set(["hit", "miss"]);
 const VALID_REGIONS = new Set(["top", "middle", "bottom"]);
 const VALID_OPERATIONS = new Set(["insert", "aim", "bend", "base", "prune", "camera"]);
 const VALID_INPUT_METHODS = new Set(["pointer", "keyboard"]);
-const VALID_OUTCOMES = new Set<TransactionOutcome>(["committed", "cancelled", "declined", "released"]);
+
+/** Which outcomes are semantically legal for a hit with this operation. */
+const ALLOWED_OUTCOMES_BY_OPERATION: Record<string, ReadonlySet<TransactionOutcome>> = {
+  insert: new Set(["committed", "cancelled", "declined"]),
+  aim: new Set(["committed", "cancelled"]),
+  bend: new Set(["committed", "cancelled"]),
+  base: new Set(["committed", "cancelled"]),
+  prune: new Set(["committed", "cancelled"]),
+  camera: new Set(["released", "cancelled"]),
+};
 
 export type PersistedVariantTelemetry = {
   acquisitions: AcquisitionRecord[];
@@ -20,6 +45,8 @@ export type PersistedVariantTelemetry = {
 
 export type PersistedTelemetry = {
   storageVersion: 1;
+  /** Persisted with the dataset itself, not only the export envelope. */
+  instrumentVersion: string;
   savedAt: string;
   variants: {
     bead: PersistedVariantTelemetry;
@@ -30,6 +57,7 @@ export type PersistedTelemetry = {
 function emptyTelemetry(): PersistedTelemetry {
   return {
     storageVersion: 1,
+    instrumentVersion: TELEMETRY_INSTRUMENT_VERSION,
     savedAt: new Date(0).toISOString(),
     variants: {
       bead: { acquisitions: [] },
@@ -38,56 +66,116 @@ function emptyTelemetry(): PersistedTelemetry {
   };
 }
 
+function isFiniteNonNegative(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
 /**
- * Strict per-record validation, enforced identically at hydration and at
- * `append()`. Encodes:
+ * Validates, then reconstructs, one record as an allowlisted object — never
+ * a pass-through of the parsed JSON. Undeclared/extra fields from a
+ * tampered or future-schema payload are always dropped, never retained.
+ * Returns `null` for anything that fails structural or semantic validation
+ * (dropped, not partially trusted). Encodes:
  * - bucket/variant agreement — a record's own `bendVariant` must match the
  *   bucket it is stored under;
  * - resolved-hit requirement — a `"hit"` is only ever valid with a real,
- *   final, non-null `outcome` and a finite `timeToAcquireMs`; a pending/live
- *   hit can never pass;
- * - miss invariants — a `"miss"` never carries an `outcome` or
- *   `timeToAcquireMs`, because a miss never opens a transaction.
- * Anything that fails is dropped rather than partially trusted.
+ *   final, non-null `outcome` and a finite, nonnegative `timeToAcquireMs`;
+ * - miss invariants — a `"miss"` never carries an `outcome` or a timing;
+ * - semantic combination rules — a hit requires an `operation`; camera may
+ *   resolve only `released`/`cancelled`; graph edits (aim/bend/base/prune)
+ *   may resolve only `committed`/`cancelled`; only `insert` may resolve
+ *   `declined`; only `insert` carries `materialId`/`inputMethod`, and it
+ *   always carries both; a `cancelled` outcome always carries a reason; all
+ *   timing values are finite and nonnegative.
  */
-function isValidAcquisitionRecord(value: unknown, expectedVariant: BendVariant): value is AcquisitionRecord {
-  if (!value || typeof value !== "object") return false;
+function canonicalizeAcquisitionRecord(value: unknown, expectedVariant: BendVariant): AcquisitionRecord | null {
+  if (!value || typeof value !== "object") return null;
   const record = value as Record<string, unknown>;
 
-  if (typeof record.at !== "number" || !Number.isFinite(record.at)) return false;
-  if (typeof record.wallClockMs !== "number" || !Number.isFinite(record.wallClockMs)) return false;
-  if (typeof record.sessionId !== "string" || record.sessionId.length === 0) return false;
-  if (record.bendVariant !== expectedVariant) return false;
-  if (!VALID_POSTURES.has(record.posture as string)) return false;
-  if (!VALID_TOOLS.has(record.tool as string)) return false;
-  if (!VALID_RESULTS.has(record.result as string)) return false;
-  if (record.operation !== undefined && !VALID_OPERATIONS.has(record.operation as string)) return false;
-  if (!VALID_REGIONS.has(record.region as string)) return false;
-  if (!Number.isInteger(record.missesBeforeHit) || (record.missesBeforeHit as number) < 0) return false;
-  if (record.materialId !== undefined && typeof record.materialId !== "string") return false;
-  if (record.inputMethod !== undefined && !VALID_INPUT_METHODS.has(record.inputMethod as string)) return false;
-  if (record.cancelReason !== undefined && typeof record.cancelReason !== "string") return false;
+  if (!isFiniteNonNegative(record.at)) return null;
+  if (!isFiniteNonNegative(record.wallClockMs)) return null;
+  if (typeof record.sessionId !== "string" || record.sessionId.length === 0) return null;
+  if (record.bendVariant !== expectedVariant) return null;
+  if (!VALID_POSTURES.has(record.posture as string)) return null;
+  if (!VALID_TOOLS.has(record.tool as string)) return null;
+  if (!VALID_RESULTS.has(record.result as string)) return null;
+  if (record.operation !== undefined && !VALID_OPERATIONS.has(record.operation as string)) return null;
+  if (!VALID_REGIONS.has(record.region as string)) return null;
+  if (!Number.isInteger(record.missesBeforeHit) || (record.missesBeforeHit as number) < 0) return null;
+  if (record.materialId !== undefined && typeof record.materialId !== "string") return null;
+  if (record.inputMethod !== undefined && !VALID_INPUT_METHODS.has(record.inputMethod as string)) return null;
+  if (record.cancelReason !== undefined && typeof record.cancelReason !== "string") return null;
+
+  const operation = record.operation as AcquisitionRecord["operation"];
+  const isInsert = operation === "insert";
+  // Only insert carries materialId/inputMethod, and it always carries both.
+  if (isInsert) {
+    if (typeof record.materialId !== "string" || record.materialId.length === 0) return null;
+    if (!VALID_INPUT_METHODS.has(record.inputMethod as string)) return null;
+  } else if (record.materialId !== undefined || record.inputMethod !== undefined) {
+    return null;
+  }
 
   if (record.result === "miss") {
-    if (record.timeToAcquireMs !== null) return false;
-    if (record.outcome !== null && record.outcome !== undefined) return false;
-    if (record.transactionDurationMs !== undefined) return false;
-    return true;
+    if (record.timeToAcquireMs !== null) return null;
+    if (record.outcome !== null && record.outcome !== undefined) return null;
+    if (record.transactionDurationMs !== undefined) return null;
+    return {
+      at: record.at as number,
+      wallClockMs: record.wallClockMs as number,
+      sessionId: record.sessionId as string,
+      bendVariant: expectedVariant,
+      posture: record.posture as AcquisitionRecord["posture"],
+      tool: record.tool as AcquisitionRecord["tool"],
+      result: "miss",
+      region: record.region as AcquisitionRecord["region"],
+      missesBeforeHit: record.missesBeforeHit as number,
+      timeToAcquireMs: null,
+      outcome: null,
+    };
   }
 
   // result === "hit": only ever valid once its transaction is fully resolved.
-  if (typeof record.timeToAcquireMs !== "number" || !Number.isFinite(record.timeToAcquireMs)) return false;
-  if (!VALID_OUTCOMES.has(record.outcome as TransactionOutcome)) return false;
-  if (
-    record.transactionDurationMs !== undefined
-    && (typeof record.transactionDurationMs !== "number" || record.transactionDurationMs < 0)
-  ) return false;
-  return true;
+  if (operation === undefined) return null; // hits require an operation.
+  if (!isFiniteNonNegative(record.timeToAcquireMs)) return null;
+  const allowedOutcomes = ALLOWED_OUTCOMES_BY_OPERATION[operation];
+  if (!allowedOutcomes || !allowedOutcomes.has(record.outcome as TransactionOutcome)) return null;
+  if (record.outcome === "cancelled" && (typeof record.cancelReason !== "string" || record.cancelReason.length === 0)) {
+    return null;
+  }
+  if (record.transactionDurationMs !== undefined && !isFiniteNonNegative(record.transactionDurationMs)) return null;
+
+  const canonical: AcquisitionRecord = {
+    at: record.at as number,
+    wallClockMs: record.wallClockMs as number,
+    sessionId: record.sessionId as string,
+    bendVariant: expectedVariant,
+    posture: record.posture as AcquisitionRecord["posture"],
+    tool: record.tool as AcquisitionRecord["tool"],
+    result: "hit",
+    operation,
+    region: record.region as AcquisitionRecord["region"],
+    missesBeforeHit: record.missesBeforeHit as number,
+    timeToAcquireMs: record.timeToAcquireMs as number,
+    outcome: record.outcome as TransactionOutcome,
+  };
+  if (isInsert) {
+    canonical.materialId = record.materialId as string;
+    canonical.inputMethod = record.inputMethod as AcquisitionRecord["inputMethod"];
+  }
+  if (typeof record.cancelReason === "string") canonical.cancelReason = record.cancelReason;
+  if (record.transactionDurationMs !== undefined) canonical.transactionDurationMs = record.transactionDurationMs as number;
+  return canonical;
 }
 
 function sanitizeBucket(value: unknown, variant: BendVariant): AcquisitionRecord[] {
   if (!Array.isArray(value)) return [];
-  return value.filter((entry): entry is AcquisitionRecord => isValidAcquisitionRecord(entry, variant));
+  const canonicalized: AcquisitionRecord[] = [];
+  for (const entry of value) {
+    const record = canonicalizeAcquisitionRecord(entry, variant);
+    if (record) canonicalized.push(record);
+  }
+  return canonicalized;
 }
 
 function sanitize(value: unknown): PersistedTelemetry {
@@ -101,8 +189,15 @@ function sanitize(value: unknown): PersistedTelemetry {
   ) {
     return emptyTelemetry();
   }
+  // A payload written by a different instrument version is never trusted or
+  // partially merged with the current one: fail closed to empty rather than
+  // silently mixing schemas.
+  if (candidate.instrumentVersion !== TELEMETRY_INSTRUMENT_VERSION) {
+    return emptyTelemetry();
+  }
   return {
     storageVersion: 1,
+    instrumentVersion: TELEMETRY_INSTRUMENT_VERSION,
     savedAt: candidate.savedAt,
     variants: {
       bead: { acquisitions: sanitizeBucket(candidate.variants.bead?.acquisitions, "bead") },
@@ -111,44 +206,136 @@ function sanitize(value: unknown): PersistedTelemetry {
   };
 }
 
+function byteLength(value: unknown): number {
+  return new TextEncoder().encode(JSON.stringify(value)).length;
+}
+
+function findGloballyOldestRecord(
+  payload: PersistedTelemetry,
+): { variant: BendVariant; index: number } | null {
+  let best: { variant: BendVariant; index: number; wallClockMs: number } | null = null;
+  for (const variant of ["bead", "touch"] as const) {
+    const bucket = payload.variants[variant].acquisitions;
+    for (let index = 0; index < bucket.length; index += 1) {
+      const wallClockMs = bucket[index].wallClockMs;
+      if (best === null || wallClockMs < best.wallClockMs) {
+        best = { variant, index, wallClockMs };
+      }
+    }
+  }
+  return best === null ? null : { variant: best.variant, index: best.index };
+}
+
+/**
+ * Drops the globally oldest record (by wall-clock time, across both
+ * buckets) repeatedly until the whole payload serializes under
+ * `MAX_PAYLOAD_BYTES`, or there is nothing left to drop. Runs only at flush
+ * time (see `TelemetryStore.flush`), never inside `append`, so a single
+ * acquisition's append stays cheap regardless of total history size.
+ */
+function trimToByteBudget(payload: PersistedTelemetry): void {
+  while (byteLength(payload) > MAX_PAYLOAD_BYTES) {
+    const oldest = findGloballyOldestRecord(payload);
+    if (!oldest) break; // nothing left to drop; this is as small as it gets.
+    payload.variants[oldest.variant].acquisitions.splice(oldest.index, 1);
+  }
+}
+
 /**
  * Durable, cross-session acquisition telemetry keyed by bend-experiment
  * variant. Lives beside `CommittedStore`'s autosave key but is a separate
  * payload: telemetry is diagnostic, not botanical, and must never gate,
- * delay, or corrupt graph persistence. Callers must always persist the
- * committed botanical graph first and treat this store as best-effort; every
- * method here fails closed (returns `false`/drops data) instead of throwing.
+ * delay, or corrupt graph persistence.
+ *
+ * `append` only ever mutates a cheap in-memory cache and schedules a flush;
+ * it never does a synchronous whole-history JSON.parse/stringify/setItem
+ * itself, so the craft-critical commit path that calls it never blocks on
+ * rewriting the entire telemetry history. The actual write — including the
+ * 256 KiB size trim — happens in a deferred microtask (`flush`), which can
+ * also be called directly and synchronously where that is safe (tests, or
+ * app teardown), and always fails closed (never throws past this layer).
  *
  * Only ever call `append` with a fully resolved record (a miss, or a hit
  * whose transaction has already committed, cancelled, declined, or — for
- * camera — released). `append` independently re-validates that invariant
- * before writing, so a pending/live record can never reach storage even if
- * a caller forgets to resolve it first.
+ * camera — released). `append` independently re-validates and canonicalizes
+ * that invariant before buffering, so a pending/live or malformed record can
+ * never reach storage even if a caller forgets to resolve it first.
  */
 export class TelemetryStore {
+  private cache: PersistedTelemetry | null = null;
+  private flushScheduled = false;
+
   constructor(private readonly key: string = STORAGE_KEY) {}
 
+  /** Always reflects the in-memory cache, including not-yet-flushed appends. */
   load(): PersistedTelemetry {
-    try {
-      const raw = localStorage.getItem(this.key);
-      if (!raw) return emptyTelemetry();
-      return sanitize(JSON.parse(raw));
-    } catch {
-      return emptyTelemetry();
-    }
+    const cache = this.ensureCache();
+    return {
+      storageVersion: cache.storageVersion,
+      instrumentVersion: cache.instrumentVersion,
+      savedAt: cache.savedAt,
+      variants: {
+        bead: { acquisitions: cache.variants.bead.acquisitions.map((record) => ({ ...record })) },
+        touch: { acquisitions: cache.variants.touch.acquisitions.map((record) => ({ ...record })) },
+      },
+    };
   }
 
   append(variant: BendVariant, record: AcquisitionRecord): boolean {
-    if (!isValidAcquisitionRecord(record, variant)) return false;
+    const canonical = canonicalizeAcquisitionRecord(record, variant);
+    if (!canonical) return false;
+    const cache = this.ensureCache();
+    const bucket = cache.variants[variant].acquisitions;
+    bucket.push(canonical);
+    if (bucket.length > MAX_RECORDS_PER_VARIANT) {
+      bucket.splice(0, bucket.length - MAX_RECORDS_PER_VARIANT);
+    }
+    cache.savedAt = new Date().toISOString();
+    this.scheduleFlush();
+    return true;
+  }
+
+  /**
+   * Explicitly, synchronously wipes study data — never implied by an
+   * ordinary specimen reset. Cancels any not-yet-run scheduled flush so a
+   * stale write can't resurrect what was just cleared.
+   */
+  clear(): void {
+    this.cache = emptyTelemetry();
+    this.flushScheduled = false;
     try {
-      const current = this.load();
-      const bucket = current.variants[variant].acquisitions;
-      bucket.push({ ...record });
-      if (bucket.length > MAX_RECORDS_PER_VARIANT) {
-        bucket.splice(0, bucket.length - MAX_RECORDS_PER_VARIANT);
-      }
-      current.savedAt = new Date().toISOString();
-      localStorage.setItem(this.key, JSON.stringify(current));
+      localStorage.removeItem(this.key);
+    } catch {
+      // Storage is an optional resilience layer; telemetry loss never blocks the toy.
+    }
+  }
+
+  /**
+   * Forces the buffered cache to storage now (with the byte trim applied).
+   * Craft-critical code must never call this directly — that would defeat
+   * buffering's purpose. It exists for deterministic tests and for safe,
+   * non-critical teardown moments (visibility change, page hide).
+   */
+  flush(): boolean {
+    this.flushScheduled = false;
+    return this.writeCacheToStorage();
+  }
+
+  private scheduleFlush(): void {
+    if (this.flushScheduled) return;
+    this.flushScheduled = true;
+    queueMicrotask(() => {
+      if (!this.flushScheduled) return; // cancelled by clear()/an explicit flush() first.
+      this.flushScheduled = false;
+      this.writeCacheToStorage();
+    });
+  }
+
+  private writeCacheToStorage(): boolean {
+    const cache = this.ensureCache();
+    trimToByteBudget(cache);
+    try {
+      localStorage.setItem(this.key, JSON.stringify(cache));
       return true;
     } catch {
       // Best-effort: a full quota or a disabled storage API must never
@@ -157,11 +344,18 @@ export class TelemetryStore {
     }
   }
 
-  clear(): void {
+  private ensureCache(): PersistedTelemetry {
+    if (this.cache === null) this.cache = this.loadFromStorage();
+    return this.cache;
+  }
+
+  private loadFromStorage(): PersistedTelemetry {
     try {
-      localStorage.removeItem(this.key);
+      const raw = localStorage.getItem(this.key);
+      if (!raw) return emptyTelemetry();
+      return sanitize(JSON.parse(raw));
     } catch {
-      // Storage is an optional resilience layer; telemetry loss never blocks the toy.
+      return emptyTelemetry();
     }
   }
 }

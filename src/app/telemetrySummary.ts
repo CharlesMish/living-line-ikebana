@@ -43,7 +43,10 @@ export type BendAcquisitionSummary = {
  */
 export function summarizeBendAcquisitions(records: readonly AcquisitionRecord[]): BendAcquisitionSummary {
   const bendHits = records.filter((record) => record.operation === "bend" && record.result === "hit");
-  const resolved = bendHits.filter((record) => record.outcome !== null);
+  // "Resolved" here means only committed or cancelled — never released
+  // (camera can't produce a "bend" record anyway) and never declined (only
+  // insert can be declined) and never a still-pending/unresolved hit.
+  const resolved = bendHits.filter((record) => record.outcome === "committed" || record.outcome === "cancelled");
   const committed = resolved.filter((record) => record.outcome === "committed");
   const cancelled = resolved.filter((record) => record.outcome === "cancelled");
   return {

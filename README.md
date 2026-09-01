@@ -60,6 +60,20 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) for dependency direction and [`tests/br
 
 ## Persistence and testing
 
-Local autosave records only committed canonical graphs. A live preview is never serialized. Add `?fresh=1` when running a clean test session without loading the prior local arrangement.
+Local autosave records only committed canonical graphs. A live preview is never serialized. Add `?fresh=1` when running a clean test session without loading the prior local arrangement — this also clears the acquisition telemetry described below.
 
 The manual phone test is in `tests/browser/PHONE_WEB_TEST_CARD.md`. Use a physical iPhone for the acquisition and browser-ownership judgement; desktop emulation is useful for smoke testing but cannot stand in for Safari touch cancellation or native haptics.
+
+## Acquisition telemetry and export
+
+Every recorded acquisition (a pointer hit or miss) carries the bend variant active when it happened, how many misses preceded it in that attempt, how long the attempt took, and — once its transaction resolves — whether it committed, was cancelled, or was declined. This is what makes the two bend hypotheses in the info panel comparable from real phone sessions instead of only from developer intuition.
+
+Telemetry persists locally (`ikebana-web-alpha:telemetry-v1`), keyed by variant, alongside but separate from the committed-graph autosave. It survives a reload; `?fresh=1` clears it along with the arrangement.
+
+The info panel's **Export session data** button gets a session's records off the phone for comparison. It tries, in order:
+
+1. The Web Share API with a JSON file payload — iOS Safari's native share sheet (Save to Files, AirDrop, Messages, Mail). This is the only one of the three that reliably moves an actual file off an iPhone without a server.
+2. An anchor/blob `download` — works in a regular Safari tab when Share is unavailable, saving to Files/Downloads.
+3. An on-screen read-only text panel for a manual select-all-and-copy, which needs no permission or API support and so cannot fail.
+
+This diagnostic layer is intentionally separate from the botanical graph: it never touches `src/core/`, never gates a craft operation, and a cancelled edit's telemetry can never read as a committed one.

@@ -213,6 +213,24 @@ Required checks:
 
 Multiple commits may be safely coalesced, but every payload actually written must correspond to a completed commit. A timer firing during an active preview may write only the last committed snapshot, never current presentation state.
 
+## Acquisition telemetry and export
+
+Telemetry is diagnostic only: it never gates a craft operation and is a separate storage key from the committed-graph autosave above.
+
+Required checks:
+
+1. `getPersistedTelemetry()` starts with empty `bead`/`touch` acquisition arrays on a cleared origin.
+2. Every acquisition — hit or miss — carries the `bendVariant` active when it happened. Switching the variant mid-session tags later acquisitions with the new variant without rewriting earlier ones.
+3. A committed edit's record shows `outcome: "committed"`; an interrupted/cancelled one shows `outcome: "cancelled"` with a reason. The two are never the same value, and a cancelled record is never briefly written as committed before correction — resolution happens once, after the coordinator already knows the outcome.
+4. Reload without `?fresh=1`: telemetry accumulated so far is still present. Reload with `?fresh=1`: `getPersistedTelemetry()` returns empty `bead`/`touch` arrays again, same as the graph autosave.
+5. Tap **Export session data** in the info panel:
+   - if the device offers the Web Share API with file support, the native share sheet appears with a `.json` attachment (try Save to Files);
+   - otherwise a file download should appear (check Files app / Downloads);
+   - otherwise a read-only text panel appears with the same JSON, pre-selected for copy.
+6. The exported JSON's `persisted` field matches `getPersistedTelemetry()` at export time, and `summary.bead`/`summary.touch` counts agree with a manual tally of hits/misses/committed/cancelled for that variant.
+
+What this data can answer: which variant is acquired faster (`meanTimeToAcquireMs`) and with fewer misses (`meanMissesBeforeHit`), and what fraction of acquired edits actually land (`committed` vs. `cancelled`/`declined`), split by variant. What it cannot answer: whether the resulting silhouette is preferred, or anything about feel — that remains the phone card's "Bend experiment" section above.
+
 ## WebGL context-loss recovery
 
 Test once while idle and once during a visible edit preview.
@@ -345,6 +363,15 @@ interface IkebanaTestBridgeV1 {
       reason: string;
     }[];
   };
+  getPersistedTelemetry(): {
+    storageVersion: 1;
+    savedAt: string;
+    variants: {
+      bead: { acquisitions: unknown[] };
+      touch: { acquisitions: unknown[] };
+    };
+  };
+  getTelemetryExportPayload(): unknown; // the exact JSON the export button would share/download
   resetForTest(options: { clearAutosave: boolean; bendVariant?: "fixed" | "touch" }): Promise<void>;
   interruptForTest(reason:
     | "pointercancel"
@@ -372,3 +399,5 @@ Recommended in-memory metric events, enabled only for QA/debug builds:
 - `context`: lost/restored and canonical hash.
 
 These hooks diagnose the experiment. They must not become visible developer narration or an analytics dependency in the toy.
+
+Acquisition telemetry (bend variant, attempt miss count, time-to-acquire, and commit/cancel/decline outcome) is durable rather than in-memory-only — see "Acquisition telemetry and export" above — but the same rule applies: it stays a diagnostic layer, never a visible analytics dashboard, and never a gate on any craft operation.

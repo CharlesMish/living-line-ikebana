@@ -113,3 +113,15 @@ Physical-phone evidence is separate. The current field threshold is at least 8 o
 
 If those interaction thresholds still fail after two focused gesture-tuning passes—or if two of three testers prefer sliders or generic gizmos because direct shaping cannot be trusted—reconsider this interaction foundation instead of burying it under polish.
 
+## 8. Acquisition telemetry (additive; does not revise sections 1–7)
+
+This section documents diagnostic instrumentation added to make the bend-experiment hypotheses (fixed bead vs. touch-located) answerable from phone sessions. It is purely observational: it never gates, delays, or alters any craft operation, transaction, or camera law above, and it is not consulted by any core geometry or transaction code.
+
+- Local storage key: `ikebana-web-alpha:telemetry-v1`, distinct from the `ikebana-web-alpha:studio-v1` autosave key. Corrupt or unsupported stored data fails closed to an empty telemetry session, mirroring autosave's recovery law; it never partially hydrates.
+- Payload version `storageVersion: 1` with `savedAt` and per-variant (`bead`, `touch`) acquisition arrays.
+- Every acquisition record carries the bend variant active at the moment it happened, an attempt-scoped miss count and elapsed time (misses immediately preceding a hit belong to that hit's attempt), and — once known — a transaction outcome of `committed`, `cancelled`, or `declined`.
+- A record is written to storage only once its transaction is fully resolved (or immediately, for a miss, which never opens a transaction). Nothing pending, live, or previewed is ever persisted, matching autosave's live-preview exclusion.
+- A cancelled transaction is written with `outcome: "cancelled"` and its cancellation reason; a committed one is written with `outcome: "committed"`. Neither can be produced by the other's code path, so a cancellation can never be misread as a commit.
+- `?fresh=1` clears both the autosave and telemetry stores, yielding an empty session for both.
+- Export is a deliberate, user-triggered action (not automatic upload): it tries the Web Share API with a file payload first, falls back to an anchor/blob download, and falls back again to an on-screen read-only manual-copy view. See `README.md` for why.
+

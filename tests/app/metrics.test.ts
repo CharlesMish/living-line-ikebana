@@ -79,3 +79,92 @@ test("a hit's transaction outcome distinguishes cancellation from commit", () =>
   assert.equal(metrics.committedTransactions, 1);
   assert.equal(metrics.cancelledTransactions, 1);
 });
+
+test("resolving an already-resolved acquisition is a no-op (resolve-once)", () => {
+  const metrics = new SessionMetrics("session-a", "bead");
+  const record = metrics.recordAcquisition({
+    posture: "arrange",
+    tool: "shape",
+    result: "hit",
+    operation: "bend",
+    region: "middle",
+  });
+
+  metrics.resolveAcquisition(record, "committed");
+  assert.equal(record.outcome, "committed");
+  assert.equal(metrics.committedTransactions, 1);
+
+  // A later, mistaken second resolution must not flip the outcome or double-count.
+  metrics.resolveAcquisition(record, "cancelled", { cancelReason: "pointer-cancel" });
+  assert.equal(record.outcome, "committed");
+  assert.equal(record.cancelReason, undefined);
+  assert.equal(metrics.committedTransactions, 1);
+  assert.equal(metrics.cancelledTransactions, 0);
+});
+
+test("camera resolves as 'released', never 'committed' (camera never edits the graph)", () => {
+  const metrics = new SessionMetrics("session-a", "bead");
+  const record = metrics.recordAcquisition({
+    posture: "arrange",
+    tool: "shape",
+    result: "hit",
+    operation: "camera",
+    region: "middle",
+  });
+  metrics.resolveAcquisition(record, "released");
+  assert.equal(record.outcome, "released");
+  assert.notEqual(record.outcome, "committed");
+  assert.equal(metrics.releasedTransactions, 1);
+  assert.equal(metrics.committedTransactions, 0);
+});
+
+test("switching the bend variant resets in-progress attempt state (misses on arm A never attach to a hit on arm B)", () => {
+  const metrics = new SessionMetrics("session-a", "bead");
+  const base = { posture: "arrange" as const, tool: "shape" as const, region: "middle" as const };
+
+  metrics.recordAcquisition({ ...base, result: "miss" });
+  metrics.recordAcquisition({ ...base, result: "miss" });
+  metrics.setBendVariant("touch");
+  const hit = metrics.recordAcquisition({ ...base, result: "hit", operation: "bend" });
+
+  assert.equal(hit.bendVariant, "touch");
+  assert.equal(hit.missesBeforeHit, 0);
+});
+
+test("resetAttempt() clears in-progress state at a posture/tool/test-block boundary", () => {
+  const metrics = new SessionMetrics("session-a", "bead");
+  const base = { posture: "arrange" as const, region: "middle" as const };
+
+  metrics.recordAcquisition({ ...base, tool: "shape", result: "miss" });
+  metrics.recordAcquisition({ ...base, tool: "shape", result: "miss" });
+  // Posture/tool command boundary: IkebanaApp calls this before switching tool.
+  metrics.resetAttempt();
+  const hit = metrics.recordAcquisition({ ...base, tool: "prune", result: "hit", operation: "prune" });
+
+  assert.equal(hit.missesBeforeHit, 0);
+});
+
+test("a full reset() (test-block boundary) also clears in-progress attempt state", () => {
+  const metrics = new SessionMetrics("session-a", "bead");
+  const base = { posture: "arrange" as const, tool: "shape" as const, region: "middle" as const };
+  metrics.recordAcquisition({ ...base, result: "miss" });
+  metrics.reset();
+  const hit = metrics.recordAcquisition({ ...base, result: "hit", operation: "aim" });
+  assert.equal(hit.missesBeforeHit, 0);
+  assert.deepEqual(metrics.snapshot().acquisitions, [hit]);
+});
+
+test("materialId and inputMethod are carried through for insert acquisitions, never hardcoded by the metrics layer", () => {
+  const metrics = new SessionMetrics("session-a", "bead");
+  const hit = metrics.recordAcquisition({
+    posture: "arrange",
+    tool: "shape",
+    result: "hit",
+    operation: "insert",
+    materialId: "some-registry-material-id",
+    inputMethod: "keyboard",
+    region: "bottom",
+  });
+  assert.equal(hit.materialId, "some-registry-material-id");
+  assert.equal(hit.inputMethod, "keyboard");
+});

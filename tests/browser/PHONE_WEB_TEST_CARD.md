@@ -215,24 +215,27 @@ Multiple commits may be safely coalesced, but every payload actually written mus
 
 ## Acquisition telemetry and export
 
-Telemetry is strictly observational diagnostic instrumentation, not a scored or validated measurement of ease, speed, or preference. It never gates a craft operation, is a separate storage key from the committed-graph autosave above, and the graph always saves first — telemetry is best-effort and must never block or fail that save.
+Telemetry is strictly observational diagnostic instrumentation, not a scored or validated measurement of ease, speed, or preference. It never gates a craft operation, is a separate storage key from the committed-graph autosave above, and the graph always saves first, with telemetry subordinate to it over time (not only within one release) — see check 9.
 
 Required checks:
 
 1. `getPersistedTelemetry()` starts with empty `bead`/`touch` acquisition arrays on a cleared origin (use `resetForTest({ clearAutosave: true, clearTelemetry: true, ... })` or `?clearStudyData=1`).
-2. Every acquisition — hit or miss — carries the `bendVariant` active when it happened. Switching the variant mid-session tags later acquisitions with the new variant without rewriting earlier ones, and resets any in-progress miss/attempt state so a miss on one arm never attaches to a hit on the other. The same reset happens on a posture or tool change, and on any test-block boundary (a full reset).
+2. Every acquisition — hit or miss — carries the `bendVariant` active when it happened. Switching the variant mid-session tags later acquisitions with the new variant without rewriting earlier ones, and resets any in-progress miss/attempt state so a miss on one arm never attaches to a hit on the other. The same reset happens on a posture, tool, or canonical-view change, and on any test-block boundary (a full reset).
 3. A committed edit's record shows `outcome: "committed"`; an interrupted/cancelled one shows `outcome: "cancelled"` with a reason. The two are never the same value, and a cancelled record is never briefly written as committed before correction — resolution happens once, after the coordinator already knows the outcome, and resolving an already-resolved record is a no-op. A camera release resolves as `outcome: "released"`, never `"committed"` — camera never edits the graph.
-4. An insertion's record carries `materialId` (from the material registry, never hardcoded) and `inputMethod` (`"pointer"` for a tray drag, `"keyboard"` for `activate-material`).
-5. Reload without any flag: telemetry accumulated so far is still present. Reload with `?fresh=1` (an ordinary specimen reset): telemetry is still present — a fresh specimen must never silently delete study data. Only `?clearStudyData=1` returns `getPersistedTelemetry()` to empty `bead`/`touch` arrays.
-6. Begin a plant drag from the tray (hold), then tap **Export local study data** in the info panel while still holding: the drag's active transaction cancels first (its acquisition resolves as `"cancelled"` with reason `"experiment-command"`), and only then does export proceed. Releasing the now-stale pointer afterward is an idle no-op.
-7. Tap **Export local study data**:
+4. An insertion's record carries `materialId` (from the material registry, never hardcoded) and `inputMethod` (`"pointer"` for a tray drag, `"keyboard"` for `activate-material`); no other operation carries either field.
+5. Reload without any flag: telemetry accumulated so far is still present. Reload with `?fresh=1` (an ordinary specimen reset): telemetry is still present — a fresh specimen must never silently delete study data.
+6. `?clearStudyData=1` is one-shot: it returns `getPersistedTelemetry()` to empty `bead`/`touch` arrays once, and the app immediately strips the flag from the address bar. A record collected after that clear, followed by an ordinary reload of the (now flag-free) address, must still be present — the flag must never re-clear on a later reload or a bend-variant switch.
+7. Begin a plant drag from the tray (hold), then tap **Export local study data** in the info panel while still holding: the drag's active transaction cancels first (its acquisition resolves as `"cancelled"` with reason `"experiment-command"`), and only then does export proceed. Releasing the now-stale pointer afterward is an idle no-op.
+8. Tap **Export local study data**:
    - if the device offers the Web Share API with file support, the native share sheet appears with a `.json` attachment (try Save to Files);
    - dismissing that share sheet without picking a destination reports a distinct "Export cancelled." status and must not produce a file download or open the manual-copy panel;
    - otherwise (Share unavailable) a file download should appear (check Files app / Downloads);
    - otherwise a read-only text panel appears with the same JSON, pre-selected for copy.
-8. The exported JSON's `persisted` field matches `getPersistedTelemetry()` at export time; it includes `instrumentVersion` and a local-only `privacyStatement`. `summary.bead`/`summary.touch` are scoped to `scope: "bend-only-resolved-hits"` — resolved bend hits only. A tally of camera or insert (pointer or keyboard) records must never appear in `summary.*`, though they remain visible in `persisted.*.acquisitions` for debugging.
+9. Malformed or exhausted storage never wins against the graph: with `localStorage` artificially quota-limited (a harness/dev-tools trick, or the automated shared-origin-quota check), pre-occupy storage with telemetry, then commit a plant edit that would fit once telemetry yields. The commit must succeed — telemetry is evicted and the graph save is retried once — never the reverse.
+10. The exported JSON's `persisted` field matches `getPersistedTelemetry()` at export time and carries the same `instrumentVersion` as the persisted dataset (not just the export envelope), plus a precise `privacyStatement` (timestamps and a random session ID are present; no direct identifier or arrangement content is). `summary.bead`/`summary.touch` are scoped to `scope: "bend-only-resolved-hits"` — resolved (committed/cancelled only) bend hits. A tally of camera, released/declined, or insert (pointer or keyboard) records must never appear in `summary.*`, though they remain visible in `persisted.*.acquisitions` for debugging.
+11. The complete persisted payload stays at or under 256 KiB; sustained use trims the oldest records first rather than growing without bound or silently corrupting.
 
-What this data can answer: for acquisitions the instrument resolved as bend hits, how many committed vs. cancelled, and the mean of the raw `rawMeanTimeToAcquireMs`/`rawMeanMissesBeforeHit` counters recorded for them, split by variant. What it cannot answer, and must not be read as answering: which bend variant is faster or easier to use, or whether the resulting silhouette is preferred — a miss has no known intended operation, and feel/intent/correctness judgments remain this phone card's "Bend experiment" section above, observer-recorded, unless a future explicit trial lifecycle records intent directly.
+What this data can answer: for acquisitions the instrument resolved as bend hits (committed or cancelled only), how many of each, and the mean of the raw `rawMeanTimeToAcquireMs`/`rawMeanMissesBeforeHit` counters recorded for them, split by variant. What it cannot answer, and must not be read as answering: which bend variant is faster or easier to use, or whether the resulting silhouette is preferred — a miss has no known intended operation, and feel/intent/correctness judgments remain this phone card's "Bend experiment" section above, observer-recorded, unless a future explicit trial lifecycle records intent directly.
 
 ## WebGL context-loss recovery
 
@@ -368,6 +371,7 @@ interface IkebanaTestBridgeV1 {
   };
   getPersistedTelemetry(): {
     storageVersion: 1;
+    instrumentVersion: string; // persisted with the dataset, not only the export envelope
     savedAt: string;
     variants: {
       bead: { acquisitions: unknown[] };

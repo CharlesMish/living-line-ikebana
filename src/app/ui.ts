@@ -30,7 +30,8 @@ export type UICommand =
       clientX: number;
       clientY: number;
     }
-  | { kind: "activate-material"; materialId: string };
+  | { kind: "activate-material"; materialId: string }
+  | { kind: "export-telemetry" };
 
 export type UICommandListener = (command: UICommand, sourceEvent: Event) => void;
 
@@ -44,6 +45,8 @@ export interface UIBindings {
   setExperimentPanelOpen(open: boolean): void;
   setTrayEnabled(enabled: boolean): void;
   setTrayDragging(dragging: boolean, materialId?: string | null): void;
+  /** Shows the manual-copy telemetry panel with `text`, or hides it when `null`. */
+  showTelemetryFallback(text: string | null): void;
   destroy(): void;
 }
 
@@ -98,6 +101,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const experimentPanel = requireElement<HTMLElement>(root, "#experiment-panel");
   const experimentToggle = requireElement<HTMLButtonElement>(root, "#experiment-toggle");
   const experimentClose = requireElement<HTMLButtonElement>(root, "#experiment-close");
+  const telemetryExportTrigger = requireElement<HTMLButtonElement>(root, "#telemetry-export-trigger");
+  const telemetryExportPanel = requireElement<HTMLElement>(root, "#telemetry-export-panel");
+  const telemetryExportText = requireElement<HTMLTextAreaElement>(root, "#telemetry-export-text");
+  const telemetryExportClose = requireElement<HTMLButtonElement>(root, "#telemetry-export-close");
 
   const search = options.search ?? globalThis.location?.search ?? "";
   let currentState: UIState = {
@@ -206,6 +213,23 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     listenerOptions,
   );
 
+  telemetryExportTrigger.addEventListener(
+    "click",
+    (event) => {
+      emit({ kind: "export-telemetry" }, event);
+    },
+    listenerOptions,
+  );
+
+  telemetryExportClose.addEventListener(
+    "click",
+    () => {
+      telemetryExportPanel.hidden = true;
+      telemetryExportText.value = "";
+    },
+    listenerOptions,
+  );
+
   for (const trayButton of trayButtons) {
     trayButton.addEventListener(
       "pointerdown",
@@ -276,6 +300,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
         trayDragging: dragging,
         activeMaterialId: dragging ? materialId : null,
       });
+    },
+    showTelemetryFallback(text) {
+      telemetryExportPanel.hidden = text === null;
+      telemetryExportText.value = text ?? "";
+      if (text !== null) telemetryExportText.select();
     },
     destroy() {
       controller.abort();

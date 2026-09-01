@@ -64,6 +64,38 @@
           <button type="button" data-bend-variant="touch-located" aria-pressed="false">Where touched</button>
         </div>
         <p class="panel-note">Both keep the same branch length and broad curve.</p>
+        <button
+          id="telemetry-export-trigger"
+          class="quiet-button telemetry-export-trigger"
+          type="button"
+          data-testid="export-telemetry"
+        >
+          Export session data
+        </button>
+      </section>
+
+      <section
+        id="telemetry-export-panel"
+        class="experiment-panel telemetry-export-panel"
+        role="dialog"
+        aria-labelledby="telemetry-export-title"
+        hidden
+      >
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Session data</p>
+            <h2 id="telemetry-export-title">Copy this manually</h2>
+          </div>
+          <button id="telemetry-export-close" class="icon-button" type="button" aria-label="Close session data">×</button>
+        </div>
+        <p class="panel-note">Sharing and downloading were not available here. Select all, copy, and send it to yourself.</p>
+        <textarea
+          id="telemetry-export-text"
+          class="telemetry-export-text"
+          data-testid="telemetry-export-text"
+          readonly
+          rows="10"
+        ></textarea>
       </section>
 
       <p id="status" class="status-pill" data-testid="status" role="status" aria-live="polite" aria-atomic="true">

@@ -39,14 +39,21 @@ import {
   type StudioContextMap,
   type StudioInputMap,
 } from "./domainAdapters.ts";
-import { SessionMetrics, screenRegion } from "./metrics.ts";
 import {
   KENZAN_BASE,
   prepareMaterialInsertionForApp,
   selectedBranchIdForSeatedGraph,
 } from "./materialInsertion.ts";
+import {
+  createSessionId,
+  SessionMetrics,
+  screenRegion,
+  type AcquisitionRecord,
+  type TransactionOutcome,
+} from "./metrics.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
+import { TelemetryStore, type PersistedTelemetry } from "./telemetry.ts";
 import {
   createUIBindings,
   type BendVariant as UIBendVariant,
@@ -141,6 +148,8 @@ interface IkebanaTestBridge {
   getMetrics(): unknown;
   resetMetrics(): void;
   getAutosaveAudit(): { writes: AutosaveAuditRecord[] };
+  getPersistedTelemetry(): PersistedTelemetry;
+  getTelemetryExportPayload(): unknown;
   resetForTest(options: { clearAutosave: boolean; bendVariant?: "fixed" | "touch" | string }): Promise<void>;
   interruptForTest(reason: string): void;
   loseContextForTest(): Promise<boolean>;
@@ -190,6 +199,35 @@ function clonePlain<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function mean(values: number[]): number | null {
+  if (values.length === 0) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+/**
+ * A compact, ready-to-read comparison of one variant's acquisitions. This
+ * answers "which arm is easier/faster to hit and how often does an acquired
+ * edit actually land" without further spreadsheet work; it does not answer
+ * whether the resulting silhouette is preferred, which needs the phone card.
+ */
+function summarizeVariantTelemetry(records: AcquisitionRecord[]) {
+  const hits = records.filter((record) => record.result === "hit");
+  const misses = records.filter((record) => record.result === "miss");
+  const committed = hits.filter((record) => record.outcome === "committed");
+  const cancelled = hits.filter((record) => record.outcome === "cancelled");
+  const declined = hits.filter((record) => record.outcome === "declined");
+  return {
+    totalAcquisitions: records.length,
+    hits: hits.length,
+    misses: misses.length,
+    committed: committed.length,
+    cancelled: cancelled.length,
+    declined: declined.length,
+    meanTimeToAcquireMs: mean(hits.map((record) => record.timeToAcquireMs ?? 0)),
+    meanMissesBeforeHit: mean(hits.map((record) => record.missesBeforeHit)),
+  };
+}
+
 export class IkebanaApp {
   private readonly root: HTMLElement;
   private readonly ui: UIBindings;
@@ -197,15 +235,19 @@ export class IkebanaApp {
   private readonly studio: ThreeStudio;
   private readonly store = new CommittedStore<CanonicalPlantGraph>();
   private readonly sound = new CraftSound();
-  private readonly metrics = new SessionMetrics();
+  private readonly config = readExperimentConfig();
+  private readonly sessionId = createSessionId();
+  private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
+  private readonly telemetryStore = new TelemetryStore();
   private readonly autosaveWrites: AutosaveAuditRecord[] = [];
   private readonly abortController = new AbortController();
-  private readonly config = readExperimentConfig();
 
   private coordinator!: Coordinator;
   private gesture: Gesture | null = null;
   private selectedBranchId: string | null = null;
   private bendVariant: BendVariant;
+  /** The hit that opened the transaction currently pending commit/cancel/decline. */
+  private pendingAcquisitionRecord: AcquisitionRecord | null = null;
   private cameraIsFree = false;
   private started = false;
   private disposed = false;
@@ -217,6 +259,7 @@ export class IkebanaApp {
   constructor(root: HTMLElement) {
     this.root = root;
     this.bendVariant = this.config.bendVariant;
+    if (this.config.fresh) this.telemetryStore.clear();
     this.ui = createUIBindings({
       root,
       initialState: { bendVariant: uiVariant(this.bendVariant) },
@@ -317,8 +360,8 @@ export class IkebanaApp {
         view: "front",
         bendVariant: this.bendVariant,
         onChange: () => this.syncPresentation(),
-        onCancel: () => {
-          this.metrics.cancelledTransactions += 1;
+        onCancel: (event) => {
+          this.resolvePendingAcquisition("cancelled", event.reason);
         },
         onAutosave: (event) => {
           const plantsToSave = [...event.document.plants.values()]
@@ -331,7 +374,7 @@ export class IkebanaApp {
             transactionActive: this.coordinator.getDebugState().active !== null,
             reason: "commit",
           });
-          this.metrics.committedTransactions += 1;
+          this.resolvePendingAcquisition("committed");
           this.lastSaveSucceeded = this.store.save(
             event.document.successfulPlantOrdinal + 1,
             plantsToSave,
@@ -372,6 +415,7 @@ export class IkebanaApp {
       case "set-bend-variant": {
         this.interruptActive("experiment-command");
         this.bendVariant = domainVariant(command.bendVariant);
+        this.metrics.setBendVariant(this.bendVariant);
         this.coordinator.commandBendVariant(this.bendVariant);
         this.ui.setState({ bendVariant: command.bendVariant });
         history.replaceState(null, "", urlForBendVariant(this.bendVariant));
@@ -390,6 +434,10 @@ export class IkebanaApp {
       }
       case "activate-material": {
         this.activateMaterial(command.materialId);
+        break;
+      }
+      case "export-telemetry": {
+        void this.exportTelemetry();
         break;
       }
     }
@@ -434,7 +482,7 @@ export class IkebanaApp {
       this.releasePointer(capture, command.pointerId);
       return;
     }
-    this.metrics.recordAcquisition({
+    this.trackAcquisition({
       posture: "arrange",
       tool: "shape",
       result: "hit",
@@ -465,6 +513,13 @@ export class IkebanaApp {
       { base, valid: true },
     );
     if (!started.ok) return;
+    this.trackAcquisition({
+      posture: "arrange",
+      tool: "shape",
+      result: "hit",
+      operation: "insert",
+      region: "bottom",
+    });
     this.lastSaveSucceeded = true;
     const released = this.coordinator.release(owner);
     if (!released.ok) return;
@@ -491,7 +546,7 @@ export class IkebanaApp {
 
     const candidate = this.studio.collectHitCandidates(event.clientX, event.clientY)[0] ?? null;
     if (!candidate) {
-      this.metrics.recordAcquisition({
+      this.trackAcquisition({
         posture: "arrange",
         tool: debug.tool,
         result: "miss",
@@ -809,17 +864,25 @@ export class IkebanaApp {
     this.releaseGesturePointers(gesture);
     if (gesture.kind === "insert") {
       if (insertionWasValid) {
+        // The coordinator's onAutosave already resolved this acquisition as "committed".
         const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(gesture.plantId);
         this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
         this.sound.seat();
         if (this.lastSaveSucceeded) this.ui.setStatus("Seated.");
       } else {
+        // An invalid release commits nothing and the coordinator never signals
+        // cancellation for it either; that ambiguity would otherwise leave this
+        // acquisition's transaction unresolved forever.
+        this.resolvePendingAcquisition("declined");
         this.ui.setStatus("Returned to the tray.");
       }
     } else if (gesture.kind === "prune") {
       this.sound.cut();
       if (this.lastSaveSucceeded) this.ui.setStatus("Cut.");
-    } else if (gesture.kind !== "camera") {
+    } else if (gesture.kind === "camera") {
+      // Camera commits never route through the coordinator's graph autosave hook.
+      this.resolvePendingAcquisition("committed");
+    } else {
       if (this.lastSaveSucceeded) this.ui.setStatus("Set.");
     }
     this.syncPresentation();
@@ -883,13 +946,129 @@ export class IkebanaApp {
 
   private recordHit(event: PointerEvent, operation: "aim" | "bend" | "base" | "prune" | "camera") {
     const debug = this.coordinator.getDebugState();
-    this.metrics.recordAcquisition({
+    this.trackAcquisition({
       posture: debug.posture === "arrange" ? "arrange" : "inspect",
       tool: debug.tool,
       result: "hit",
       operation,
       region: screenRegion(event.clientY),
     });
+  }
+
+  /**
+   * Records one acquisition (hit or miss). A hit opens a transaction whose
+   * outcome is not yet known, so it is held as pending and persisted only
+   * once `resolvePendingAcquisition` learns whether it committed, cancelled,
+   * or was declined. A miss never opens a transaction, so it is durable
+   * immediately: there is nothing further to resolve.
+   */
+  private trackAcquisition(
+    input: Parameters<SessionMetrics["recordAcquisition"]>[0],
+  ): AcquisitionRecord {
+    const record = this.metrics.recordAcquisition(input);
+    if (record.result === "hit") {
+      this.pendingAcquisitionRecord = record;
+    } else {
+      this.telemetryStore.append(record.bendVariant, record);
+    }
+    return record;
+  }
+
+  /**
+   * Resolves the acquisition that opened the currently pending transaction,
+   * if any, and persists it durably and exactly once. A cancelled record can
+   * never have been written as committed: nothing is persisted before this
+   * runs, and this runs at most once per transaction.
+   */
+  private resolvePendingAcquisition(outcome: TransactionOutcome, cancelReason?: string): void {
+    const record = this.pendingAcquisitionRecord;
+    this.pendingAcquisitionRecord = null;
+    if (!record) return;
+    this.metrics.resolveAcquisition(record, outcome, { cancelReason });
+    this.telemetryStore.append(record.bendVariant, record);
+  }
+
+  private telemetryExportPayload() {
+    const persisted = this.telemetryStore.load();
+    return {
+      schemaVersion: 1 as const,
+      exportedAt: new Date().toISOString(),
+      sessionId: this.sessionId,
+      currentBendVariant: this.bendVariant,
+      persisted,
+      summary: {
+        bead: summarizeVariantTelemetry(persisted.variants.bead.acquisitions),
+        touch: summarizeVariantTelemetry(persisted.variants.touch.acquisitions),
+      },
+    };
+  }
+
+  private async exportTelemetry(): Promise<void> {
+    const payload = this.telemetryExportPayload();
+    const json = JSON.stringify(payload, null, 2);
+    const filename = `living-line-telemetry-${payload.sessionId}.json`;
+
+    if (await this.shareTelemetry(json, filename)) {
+      this.ui.setStatus("Shared session data.");
+      return;
+    }
+    if (this.downloadTelemetry(json, filename)) {
+      this.ui.setStatus("Downloaded session data.");
+      return;
+    }
+    this.ui.showTelemetryFallback(json);
+    this.ui.setStatus("Select all, then copy the session data below.");
+  }
+
+  /**
+   * Primary export path: the Web Share API (with a File payload) hands the
+   * JSON straight to iOS Safari's native share sheet — Save to Files,
+   * AirDrop, Messages, Mail — which is the most direct way to get a file off
+   * an iPhone without a server. Not available in every browser/context, so
+   * this fails soft to the download and manual-copy paths below.
+   */
+  private async shareTelemetry(json: string, filename: string): Promise<boolean> {
+    const nav = navigator as Navigator & {
+      canShare?: (data: { files?: File[] }) => boolean;
+      share?: (data: { files?: File[]; title?: string }) => Promise<void>;
+    };
+    if (typeof File === "undefined" || !nav.canShare || !nav.share) return false;
+    try {
+      const file = new File([json], filename, { type: "application/json" });
+      if (!nav.canShare({ files: [file] })) return false;
+      await nav.share({ files: [file], title: "Living Line telemetry" });
+      return true;
+    } catch (error) {
+      // AbortError means the tester dismissed the share sheet; that is not a
+      // failure worth falling back from, but nothing was exported either.
+      if (error instanceof DOMException && error.name === "AbortError") return true;
+      return false;
+    }
+  }
+
+  /**
+   * Fallback export path: an anchor with `download` on a blob URL. Safari
+   * (including iOS Safari in a regular tab) saves this to Files/Downloads.
+   * Used when Share is unsupported/unavailable (e.g. no File/Share API, or
+   * `canShare` rejects the payload).
+   */
+  private downloadTelemetry(json: string, filename: string): boolean {
+    if (typeof document === "undefined" || typeof URL?.createObjectURL !== "function") return false;
+    try {
+      const blob = new Blob([json], { type: "application/json" });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = filename;
+      anchor.rel = "noopener";
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private abortFailedBegin(gesture: Gesture) {
@@ -1107,14 +1286,21 @@ export class IkebanaApp {
       getMetrics: () => this.metrics.snapshot(),
       resetMetrics: () => this.metrics.reset(),
       getAutosaveAudit: () => ({ writes: this.autosaveWrites.map((write) => ({ ...write })) }),
+      getPersistedTelemetry: () => clonePlain(this.telemetryStore.load()),
+      getTelemetryExportPayload: () => clonePlain(this.telemetryExportPayload()),
       resetForTest: async (options) => {
         this.interruptActive("system-interruption", false);
-        if (options.clearAutosave) this.store.clear();
+        this.pendingAcquisitionRecord = null;
+        if (options.clearAutosave) {
+          this.store.clear();
+          this.telemetryStore.clear();
+        }
         this.autosaveWrites.length = 0;
         this.metrics.reset();
         this.selectedBranchId = null;
         this.cameraIsFree = false;
         this.bendVariant = options.bendVariant === "touch" ? "touch" : "bead";
+        this.metrics.setBendVariant(this.bendVariant);
         this.studio.clearGraphs();
         this.studio.setPendingGraph(null);
         this.replaceCoordinator(new Map(), 0);

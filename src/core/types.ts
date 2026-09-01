@@ -2,6 +2,7 @@ import type { Vec3 } from "./math.ts";
 
 export const SCHEMA_VERSION = 1 as const;
 export const GENERATOR_VERSION = "one-branch-v1" as const;
+export type GeneratorVersion = string;
 
 export type BranchKind = "trunk" | "lateral" | "twig" | "petiole" | "pedicel";
 export type OrganKind = "leaf" | "bloom" | "bud";
@@ -33,7 +34,7 @@ export interface Organ {
 
 export interface PlantGraph {
   schemaVersion: typeof SCHEMA_VERSION;
-  generatorVersion: typeof GENERATOR_VERSION;
+  generatorVersion: GeneratorVersion;
   id: string;
   seed: number;
   rootBranchId: string;
@@ -50,7 +51,7 @@ export interface CanonicalOrgan extends Organ {}
 
 export interface CanonicalPlantGraph {
   schemaVersion: typeof SCHEMA_VERSION;
-  generatorVersion: typeof GENERATOR_VERSION;
+  generatorVersion: GeneratorVersion;
   id: string;
   seed: number;
   rootBranchId: string;

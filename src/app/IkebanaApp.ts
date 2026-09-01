@@ -3,12 +3,10 @@ import {
   addScaled,
   assertValidPlantGraph,
   bendStationAtFraction,
-  createFloweringBranch,
   fromCanonicalPlantGraph,
   legalBendStation,
   normalize,
   sampleBranch,
-  successfulSeatIdentity,
   toCanonicalPlantGraph,
   type CanonicalPlantGraph,
   type CutPlan,
@@ -42,6 +40,11 @@ import {
   type StudioInputMap,
 } from "./domainAdapters.ts";
 import { SessionMetrics, screenRegion } from "./metrics.ts";
+import {
+  KENZAN_BASE,
+  prepareMaterialInsertionForApp,
+  selectedBranchIdForSeatedGraph,
+} from "./materialInsertion.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
 import {
@@ -67,6 +70,7 @@ type PointerBase = {
 
 type InsertGesture = PointerBase & {
   kind: "insert";
+  materialId: string;
   plantId: string;
   pendingVisible: boolean;
 };
@@ -149,7 +153,6 @@ declare global {
   }
 }
 
-const KENZAN_BASE: Vec3 = { x: 0, y: 0.55, z: 0 };
 const TOUCH_BEND_START = 0.24;
 const TOUCH_BEND_END = 0.72;
 
@@ -386,7 +389,7 @@ export class IkebanaApp {
         break;
       }
       case "activate-material": {
-        this.activateMaterial();
+        this.activateMaterial(command.materialId);
         break;
       }
     }
@@ -397,26 +400,32 @@ export class IkebanaApp {
     event: PointerEvent,
   ) {
     if (this.gesture || this.coordinator.getDebugState().posture !== "arrange") return;
-    const ordinal = this.coordinator.getDebugState().successfulPlantOrdinal + 1;
-    const identity = successfulSeatIdentity(ordinal);
-    const graph = createFloweringBranch(identity.id, identity.seed, KENZAN_BASE);
+    const prepared = this.prepareMaterialInsertion(command.materialId);
+    if (!prepared) return;
+    const reservation = {
+      ordinal: prepared.ordinal,
+      plantId: prepared.plantId,
+      seed: prepared.seed,
+      graph: prepared.graph,
+    };
     const intersection = this.studio.intersectKenzanPlane(command.clientX, command.clientY);
     const input = placementInputFromIntersection(intersection);
     const capture = this.materialCaptureElement(event);
     if (!capture) return;
     const gesture: InsertGesture = {
       kind: "insert",
+      materialId: command.materialId,
       owner: command.pointerId,
       capture,
       acquisitionHash: this.canonicalHash(),
-      plantId: identity.id,
+      plantId: prepared.plantId,
       pendingVisible: intersection !== null,
     };
     this.gesture = gesture;
     this.capturePointer(capture, command.pointerId);
     const result = this.coordinator.beginInsert(
       command.pointerId,
-      { ordinal, plantId: identity.id, seed: identity.seed, graph },
+      reservation,
       {},
       input,
     );
@@ -435,25 +444,32 @@ export class IkebanaApp {
     this.ui.setStatus(input.valid ? "Over the pins." : "Find the pins.");
   }
 
-  private activateMaterial() {
+  private activateMaterial(materialId: string) {
     if (this.gesture || this.coordinator.getDebugState().posture !== "arrange") return;
-    const ordinal = this.coordinator.getDebugState().successfulPlantOrdinal + 1;
-    const identity = successfulSeatIdentity(ordinal);
-    const graph = createFloweringBranch(identity.id, identity.seed, KENZAN_BASE);
-    const angle = (ordinal - 1) * 2.399963;
-    const radius = Math.min(0.86, Math.sqrt(Math.max(0, ordinal - 1)) * 0.28);
+    const prepared = this.prepareMaterialInsertion(materialId);
+    if (!prepared) return;
+    const reservation = {
+      ordinal: prepared.ordinal,
+      plantId: prepared.plantId,
+      seed: prepared.seed,
+      graph: prepared.graph,
+    };
+    const angle = (prepared.ordinal - 1) * 2.399963;
+    const radius = Math.min(0.86, Math.sqrt(Math.max(0, prepared.ordinal - 1)) * 0.28);
     const base = { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
-    const owner = `keyboard-${ordinal}`;
+    const owner = `keyboard-${prepared.ordinal}`;
     const started = this.coordinator.beginInsert(
       owner,
-      { ordinal, plantId: identity.id, seed: identity.seed, graph },
+      reservation,
       {},
       { base, valid: true },
     );
     if (!started.ok) return;
     this.lastSaveSucceeded = true;
-    this.coordinator.release(owner);
-    this.selectedBranchId = `${identity.id}:trunk`;
+    const released = this.coordinator.release(owner);
+    if (!released.ok) return;
+    const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(prepared.plantId);
+    this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
     this.sound.seat();
     if (this.lastSaveSucceeded) this.ui.setStatus("Seated.");
     this.syncPresentation();
@@ -793,7 +809,8 @@ export class IkebanaApp {
     this.releaseGesturePointers(gesture);
     if (gesture.kind === "insert") {
       if (insertionWasValid) {
-        this.selectedBranchId = `${gesture.plantId}:trunk`;
+        const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(gesture.plantId);
+        this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
         this.sound.seat();
         if (this.lastSaveSucceeded) this.ui.setStatus("Seated.");
       } else {
@@ -929,6 +946,23 @@ export class IkebanaApp {
 
   private preventDefault = (event: Event) => event.preventDefault();
 
+  private prepareMaterialInsertion(materialId: string) {
+    const prepared = prepareMaterialInsertionForApp(
+      materialId,
+      this.coordinator.getDebugState().successfulPlantOrdinal,
+    );
+    if (!prepared.ok) {
+      this.ui.setStatus(
+        prepared.reason === "unknown-material"
+          ? "Material unavailable."
+          : "Material could not be prepared.",
+        "warning",
+      );
+      return null;
+    }
+    return prepared;
+  }
+
   private syncPresentation() {
     if (!this.coordinator || this.disposed) return;
     const presentation = this.coordinator.getPresentationState();
@@ -990,7 +1024,13 @@ export class IkebanaApp {
     this.root.dataset.tool = debug.tool;
     this.root.dataset.view = this.cameraIsFree ? "orbit" : debug.view;
     const dragging = debug.active?.kind === "insert";
-    if (this.ui.state.trayDragging !== dragging) this.ui.setTrayDragging(dragging);
+    const activeMaterialId = this.gesture?.kind === "insert" ? this.gesture.materialId : null;
+    if (
+      this.ui.state.trayDragging !== dragging
+      || this.ui.state.activeMaterialId !== activeMaterialId
+    ) {
+      this.ui.setTrayDragging(dragging, activeMaterialId);
+    }
   }
 
   private canonicalSnapshot() {
@@ -1085,6 +1125,7 @@ export class IkebanaApp {
           bendVariant: uiVariant(this.bendVariant),
           experimentPanelOpen: false,
           trayDragging: false,
+          activeMaterialId: null,
         });
         this.ui.setStatus("Place a cutting.");
         this.syncPresentation();

@@ -12,6 +12,7 @@ export interface UIState {
   experimentPanelOpen: boolean;
   trayEnabled: boolean;
   trayDragging: boolean;
+  activeMaterialId: string | null;
   status: string;
   statusTone: StatusTone;
 }
@@ -42,7 +43,7 @@ export interface UIBindings {
   setStatus(message: string, tone?: StatusTone): void;
   setExperimentPanelOpen(open: boolean): void;
   setTrayEnabled(enabled: boolean): void;
-  setTrayDragging(dragging: boolean): void;
+  setTrayDragging(dragging: boolean, materialId?: string | null): void;
   destroy(): void;
 }
 
@@ -60,6 +61,7 @@ const DEFAULT_STATE: UIState = {
   experimentPanelOpen: false,
   trayEnabled: true,
   trayDragging: false,
+  activeMaterialId: null,
   status: "Place a cutting.",
   statusTone: "quiet",
 };
@@ -89,7 +91,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
   const craftChrome = requireElement<HTMLElement>(root, "#craft-chrome");
-  const trayButton = requireElement<HTMLButtonElement>(root, "[data-material-id]");
+  const trayButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-material-id]")];
+  if (trayButtons.length === 0) {
+    throw new Error("UI shell is missing required element: [data-material-id]");
+  }
   const experimentPanel = requireElement<HTMLElement>(root, "#experiment-panel");
   const experimentToggle = requireElement<HTMLButtonElement>(root, "#experiment-toggle");
   const experimentClose = requireElement<HTMLButtonElement>(root, "#experiment-close");
@@ -133,9 +138,13 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
     craftChrome.inert = currentState.posture === "step-back";
     craftChrome.setAttribute("aria-hidden", String(currentState.posture === "step-back"));
-    trayButton.disabled = !currentState.trayEnabled;
-    trayButton.dataset.dragging = String(currentState.trayDragging);
-    trayButton.setAttribute("aria-busy", String(currentState.trayDragging));
+    for (const trayButton of trayButtons) {
+      const buttonDragging = currentState.trayDragging
+        && currentState.activeMaterialId === trayButton.dataset.materialId;
+      trayButton.disabled = !currentState.trayEnabled;
+      trayButton.dataset.dragging = String(buttonDragging);
+      trayButton.setAttribute("aria-busy", String(buttonDragging));
+    }
 
     status.textContent = currentState.status;
     status.dataset.tone = currentState.statusTone;
@@ -197,40 +206,48 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     listenerOptions,
   );
 
-  trayButton.addEventListener(
-    "pointerdown",
-    (event) => {
-      if (!currentState.trayEnabled || event.button !== 0) return;
-      event.preventDefault();
-      emit(
-        {
-          kind: "begin-material-drag",
-          materialId: trayButton.dataset.materialId ?? "flowering-branch",
-          pointerId: event.pointerId,
-          clientX: event.clientX,
-          clientY: event.clientY,
-        },
-        event,
-      );
-    },
-    listenerOptions,
-  );
+  for (const trayButton of trayButtons) {
+    trayButton.addEventListener(
+      "pointerdown",
+      (event) => {
+        const materialId = trayButton.dataset.materialId;
+        if (
+          !currentState.trayEnabled
+          || event.button !== 0
+          || !materialId
+          || materialId.trim().length === 0
+        ) return;
+        event.preventDefault();
+        emit(
+          {
+            kind: "begin-material-drag",
+            materialId,
+            pointerId: event.pointerId,
+            clientX: event.clientX,
+            clientY: event.clientY,
+          },
+          event,
+        );
+      },
+      listenerOptions,
+    );
 
-  trayButton.addEventListener(
-    "click",
-    (event) => {
-      // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
-      if (!currentState.trayEnabled || event.detail !== 0) return;
-      emit(
-        {
-          kind: "activate-material",
-          materialId: trayButton.dataset.materialId ?? "flowering-branch",
-        },
-        event,
-      );
-    },
-    listenerOptions,
-  );
+    trayButton.addEventListener(
+      "click",
+      (event) => {
+        const materialId = trayButton.dataset.materialId;
+        // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
+        if (
+          !currentState.trayEnabled
+          || event.detail !== 0
+          || !materialId
+          || materialId.trim().length === 0
+        ) return;
+        emit({ kind: "activate-material", materialId }, event);
+      },
+      listenerOptions,
+    );
+  }
 
   render();
 
@@ -254,8 +271,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     setTrayEnabled(enabled) {
       setState({ trayEnabled: enabled });
     },
-    setTrayDragging(dragging) {
-      setState({ trayDragging: dragging });
+    setTrayDragging(dragging, materialId = null) {
+      setState({
+        trayDragging: dragging,
+        activeMaterialId: dragging ? materialId : null,
+      });
     },
     destroy() {
       controller.abort();

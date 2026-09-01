@@ -1,6 +1,6 @@
 import { cloneVec3 } from "./math.ts";
+import { isSupportedGeneratorVersion } from "./materialCatalog.ts";
 import {
-  GENERATOR_VERSION,
   SCHEMA_VERSION,
   type Branch,
   type CanonicalBranch,
@@ -35,15 +35,20 @@ const canonicalOrgan = (organ: Organ): CanonicalOrgan => ({
   active: organ.active,
 });
 
-export const toCanonicalPlantGraph = (graph: PlantGraph): CanonicalPlantGraph => ({
-  schemaVersion: graph.schemaVersion,
-  generatorVersion: graph.generatorVersion,
-  id: graph.id,
-  seed: graph.seed >>> 0,
-  rootBranchId: graph.rootBranchId,
-  branches: [...graph.branches.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(canonicalBranch),
-  organs: [...graph.organs.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(canonicalOrgan),
-});
+export const toCanonicalPlantGraph = (graph: PlantGraph): CanonicalPlantGraph => {
+  if (!isSupportedGeneratorVersion(graph.generatorVersion)) {
+    throw new TypeError(`Unsupported generatorVersion ${graph.generatorVersion}`);
+  }
+  return {
+    schemaVersion: graph.schemaVersion,
+    generatorVersion: graph.generatorVersion,
+    id: graph.id,
+    seed: graph.seed >>> 0,
+    rootBranchId: graph.rootBranchId,
+    branches: [...graph.branches.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(canonicalBranch),
+    organs: [...graph.organs.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(canonicalOrgan),
+  };
+};
 
 export const serializePlantGraph = (graph: PlantGraph, space?: number): string =>
   JSON.stringify(toCanonicalPlantGraph(graph), null, space);
@@ -123,7 +128,10 @@ const decodeOrgan = (value: unknown, index: number): Organ => {
 export const fromCanonicalPlantGraph = (value: unknown): PlantGraph => {
   const record = asRecord(value, "plant graph");
   if (record.schemaVersion !== SCHEMA_VERSION) throw new TypeError(`Unsupported schemaVersion ${String(record.schemaVersion)}`);
-  if (record.generatorVersion !== GENERATOR_VERSION) throw new TypeError(`Unsupported generatorVersion ${String(record.generatorVersion)}`);
+  const generatorVersion = asString(record.generatorVersion, "generatorVersion");
+  if (!isSupportedGeneratorVersion(generatorVersion)) {
+    throw new TypeError(`Unsupported generatorVersion ${generatorVersion}`);
+  }
   if (!Array.isArray(record.branches) || !Array.isArray(record.organs)) {
     throw new TypeError("branches and organs must be arrays");
   }
@@ -133,7 +141,7 @@ export const fromCanonicalPlantGraph = (value: unknown): PlantGraph => {
   if (new Set(organs.map(({ id }) => id)).size !== organs.length) throw new TypeError("organ IDs must be unique");
   return {
     schemaVersion: SCHEMA_VERSION,
-    generatorVersion: GENERATOR_VERSION,
+    generatorVersion,
     id: asString(record.id, "id"),
     seed: asNumber(record.seed, "seed") >>> 0,
     rootBranchId: asString(record.rootBranchId, "rootBranchId"),

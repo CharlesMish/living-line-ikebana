@@ -1,9 +1,36 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { afterEach } from "node:test";
 
 import { TelemetryStore, TELEMETRY_INSTRUMENT_VERSION } from "../../src/app/telemetry.ts";
 
 const STORAGE_KEY = "ikebana-web-alpha:telemetry-v1";
+
+// TelemetryStore now schedules its deferred flush with a real task-boundary
+// timer (setTimeout), not a microtask. A test that appends and never
+// flushes/clears/awaits that timer would otherwise leave it dangling in
+// the real Node event loop, where it can fire during a *later* test and
+// write into whatever `localStorage` mock that later test just installed.
+// Track every store created via `createStore()` and force-flush (which
+// also cancels any pending real timer) after every test, regardless of
+// whether the test itself remembered to.
+const activeStores: TelemetryStore[] = [];
+
+function createStore(key?: string): TelemetryStore {
+  const store = key === undefined ? new TelemetryStore() : new TelemetryStore(key);
+  activeStores.push(store);
+  return store;
+}
+
+afterEach(() => {
+  for (const store of activeStores) {
+    try {
+      store.flush();
+    } catch {
+      // Best-effort cleanup only; a test's own assertions already ran.
+    }
+  }
+  activeStores.length = 0;
+});
 
 class MemoryStorage {
   private readonly store = new Map<string, string>();
@@ -63,7 +90,7 @@ function rawStoredPayload(variants: Record<string, unknown[]>) {
 
 test("persisted telemetry starts empty and is keyed by bend variant", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   const loaded = store.load();
   assert.deepEqual(loaded.variants.bead.acquisitions, []);
   assert.deepEqual(loaded.variants.touch.acquisitions, []);
@@ -71,7 +98,7 @@ test("persisted telemetry starts empty and is keyed by bend variant", () => {
 
 test("a cancelled transaction is distinguishable from a committed one in persisted data", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
 
   store.append("touch", acquisition({ outcome: "committed" }));
   store.append("touch", acquisition({ outcome: "cancelled", cancelReason: "pointer-cancel" }));
@@ -89,7 +116,7 @@ test("a cancelled transaction is distinguishable from a committed one in persist
 
 test("a camera release is distinguishable from a graph commit ('released' is never 'committed')", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   const ok = store.append(
     "touch",
     acquisition({ operation: "camera", outcome: "released", tool: "shape" }),
@@ -102,13 +129,13 @@ test("a camera release is distinguishable from a graph commit ('released' is nev
 
 test("telemetry survives a reload (a fresh store instance reading the same key, after a flush)", () => {
   const storage = installMemoryStorage();
-  const firstLoadSession = new TelemetryStore();
+  const firstLoadSession = createStore();
   firstLoadSession.append("bead", acquisition({ bendVariant: "bead" }));
   // append() only buffers in memory and schedules a deferred flush; force it
   // now so a brand-new store instance (simulating a reload) can see it.
   firstLoadSession.flush();
 
-  const secondLoadSession = new TelemetryStore();
+  const secondLoadSession = createStore();
   const reloaded = secondLoadSession.load();
   assert.equal(reloaded.variants.bead.acquisitions.length, 1);
   assert.ok(storage.getItem(STORAGE_KEY));
@@ -116,7 +143,7 @@ test("telemetry survives a reload (a fresh store instance reading the same key, 
 
 test("append() buffers in memory without a synchronous storage write; flush() performs the deferred write", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   let writes = 0;
   const originalSetItem = localStorage.setItem.bind(localStorage);
   (localStorage as unknown as { setItem: typeof localStorage.setItem }).setItem = (key, value) => {
@@ -134,23 +161,101 @@ test("append() buffers in memory without a synchronous storage write; flush() pe
   assert.equal(writes, 1, "flush() performs exactly the deferred write");
 });
 
-test("append() schedules a flush that runs on its own (a microtask), without an explicit flush() call", async () => {
+test("append() has not written after only a microtask; it writes after the scheduled task/render boundary", async () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   store.append("touch", acquisition());
   assert.equal(localStorage.getItem(STORAGE_KEY), null, "not yet written synchronously");
 
+  // A microtask alone must not be enough: it runs before the browser gets
+  // a chance to paint or do other work, so it does not actually relieve
+  // the interaction frame the way a task-boundary handoff does.
   await Promise.resolve();
   await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(
+    localStorage.getItem(STORAGE_KEY),
+    null,
+    "must still be unwritten after only microtasks",
+  );
 
+  // Crossing an actual task boundary must be enough.
+  await new Promise((resolve) => setTimeout(resolve, 0));
   const raw = localStorage.getItem(STORAGE_KEY);
-  assert.ok(raw, "the scheduled microtask flush must eventually write without any explicit flush() call");
+  assert.ok(raw, "the scheduled task-boundary flush must eventually write without any explicit flush() call");
   assert.equal(JSON.parse(raw).variants.touch.acquisitions.length, 1);
+});
+
+test("after priming, append() performs zero storage reads (no getItem/parse on the interaction path)", () => {
+  installMemoryStorage();
+  let getItemCalls = 0;
+  const originalGetItem = localStorage.getItem.bind(localStorage);
+  (localStorage as unknown as { getItem: typeof localStorage.getItem }).getItem = (key: string) => {
+    getItemCalls += 1;
+    return originalGetItem(key);
+  };
+
+  const store = createStore();
+  store.prime();
+  assert.ok(getItemCalls >= 1, "priming itself is expected to read storage exactly once");
+  const readsAfterPrime = getItemCalls;
+
+  store.append("touch", acquisition());
+  store.append("bead", acquisition({ bendVariant: "bead" }));
+  store.load();
+  store.load();
+
+  assert.equal(
+    getItemCalls,
+    readsAfterPrime,
+    "append()/load() after priming must never call localStorage.getItem again",
+  );
+});
+
+test("clear() cannot be undone by an obsolete scheduled callback (generation token)", () => {
+  // Fake setTimeout/clearTimeout: clearTimeout is deliberately a no-op, so
+  // the ONLY thing that can stop the captured callback from writing stale
+  // data back is the generation-token check inside TelemetryStore itself —
+  // this proves that specific mechanism, not merely that clearTimeout works.
+  const scheduled: Array<() => void> = [];
+  const originalSetTimeout = globalThis.setTimeout;
+  const originalClearTimeout = globalThis.clearTimeout;
+  (globalThis as unknown as { setTimeout: typeof setTimeout }).setTimeout = ((callback: () => void) => {
+    scheduled.push(callback);
+    return scheduled.length as unknown as ReturnType<typeof setTimeout>;
+  }) as typeof setTimeout;
+  (globalThis as unknown as { clearTimeout: typeof clearTimeout }).clearTimeout = (() => {
+    // no-op: intentionally does not remove anything from `scheduled`.
+  }) as typeof clearTimeout;
+
+  try {
+    installMemoryStorage();
+    const store = createStore();
+    store.prime();
+    store.append("touch", acquisition());
+    const obsoleteCallback = scheduled[scheduled.length - 1];
+    assert.ok(obsoleteCallback, "expected append() to have scheduled a flush callback");
+
+    store.clear();
+    // Manually fire the callback that would have flushed the pre-clear
+    // state, despite clear() having already run and (in a real
+    // environment) called clearTimeout — here faked to fail at that.
+    obsoleteCallback();
+
+    assert.equal(
+      localStorage.getItem(STORAGE_KEY),
+      null,
+      "an obsolete scheduled callback must never resurrect data after clear(), even if timer cancellation itself is bypassed",
+    );
+  } finally {
+    globalThis.setTimeout = originalSetTimeout;
+    globalThis.clearTimeout = originalClearTimeout;
+  }
 });
 
 test("clear() explicitly wipes study data (distinct from an ordinary specimen reset)", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   store.append("touch", acquisition());
   assert.equal(store.load().variants.touch.acquisitions.length, 1);
 
@@ -160,32 +265,55 @@ test("clear() explicitly wipes study data (distinct from an ordinary specimen re
   assert.deepEqual(reloaded.variants.touch.acquisitions, []);
 });
 
-test("clear() cancels a pending scheduled flush so stale buffered data can't resurrect after clearing", async () => {
+test("clear() cancels a pending scheduled (real-timer) flush so stale buffered data can't resurrect after clearing", async () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   store.append("touch", acquisition());
   store.clear();
 
-  await Promise.resolve();
-  await Promise.resolve();
+  // Wait past a real task boundary — long enough for the original
+  // scheduled flush to have fired had it not been cancelled — before
+  // asserting it didn't resurrect the cleared data.
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
   const raw = localStorage.getItem(STORAGE_KEY);
   assert.equal(raw, null, "clear() must remove storage, and no stale flush may write the cleared record back");
 });
 
-test("the complete persisted payload stays under the 256 KiB bound by dropping the oldest records first", () => {
+test("the complete persisted payload stays under the 256 KiB bound by dropping the globally oldest valid records first", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
+  const RECORD_COUNT = 1500;
   // Each record is a few hundred bytes; appending many across both variants
-  // must eventually exceed 256 KiB and force a trim at flush time.
-  for (let index = 0; index < 1500; index += 1) {
-    store.append(index % 2 === 0 ? "bead" : "touch", acquisition({
+  // must eventually exceed 256 KiB and force a trim at flush time. Every
+  // record's own bendVariant must agree with the bucket it is appended to,
+  // or canonicalization would silently reject it (a bug this test used to
+  // have) and this test would not actually be exercising 1500 real records.
+  for (let index = 0; index < RECORD_COUNT; index += 1) {
+    const variant = index % 2 === 0 ? "bead" : "touch";
+    const ok = store.append(variant, acquisition({
+      bendVariant: variant,
       wallClockMs: index, // strictly increasing "age": index 0 is oldest.
       sessionId: `session-${index}`,
       cancelReason: index % 3 === 0 ? "pointer-cancel" : undefined,
       outcome: index % 3 === 0 ? "cancelled" : "committed",
     }));
+    assert.equal(ok, true, `expected append() to succeed for record ${index}`);
   }
+
+  const totalBeforeFlush =
+    store.load().variants.bead.acquisitions.length + store.load().variants.touch.acquisitions.length;
+  assert.equal(totalBeforeFlush, RECORD_COUNT, "every one of the 1500 generated records must actually have been buffered");
+
+  // Confirm the ungoverned in-memory history genuinely exceeds the cap
+  // before any trimming — otherwise this test would not prove eviction at
+  // all, only that a small payload happens to fit.
+  const untrimmedBytes = new TextEncoder().encode(JSON.stringify(store.load())).length;
+  assert.ok(
+    untrimmedBytes > 256 * 1024,
+    `expected the untrimmed history to exceed 256 KiB before trimming, got ${untrimmedBytes} bytes`,
+  );
 
   const flushed = store.flush();
   assert.equal(flushed, true);
@@ -196,20 +324,35 @@ test("the complete persisted payload stays under the 256 KiB bound by dropping t
   assert.ok(byteLength <= 256 * 1024, `expected <= 256 KiB, got ${byteLength} bytes`);
 
   const loaded = store.load();
-  const remaining = [...loaded.variants.bead.acquisitions, ...loaded.variants.touch.acquisitions];
+  const remainingBead = loaded.variants.bead.acquisitions;
+  const remainingTouch = loaded.variants.touch.acquisitions;
+  const remaining = [...remainingBead, ...remainingTouch];
   assert.ok(remaining.length > 0, "trimming must not be forced to remove everything for a realistic history");
-  assert.ok(remaining.length < 1500, "the oversized history must actually have been trimmed");
-  // Oldest-first eviction: no surviving record may be older (by wallClockMs)
-  // than the oldest surviving record's neighbors that got dropped — i.e.
-  // the minimum surviving wallClockMs must be greater than 0 (index 0 was
-  // the very oldest and must have been dropped first).
-  const minSurvivingWallClock = Math.min(...remaining.map((record) => record.wallClockMs));
-  assert.ok(minSurvivingWallClock > 0, "the globally oldest records must be evicted first");
+  assert.ok(remaining.length < RECORD_COUNT, "the oversized history must actually have been trimmed");
+  // Every surviving record must itself still be valid/canonical (bucket
+  // agreement holds, since these came from append()'s own canonicalization).
+  for (const record of remainingBead) assert.equal(record.bendVariant, "bead");
+  for (const record of remainingTouch) assert.equal(record.bendVariant, "touch");
+
+  // Oldest-first eviction, proven precisely: the surviving set must be
+  // exactly the highest-wallClockMs tail of the original 1500 (i.e. every
+  // dropped record's wallClockMs must be less than every surviving one's).
+  const survivingWallClocks = remaining.map((record) => record.wallClockMs).sort((a, b) => a - b);
+  const droppedCount = RECORD_COUNT - remaining.length;
+  const expectedSurvivingWallClocks = Array.from(
+    { length: remaining.length },
+    (_, index) => droppedCount + index,
+  );
+  assert.deepEqual(
+    survivingWallClocks,
+    expectedSurvivingWallClocks,
+    "the surviving records must be exactly the newest tail; eviction must remove the globally oldest first",
+  );
 });
 
 test("append() rejects bucket/variant disagreement instead of trusting the caller", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   // Appending a "bead" record into the "touch" bucket must fail closed.
   const ok = store.append("touch", acquisition({ bendVariant: "bead" }));
   assert.equal(ok, false);
@@ -218,7 +361,7 @@ test("append() rejects bucket/variant disagreement instead of trusting the calle
 
 test("append() refuses an unresolved (pending) hit: hits are only ever persisted with a final outcome", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   const ok = store.append("touch", acquisition({ outcome: null }));
   assert.equal(ok, false);
   assert.equal(store.load().variants.touch.acquisitions.length, 0);
@@ -226,7 +369,7 @@ test("append() refuses an unresolved (pending) hit: hits are only ever persisted
 
 test("append() enforces miss invariants: a miss never carries an outcome or a timing", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   const missWithOutcome = store.append(
     "touch",
     acquisition({ result: "miss", outcome: "committed", timeToAcquireMs: null, operation: undefined }),
@@ -249,14 +392,14 @@ test("append() enforces miss invariants: a miss never carries an outcome or a ti
 
 test("semantic combination rules: hits require an operation", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   const ok = store.append("touch", acquisition({ operation: undefined }));
   assert.equal(ok, false);
 });
 
 test("semantic combination rules: camera may resolve only released or cancelled", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   assert.equal(store.append("touch", acquisition({ operation: "camera", outcome: "committed" })), false);
   assert.equal(store.append("touch", acquisition({ operation: "camera", outcome: "declined" })), false);
   assert.equal(store.append("touch", acquisition({ operation: "camera", outcome: "released" })), true);
@@ -268,7 +411,7 @@ test("semantic combination rules: camera may resolve only released or cancelled"
 
 test("semantic combination rules: graph edits (aim/bend/base/prune) may resolve only committed or cancelled", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   for (const operation of ["aim", "bend", "base", "prune"] as const) {
     assert.equal(store.append("touch", acquisition({ operation, outcome: "declined" })), false, operation);
     assert.equal(store.append("touch", acquisition({ operation, outcome: "released" })), false, operation);
@@ -276,9 +419,9 @@ test("semantic combination rules: graph edits (aim/bend/base/prune) may resolve 
   }
 });
 
-test("semantic combination rules: only invalid insertion may be declined", () => {
+test("semantic combination rules: only insertion may be declined (the storage layer cannot verify 'invalid'; the app alone is responsible for that)", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   assert.equal(
     store.append("touch", acquisition({ operation: "insert", outcome: "declined", materialId: "flowering-branch", inputMethod: "pointer" })),
     true,
@@ -289,7 +432,7 @@ test("semantic combination rules: only invalid insertion may be declined", () =>
 
 test("semantic combination rules: insert requires materialId and inputMethod; non-insert forbids them", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   assert.equal(
     store.append("touch", acquisition({ operation: "insert", outcome: "committed", materialId: undefined, inputMethod: "pointer" })),
     false,
@@ -318,7 +461,7 @@ test("semantic combination rules: insert requires materialId and inputMethod; no
 
 test("semantic combination rules: a cancelled outcome always requires a reason", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   assert.equal(
     store.append("touch", acquisition({ operation: "bend", outcome: "cancelled", cancelReason: undefined })),
     false,
@@ -335,7 +478,7 @@ test("semantic combination rules: a cancelled outcome always requires a reason",
 
 test("semantic combination rules: all timing values must be finite and nonnegative", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   assert.equal(store.append("touch", acquisition({ timeToAcquireMs: -1 })), false);
   assert.equal(store.append("touch", acquisition({ timeToAcquireMs: Number.POSITIVE_INFINITY })), false);
   assert.equal(store.append("touch", acquisition({ at: -5 })), false);
@@ -354,7 +497,7 @@ test("canonicalization: undeclared/extra fields from a tampered payload are neve
   };
   storage.setItem(STORAGE_KEY, JSON.stringify(rawStoredPayload({ touch: [tampered] })));
 
-  const store = new TelemetryStore();
+  const store = createStore();
   const [record] = store.load().variants.touch.acquisitions;
   assert.equal(record.sessionId, "session-good");
   assert.equal((record as Record<string, unknown>).unexpectedField, undefined);
@@ -377,7 +520,7 @@ test("canonicalization: undeclared/extra fields from a tampered payload are neve
 
 test("canonicalization also applies to append(): a record object with extra properties is reconstructed, not passed through", () => {
   installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   const withExtra = { ...acquisition(), extraJunk: "nope" } as unknown as ReturnType<typeof acquisition>;
   store.append("touch", withExtra);
   const [record] = store.load().variants.touch.acquisitions;
@@ -391,7 +534,7 @@ test("hydration drops a malformed record but keeps the rest, never partial-hydra
   const badPendingHit = { ...acquisition({ sessionId: "session-bad-2" }), outcome: null };
   storage.setItem(STORAGE_KEY, JSON.stringify(rawStoredPayload({ touch: [good, badBucketMismatch, badPendingHit] })));
 
-  const store = new TelemetryStore();
+  const store = createStore();
   const loaded = store.load();
   assert.equal(loaded.variants.touch.acquisitions.length, 1);
   assert.equal(loaded.variants.touch.acquisitions[0].sessionId, "session-good");
@@ -400,15 +543,110 @@ test("hydration drops a malformed record but keeps the rest, never partial-hydra
 test("a fully corrupt top-level payload fails closed to an empty session, never a partial one", () => {
   const storage = installMemoryStorage();
   storage.setItem(STORAGE_KEY, JSON.stringify({ garbage: true }));
-  const store = new TelemetryStore();
+  const store = createStore();
   const loaded = store.load();
   assert.deepEqual(loaded.variants.bead.acquisitions, []);
   assert.deepEqual(loaded.variants.touch.acquisitions, []);
 });
 
+test("savedAt must be exactly the canonical ISO form we generate, or the payload fails closed", () => {
+  const storage = installMemoryStorage();
+  storage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(rawStoredPayload({ touch: [acquisition({ sessionId: "should-not-survive" })] })).replace(
+      /"savedAt":"[^"]*"/,
+      '"savedAt":"not-a-real-timestamp"',
+    ),
+  );
+  const store = createStore();
+  const loaded = store.load();
+  assert.deepEqual(loaded.variants.touch.acquisitions, [], "a non-canonical savedAt must fail the whole payload closed");
+
+  const storage2 = installMemoryStorage();
+  // A real, parseable date, but not in the exact toISOString() shape (no
+  // milliseconds) — still not the canonical form we generate, so it must
+  // also fail closed rather than being loosely accepted.
+  storage2.setItem(
+    STORAGE_KEY,
+    JSON.stringify(rawStoredPayload({ touch: [acquisition({ sessionId: "should-not-survive-either" })] })).replace(
+      /"savedAt":"[^"]*"/,
+      '"savedAt":"2024-01-01T00:00:00Z"',
+    ),
+  );
+  const store2 = createStore();
+  assert.deepEqual(store2.load().variants.touch.acquisitions, []);
+});
+
+test("an already-oversized raw stored payload is rejected before it is ever parsed", () => {
+  const storage = installMemoryStorage();
+  // Build a payload whose raw string is deliberately over 256 KiB, using
+  // otherwise-well-formed records, so this proves the size check runs
+  // before (not instead of) structural validation.
+  const acquisitions = Array.from({ length: 3000 }, (_, index) =>
+    acquisition({ sessionId: `oversized-${index}`, wallClockMs: index }));
+  const oversizedRaw = JSON.stringify(rawStoredPayload({ touch: acquisitions }));
+  assert.ok(
+    new TextEncoder().encode(oversizedRaw).length > 256 * 1024,
+    "expected the constructed fixture to itself exceed 256 KiB",
+  );
+  storage.setItem(STORAGE_KEY, oversizedRaw);
+
+  let parseCalls = 0;
+  const originalParse = JSON.parse;
+  (JSON as unknown as { parse: typeof JSON.parse }).parse = ((text: string, reviver?: unknown) => {
+    parseCalls += 1;
+    return originalParse(text, reviver as never);
+  }) as typeof JSON.parse;
+
+  try {
+    const store = createStore();
+    const loaded = store.load();
+    assert.deepEqual(loaded.variants.touch.acquisitions, [], "an oversized raw payload must fail closed to empty");
+    assert.equal(parseCalls, 0, "an oversized raw payload must be rejected before JSON.parse ever runs");
+  } finally {
+    JSON.parse = originalParse;
+  }
+});
+
+test("a committed, released, or declined record carrying cancelReason is rejected (cancelReason requires outcome === 'cancelled')", () => {
+  installMemoryStorage();
+  const store = createStore();
+  assert.equal(
+    store.append("touch", acquisition({ operation: "bend", outcome: "committed", cancelReason: "pointer-cancel" })),
+    false,
+    "a committed record must never carry a cancelReason",
+  );
+  assert.equal(
+    store.append("touch", acquisition({ operation: "camera", outcome: "released", cancelReason: "pointer-cancel" })),
+    false,
+    "a released record must never carry a cancelReason",
+  );
+  assert.equal(
+    store.append("touch", acquisition({
+      operation: "insert",
+      outcome: "declined",
+      materialId: "flowering-branch",
+      inputMethod: "pointer",
+      cancelReason: "pointer-cancel",
+    })),
+    false,
+    "a declined record must never carry a cancelReason",
+  );
+  assert.equal(
+    store.append("touch", acquisition({ result: "miss", operation: undefined, outcome: null, timeToAcquireMs: null, cancelReason: "pointer-cancel" })),
+    false,
+    "a miss must never carry a cancelReason",
+  );
+  assert.equal(
+    store.append("touch", acquisition({ operation: "bend", outcome: "cancelled", cancelReason: "pointer-cancel" })),
+    true,
+    "a cancelled record correctly carrying a cancelReason must still be accepted",
+  );
+});
+
 test("instrumentVersion is persisted with the dataset, and a mismatched version fails closed instead of mixing schemas", () => {
   const storage = installMemoryStorage();
-  const store = new TelemetryStore();
+  const store = createStore();
   store.append("touch", acquisition());
   store.flush();
 
@@ -423,7 +661,7 @@ test("instrumentVersion is persisted with the dataset, and a mismatched version 
       JSON.stringify("0-incompatible"),
     ),
   );
-  const freshStore = new TelemetryStore();
+  const freshStore = createStore();
   const loaded = freshStore.load();
   assert.deepEqual(loaded.variants.touch.acquisitions, [], "an incompatible instrument version must never be mixed in");
   assert.equal(loaded.instrumentVersion, TELEMETRY_INSTRUMENT_VERSION, "a freshly-failed-closed payload still tags the current version");
@@ -439,7 +677,7 @@ test("a quota-full/throwing storage fails closed (append still buffers; flush() 
   };
   (globalThis as { localStorage?: unknown }).localStorage = throwingStorage;
 
-  const store = new TelemetryStore();
+  const store = createStore();
   assert.doesNotThrow(() => {
     const ok = store.append("touch", acquisition());
     assert.equal(ok, true, "append() only reports validation, not the deferred write outcome");

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cmish.dev/schemas/ikebana-plant-graph-v1.json",
+  "title": "Ikebana persistent botanical graph",
+  "$comment": "Canonical arrays are sorted by stable ID. ID uniqueness, reference integrity, rest-length counts/sums, attachment bounds, and reference-normal orthogonality are validated by IkebanaCore tests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatorVersion", "id", "seed", "rootBranchId", "branches", "organs"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatorVersion": { "const": "one-branch-v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "rootBranchId": { "type": "string", "minLength": 1 },
+    "branches": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/branch" }
+    },
+    "organs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/organ" }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "kind", "parentId", "parentDistance", "points", "restLengths", "activeLength", "radius", "stiffness", "referenceNormal", "active"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "kind": { "enum": ["trunk", "lateral", "twig", "petiole", "pedicel"] },
+        "parentId": { "type": ["string", "null"] },
+        "parentDistance": { "type": "number", "minimum": 0 },
+        "points": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/vec3" } },
+        "restLengths": { "type": "array", "minItems": 1, "items": { "type": "number", "exclusiveMinimum": 0 } },
+        "activeLength": { "type": "number", "exclusiveMinimum": 0 },
+        "radius": { "type": "number", "exclusiveMinimum": 0 },
+        "stiffness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "referenceNormal": { "$ref": "#/$defs/vec3" },
+        "active": { "type": "boolean" }
+      }
+    },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "branchId", "distance", "spin", "scale", "active"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["leaf", "bloom", "bud"] },
+        "branchId": { "type": "string", "minLength": 1 },
+        "distance": { "type": "number", "minimum": 0 },
+        "spin": { "type": "number" },
+        "scale": { "type": "number", "exclusiveMinimum": 0 },
+        "active": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#e8e3d7" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      name="description"
+      content="A quiet study in arranging and shaping a living line."
+    />
+    <title>Living Line</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main id="app" class="app-shell" data-testid="app-root" data-ready="false" data-transaction="none" data-posture="arrange" data-tool="shape" data-view="front">
+      <div id="studio" class="studio" aria-label="Ikebana arrangement space"></div>
+
+      <header class="top-chrome" aria-label="View controls">
+        <div class="top-row">
+          <div class="wordmark" aria-label="Living Line">
+            <span class="wordmark-mark" aria-hidden="true"></span>
+            <span>Living Line</span>
+          </div>
+
+          <button
+            id="experiment-toggle"
+            class="icon-button quiet-button"
+            type="button"
+            aria-label="About this shaping study"
+            aria-controls="experiment-panel"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">i</span>
+          </button>
+        </div>
+
+        <nav class="segmented view-switcher" aria-label="Intended viewing direction">
+          <button type="button" data-testid="view-front" data-view="front" aria-pressed="true">Front</button>
+          <button type="button" data-testid="view-three-quarter" data-view="three-quarter" aria-pressed="false" aria-label="Three-quarter view">3/4</button>
+          <button type="button" data-testid="view-above" data-view="above" aria-pressed="false">Above</button>
+        </nav>
+      </header>
+
+      <section
+        id="experiment-panel"
+        class="experiment-panel"
+        role="dialog"
+        aria-labelledby="experiment-title"
+        hidden
+      >
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Shaping study</p>
+            <h1 id="experiment-title">Where should a bend begin?</h1>
+          </div>
+          <button id="experiment-close" class="icon-button" type="button" aria-label="Close shaping study">×</button>
+        </div>
+        <div class="segmented experiment-switcher" aria-label="Bend interaction variant">
+          <button type="button" data-bend-variant="fixed-bead" aria-pressed="true">Fixed point</button>
+          <button type="button" data-bend-variant="touch-located" aria-pressed="false">Where touched</button>
+        </div>
+        <p class="panel-note">Both keep the same branch length and broad curve.</p>
+      </section>
+
+      <p id="status" class="status-pill" data-testid="status" role="status" aria-live="polite" aria-atomic="true">
+        Place a cutting.
+      </p>
+
+      <section class="bottom-chrome" aria-label="Craft controls">
+        <div class="posture-control segmented" aria-label="Interaction posture">
+          <button type="button" data-testid="posture-arrange" data-posture="arrange" aria-pressed="true">Arrange</button>
+          <button type="button" data-testid="posture-step-back" data-posture="step-back" aria-pressed="false">Step Back</button>
+        </div>
+
+        <div id="craft-chrome" class="craft-chrome">
+          <div class="tool-control segmented" aria-label="Craft tool">
+            <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
+            <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
+          </div>
+
+          <div class="material-tray" aria-label="Living materials">
+            <button
+              id="flowering-cutting"
+              class="material-card"
+              type="button"
+              data-testid="material-flowering-branch"
+              data-material-id="flowering-branch"
+              aria-label="Drag flowering branch to the kenzan"
+            >
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M18 58 C78 60 117 42 167 31 C207 22 245 14 283 9" />
+                <path class="cutting-twig" d="M114 43 C111 27 104 17 94 9" />
+                <path class="cutting-twig" d="M173 30 C183 18 194 12 207 8" />
+                <path class="cutting-twig" d="M217 20 C225 30 236 36 249 38" />
+                <ellipse class="cutting-leaf" cx="91" cy="12" rx="12" ry="5" transform="rotate(35 91 12)" />
+                <ellipse class="cutting-leaf" cx="117" cy="35" rx="14" ry="5" transform="rotate(-31 117 35)" />
+                <ellipse class="cutting-leaf" cx="202" cy="10" rx="13" ry="5" transform="rotate(-22 202 10)" />
+                <ellipse class="cutting-leaf" cx="245" cy="36" rx="14" ry="5" transform="rotate(21 245 36)" />
+                <g class="cutting-bloom" transform="translate(282 9)">
+                  <circle cx="-5" cy="0" r="5" />
+                  <circle cx="0" cy="-5" r="5" />
+                  <circle cx="5" cy="0" r="5" />
+                  <circle cx="0" cy="5" r="5" />
+                  <circle class="cutting-bloom-center" cx="0" cy="0" r="3" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Flowering branch</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <noscript>This study needs JavaScript to shape the branch.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

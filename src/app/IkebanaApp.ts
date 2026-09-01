@@ -54,6 +54,7 @@ import {
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
 import { TelemetryStore, type PersistedTelemetry } from "./telemetry.ts";
+import { summarizeBendAcquisitions } from "./telemetrySummary.ts";
 import {
   createUIBindings,
   type BendVariant as UIBendVariant,
@@ -150,7 +151,12 @@ interface IkebanaTestBridge {
   getAutosaveAudit(): { writes: AutosaveAuditRecord[] };
   getPersistedTelemetry(): PersistedTelemetry;
   getTelemetryExportPayload(): unknown;
-  resetForTest(options: { clearAutosave: boolean; bendVariant?: "fixed" | "touch" | string }): Promise<void>;
+  resetForTest(options: {
+    clearAutosave: boolean;
+    /** Deliberately separate from clearAutosave: a specimen reset never implies wiping study data. */
+    clearTelemetry: boolean;
+    bendVariant?: "fixed" | "touch" | string;
+  }): Promise<void>;
   interruptForTest(reason: string): void;
   loseContextForTest(): Promise<boolean>;
   restoreContextForTest(): Promise<boolean>;
@@ -164,6 +170,8 @@ declare global {
 
 const TOUCH_BEND_START = 0.24;
 const TOUCH_BEND_END = 0.72;
+/** Independent of telemetry's storageVersion; bump when what is recorded changes. */
+const TELEMETRY_INSTRUMENT_VERSION = "2" as const;
 
 export function placementInputFromIntersection(intersection: KenzanIntersection | null) {
   return intersection
@@ -199,34 +207,6 @@ function clonePlain<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-function mean(values: number[]): number | null {
-  if (values.length === 0) return null;
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
-
-/**
- * A compact, ready-to-read comparison of one variant's acquisitions. This
- * answers "which arm is easier/faster to hit and how often does an acquired
- * edit actually land" without further spreadsheet work; it does not answer
- * whether the resulting silhouette is preferred, which needs the phone card.
- */
-function summarizeVariantTelemetry(records: AcquisitionRecord[]) {
-  const hits = records.filter((record) => record.result === "hit");
-  const misses = records.filter((record) => record.result === "miss");
-  const committed = hits.filter((record) => record.outcome === "committed");
-  const cancelled = hits.filter((record) => record.outcome === "cancelled");
-  const declined = hits.filter((record) => record.outcome === "declined");
-  return {
-    totalAcquisitions: records.length,
-    hits: hits.length,
-    misses: misses.length,
-    committed: committed.length,
-    cancelled: cancelled.length,
-    declined: declined.length,
-    meanTimeToAcquireMs: mean(hits.map((record) => record.timeToAcquireMs ?? 0)),
-    meanMissesBeforeHit: mean(hits.map((record) => record.missesBeforeHit)),
-  };
-}
 
 export class IkebanaApp {
   private readonly root: HTMLElement;
@@ -259,7 +239,9 @@ export class IkebanaApp {
   constructor(root: HTMLElement) {
     this.root = root;
     this.bendVariant = this.config.bendVariant;
-    if (this.config.fresh) this.telemetryStore.clear();
+    // A fresh specimen (?fresh=1) never implies clearing study data; that is
+    // a distinct, explicit action (?clearStudyData=1). See config.ts.
+    if (this.config.clearStudyData) this.telemetryStore.clear();
     this.ui = createUIBindings({
       root,
       initialState: { bendVariant: uiVariant(this.bendVariant) },
@@ -374,7 +356,10 @@ export class IkebanaApp {
             transactionActive: this.coordinator.getDebugState().active !== null,
             reason: "commit",
           });
-          this.resolvePendingAcquisition("committed");
+          // The committed botanical graph is the authority and must be
+          // attempted first. Study telemetry is a best-effort diagnostic
+          // layer recorded only afterward, and never allowed to block,
+          // delay, or fail this save (see resolvePendingAcquisition).
           this.lastSaveSucceeded = this.store.save(
             event.document.successfulPlantOrdinal + 1,
             plantsToSave,
@@ -382,6 +367,7 @@ export class IkebanaApp {
           if (!this.lastSaveSucceeded) {
             this.ui.setStatus("Could not save this change.", "warning");
           }
+          this.resolvePendingAcquisition("committed");
         },
       },
     );
@@ -392,6 +378,9 @@ export class IkebanaApp {
     switch (command.kind) {
       case "set-posture": {
         this.interruptActive("posture-command");
+        // A miss recorded under the old posture must never attach to a hit
+        // recorded after this boundary.
+        this.metrics.resetAttempt();
         this.coordinator.commandPosture(command.posture);
         this.ui.setState({ posture: command.posture });
         this.ui.setStatus(command.posture === "step-back" ? "Drag to look." : "Touch the material.");
@@ -399,6 +388,8 @@ export class IkebanaApp {
       }
       case "set-tool": {
         this.interruptActive("tool-command");
+        // Same context-boundary rule as posture, for the shape/prune tool.
+        this.metrics.resetAttempt();
         this.coordinator.commandTool(command.tool);
         this.ui.setState({ tool: command.tool });
         this.ui.setStatus(command.tool === "shape" ? "Shape the line." : "Choose where to cut.");
@@ -437,6 +428,11 @@ export class IkebanaApp {
         break;
       }
       case "export-telemetry": {
+        // Export is persistent chrome, exactly like the other experiment-panel
+        // commands: it cancels any active transaction first (which resolves
+        // that acquisition as "cancelled", never leaving it as a silent
+        // in-progress commit) and only then proceeds.
+        this.interruptActive("experiment-command");
         void this.exportTelemetry();
         break;
       }
@@ -487,6 +483,8 @@ export class IkebanaApp {
       tool: "shape",
       result: "hit",
       operation: "insert",
+      materialId: command.materialId,
+      inputMethod: "pointer",
       region: screenRegion(command.clientY),
     });
     this.ui.setStatus(input.valid ? "Over the pins." : "Find the pins.");
@@ -518,6 +516,8 @@ export class IkebanaApp {
       tool: "shape",
       result: "hit",
       operation: "insert",
+      materialId,
+      inputMethod: "keyboard",
       region: "bottom",
     });
     this.lastSaveSucceeded = true;
@@ -880,8 +880,10 @@ export class IkebanaApp {
       this.sound.cut();
       if (this.lastSaveSucceeded) this.ui.setStatus("Cut.");
     } else if (gesture.kind === "camera") {
-      // Camera commits never route through the coordinator's graph autosave hook.
-      this.resolvePendingAcquisition("committed");
+      // Camera never edits the graph and never routes through the
+      // coordinator's autosave hook, so it is resolved as "released", never
+      // "committed" — that word is reserved for an actual graph commit.
+      this.resolvePendingAcquisition("released");
     } else {
       if (this.lastSaveSucceeded) this.ui.setStatus("Set.");
     }
@@ -978,27 +980,44 @@ export class IkebanaApp {
    * Resolves the acquisition that opened the currently pending transaction,
    * if any, and persists it durably and exactly once. A cancelled record can
    * never have been written as committed: nothing is persisted before this
-   * runs, and this runs at most once per transaction.
+   * runs, and this runs at most once per transaction (resolve-once).
+   *
+   * This is a best-effort diagnostic write. It is always called after any
+   * graph-authoritative save it accompanies (see `onAutosave`), and it never
+   * throws past this boundary: a full storage quota or disabled storage API
+   * can lose telemetry but must never surface as an app-visible failure or
+   * block anything else.
    */
   private resolvePendingAcquisition(outcome: TransactionOutcome, cancelReason?: string): void {
     const record = this.pendingAcquisitionRecord;
     this.pendingAcquisitionRecord = null;
     if (!record) return;
-    this.metrics.resolveAcquisition(record, outcome, { cancelReason });
-    this.telemetryStore.append(record.bendVariant, record);
+    try {
+      this.metrics.resolveAcquisition(record, outcome, { cancelReason });
+      this.telemetryStore.append(record.bendVariant, record);
+    } catch {
+      // Best-effort: telemetry must never prevent or corrupt anything else.
+    }
   }
 
   private telemetryExportPayload() {
     const persisted = this.telemetryStore.load();
     return {
       schemaVersion: 1 as const,
+      /** Bump when recording/measurement semantics change, independent of storageVersion. */
+      instrumentVersion: TELEMETRY_INSTRUMENT_VERSION,
+      privacyStatement:
+        "Generated locally on this device from this browser's local storage. " +
+        "Nothing is uploaded automatically; you chose to export this file, and it " +
+        "contains only acquisition/timing/outcome diagnostics for this study, never " +
+        "personal information.",
       exportedAt: new Date().toISOString(),
       sessionId: this.sessionId,
       currentBendVariant: this.bendVariant,
       persisted,
       summary: {
-        bead: summarizeVariantTelemetry(persisted.variants.bead.acquisitions),
-        touch: summarizeVariantTelemetry(persisted.variants.touch.acquisitions),
+        bead: summarizeBendAcquisitions(persisted.variants.bead.acquisitions),
+        touch: summarizeBendAcquisitions(persisted.variants.touch.acquisitions),
       },
     };
   }
@@ -1006,18 +1025,26 @@ export class IkebanaApp {
   private async exportTelemetry(): Promise<void> {
     const payload = this.telemetryExportPayload();
     const json = JSON.stringify(payload, null, 2);
-    const filename = `living-line-telemetry-${payload.sessionId}.json`;
+    const filename = `living-line-study-data-${payload.sessionId}.json`;
 
-    if (await this.shareTelemetry(json, filename)) {
-      this.ui.setStatus("Shared session data.");
+    const shareResult = await this.shareTelemetry(json, filename);
+    if (shareResult === "shared") {
+      this.ui.setStatus("Shared local study data.");
+      return;
+    }
+    if (shareResult === "cancelled") {
+      // A deliberate dismissal of the share sheet is not a failure and must
+      // never silently fall through to a download: that would export data
+      // the tester just chose not to share.
+      this.ui.setStatus("Export cancelled.");
       return;
     }
     if (this.downloadTelemetry(json, filename)) {
-      this.ui.setStatus("Downloaded session data.");
+      this.ui.setStatus("Downloaded local study data.");
       return;
     }
     this.ui.showTelemetryFallback(json);
-    this.ui.setStatus("Select all, then copy the session data below.");
+    this.ui.setStatus("Select all, then copy the local study data below.");
   }
 
   /**
@@ -1025,24 +1052,24 @@ export class IkebanaApp {
    * JSON straight to iOS Safari's native share sheet — Save to Files,
    * AirDrop, Messages, Mail — which is the most direct way to get a file off
    * an iPhone without a server. Not available in every browser/context, so
-   * this fails soft to the download and manual-copy paths below.
+   * `"unavailable"` fails soft to the download and manual-copy paths below.
+   * `"cancelled"` (the tester dismissed the sheet) is a distinct, honest
+   * result that must never be treated as `"shared"` or silently downloaded.
    */
-  private async shareTelemetry(json: string, filename: string): Promise<boolean> {
+  private async shareTelemetry(json: string, filename: string): Promise<"shared" | "cancelled" | "unavailable"> {
     const nav = navigator as Navigator & {
       canShare?: (data: { files?: File[] }) => boolean;
       share?: (data: { files?: File[]; title?: string }) => Promise<void>;
     };
-    if (typeof File === "undefined" || !nav.canShare || !nav.share) return false;
+    if (typeof File === "undefined" || !nav.canShare || !nav.share) return "unavailable";
     try {
       const file = new File([json], filename, { type: "application/json" });
-      if (!nav.canShare({ files: [file] })) return false;
-      await nav.share({ files: [file], title: "Living Line telemetry" });
-      return true;
+      if (!nav.canShare({ files: [file] })) return "unavailable";
+      await nav.share({ files: [file], title: "Living Line local study data" });
+      return "shared";
     } catch (error) {
-      // AbortError means the tester dismissed the share sheet; that is not a
-      // failure worth falling back from, but nothing was exported either.
-      if (error instanceof DOMException && error.name === "AbortError") return true;
-      return false;
+      if (error instanceof DOMException && error.name === "AbortError") return "cancelled";
+      return "unavailable";
     }
   }
 
@@ -1291,10 +1318,8 @@ export class IkebanaApp {
       resetForTest: async (options) => {
         this.interruptActive("system-interruption", false);
         this.pendingAcquisitionRecord = null;
-        if (options.clearAutosave) {
-          this.store.clear();
-          this.telemetryStore.clear();
-        }
+        if (options.clearAutosave) this.store.clear();
+        if (options.clearTelemetry) this.telemetryStore.clear();
         this.autosaveWrites.length = 0;
         this.metrics.reset();
         this.selectedBranchId = null;

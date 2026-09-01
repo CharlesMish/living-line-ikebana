@@ -282,6 +282,111 @@ try {
     }
   });
 
+  await test("acquisitions carry a variant and distinguish committed from cancelled telemetry", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, bendVariant: "touch" });
+    });
+
+    // Keyboard-equivalent activation commits an insert synchronously.
+    await page.evaluate(() => {
+      document
+        .querySelector('[data-testid="material-flowering-branch"]')
+        .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    });
+
+    // A pointerdown on the tray opens an insert transaction; cancel it explicitly.
+    await page.evaluate(() => {
+      const button = document.querySelector('[data-testid="material-flowering-branch"]');
+      const rect = button.getBoundingClientRect();
+      button.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          pointerId: 101,
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2,
+          button: 0,
+        }),
+      );
+    });
+    await page.evaluate(() => window.__IKEBANA_TEST__.interruptForTest("pointercancel"));
+
+    const telemetry = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const touchAcquisitions = telemetry.variants.touch.acquisitions;
+    assert.equal(touchAcquisitions.length, 2);
+    for (const record of touchAcquisitions) {
+      assert.equal(record.bendVariant, "touch");
+      assert.equal(typeof record.sessionId, "string");
+    }
+    const committed = touchAcquisitions.find((record) => record.outcome === "committed");
+    const cancelled = touchAcquisitions.find((record) => record.outcome === "cancelled");
+    assert.ok(committed, "expected one committed acquisition");
+    assert.ok(cancelled, "expected one cancelled acquisition");
+    assert.notEqual(committed.outcome, cancelled.outcome);
+    assert.equal(cancelled.cancelReason, "pointer-cancel");
+
+    const exportPayload = await page.evaluate(() => window.__IKEBANA_TEST__.getTelemetryExportPayload());
+    assert.equal(exportPayload.summary.touch.committed, 1);
+    assert.equal(exportPayload.summary.touch.cancelled, 1);
+  });
+
+  await test("?fresh=1 clears persisted telemetry across a reload", async () => {
+    const before = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const totalBefore =
+      before.variants.bead.acquisitions.length + before.variants.touch.acquisitions.length;
+    assert.ok(totalBefore > 0, "expected telemetry recorded by the prior test to persist");
+
+    const freshUrl = new URL(url.href);
+    freshUrl.searchParams.set("fresh", "1");
+    const response = await page.goto(freshUrl.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok(response?.ok(), `Could not load ${freshUrl.href}: ${response?.status()}`);
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const after = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(after.variants.bead.acquisitions.length, 0);
+    assert.equal(after.variants.touch.acquisitions.length, 0);
+  });
+
+  await test("telemetry survives an ordinary reload (no ?fresh=1)", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, bendVariant: "fixed" });
+    });
+    await page.evaluate(() => {
+      document
+        .querySelector('[data-testid="material-flowering-branch"]')
+        .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    });
+    const before = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(before.variants.bead.acquisitions.length, 1);
+
+    // A repeat load of the exact same URL may be answered "304 Not Modified"
+    // from cache; that is still a successful navigation, just not `.ok()`.
+    const response = await page.goto(url.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok(
+      (response?.status() ?? 0) < 400,
+      `Could not load ${url.href}: ${response?.status()}`,
+    );
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const after = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(after.variants.bead.acquisitions.length, 1);
+  });
+
   await test("idle WebGL context loss does not alter canonical state", async () => {
     const result = await page.evaluate(async () => {
       const bridge = window.__IKEBANA_TEST__;

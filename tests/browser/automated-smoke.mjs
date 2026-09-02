@@ -543,6 +543,7 @@ try {
     assert.ok(trayBox, "tray material must be present in Arrange");
     const start = { x: trayBox.x + trayBox.width / 2, y: trayBox.y + trayBox.height / 2 };
     const mid = { x: 390 / 2, y: 844 * 0.72 };
+    const invalid = { x: 28, y: 844 * 0.40 };
     await page.mouse.move(start.x, start.y);
     await page.mouse.down();
     const acquired = await getBridgeState();
@@ -554,6 +555,7 @@ try {
     assert.equal(crossed.tool, "shape");
     assert.equal(crossed.view, before.view);
     assert.equal(crossed.canonicalHash, before.canonicalHash);
+    await page.mouse.move(invalid.x, invalid.y, { steps: 8 });
     await page.mouse.up();
     const afterRelease = await getBridgeState();
     assert.equal(afterRelease.successfulSeatOrdinal, 0);

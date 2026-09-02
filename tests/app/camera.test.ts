@@ -30,9 +30,29 @@ test("Above orbit begins continuously instead of snapping away from plan view", 
   assert.ok(Math.abs(yawOnly.position.y - pose.position.y) < 1e-6);
 });
 
-test("portrait Front keeps both the pin field and stock crown in the craft viewport", () => {
-  const rootY = projectedClientY(new Vector3(0, 0.55, 0));
-  const crownY = projectedClientY(new Vector3(0, 6.53, 0));
-  assert.ok(rootY > 520 && rootY < 600, `root projected to ${rootY}`);
-  assert.ok(crownY > 105 && crownY < 180, `crown projected to ${crownY}`);
+test("canonical viewing directions remain the mainline Front / 3/4 / Above poses", () => {
+  assert.deepEqual(canonicalCameraPose("front"), {
+    position: { x: 0, y: 3.7, z: 15 },
+    target: { x: 0, y: 2.55, z: 0 },
+    up: { x: 0, y: 1, z: 0 },
+  });
+  assert.deepEqual(canonicalCameraPose("three-quarter"), {
+    position: { x: 9.72, y: 6.42, z: 11.1 },
+    target: { x: 0, y: 2.4, z: 0 },
+    up: { x: 0, y: 1, z: 0 },
+  });
+  assert.deepEqual(canonicalCameraPose("above"), {
+    position: { x: 0.02, y: 15.4, z: 0.02 },
+    target: { x: 0, y: 1.85, z: 0 },
+    up: { x: 0, y: 0, z: -1 },
+  });
+});
+
+test("portrait Front keeps both the pin field and stock crown below the top chrome band", () => {
+  for (const [width, height] of [[390, 844], [430, 932]] as const) {
+    const rootY = projectedClientY(new Vector3(0, 0.55, 0), width, height);
+    const crownY = projectedClientY(new Vector3(0, 6.53, 0), width, height);
+    assert.ok(rootY > height * 0.58 && rootY < height * 0.74, `${width}×${height} root projected to ${rootY}`);
+    assert.ok(crownY > 100 && crownY < 200, `${width}×${height} crown projected to ${crownY}`);
+  }
 });

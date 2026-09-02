@@ -51,6 +51,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 
 - Bending edits an actual branch curve. It is not a scale, point-index joint, free-chain IK solve, or cumulative drag.
 - Eligible branches are active `trunk`, `lateral`, or `twig` records with at least four points, at least three rest segments, and a nondegenerate legal interior rest-arc interval. Petioles and pedicels are not bend-handle targets.
+- Touch-located bending is the ordinary default (bare URL and `?bend=touch`). `?bend=fixed` keeps the entire fixed-bead implementation as a working experiment/accessibility fallback. Internal telemetry buckets remain `touch` / `bead`.
 - The fixed experiment station is `0.54 * activeLength`, clamped between the first and last rest segments. The touch experiment samples an eligible middle span. In both cases, the chosen material distance freezes at acquisition.
 - Both variants call the same broad smootherstep, stiffness-capped solver. Extreme input saturates instead of folding into free pretzel geometry.
 - The solver reconstructs from unchanged rest lengths and remaps active descendants coherently. It does not stretch stock.
@@ -78,7 +79,8 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Only the acquired owner's ordinary `pointerup` release commits. Repeated release or the normal capture loss after release is an idle no-op.
 - `pointercancel`, premature lost capture, hidden visibility, `pagehide`, relevant viewport or orientation changes, WebGL context loss, and explicit cancellation restore the snapshot and write no save.
 - A tool, view, posture, selection, or bend-experiment command cancels first, then applies the command.
-- Persistent chrome remains usable as an interrupt command during a scene grab. A second scene pointer during a plant transaction is ignored.
+- Persistent chrome remains usable as an interrupt command during a scene grab. Hidden contextual controls are not focusable and do not intercept pointers. A second scene pointer during a plant transaction is ignored.
+- Arrange chrome is compact and top-mounted: Arrange | Step Back, then Shape | Prune. Canonical Front / 3/4 / Above controls appear only while Step Back is active. They remain fully functional; they are contextual, not removed. The material tray is present only in Arrange so the tray-to-kenzan corridor stays clear of interactive chrome.
 - Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing except explain Step Back.
 - Step Back permits constrained orbit and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.
 

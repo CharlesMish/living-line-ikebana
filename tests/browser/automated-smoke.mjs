@@ -9,7 +9,7 @@
  * Run after starting a preview server:
  *
  *   IKEBANA_BROWSER_SMOKE=1 \
- *   IKEBANA_URL='http://127.0.0.1:4173/?test=1&bend=fixed' \
+ *   IKEBANA_URL='http://127.0.0.1:4173/?test=1' \
  *   node tests/browser/automated-smoke.mjs
  *
  * Playwright is intentionally optional for the first source build:
@@ -44,7 +44,6 @@ try {
 const rawUrl = process.env.IKEBANA_URL ?? "http://127.0.0.1:4173/";
 const url = new URL(rawUrl);
 url.searchParams.set("test", "1");
-if (!url.searchParams.has("bend")) url.searchParams.set("bend", "fixed");
 
 const browserName = process.env.IKEBANA_BROWSER ?? "webkit";
 const browserType = playwright[browserName];
@@ -167,12 +166,52 @@ try {
     assert.equal(shell.bodyOverflowY, "hidden");
   });
 
+  await test("bare URL, ?bend=touch, and ?bend=fixed select the documented bend buckets", async () => {
+    const cases = [
+      { search: "?test=1", expected: "touch" },
+      { search: "?test=1&bend=touch", expected: "touch" },
+      { search: "?test=1&bend=fixed", expected: "fixed" },
+    ];
+    for (const entry of cases) {
+      const probe = new URL(url.origin + url.pathname + entry.search);
+      const response = await page.goto(probe.href, { waitUntil: "networkidle", timeout: 30_000 });
+      assert.ok((response?.status() ?? 0) < 400, `Could not load ${probe.href}: ${response?.status()}`);
+      await page.waitForFunction(
+        () =>
+          Boolean(
+            window.__IKEBANA_TEST__ &&
+              document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+          ),
+        undefined,
+        { timeout: 20_000 },
+      );
+      const state = await getBridgeState();
+      const rootVariant = await page.evaluate(
+        () => document.querySelector('[data-testid="app-root"]').dataset.bendVariant,
+      );
+      assert.equal(state.bendVariant, entry.expected, `${entry.search} should launch ${entry.expected}`);
+      assert.equal(rootVariant, entry.expected);
+    }
+    const restore = await page.goto(url.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok((restore?.status() ?? 0) < 400, `Could not reload ${url.href}: ${restore?.status()}`);
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+  });
+
   await test("launch state is empty Front + Arrange + Shape", async () => {
     await page.evaluate(async () => {
+      const requested = new URL(location.href).searchParams.get("bend");
       await window.__IKEBANA_TEST__.resetForTest({
         clearAutosave: true,
         clearTelemetry: true,
-        bendVariant: new URL(location.href).searchParams.get("bend") ?? "fixed",
+        bendVariant: requested === "fixed" || requested === "bead" ? "fixed" : "touch",
       });
     });
     const state = await getBridgeState();
@@ -184,6 +223,207 @@ try {
     assert.equal(state.selectedPlantId, null);
     assert.equal(state.selectedBranchId, null);
     assert.equal(state.successfulSeatOrdinal, 0);
+  });
+
+  async function chromeSnapshot() {
+    return page.evaluate(() => {
+      const style = (element) => {
+        if (!(element instanceof HTMLElement)) return null;
+        const computed = getComputedStyle(element);
+        return {
+          hidden: element.hidden,
+          inert: element.inert,
+          ariaHidden: element.getAttribute("aria-hidden"),
+          pointerEvents: computed.pointerEvents,
+          display: computed.display,
+          focusable: [...element.querySelectorAll("button")].map((button) => ({
+            testId: button.dataset.testid,
+            tabIndex: button.tabIndex,
+            disabled: button.disabled,
+          })),
+        };
+      };
+      const rect = (element) => {
+        if (!(element instanceof HTMLElement) || element.hidden) return null;
+        const box = element.getBoundingClientRect();
+        return { left: box.left, top: box.top, right: box.right, bottom: box.bottom };
+      };
+      const intersects = (left, right) =>
+        left &&
+        right &&
+        left.left < right.right - 0.5 &&
+        left.right > right.left + 0.5 &&
+        left.top < right.bottom - 0.5 &&
+        left.bottom > right.top + 0.5;
+      const tray = document.querySelector('[data-testid="chrome-tray"]');
+      const tools = document.querySelector('[data-testid="chrome-tools"]');
+      const views = document.querySelector('[data-testid="chrome-views"]');
+      const trayBox = rect(tray);
+      const kenzan = { x: innerWidth / 2, y: innerHeight * 0.52 };
+      const trayCenter = trayBox
+        ? { x: (trayBox.left + trayBox.right) / 2, y: (trayBox.top + trayBox.bottom) / 2 }
+        : null;
+      const corridor = trayCenter
+        ? {
+            left: Math.min(trayCenter.x, kenzan.x) - 56,
+            right: Math.max(trayCenter.x, kenzan.x) + 56,
+            top: Math.min(trayCenter.y, kenzan.y),
+            bottom: Math.max(trayCenter.y, kenzan.y),
+          }
+        : null;
+      const pinField = {
+        left: kenzan.x - 72,
+        top: kenzan.y - 72,
+        right: kenzan.x + 72,
+        bottom: kenzan.y + 72,
+      };
+      const persistent = [
+        ...document.querySelectorAll(
+          "[data-posture], [data-tool], [data-view], #experiment-toggle",
+        ),
+      ]
+        .filter((element) => element instanceof HTMLElement)
+        .filter((element) => {
+          if (element.closest("[hidden], [inert]")) return false;
+          const computed = getComputedStyle(element);
+          return computed.display !== "none" && computed.pointerEvents !== "none" && computed.visibility !== "hidden";
+        })
+        .map((element) => {
+          const box = element.getBoundingClientRect();
+          return {
+            testId: element.dataset.testid ?? element.id,
+            left: box.left,
+            top: box.top,
+            right: box.right,
+            bottom: box.bottom,
+          };
+        });
+      return {
+        posture: document.querySelector('[data-testid="app-root"]').dataset.posture,
+        contextual: document.querySelector('[data-testid="app-root"]').dataset.contextual,
+        tools: style(tools),
+        views: style(views),
+        tray: style(tray),
+        trayBox,
+        corridor,
+        pinField,
+        persistent,
+        corridorHits: corridor
+          ? persistent.filter((box) => intersects(box, corridor)).map((box) => box.testId)
+          : [],
+        pinFieldHits: persistent.filter((box) => intersects(box, pinField)).map((box) => box.testId),
+      };
+    });
+  }
+
+  await test("contextual chrome rows follow posture and stay out of the insertion corridor", async () => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: true,
+        clearTelemetry: true,
+        bendVariant: "touch",
+      });
+    });
+    const arrange = await chromeSnapshot();
+    assert.equal(arrange.posture, "arrange");
+    assert.equal(arrange.contextual, "tools");
+    assert.equal(arrange.tools.hidden, false);
+    assert.equal(arrange.tools.inert, false);
+    assert.equal(arrange.views.hidden, true);
+    assert.equal(arrange.views.inert, true);
+    assert.equal(arrange.tray.hidden, false);
+    assert.equal(arrange.views.pointerEvents, "none");
+    for (const button of arrange.views.focusable) assert.equal(button.tabIndex, -1);
+    assert.deepEqual(arrange.corridorHits, []);
+    assert.deepEqual(arrange.pinFieldHits, []);
+
+    const before = await getBridgeState();
+    await page.evaluate(() => document.querySelector('[data-testid="posture-step-back"]').click());
+    const stepBack = await chromeSnapshot();
+    const afterPosture = await getBridgeState();
+    assert.equal(stepBack.contextual, "views");
+    assert.equal(stepBack.tools.hidden, true);
+    assert.equal(stepBack.tools.inert, true);
+    assert.equal(stepBack.views.hidden, false);
+    assert.equal(stepBack.tray.hidden, true);
+    assert.equal(stepBack.tray.inert, true);
+    for (const button of stepBack.tools.focusable) assert.equal(button.tabIndex, -1);
+    assert.equal(afterPosture.canonicalHash, before.canonicalHash);
+    assert.equal(afterPosture.cameraHash, before.cameraHash);
+    assert.equal(afterPosture.successfulSeatOrdinal, 0);
+
+    await page.evaluate(() => document.querySelector('[data-testid="view-above"]').click());
+    const afterView = await getBridgeState();
+    assert.equal(afterView.view, "above");
+    assert.equal(afterView.canonicalHash, before.canonicalHash);
+
+    await page.evaluate(() => document.querySelector('[data-testid="posture-arrange"]').click());
+    const restored = await chromeSnapshot();
+    assert.equal(restored.tray.hidden, false);
+    assert.equal(restored.tools.hidden, false);
+    assert.equal(restored.views.hidden, true);
+  });
+
+  await test("an acquired insertion keeps ownership while crossing the former mid-screen control strip", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: true,
+        clearTelemetry: true,
+        bendVariant: "touch",
+      });
+    });
+    const before = await getBridgeState();
+    const trayBox = await page.locator('[data-testid="material-flowering-branch"]').boundingBox();
+    assert.ok(trayBox, "tray material must be present in Arrange");
+    const start = { x: trayBox.x + trayBox.width / 2, y: trayBox.y + trayBox.height / 2 };
+    const mid = { x: 390 / 2, y: 844 * 0.72 };
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    const acquired = await getBridgeState();
+    assert.equal(acquired.transaction?.operation, "insert");
+    await page.mouse.move(mid.x, mid.y, { steps: 12 });
+    const crossed = await getBridgeState();
+    assert.equal(crossed.transaction?.operation, "insert");
+    assert.equal(crossed.posture, "arrange");
+    assert.equal(crossed.tool, "shape");
+    assert.equal(crossed.view, before.view);
+    assert.equal(crossed.canonicalHash, before.canonicalHash);
+    await page.mouse.up();
+    const afterRelease = await getBridgeState();
+    assert.equal(afterRelease.successfulSeatOrdinal, 0);
+    assert.equal(afterRelease.canonicalHash, before.canonicalHash);
+  });
+
+  await test("phone and desktop viewports keep persistent chrome out of the tray-to-kenzan corridor", async () => {
+    for (const viewport of [
+      { width: 390, height: 844 },
+      { width: 430, height: 932 },
+      { width: 1280, height: 800 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.evaluate(async () => {
+        await window.__IKEBANA_TEST__.resetForTest({
+          clearAutosave: true,
+          clearTelemetry: true,
+          bendVariant: "touch",
+        });
+      });
+      const snapshot = await chromeSnapshot();
+      assert.deepEqual(
+        snapshot.corridorHits,
+        [],
+        `${viewport.width}×${viewport.height}: interactive chrome intersects the insertion corridor: ${snapshot.corridorHits.join(", ")}`,
+      );
+      if (viewport.height > viewport.width) {
+        assert.deepEqual(
+          snapshot.pinFieldHits,
+          [],
+          `${viewport.width}×${viewport.height}: interactive chrome covers the usable pin field: ${snapshot.pinFieldHits.join(", ")}`,
+        );
+      }
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
   });
 
   await test("hit resolution ignores candidate array/raycaster order", async () => {

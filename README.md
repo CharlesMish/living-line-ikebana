@@ -36,17 +36,17 @@ The generated outputs are `dist/index.html` plus assets and `dist/ikebana-web-al
 - Drag the flowering cutting from the tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
 - In **Arrange · Shape**, drag a branch to aim its continuation, use the temporary base ring to move insertion, and use the current bend interaction to shape a broad curve.
 - In **Arrange · Prune**, touch and slide along a branch, inspect the exact distal material that will leave, and release to cut.
-- In **Step Back**, plant edits are locked. Drag to orbit, pinch to zoom, or use Front, 3/4, and Above.
+- In **Step Back**, plant edits are locked and the material tray is hidden. Drag to orbit, pinch to zoom, or use the contextual Front, 3/4, and Above controls.
 - Any interruption, lost pointer, view/tool/posture change, or hidden tab cancels the live plant edit. Only an ordinary release commits.
 
 ## Bend experiment
 
 The info panel switches between two acquisition hypotheses. They share the same material-distance addressing, stiffness cap, broad smootherstep solver, and segment-length constraints.
 
-- **Fixed point** (default): a subordinate bead appears at 54% of the selected eligible branch’s active rest arc.
-- **Where touched**: touching the eligible middle span freezes that exact material distance for the bend transaction; the bead is absent until acquisition.
+- **Where touched** (default): touching the eligible middle span freezes that exact material distance for the bend transaction; the bead is absent until acquisition.
+- **Fixed point**: a subordinate bead appears at 54% of the selected eligible branch’s active rest arc. Kept as a working experiment/accessibility fallback.
 
-Use `?bend=touch` to open directly in the touch-located variant. Omitting the parameter uses the fixed-point default; `?bend=fixed` currently falls back to that same default.
+A bare URL and `?bend=touch` both open the touch-located default. `?bend=fixed` selects the fixed-bead fallback. Internal telemetry buckets remain `touch` / `bead`.
 
 ## Architecture
 

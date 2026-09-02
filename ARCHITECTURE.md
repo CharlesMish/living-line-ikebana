@@ -7,7 +7,7 @@ The botanical graph is authoritative. Three.js is a replaceable presentation ada
 - `src/input/` owns one deterministic gesture transaction at a time. Ordinary release commits; every interruption rolls back.
 - `src/app/` owns the small DOM shell, tray, posture/tool/view commands, autosave, experiment flags, and the acquisition-telemetry/export diagnostic layer (`metrics.ts`, `telemetry.ts`, `telemetrySummary.ts`). That layer is strictly observational: it never touches `src/core/` and never gates a craft operation.
 
-Material law and UI experiments are deliberately separated. The fixed-bead and touch-located bend variants use the same broad, stiffness-capped, rest-length-preserving solver.
+Material law and UI experiments are deliberately separated. The fixed-bead and touch-located bend variants use the same broad, stiffness-capped, rest-length-preserving solver. Touch-located is the ordinary default; fixed-bead remains a complete fallback.
 
 ## Dependency direction
 

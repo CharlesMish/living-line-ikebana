@@ -18,7 +18,7 @@ Run the card on a physical iPhone in Safari, in portrait, from the real hosted o
 Record:
 
 - build identifier / commit:
-- URL and bend variant (fixed default with no parameter, or `?bend=touch`):
+- URL and bend variant (touch default with no parameter, `?bend=touch`, or `?bend=fixed`):
 - iPhone model, iOS version, and Safari version:
 - viewport size before and after browser chrome moves:
 - fresh session or restored local specimen:
@@ -36,6 +36,7 @@ Inspect the built page once before physical play. All items are required.
 - The fixed application shell cannot scroll; `html`, `body`, and the application root fill the dynamic viewport and hide overflow.
 - The shell suppresses in-app rubber-band chaining with `overscroll-behavior: none` where WebKit supports it.
 - Safe-area insets do not put tray or state-changing chrome under the home indicator or notch.
+- Arrange chrome is top-mounted and contextual: Arrange | Step Back, then Shape | Prune. Front / 3/4 / Above appear only in Step Back. No interactive chrome sits between the tray and the usable kenzan on portrait phones. Hidden contextual controls are not focusable and do not intercept pointers. The tray is present in Arrange and hidden in Step Back.
 - A drag or pinch that begins on the scene never scrolls the document, selects text, or zooms the page.
 - The app listens for `pointercancel`, premature `lostpointercapture`, `visibilitychange`, `pagehide`, relevant viewport/orientation resize, and WebGL context loss.
 
@@ -100,8 +101,8 @@ Cover at least one Shape transaction and one Prune transaction across the matrix
 | `window.resize` | Resize through device rotation or harness | Cancel first, then reframe |
 | `visualViewport.resize` | Move Safari chrome while previewing | Cancel first, then reproject |
 | Orientation change | Rotate during preview | Cancel first; no stale edit plane |
-| Canonical view command | Second finger taps Front/Above/3/4 | Cancel, then change view |
-| Tool command | Second finger changes Shape/Prune | Cancel, then change tool |
+| Canonical view command | In Step Back, second finger taps Front/Above/3/4 during a camera gesture | Cancel camera ownership, then change view. Views are contextual to Step Back; they are not visible during an Arrange edit. |
+| Tool command | During an Arrange edit, second finger changes Shape/Prune | Cancel, then change tool |
 | Posture command | Second finger changes Arrange/Step Back | Cancel, then change posture |
 | Second scene pointer | Add a second finger to the canvas during an edit | Ignore it; do not pinch, orbit, or retarget |
 | WebGL context loss | Harness extension or background/resume | Cancel preview; retain committed graph; rebuild presentation |
@@ -134,11 +135,12 @@ Hard ownership checks:
 - Step Back + any plant touch: canonical graph remains unchanged.
 - Step Back + empty-space drag/pinch: camera changes within constraints.
 - A second scene pointer during a plant transaction is ignored.
-- Explicit persistent chrome remains hittable by another pointer and acts as cancel-then-command.
+- Explicit persistent chrome remains hittable by another pointer and acts as cancel-then-command. Hidden contextual rows (views during Arrange, tools and tray during Step Back) must not be focusable or pointer-active.
+- An insertion acquired from the tray owns its pointer until commit or cancellation. Passing over any button region, including the former mid-screen control strip, must not activate that button or transfer ownership.
 
-## Bend experiment: fixed bead versus touch-located station
+## Bend experiment: touch-located default versus fixed-bead fallback
 
-Use the same plant fixture, camera view, aim behavior, broad solver, response caps, and task in both runs. Choose the variant before each timed block and do not change it during that block. The visible experiment control may switch variants between blocks; switching cancels any active edit.
+Touch-located is the ordinary default (bare URL and `?bend=touch`). Fixed-bead remains a complete fallback (`?bend=fixed`). Use the same plant fixture, camera view, aim behavior, broad solver, response caps, and task in both runs. Choose the variant before each timed block and do not change it during that block. The visible experiment control may switch variants between blocks; switching cancels any active edit.
 
 ### Variant A: `fixed`
 
@@ -170,7 +172,7 @@ Ask each tester to make the same five intended silhouette changes in each varian
 - whether they describe manipulating the branch/material or manipulating a bead/control;
 - any question about what the bead is or why it disappeared.
 
-Variant B earns the next build only if its first-try acquisition rate is no more than 5 percentage points worse than A, its median corrective-bend count is no higher, and its median completion time is no more than 15% slower. Otherwise retain A while investigating the specific miss type. This comparison selects an interaction; failure of B alone does not falsify the whole foundation.
+Touch-located is now the ordinary default after physical-phone preference for the same solver. Keep recording the A/B comparison when both variants are exercised: B remains preferred unless its first-try acquisition rate is more than 5 percentage points worse than A, its median corrective-bend count is higher, or its median completion time is more than 15% slower. Failure of either variant alone does not falsify the whole foundation.
 
 ## Reach-region record
 

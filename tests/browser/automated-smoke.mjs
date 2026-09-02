@@ -279,7 +279,7 @@ try {
       };
       const persistent = [
         ...document.querySelectorAll(
-          "[data-posture], [data-tool], [data-view], #experiment-toggle",
+          "button[data-posture], button[data-tool], button[data-view], #experiment-toggle",
         ),
       ]
         .filter((element) => element instanceof HTMLElement)
@@ -330,8 +330,10 @@ try {
     assert.equal(arrange.contextual, "tools");
     assert.equal(arrange.tools.hidden, false);
     assert.equal(arrange.tools.inert, false);
+    assert.notEqual(arrange.tools.display, "none");
     assert.equal(arrange.views.hidden, true);
     assert.equal(arrange.views.inert, true);
+    assert.equal(arrange.views.display, "none");
     assert.equal(arrange.tray.hidden, false);
     assert.equal(arrange.views.pointerEvents, "none");
     for (const button of arrange.views.focusable) assert.equal(button.tabIndex, -1);
@@ -345,8 +347,11 @@ try {
     assert.equal(stepBack.contextual, "views");
     assert.equal(stepBack.tools.hidden, true);
     assert.equal(stepBack.tools.inert, true);
+    assert.equal(stepBack.tools.display, "none");
     assert.equal(stepBack.views.hidden, false);
+    assert.notEqual(stepBack.views.display, "none");
     assert.equal(stepBack.tray.hidden, true);
+    assert.equal(stepBack.tray.display, "none");
     assert.equal(stepBack.tray.inert, true);
     for (const button of stepBack.tools.focusable) assert.equal(button.tabIndex, -1);
     assert.equal(afterPosture.canonicalHash, before.canonicalHash);

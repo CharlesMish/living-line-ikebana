@@ -393,7 +393,11 @@ button:focus-visible {
 
 .tool-control[hidden],
 .view-switcher[hidden],
-.material-tray[hidden],
+.material-tray[hidden] {
+  display: none;
+  pointer-events: none;
+}
+
 .tool-control[inert],
 .view-switcher[inert],
 .material-tray[inert] {

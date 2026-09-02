@@ -12,6 +12,7 @@ import {
   updateLineGeometry,
   updateTubeGeometry,
 } from "./geometry.ts";
+import { cameraViewOffsetForOccupiedTop } from "./viewOffset.ts";
 
 export type CanonicalView = "front" | "three-quarter" | "above";
 export type StudioView = CanonicalView | "orbit" | "free";
@@ -122,6 +123,8 @@ export interface ThreeStudioOptions {
   maxPixelRatio?: number;
   debugHitTargets?: boolean;
   onViewChange?: (view: StudioView) => void;
+  /** Live canvas-local inset of painted top chrome; presentation-only framing. */
+  occupiedTopInsetPx?: () => number;
 }
 
 type BranchVisual = {
@@ -243,8 +246,12 @@ export class ThreeStudio {
   private readonly bendHandle: HandleVisual;
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
-  private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange">;
+  private readonly options: {
+    maxPixelRatio: number;
+    debugHitTargets: boolean;
+    onViewChange?: (view: StudioView) => void;
+    occupiedTopInsetPx?: () => number;
+  };
 
   private pendingPlant: PlantVisual | null = null;
   private pendingValidity: boolean | null = null;
@@ -269,6 +276,7 @@ export class ThreeStudio {
       maxPixelRatio: options.maxPixelRatio ?? 1.8,
       debugHitTargets: options.debugHitTargets ?? false,
       onViewChange: options.onViewChange,
+      occupiedTopInsetPx: options.occupiedTopInsetPx,
     };
     this.canvas.style.touchAction = "none";
 
@@ -1299,6 +1307,10 @@ export class ThreeStudio {
     return [...candidates.values()].sort(candidateComparator);
   }
 
+  relayout() {
+    this.resize();
+  }
+
   private setRaycaster(clientX: number, clientY: number) {
     const rect = this.canvas.getBoundingClientRect();
     const width = Math.max(1, rect.width);
@@ -1320,8 +1332,22 @@ export class ThreeStudio {
     const pixelRatio = Math.min(window.devicePixelRatio || 1, this.options.maxPixelRatio);
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(width, height, false);
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
+    const inset = Math.max(0, this.options.occupiedTopInsetPx?.() ?? 0);
+    const offset = cameraViewOffsetForOccupiedTop(width, height, inset);
+    if (offset) {
+      this.camera.setViewOffset(
+        offset.fullWidth,
+        offset.fullHeight,
+        offset.offsetX,
+        offset.offsetY,
+        offset.width,
+        offset.height,
+      );
+    } else {
+      this.camera.clearViewOffset();
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+    }
     this.requestRender();
   }
 

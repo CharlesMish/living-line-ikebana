@@ -1,3 +1,6 @@
+import { bendVariantFromSearch as domainBendFromSearch } from "./config.ts";
+import { contextualChromeVisibility, setChromeRowAvailability } from "./chrome.ts";
+
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
 export type CanonicalView = "front" | "three-quarter" | "above";
@@ -35,6 +38,8 @@ export type UICommand =
 
 export type UICommandListener = (command: UICommand, sourceEvent: Event) => void;
 
+export { contextualChromeVisibility, setChromeRowAvailability } from "./chrome.ts";
+
 export interface UIBindings {
   readonly root: HTMLElement;
   readonly studio: HTMLElement;
@@ -60,7 +65,7 @@ const DEFAULT_STATE: UIState = {
   posture: "arrange",
   tool: "shape",
   view: "front",
-  bendVariant: "fixed-bead",
+  bendVariant: "touch-located",
   experimentPanelOpen: false,
   trayEnabled: true,
   trayDragging: false,
@@ -78,10 +83,7 @@ function requireElement<T extends Element>(scope: ParentNode, selector: string):
 }
 
 export function bendVariantFromSearch(search: string): BendVariant {
-  const raw = new URLSearchParams(search).get("bend")?.trim().toLowerCase();
-  return raw === "touch" || raw === "touched" || raw === "touch-located" || raw === "b"
-    ? "touch-located"
-    : "fixed-bead";
+  return domainBendFromSearch(search) === "touch" ? "touch-located" : "fixed-bead";
 }
 
 export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindings {
@@ -93,7 +95,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
-  const craftChrome = requireElement<HTMLElement>(root, "#craft-chrome");
+  const toolChrome = requireElement<HTMLElement>(root, "#tool-chrome");
+  const viewChrome = requireElement<HTMLElement>(root, "#view-chrome");
+  const materialTray = requireElement<HTMLElement>(root, "#material-tray");
   const trayButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-material-id]")];
   if (trayButtons.length === 0) {
     throw new Error("UI shell is missing required element: [data-material-id]");
@@ -143,8 +147,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     experimentPanel.hidden = !currentState.experimentPanelOpen;
     experimentToggle.setAttribute("aria-expanded", String(currentState.experimentPanelOpen));
 
-    craftChrome.inert = currentState.posture === "step-back";
-    craftChrome.setAttribute("aria-hidden", String(currentState.posture === "step-back"));
+    const chrome = contextualChromeVisibility(currentState.posture);
+    root.dataset.contextual = chrome.tools ? "tools" : "views";
+    setChromeRowAvailability(toolChrome, chrome.tools);
+    setChromeRowAvailability(viewChrome, chrome.views);
+    setChromeRowAvailability(materialTray, chrome.tray);
     for (const trayButton of trayButtons) {
       const buttonDragging = currentState.trayDragging
         && currentState.activeMaterialId === trayButton.dataset.materialId;

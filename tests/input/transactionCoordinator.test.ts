@@ -373,6 +373,20 @@ test("camera can acquire only in Step Back and cancel never changes its pose", (
   assert.equal(saves[0]?.domain, "camera");
 });
 
+test("posture and tool commands do not mutate canonical graph or camera", () => {
+  const coordinator = seededCoordinator();
+  const before = coordinator.getDocumentSnapshot();
+  coordinator.commandPosture("step-back");
+  coordinator.commandTool("prune");
+  coordinator.commandPosture("arrange");
+  coordinator.commandTool("shape");
+  const after = coordinator.getDocumentSnapshot();
+  assert.equal(currentValue(coordinator), 10);
+  assert.equal(after.camera.yaw, before.camera.yaw);
+  assert.equal(after.successfulPlantOrdinal, before.successfulPlantOrdinal);
+  assert.equal(after.plants.size, before.plants.size);
+});
+
 test("acquired target owns the interaction until finish", () => {
   const coordinator = seededCoordinator();
   coordinator.beginAim(

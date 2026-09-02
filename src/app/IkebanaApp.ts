@@ -33,8 +33,10 @@ import {
   orbitCameraPose,
   type CameraPose,
 } from "./camera.ts";
+import { occupiedTopChromeInsetPx } from "./chrome.ts";
 import {
   readExperimentConfig,
+  resolveResetBendVariant,
   urlForBendVariant,
   urlWithoutClearStudyData,
   type BendVariant,
@@ -150,6 +152,11 @@ interface IkebanaTestBridge {
   getCanonicalSnapshot(): unknown;
   getRenderInventory(): unknown[];
   getScreenTargets(): unknown[];
+  projectWorldPointForTest(point: { x: number; y: number; z: number }): {
+    x: number;
+    y: number;
+    visible: boolean;
+  };
   resolveHitForTest(candidates: TestHitCandidate[]): { stableId: string } | null;
   getMetrics(): unknown;
   resetMetrics(): void;
@@ -267,6 +274,7 @@ export class IkebanaApp {
     this.ui.studio.append(this.canvas);
     this.studio = new ThreeStudio(this.canvas, {
       debugHitTargets: this.config.debug,
+      occupiedTopInsetPx: () => occupiedTopChromeInsetPx(this.root, this.canvas),
     });
 
     const initial = this.loadInitialDocument();
@@ -302,6 +310,7 @@ export class IkebanaApp {
       this.loadWarning ? "warning" : "quiet",
     );
     this.syncPresentation();
+    this.studio.relayout();
     this.root.dataset.ready = "true";
     if (new URL(location.href).searchParams.get("test") === "1") this.installTestBridge();
   }
@@ -945,8 +954,14 @@ export class IkebanaApp {
     this.interruptActive("system-interruption", false);
     this.telemetryStore.flush();
   };
-  private onViewportChanged = () => this.interruptActive("system-interruption", false);
-  private onVisualViewportChanged = () => this.interruptActive("system-interruption", false);
+  private onViewportChanged = () => {
+    this.interruptActive("system-interruption", false);
+    this.studio.relayout();
+  };
+  private onVisualViewportChanged = () => {
+    this.interruptActive("system-interruption", false);
+    this.studio.relayout();
+  };
 
   private onContextLost = (event: Event) => {
     event.preventDefault();
@@ -1337,6 +1352,10 @@ export class IkebanaApp {
       getCanonicalSnapshot: () => clonePlain(this.canonicalSnapshot()),
       getRenderInventory: () => this.studio.getRenderInventory(),
       getScreenTargets: () => this.screenTargets(),
+      projectWorldPointForTest: (point) => {
+        const projected = this.studio.projectPoint(point);
+        return { x: projected.clientX, y: projected.clientY, visible: projected.visible };
+      },
       resolveHitForTest: (candidates) => {
         const tier = { "selected-handle": 0, "selected-plant": 1, "other-plant": 2 } as const;
         const ranked = candidates.map((candidate): HitCandidate => ({
@@ -1366,7 +1385,7 @@ export class IkebanaApp {
         this.metrics.reset();
         this.selectedBranchId = null;
         this.cameraIsFree = false;
-        this.bendVariant = options.bendVariant === "touch" ? "touch" : "bead";
+        this.bendVariant = resolveResetBendVariant(options.bendVariant, this.bendVariant);
         this.metrics.setBendVariant(this.bendVariant);
         this.studio.clearGraphs();
         this.studio.setPendingGraph(null);
@@ -1382,6 +1401,7 @@ export class IkebanaApp {
         });
         this.ui.setStatus("Place a cutting.");
         this.syncPresentation();
+        this.studio.relayout();
       },
       interruptForTest: (reason) => this.interruptActive(this.testCancelReason(reason), false),
       loseContextForTest: async () => {

@@ -14,10 +14,22 @@ export type ExperimentConfig = {
   clearStudyData: boolean;
 };
 
+/**
+ * Internal buckets stay `bead` / `touch`. The public query is:
+ * bare URL and `?bend=touch` → touch (ordinary default);
+ * `?bend=fixed` (or the internal alias `bead`) → fixed-bead fallback.
+ */
+export function bendVariantFromSearch(search: string): BendVariant {
+  const params = search.startsWith("http://") || search.startsWith("https://")
+    ? new URL(search).searchParams
+    : new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  const raw = params.get("bend")?.trim().toLowerCase();
+  return raw === "fixed" || raw === "bead" ? "bead" : "touch";
+}
+
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
-  const bend = url.searchParams.get("bend");
   return {
-    bendVariant: bend === "touch" ? "touch" : "bead",
+    bendVariant: bendVariantFromSearch(url.search),
     debug: url.searchParams.get("debug") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
@@ -26,8 +38,8 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
 
 export function urlForBendVariant(variant: BendVariant, current = new URL(window.location.href)) {
   const next = new URL(current);
-  if (variant === "bead") next.searchParams.delete("bend");
-  else next.searchParams.set("bend", "touch");
+  if (variant === "touch") next.searchParams.delete("bend");
+  else next.searchParams.set("bend", "fixed");
   next.searchParams.delete("fresh");
   // clearStudyData is one-shot; it must never stick around into a URL a
   // later variant switch (or any other replaceState) produces.
@@ -44,4 +56,17 @@ export function urlWithoutClearStudyData(current = new URL(window.location.href)
   const next = new URL(current);
   next.searchParams.delete("clearStudyData");
   return next;
+}
+
+/**
+ * `resetForTest` may omit `bendVariant`. An omitted value must leave the live
+ * arm (and therefore its telemetry bucket) unchanged. An explicit `"touch"`
+ * still selects touch; any other provided token maps to the bead/fixed bucket.
+ */
+export function resolveResetBendVariant(
+  requested: string | undefined,
+  current: BendVariant,
+): BendVariant {
+  if (requested === undefined) return current;
+  return requested === "touch" ? "touch" : "bead";
 }

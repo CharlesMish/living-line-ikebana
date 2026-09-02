@@ -4,6 +4,10 @@ export {
   compareHitCandidates,
 } from "./ThreeStudio.ts";
 
+export { cameraViewOffsetForOccupiedTop } from "./viewOffset.ts";
+
+export type { CameraViewOffset } from "./viewOffset.ts";
+
 export type {
   BendVariant,
   CameraOrbitSnapshot,

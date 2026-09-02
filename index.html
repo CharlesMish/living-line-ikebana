@@ -16,33 +16,53 @@
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
-    <main id="app" class="app-shell" data-testid="app-root" data-ready="false" data-transaction="none" data-posture="arrange" data-tool="shape" data-view="front">
+    <main id="app" class="app-shell" data-testid="app-root" data-ready="false" data-transaction="none" data-posture="arrange" data-tool="shape" data-view="front" data-contextual="tools" data-bend-variant="touch">
       <div id="studio" class="studio" aria-label="Ikebana arrangement space"></div>
 
-      <header class="top-chrome" aria-label="View controls">
-        <div class="top-row">
-          <div class="wordmark" aria-label="Living Line">
-            <span class="wordmark-mark" aria-hidden="true"></span>
-            <span>Living Line</span>
-          </div>
-
-          <button
-            id="experiment-toggle"
-            class="icon-button quiet-button"
-            type="button"
-            aria-label="About this shaping study"
-            aria-controls="experiment-panel"
-            aria-expanded="false"
-          >
-            <span aria-hidden="true">i</span>
-          </button>
+      <header class="top-chrome" aria-label="Craft chrome">
+        <div class="wordmark" aria-label="Living Line">
+          <span class="wordmark-mark" aria-hidden="true"></span>
+          <span>Living Line</span>
         </div>
 
-        <nav class="segmented view-switcher" aria-label="Intended viewing direction">
-          <button type="button" data-testid="view-front" data-view="front" aria-pressed="true">Front</button>
-          <button type="button" data-testid="view-three-quarter" data-view="three-quarter" aria-pressed="false" aria-label="Three-quarter view">3/4</button>
-          <button type="button" data-testid="view-above" data-view="above" aria-pressed="false">Above</button>
-        </nav>
+        <button
+          id="experiment-toggle"
+          class="icon-button quiet-button chrome-info"
+          type="button"
+          aria-label="About this shaping study"
+          aria-controls="experiment-panel"
+          aria-expanded="false"
+        >
+          <span aria-hidden="true">i</span>
+        </button>
+
+        <div class="chrome-stack">
+          <nav class="segmented posture-control" aria-label="Interaction posture">
+            <button type="button" data-testid="posture-arrange" data-posture="arrange" aria-pressed="true">Arrange</button>
+            <button type="button" data-testid="posture-step-back" data-posture="step-back" aria-pressed="false">Step Back</button>
+          </nav>
+
+          <div class="contextual-row" data-testid="contextual-row">
+            <nav id="tool-chrome" class="segmented tool-control" data-testid="chrome-tools" aria-label="Craft tool">
+              <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
+              <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
+            </nav>
+
+            <nav
+              id="view-chrome"
+              class="segmented view-switcher"
+              data-testid="chrome-views"
+              aria-label="Intended viewing direction"
+              hidden
+              inert
+              aria-hidden="true"
+            >
+              <button type="button" data-testid="view-front" data-view="front" aria-pressed="true" tabindex="-1">Front</button>
+              <button type="button" data-testid="view-three-quarter" data-view="three-quarter" aria-pressed="false" aria-label="Three-quarter view" tabindex="-1">3/4</button>
+              <button type="button" data-testid="view-above" data-view="above" aria-pressed="false" tabindex="-1">Above</button>
+            </nav>
+          </div>
+        </div>
       </header>
 
       <section
@@ -60,8 +80,8 @@
           <button id="experiment-close" class="icon-button" type="button" aria-label="Close shaping study">×</button>
         </div>
         <div class="segmented experiment-switcher" aria-label="Bend interaction variant">
-          <button type="button" data-bend-variant="fixed-bead" aria-pressed="true">Fixed point</button>
-          <button type="button" data-bend-variant="touch-located" aria-pressed="false">Where touched</button>
+          <button type="button" data-bend-variant="fixed-bead" aria-pressed="false">Fixed point</button>
+          <button type="button" data-bend-variant="touch-located" aria-pressed="true">Where touched</button>
         </div>
         <p class="panel-note">Both keep the same branch length and broad curve.</p>
         <button
@@ -102,19 +122,8 @@
         Place a cutting.
       </p>
 
-      <section class="bottom-chrome" aria-label="Craft controls">
-        <div class="posture-control segmented" aria-label="Interaction posture">
-          <button type="button" data-testid="posture-arrange" data-posture="arrange" aria-pressed="true">Arrange</button>
-          <button type="button" data-testid="posture-step-back" data-posture="step-back" aria-pressed="false">Step Back</button>
-        </div>
-
-        <div id="craft-chrome" class="craft-chrome">
-          <div class="tool-control segmented" aria-label="Craft tool">
-            <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
-            <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
-          </div>
-
-          <div class="material-tray" aria-label="Living materials">
+      <section class="bottom-chrome" aria-label="Material tray">
+        <div id="material-tray" class="material-tray" data-testid="chrome-tray" aria-label="Living materials">
             <button
               id="flowering-cutting"
               class="material-card"
@@ -148,7 +157,6 @@
                 <i></i><i></i><i></i>
               </span>
             </button>
-          </div>
         </div>
       </section>
     </main>

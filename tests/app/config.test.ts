@@ -4,9 +4,11 @@ import test from "node:test";
 import {
   bendVariantFromSearch,
   readExperimentConfig,
+  resolveResetBendVariant,
   urlForBendVariant,
   urlWithoutClearStudyData,
 } from "../../src/app/config.ts";
+import { SessionMetrics } from "../../src/app/metrics.ts";
 
 test("bare URL and ?bend=touch resolve to touch; ?bend=fixed maps to the bead bucket", () => {
   assert.equal(bendVariantFromSearch(""), "touch");
@@ -48,4 +50,28 @@ test("urlWithoutClearStudyData strips only the one-shot flag", () => {
   assert.equal(next.searchParams.get("clearStudyData"), null);
   assert.equal(next.searchParams.get("bend"), "fixed");
   assert.equal(next.searchParams.get("fresh"), "1");
+});
+
+test("omitting resetForTest bendVariant preserves the live variant and telemetry bucket", () => {
+  assert.equal(resolveResetBendVariant(undefined, "touch"), "touch");
+  assert.equal(resolveResetBendVariant(undefined, "bead"), "bead");
+  assert.equal(resolveResetBendVariant("touch", "bead"), "touch");
+  assert.equal(resolveResetBendVariant("fixed", "touch"), "bead");
+  assert.equal(resolveResetBendVariant("bead", "touch"), "bead");
+
+  for (const current of ["touch", "bead"] as const) {
+    const preserved = resolveResetBendVariant(undefined, current);
+    const metrics = new SessionMetrics("session-omit", current);
+    metrics.reset();
+    metrics.setBendVariant(preserved);
+    const record = metrics.recordAcquisition({
+      posture: "arrange",
+      tool: "shape",
+      result: "hit",
+      operation: "bend",
+      region: "middle",
+    });
+    assert.equal(preserved, current);
+    assert.equal(record.bendVariant, current);
+  }
 });

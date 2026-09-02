@@ -57,3 +57,16 @@ export function urlWithoutClearStudyData(current = new URL(window.location.href)
   next.searchParams.delete("clearStudyData");
   return next;
 }
+
+/**
+ * `resetForTest` may omit `bendVariant`. An omitted value must leave the live
+ * arm (and therefore its telemetry bucket) unchanged. An explicit `"touch"`
+ * still selects touch; any other provided token maps to the bead/fixed bucket.
+ */
+export function resolveResetBendVariant(
+  requested: string | undefined,
+  current: BendVariant,
+): BendVariant {
+  if (requested === undefined) return current;
+  return requested === "touch" ? "touch" : "bead";
+}

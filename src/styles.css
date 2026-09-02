@@ -110,16 +110,17 @@ button:focus-visible {
   pointer-events: none;
 }
 
-.chrome-stack > *,
-.contextual-row > *:not([hidden]) {
-  pointer-events: auto;
-}
-
 .contextual-row {
   display: grid;
   justify-items: center;
   min-height: 2.94rem;
   width: 100%;
+  /* Full-width wrapper must not steal empty-space touches from the studio. */
+  pointer-events: none;
+}
+
+.contextual-row > *:not([hidden]) {
+  pointer-events: auto;
 }
 
 .contextual-row > * {

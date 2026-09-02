@@ -79,7 +79,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Only the acquired owner's ordinary `pointerup` release commits. Repeated release or the normal capture loss after release is an idle no-op.
 - `pointercancel`, premature lost capture, hidden visibility, `pagehide`, relevant viewport or orientation changes, WebGL context loss, and explicit cancellation restore the snapshot and write no save.
 - A tool, view, posture, selection, or bend-experiment command cancels first, then applies the command.
-- Persistent chrome remains usable as an interrupt command during a scene grab. Hidden contextual controls are not focusable and do not intercept pointers. A second scene pointer during a plant transaction is ignored.
+- Persistent chrome remains usable as an interrupt command during a scene grab. Hidden contextual controls are not focusable and do not intercept pointers. The contextual-row wrapper is not itself a hit target; only its visible segmented controls receive pointers. A second scene pointer during a plant transaction is ignored.
 - Arrange chrome is compact and top-mounted: Arrange | Step Back, then Shape | Prune. Canonical Front / 3/4 / Above controls appear only while Step Back is active. They remain fully functional; they are contextual, not removed. The material tray is present only in Arrange so the tray-to-kenzan corridor stays clear of interactive chrome.
 - Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing except explain Step Back.
 - Step Back permits constrained orbit and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.

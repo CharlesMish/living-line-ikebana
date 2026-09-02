@@ -36,7 +36,7 @@ Inspect the built page once before physical play. All items are required.
 - The fixed application shell cannot scroll; `html`, `body`, and the application root fill the dynamic viewport and hide overflow.
 - The shell suppresses in-app rubber-band chaining with `overscroll-behavior: none` where WebKit supports it.
 - Safe-area insets do not put tray or state-changing chrome under the home indicator or notch.
-- Arrange chrome is top-mounted and contextual: Arrange | Step Back, then Shape | Prune. Front / 3/4 / Above appear only in Step Back. No interactive chrome sits between the tray and the usable kenzan on portrait phones. Hidden contextual controls are not focusable and do not intercept pointers. The tray is present in Arrange and hidden in Step Back.
+- Arrange chrome is top-mounted and contextual: Arrange | Step Back, then Shape | Prune. Front / 3/4 / Above appear only in Step Back. No interactive chrome sits between the tray and the usable kenzan on portrait phones. Hidden contextual controls are not focusable and do not intercept pointers. Empty space inside the contextual row, outside the visible pills, must reach the studio/canvas. The tray is present in Arrange and hidden in Step Back.
 - A drag or pinch that begins on the scene never scrolls the document, selects text, or zooms the page.
 - The app listens for `pointercancel`, premature `lostpointercapture`, `visibilitychange`, `pagehide`, relevant viewport/orientation resize, and WebGL context loss.
 
@@ -135,7 +135,7 @@ Hard ownership checks:
 - Step Back + any plant touch: canonical graph remains unchanged.
 - Step Back + empty-space drag/pinch: camera changes within constraints.
 - A second scene pointer during a plant transaction is ignored.
-- Explicit persistent chrome remains hittable by another pointer and acts as cancel-then-command. Hidden contextual rows (views during Arrange, tools and tray during Step Back) must not be focusable or pointer-active.
+- Explicit persistent chrome remains hittable by another pointer and acts as cancel-then-command. Hidden contextual rows (views during Arrange, tools and tray during Step Back) must not be focusable or pointer-active. Empty space in the contextual row, outside the visible pills, belongs to the studio.
 - An insertion acquired from the tray owns its pointer until commit or cancellation. Passing over any button region, including the former mid-screen control strip, must not activate that button or transfer ownership.
 
 ## Bend experiment: touch-located default versus fixed-bead fallback
@@ -355,6 +355,11 @@ interface IkebanaTestBridgeV1 {
     y: number;
     region: string;
   }[];
+  projectWorldPointForTest(point: { x: number; y: number; z: number }): {
+    x: number;
+    y: number;
+    visible: boolean;
+  };
   resolveHitForTest(candidates: {
     stableId: string;
     tier: "selected-handle" | "selected-plant" | "other-plant";
@@ -384,7 +389,7 @@ interface IkebanaTestBridgeV1 {
   resetForTest(options: {
     clearAutosave: boolean;
     clearTelemetry: boolean; // deliberately separate: a specimen reset never implies wiping study data
-    bendVariant?: "fixed" | "touch";
+    bendVariant?: "fixed" | "touch"; // omit to preserve the currently active variant and telemetry bucket
   }): Promise<void>;
   interruptForTest(reason:
     | "pointercancel"

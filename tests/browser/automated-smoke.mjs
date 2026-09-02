@@ -123,6 +123,7 @@ try {
       "view-three-quarter",
       "view-above",
       "status",
+      "contextual-row",
     ];
     const missing = await page.evaluate((testIds) => {
       return testIds.filter(
@@ -368,6 +369,165 @@ try {
     assert.equal(restored.tray.hidden, false);
     assert.equal(restored.tools.hidden, false);
     assert.equal(restored.views.hidden, true);
+  });
+
+  await test("empty space in the contextual row hits the studio, not invisible chrome", async () => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const hit = await page.evaluate(() => {
+      const row = document.querySelector('[data-testid="contextual-row"]');
+      const tools = document.querySelector('[data-testid="chrome-tools"]');
+      const canvas = document.querySelector('[data-testid="scene-canvas"]');
+      const studio = document.getElementById("studio");
+      if (!(row instanceof HTMLElement) || !(tools instanceof HTMLElement)) {
+        throw new Error("contextual row or tools missing");
+      }
+      const rowBox = row.getBoundingClientRect();
+      const toolsBox = tools.getBoundingClientRect();
+      const x = rowBox.left + 12;
+      const y = (rowBox.top + rowBox.bottom) / 2;
+      const insideRow = x >= rowBox.left && x <= rowBox.right && y >= rowBox.top && y <= rowBox.bottom;
+      const insidePill = x >= toolsBox.left && x <= toolsBox.right && y >= toolsBox.top && y <= toolsBox.bottom;
+      const rowStyle = getComputedStyle(row);
+      const element = document.elementFromPoint(x, y);
+      return {
+        insideRow,
+        insidePill,
+        rowPointerEvents: rowStyle.pointerEvents,
+        hitTestId: element instanceof HTMLElement ? element.dataset.testid ?? element.id : null,
+        hitClass: element instanceof HTMLElement ? element.className : null,
+        hitTag: element?.nodeName ?? null,
+        isCanvas: element === canvas || canvas?.contains(element),
+        isStudio: element === studio || studio?.contains(element),
+        isRow: element === row || row.contains(element),
+      };
+    });
+    assert.equal(hit.insideRow, true);
+    assert.equal(hit.insidePill, false);
+    assert.equal(hit.rowPointerEvents, "none");
+    assert.equal(hit.isRow, false);
+    assert.ok(hit.isStudio || hit.isCanvas, `empty row point hit ${hit.hitTag}.${hit.hitClass} (${hit.hitTestId})`);
+  });
+
+  await test("crown and upper material clear the occupied top-chrome rectangle including safe-area", async () => {
+    const cases = [
+      { width: 390, height: 844, safeTop: 47 },
+      { width: 390, height: 844, safeTop: 59 },
+      { width: 430, height: 932, safeTop: 47 },
+      { width: 430, height: 932, safeTop: 59 },
+    ];
+    for (const viewport of cases) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      const result = await page.evaluate(async (safeTop) => {
+        document.documentElement.style.setProperty("--safe-top", `${safeTop}px`);
+        window.dispatchEvent(new Event("resize"));
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const bridge = window.__IKEBANA_TEST__;
+        if (!bridge?.projectWorldPointForTest) throw new Error("projectWorldPointForTest is missing");
+        const header = document.querySelector(".top-chrome");
+        const stack = document.querySelector(".chrome-stack");
+        const info = document.querySelector(".chrome-info");
+        const canvas = document.querySelector('[data-testid="scene-canvas"]');
+        if (!(header instanceof HTMLElement) || !(stack instanceof HTMLElement) || !(canvas instanceof HTMLElement)) {
+          throw new Error("top chrome or canvas missing");
+        }
+        const occupiedBottom = Math.max(
+          header.getBoundingClientRect().bottom,
+          stack.getBoundingClientRect().bottom,
+          info instanceof HTMLElement ? info.getBoundingClientRect().bottom : 0,
+        );
+        const crown = bridge.projectWorldPointForTest({ x: 0, y: 6.53, z: 0 });
+        const upper = bridge.projectWorldPointForTest({ x: 0, y: 5.2, z: 0 });
+        return {
+          occupiedBottom,
+          headerBottom: header.getBoundingClientRect().bottom,
+          stackBottom: stack.getBoundingClientRect().bottom,
+          canvasTop: canvas.getBoundingClientRect().top,
+          crownY: crown.y,
+          upperY: upper.y,
+          crownVisible: crown.visible,
+          upperVisible: upper.visible,
+        };
+      }, viewport.safeTop);
+      const label = `${viewport.width}×${viewport.height} safe-top ${viewport.safeTop}`;
+      assert.ok(result.occupiedBottom > viewport.safeTop, `${label}: occupied chrome did not include safe-area (${result.occupiedBottom})`);
+      assert.ok(
+        result.crownY > result.occupiedBottom,
+        `${label}: crown at ${result.crownY} does not clear occupied chrome ${result.occupiedBottom}`,
+      );
+      assert.ok(
+        result.upperY > result.occupiedBottom,
+        `${label}: upper material at ${result.upperY} does not clear occupied chrome ${result.occupiedBottom}`,
+      );
+    }
+    await page.evaluate(() => {
+      document.documentElement.style.removeProperty("--safe-top");
+      window.dispatchEvent(new Event("resize"));
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+  });
+
+  await test("resetForTest without bendVariant preserves the live variant and telemetry bucket", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: true,
+        clearTelemetry: true,
+        bendVariant: "touch",
+      });
+    });
+    const afterTouchOmit = await page.evaluate(async () => {
+      const before = window.__IKEBANA_TEST__.getState();
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: true,
+        clearTelemetry: true,
+      });
+      const after = window.__IKEBANA_TEST__.getState();
+      const payload = window.__IKEBANA_TEST__.getTelemetryExportPayload();
+      return {
+        before: before.bendVariant,
+        after: after.bendVariant,
+        dataset: document.querySelector('[data-testid="app-root"]').dataset.bendVariant,
+        currentBendVariant: payload.currentBendVariant,
+      };
+    });
+    assert.equal(afterTouchOmit.before, "touch");
+    assert.equal(afterTouchOmit.after, "touch");
+    assert.equal(afterTouchOmit.dataset, "touch");
+    assert.equal(afterTouchOmit.currentBendVariant, "touch");
+
+    const afterFixedOmit = await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: true,
+        clearTelemetry: true,
+        bendVariant: "fixed",
+      });
+      const before = window.__IKEBANA_TEST__.getState();
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: false,
+        clearTelemetry: false,
+      });
+      const after = window.__IKEBANA_TEST__.getState();
+      const payload = window.__IKEBANA_TEST__.getTelemetryExportPayload();
+      const telemetry = window.__IKEBANA_TEST__.getPersistedTelemetry();
+      return {
+        before: before.bendVariant,
+        after: after.bendVariant,
+        dataset: document.querySelector('[data-testid="app-root"]').dataset.bendVariant,
+        currentBendVariant: payload.currentBendVariant,
+        buckets: Object.keys(telemetry.variants).sort(),
+      };
+    });
+    assert.equal(afterFixedOmit.before, "fixed");
+    assert.equal(afterFixedOmit.after, "fixed");
+    assert.equal(afterFixedOmit.dataset, "fixed");
+    assert.equal(afterFixedOmit.currentBendVariant, "bead");
+    assert.deepEqual(afterFixedOmit.buckets, ["bead", "touch"]);
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({
+        clearAutosave: true,
+        clearTelemetry: true,
+        bendVariant: "touch",
+      });
+    });
   });
 
   await test("an acquired insertion keeps ownership while crossing the former mid-screen control strip", async () => {

@@ -231,6 +231,7 @@ test("tray pointerdown owns insertion and does not emit a chrome command", () =>
     pointerId: 17,
     clientX: 200,
     clientY: 780,
+    preventDefault() {},
   });
   assert.deepEqual(commands, [
     {
@@ -242,7 +243,14 @@ test("tray pointerdown owns insertion and does not emit a chrome command", () =>
     },
   ]);
 
-  shell.toolPrune.dispatchEvent({ type: "pointerdown", button: 0, pointerId: 17, clientX: 40, clientY: 40 });
+  shell.toolPrune.dispatchEvent({
+    type: "pointerdown",
+    button: 0,
+    pointerId: 17,
+    clientX: 40,
+    clientY: 40,
+    preventDefault() {},
+  });
   assert.equal(commands.length, 1, "the acquired tray pointer must not activate a crossed button");
   ui.destroy();
 });

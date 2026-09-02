@@ -171,6 +171,7 @@ try {
     await page.evaluate(async () => {
       await window.__IKEBANA_TEST__.resetForTest({
         clearAutosave: true,
+        clearTelemetry: true,
         bendVariant: new URL(location.href).searchParams.get("bend") ?? "fixed",
       });
     });
@@ -279,6 +280,574 @@ try {
       assert.equal(typeof write.canonicalHash, "string");
       assert.ok(write.canonicalHash.length > 0);
       assert.equal(Number.isInteger(write.commitSequence), true);
+    }
+  });
+
+  await test("acquisitions carry a variant, and camera/keyboard acquisitions never read as a graph commit", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "touch" });
+    });
+
+    // Keyboard-equivalent activation commits an insert synchronously.
+    await page.evaluate(() => {
+      document
+        .querySelector('[data-testid="material-flowering-branch"]')
+        .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    });
+
+    // A pointerdown on the tray opens an insert transaction; cancel it explicitly.
+    await page.evaluate(() => {
+      const button = document.querySelector('[data-testid="material-flowering-branch"]');
+      const rect = button.getBoundingClientRect();
+      button.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          pointerId: 101,
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2,
+          button: 0,
+        }),
+      );
+    });
+    await page.evaluate(() => window.__IKEBANA_TEST__.interruptForTest("pointercancel"));
+
+    // A Step Back camera drag: begin, move, and release on empty canvas space.
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: false, clearTelemetry: false, bendVariant: "touch" });
+      document.querySelector('[data-testid="posture-step-back"]').click();
+    });
+    await page.evaluate(() => {
+      const canvas = document.querySelector('[data-testid="scene-canvas"]');
+      const rect = canvas.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      canvas.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 202, clientX: x, clientY: y, button: 0 }));
+      window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 202, clientX: x, clientY: y }));
+    });
+
+    const telemetry = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const touchAcquisitions = telemetry.variants.touch.acquisitions;
+    for (const record of touchAcquisitions) {
+      assert.equal(record.bendVariant, "touch");
+      assert.equal(typeof record.sessionId, "string");
+    }
+    const committedInsert = touchAcquisitions.find(
+      (record) => record.operation === "insert" && record.inputMethod === "keyboard",
+    );
+    const cancelledInsert = touchAcquisitions.find(
+      (record) => record.operation === "insert" && record.inputMethod === "pointer",
+    );
+    const cameraRecord = touchAcquisitions.find((record) => record.operation === "camera");
+    assert.ok(committedInsert, "expected one committed keyboard-insert acquisition");
+    assert.equal(committedInsert.outcome, "committed");
+    assert.equal(committedInsert.materialId, "flowering-branch");
+    assert.ok(cancelledInsert, "expected one cancelled pointer-drag insert acquisition");
+    assert.equal(cancelledInsert.outcome, "cancelled");
+    assert.equal(cancelledInsert.cancelReason, "pointer-cancel");
+    assert.ok(cameraRecord, "expected one camera acquisition");
+    // The core assertion for this correction pass: camera is never "committed".
+    assert.equal(cameraRecord.outcome, "released");
+    assert.notEqual(cameraRecord.outcome, "committed");
+
+    // Raw records keep camera/keyboard-insert for debugging, but the
+    // comparative summary must exclude them entirely (bend-only, resolved).
+    const exportPayload = await page.evaluate(() => window.__IKEBANA_TEST__.getTelemetryExportPayload());
+    assert.equal(exportPayload.summary.touch.scope, "bend-only-resolved-hits");
+    assert.equal(exportPayload.summary.touch.resolvedBendHits, 0);
+    assert.equal(exportPayload.summary.touch.committedBendHits, 0);
+    assert.equal(exportPayload.summary.touch.cancelledBendHits, 0);
+    assert.equal(typeof exportPayload.instrumentVersion, "string");
+    assert.equal(typeof exportPayload.privacyStatement, "string");
+    assert.match(exportPayload.privacyStatement, /locally/i);
+
+    // Return to Arrange for later tests.
+    await page.evaluate(() => document.querySelector('[data-testid="posture-arrange"]').click());
+  });
+
+  await test("?fresh=1 preserves study telemetry; ?clearStudyData=1 is the only thing that wipes it", async () => {
+    const before = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const totalBefore =
+      before.variants.bead.acquisitions.length + before.variants.touch.acquisitions.length;
+    assert.ok(totalBefore > 0, "expected telemetry recorded by the prior test to persist");
+
+    const freshUrl = new URL(url.href);
+    freshUrl.searchParams.set("fresh", "1");
+    const freshResponse = await page.goto(freshUrl.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok((freshResponse?.status() ?? 0) < 400, `Could not load ${freshUrl.href}: ${freshResponse?.status()}`);
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const afterFresh = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const totalAfterFresh =
+      afterFresh.variants.bead.acquisitions.length + afterFresh.variants.touch.acquisitions.length;
+    assert.equal(
+      totalAfterFresh,
+      totalBefore,
+      "an ordinary specimen reset (?fresh=1) must never delete study telemetry",
+    );
+
+    const clearUrl = new URL(url.href);
+    clearUrl.searchParams.set("clearStudyData", "1");
+    const clearResponse = await page.goto(clearUrl.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok((clearResponse?.status() ?? 0) < 400, `Could not load ${clearUrl.href}: ${clearResponse?.status()}`);
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const afterClear = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(afterClear.variants.bead.acquisitions.length, 0);
+    assert.equal(afterClear.variants.touch.acquisitions.length, 0);
+  });
+
+  await test("?clearStudyData=1 is one-shot: it clears once, strips itself from the URL, and never re-clears on a later reload", async () => {
+    const clearUrl = new URL(url.href);
+    clearUrl.searchParams.set("clearStudyData", "1");
+    const clearResponse = await page.goto(clearUrl.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok((clearResponse?.status() ?? 0) < 400, `Could not load ${clearUrl.href}: ${clearResponse?.status()}`);
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const afterClear = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(
+      afterClear.variants.bead.acquisitions.length + afterClear.variants.touch.acquisitions.length,
+      0,
+    );
+
+    const searchAfterClear = await page.evaluate(() => location.search);
+    assert.doesNotMatch(
+      searchAfterClear,
+      /clearStudyData/,
+      "clearStudyData must be removed from the URL (via replaceState) immediately after it is acted on",
+    );
+
+    // Collect a new record after the one-shot clear.
+    await page.evaluate(() => {
+      document
+        .querySelector('[data-testid="material-flowering-branch"]')
+        .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    });
+    const collected = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const totalCollected =
+      collected.variants.bead.acquisitions.length + collected.variants.touch.acquisitions.length;
+    assert.equal(totalCollected, 1);
+
+    // Give the deferred flush a turn, then reload the current (now
+    // flag-free) URL. If clearStudyData had stuck around, this would wipe
+    // the just-collected record again.
+    await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
+    const currentUrl = page.url();
+    assert.doesNotMatch(currentUrl, /clearStudyData/);
+    const reloadResponse = await page.goto(currentUrl, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok((reloadResponse?.status() ?? 0) < 400, `Could not reload ${currentUrl}: ${reloadResponse?.status()}`);
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const afterReload = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const totalAfterReload =
+      afterReload.variants.bead.acquisitions.length + afterReload.variants.touch.acquisitions.length;
+    assert.equal(totalAfterReload, 1, "the record collected after the one-shot clear must survive an ordinary reload");
+  });
+
+  await test("a canonical-view change resets in-progress attempt state, same as posture/tool/variant", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "fixed" });
+    });
+    // A miss: an empty-space tap with no acquirable target.
+    await page.evaluate(() => {
+      const canvas = document.querySelector('[data-testid="scene-canvas"]');
+      const rect = canvas.getBoundingClientRect();
+      canvas.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          pointerId: 404,
+          clientX: rect.left + 2,
+          clientY: rect.top + 2,
+          button: 0,
+        }),
+      );
+      window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 404, clientX: rect.left + 2, clientY: rect.top + 2 }));
+    });
+    const beforeViewChange = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const missCount =
+      beforeViewChange.variants.bead.acquisitions.length + beforeViewChange.variants.touch.acquisitions.length;
+    assert.ok(missCount >= 1, "expected the empty-space tap to record a miss");
+
+    // A canonical view change is the boundary under test.
+    await page.evaluate(() => document.querySelector('[data-testid="view-above"]').click());
+
+    // A committed hit (keyboard insert) after the boundary must start its
+    // own attempt at zero misses, not inherit the miss from before the view change.
+    await page.evaluate(() => {
+      document
+        .querySelector('[data-testid="material-flowering-branch"]')
+        .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    });
+    const after = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const insertRecord = [...after.variants.bead.acquisitions, ...after.variants.touch.acquisitions].find(
+      (record) => record.operation === "insert",
+    );
+    assert.ok(insertRecord, "expected the keyboard insertion to be recorded");
+    assert.equal(
+      insertRecord.missesBeforeHit,
+      0,
+      "a canonical view change must reset in-progress attempt state, same as posture/tool/variant",
+    );
+
+    await page.evaluate(() => document.querySelector('[data-testid="view-front"]').click());
+  });
+
+  await test("telemetry survives an ordinary reload with neither flag", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "fixed" });
+    });
+    await page.evaluate(() => {
+      document
+        .querySelector('[data-testid="material-flowering-branch"]')
+        .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    });
+    const before = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(before.variants.bead.acquisitions.length, 1);
+
+    // A repeat load of the exact same URL may be answered "304 Not Modified"
+    // from cache; that is still a successful navigation, just not `.ok()`.
+    const response = await page.goto(url.href, { waitUntil: "networkidle", timeout: 30_000 });
+    assert.ok(
+      (response?.status() ?? 0) < 400,
+      `Could not load ${url.href}: ${response?.status()}`,
+    );
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          window.__IKEBANA_TEST__ &&
+            document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+
+    const after = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    assert.equal(after.variants.bead.acquisitions.length, 1);
+  });
+
+  await test("Export is persistent chrome: a hold-drag is cancelled first, then export proceeds", async () => {
+    await page.evaluate(async () => {
+      await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "fixed" });
+    });
+    // Open the info panel so its export button is reachable, as a second
+    // finger/click would reach it during a real hold-drag.
+    await page.evaluate(() => document.querySelector("#experiment-toggle").click());
+    await page.waitForSelector("#experiment-panel:not([hidden])");
+
+    // Begin a hold-drag from the tray (an active, uncommitted insert transaction).
+    await page.evaluate(() => {
+      const button = document.querySelector('[data-testid="material-flowering-branch"]');
+      const rect = button.getBoundingClientRect();
+      button.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          pointerId: 303,
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2,
+          button: 0,
+        }),
+      );
+    });
+    const midDrag = await getBridgeState();
+    assert.equal(midDrag.transaction?.operation, "insert", "expected an active insert transaction mid-drag");
+
+    // A second control (Export) is tapped during the hold-drag.
+    await page.evaluate(() => document.querySelector("#telemetry-export-trigger").click());
+
+    const afterExportTap = await getBridgeState();
+    assert.equal(afterExportTap.transaction, null, "export must cancel the active transaction first");
+
+    const telemetry = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
+    const cancelledByExport = telemetry.variants.bead.acquisitions.find(
+      (record) => record.operation === "insert" && record.cancelReason === "experiment-command",
+    );
+    assert.ok(cancelledByExport, "expected the held drag's acquisition to resolve as cancelled by the export command");
+    assert.equal(cancelledByExport.outcome, "cancelled");
+
+    // A later ordinary release of the same (already-cancelled) pointer is a no-op.
+    await page.evaluate(() => {
+      window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 303, clientX: 1, clientY: 1 }));
+    });
+    const afterRelease = await getBridgeState();
+    assert.equal(afterRelease.transaction, null);
+    assert.equal(afterRelease.canonicalHash, afterExportTap.canonicalHash);
+
+    await page.evaluate(() => document.querySelector("#experiment-close").click());
+  });
+
+  await test("study telemetry running out of storage quota never prevents the botanical graph from saving", async () => {
+    const quotaContext = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    const quotaPage = await quotaContext.newPage();
+    const quotaPageErrors = [];
+    quotaPage.on("pageerror", (error) => quotaPageErrors.push(String(error)));
+    // Simulate a full quota (or a disabled storage API) for the telemetry
+    // key specifically, while the graph-autosave key keeps working.
+    await quotaPage.addInitScript(() => {
+      const telemetryKey = "ikebana-web-alpha:telemetry-v1";
+      const originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function patchedSetItem(key, value) {
+        if (key === telemetryKey) {
+          throw new DOMException("Quota exceeded", "QuotaExceededError");
+        }
+        return originalSetItem.call(this, key, value);
+      };
+    });
+
+    try {
+      const response = await quotaPage.goto(url.href, { waitUntil: "networkidle", timeout: 30_000 });
+      assert.ok((response?.status() ?? 0) < 400, `Could not load ${url.href}: ${response?.status()}`);
+      await quotaPage.waitForFunction(
+        () =>
+          Boolean(
+            window.__IKEBANA_TEST__ &&
+              document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+          ),
+        undefined,
+        { timeout: 20_000 },
+      );
+      await quotaPage.evaluate(async () => {
+        await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: false, bendVariant: "fixed" });
+      });
+
+      // A real graph commit (keyboard activation) while every telemetry
+      // write throws.
+      await quotaPage.evaluate(() => {
+        document
+          .querySelector('[data-testid="material-flowering-branch"]')
+          .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+      });
+
+      const state = await quotaPage.evaluate(() => window.__IKEBANA_TEST__.getState());
+      assert.equal(state.successfulSeatOrdinal, 1, "the graph commit must succeed even though telemetry storage throws");
+
+      const audit = await quotaPage.evaluate(() => window.__IKEBANA_TEST__.getAutosaveAudit());
+      assert.ok(audit.writes.length >= 1, "expected the graph autosave write to have been attempted and recorded");
+
+      const graphPayload = await quotaPage.evaluate(() => localStorage.getItem("ikebana-web-alpha:studio-v1"));
+      assert.ok(graphPayload, "expected the committed graph to actually be persisted to storage");
+      assert.equal(JSON.parse(graphPayload).plants.length, 1);
+
+      // Telemetry writes are deferred to a later timer task; give the
+      // scheduled flush a turn to run and (harmlessly, internally) fail before
+      // asserting no uncaught page error resulted from it.
+      await quotaPage.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
+      assert.deepEqual(quotaPageErrors, [], "a throwing telemetry write must never surface as an uncaught page error");
+    } finally {
+      await quotaContext.close();
+    }
+  });
+
+  await test("a shared-origin quota: telemetry occupying storage never prevents a graph save that would otherwise fit", async () => {
+    const sharedQuotaContext = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    const sharedQuotaPage = await sharedQuotaContext.newPage();
+    // A realistic shared-origin quota: every key competes for the same
+    // budget, unlike the per-key-throw test above. ~20 KB is small enough
+    // that pre-occupying most of it with telemetry blocks a real single-
+    // plant graph save, but the graph alone comfortably fits once telemetry
+    // yields (clears) its share.
+    await sharedQuotaPage.addInitScript(() => {
+      const BUDGET_BYTES = 20_000;
+      const originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function patchedSetItem(key, value) {
+        let totalExcludingThisKey = 0;
+        for (let index = 0; index < this.length; index += 1) {
+          const existingKey = this.key(index);
+          if (existingKey === key) continue;
+          totalExcludingThisKey += existingKey.length + (this.getItem(existingKey) ?? "").length;
+        }
+        if (totalExcludingThisKey + key.length + value.length > BUDGET_BYTES) {
+          throw new DOMException("Quota exceeded", "QuotaExceededError");
+        }
+        return originalSetItem.call(this, key, value);
+      };
+    });
+
+    try {
+      const response = await sharedQuotaPage.goto(url.href, { waitUntil: "networkidle", timeout: 30_000 });
+      assert.ok((response?.status() ?? 0) < 400, `Could not load ${url.href}: ${response?.status()}`);
+      await sharedQuotaPage.waitForFunction(
+        () =>
+          Boolean(
+            window.__IKEBANA_TEST__ &&
+              document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+          ),
+        undefined,
+        { timeout: 20_000 },
+      );
+      await sharedQuotaPage.evaluate(async () => {
+        await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "fixed" });
+      });
+
+      // Occupy most of the virtual quota with junk telemetry directly
+      // (deterministic; not dependent on how many real gestures it'd take).
+      const seeded = await sharedQuotaPage.evaluate(() => {
+        try {
+          const junkAcquisition = (index) => ({
+            at: index,
+            wallClockMs: index,
+            sessionId: "seed-session",
+            bendVariant: "bead",
+            posture: "arrange",
+            tool: "shape",
+            result: "hit",
+            operation: "aim",
+            region: "middle",
+            missesBeforeHit: 0,
+            timeToAcquireMs: 5,
+            outcome: "committed",
+          });
+          const acquisitions = Array.from({ length: 40 }, (_, index) => junkAcquisition(index));
+          const payload = {
+            storageVersion: 1,
+            instrumentVersion: window.__IKEBANA_TEST__.getPersistedTelemetry().instrumentVersion,
+            savedAt: new Date().toISOString(),
+            variants: { bead: { acquisitions }, touch: { acquisitions: [] } },
+          };
+          localStorage.setItem("ikebana-web-alpha:telemetry-v1", JSON.stringify(payload));
+          return true;
+        } catch {
+          return false;
+        }
+      });
+      assert.equal(seeded, true, "expected the junk telemetry seed itself to fit under the virtual quota");
+
+      const occupiedBefore = await sharedQuotaPage.evaluate(
+        () => localStorage.getItem("ikebana-web-alpha:telemetry-v1")?.length ?? 0,
+      );
+      assert.ok(occupiedBefore > 0, "expected telemetry to actually occupy shared storage before the graph commit");
+
+      // A real graph commit (keyboard activation): alone it fits under the
+      // budget, but not stacked on top of the seeded telemetry — the first
+      // save attempt must fail, triggering eviction, then a retry that fits.
+      await sharedQuotaPage.evaluate(() => {
+        document
+          .querySelector('[data-testid="material-flowering-branch"]')
+          .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+      });
+
+      const state = await sharedQuotaPage.evaluate(() => window.__IKEBANA_TEST__.getState());
+      assert.equal(
+        state.successfulSeatOrdinal,
+        1,
+        "telemetry must yield storage so a graph that would otherwise fit can still save",
+      );
+
+      const graphPayload = await sharedQuotaPage.evaluate(() => localStorage.getItem("ikebana-web-alpha:studio-v1"));
+      assert.ok(graphPayload, "expected the committed graph to actually be persisted after eviction+retry");
+      assert.equal(JSON.parse(graphPayload).plants.length, 1);
+
+      const telemetryAfter = await sharedQuotaPage.evaluate(() =>
+        window.__IKEBANA_TEST__.getPersistedTelemetry(),
+      );
+      const totalAfter =
+        telemetryAfter.variants.bead.acquisitions.length + telemetryAfter.variants.touch.acquisitions.length;
+      // The 40 seeded junk records must be gone (evicted); only this one
+      // commit's own telemetry (recorded after the successful retry) remains.
+      assert.equal(
+        totalAfter,
+        1,
+        "eviction must have actually cleared the blocking seeded telemetry, leaving only this commit's own record",
+      );
+      assert.equal(telemetryAfter.variants.bead.acquisitions[0]?.sessionId === "seed-session", false);
+    } finally {
+      await sharedQuotaContext.close();
+    }
+  });
+
+  await test("dismissing the Share sheet is a distinct 'cancelled' result, never a silent download", async () => {
+    const shareContext = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    const sharePage = await shareContext.newPage();
+    const downloads = [];
+    sharePage.on("download", (download) => downloads.push(download));
+    await sharePage.addInitScript(() => {
+      Object.defineProperty(window.navigator, "canShare", {
+        configurable: true,
+        value: () => true,
+      });
+      Object.defineProperty(window.navigator, "share", {
+        configurable: true,
+        value: () => Promise.reject(new DOMException("Abort due to cancellation of share.", "AbortError")),
+      });
+    });
+
+    try {
+      const response = await sharePage.goto(url.href, { waitUntil: "networkidle", timeout: 30_000 });
+      assert.ok((response?.status() ?? 0) < 400, `Could not load ${url.href}: ${response?.status()}`);
+      await sharePage.waitForFunction(
+        () =>
+          Boolean(
+            window.__IKEBANA_TEST__ &&
+              document.querySelector('[data-testid="app-root"][data-ready="true"]'),
+          ),
+        undefined,
+        { timeout: 20_000 },
+      );
+      await sharePage.evaluate(async () => {
+        await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "fixed" });
+      });
+      await sharePage.evaluate(() => document.querySelector("#experiment-toggle").click());
+      await sharePage.waitForSelector("#experiment-panel:not([hidden])");
+      await sharePage.evaluate(() => document.querySelector("#telemetry-export-trigger").click());
+      await sharePage.waitForFunction(
+        () => (document.querySelector('[data-testid="status"]')?.textContent ?? "").toLowerCase().includes("cancelled"),
+        undefined,
+        { timeout: 5_000 },
+      );
+
+      const statusText = await sharePage.evaluate(() => document.querySelector('[data-testid="status"]').textContent.trim());
+      assert.match(statusText, /export cancelled/i);
+      assert.equal(downloads.length, 0, "a deliberate share dismissal must never fall through to a silent download");
+
+      const fallbackVisible = await sharePage.evaluate(() => {
+        const panel = document.querySelector("#telemetry-export-panel");
+        return panel && !panel.hidden;
+      });
+      assert.equal(fallbackVisible, false, "a deliberate cancellation must not open the manual-copy fallback either");
+    } finally {
+      await shareContext.close();
     }
   });
 

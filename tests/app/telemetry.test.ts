@@ -161,15 +161,15 @@ test("append() buffers in memory without a synchronous storage write; flush() pe
   assert.equal(writes, 1, "flush() performs exactly the deferred write");
 });
 
-test("append() has not written after only a microtask; it writes after the scheduled task/render boundary", async () => {
+test("append() has not written after only a microtask; it writes on the scheduled timer task", async () => {
   installMemoryStorage();
   const store = createStore();
   store.append("touch", acquisition());
   assert.equal(localStorage.getItem(STORAGE_KEY), null, "not yet written synchronously");
 
   // A microtask alone must not be enough: it runs before the browser gets
-  // a chance to paint or do other work, so it does not actually relieve
-  // the interaction frame the way a task-boundary handoff does.
+  // a chance to paint or do other work. A later timer task yields the
+  // current event stack without asserting that the browser must paint.
   await Promise.resolve();
   await Promise.resolve();
   await Promise.resolve();
@@ -179,10 +179,10 @@ test("append() has not written after only a microtask; it writes after the sched
     "must still be unwritten after only microtasks",
   );
 
-  // Crossing an actual task boundary must be enough.
+  // Reaching the scheduled timer task must be enough.
   await new Promise((resolve) => setTimeout(resolve, 0));
   const raw = localStorage.getItem(STORAGE_KEY);
-  assert.ok(raw, "the scheduled task-boundary flush must eventually write without any explicit flush() call");
+  assert.ok(raw, "the scheduled timer flush must eventually write without any explicit flush() call");
   assert.equal(JSON.parse(raw).variants.touch.acquisitions.length, 1);
 });
 

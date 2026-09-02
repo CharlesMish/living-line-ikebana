@@ -279,10 +279,10 @@ function trimToByteBudget(payload: PersistedTelemetry): void {
  * every `append`/`load` after that reads only the in-memory cache.
  *
  * The actual write — including the 256 KiB size trim — happens in a flush
- * scheduled to cross a task/render boundary (`setTimeout`, not a
- * microtask): a microtask alone runs before the browser gets a chance to
- * paint or do other work, so it does not actually relieve the current
- * frame the way a task-boundary handoff does. `flush()` can also be called
+ * scheduled on a later timer task (`setTimeout`, not a microtask): a
+ * microtask alone runs before the browser gets a chance to paint or do
+ * other work. The timer task yields the current event stack and permits,
+ * but does not guarantee, an intervening paint. `flush()` can also be called
  * directly and synchronously where that is safe (tests, or app teardown —
  * never the craft-critical commit path), and always fails closed (never
  * throws past this layer). Every scheduled flush carries the generation it
@@ -378,11 +378,10 @@ export class TelemetryStore {
   }
 
   /**
-   * Schedules a flush to run after the current task/render boundary — a
-   * macrotask (`setTimeout`), deliberately not a microtask. A microtask
-   * runs before the browser can paint or process other pending work, so it
-   * does not actually get this write off the interaction frame; a task
-   * boundary does.
+   * Schedules a flush on a later timer task (`setTimeout`), deliberately not
+   * a microtask. A microtask runs before the browser can paint or process
+   * other pending work; yielding the current event stack gives the browser
+   * an opportunity to paint, without claiming that a paint is guaranteed.
    */
   private scheduleFlush(): void {
     if (this.scheduledHandle !== null) return; // already scheduled.

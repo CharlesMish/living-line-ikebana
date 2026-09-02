@@ -662,8 +662,8 @@ try {
       assert.ok(graphPayload, "expected the committed graph to actually be persisted to storage");
       assert.equal(JSON.parse(graphPayload).plants.length, 1);
 
-      // Telemetry writes are deferred (a microtask); give the scheduled
-      // flush a turn to run and (harmlessly, internally) fail before
+      // Telemetry writes are deferred to a later timer task; give the
+      // scheduled flush a turn to run and (harmlessly, internally) fail before
       // asserting no uncaught page error resulted from it.
       await quotaPage.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
       assert.deepEqual(quotaPageErrors, [], "a throwing telemetry write must never surface as an uncaught page error");

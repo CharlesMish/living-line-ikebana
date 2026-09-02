@@ -21,6 +21,8 @@ npm run dev
 
 Then open the local URL on desktop or on a phone on the same network.
 
+The public project page is deployed from `main` by [`.github/workflows/pages.yml`](.github/workflows/pages.yml). In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The expected URL is `https://charlesmish.github.io/living-line-ikebana/`.
+
 For a production build and a self-contained file:
 
 ```bash

@@ -43,6 +43,23 @@ Inspect the built page once before physical play. All items are required.
 
 ## Ten-minute craft path
 
+For the single-branch presentation experiment, also check:
+
+- The leaf and petal detail stays on the same organ after bend, prune elsewhere,
+  reload and graphics recovery; the outside of stems is visible from all views.
+- Mouse Prune hover changes only the displayed preview. Moving off the canvas
+  restores the view without changing selection, graph, ordinal or saves.
+- Touch acquisition shows an action icon and material name away from the
+  finger. Cut text agrees with every faded stem/organ, including bare branches.
+- A small first orbit from Above does not roll. Inspect from both sides, then
+  return to Front and continue editing.
+- Escape during a drag cancels; a later release makes no change. Tool switching
+  remains the touch cancellation path.
+- Open the help panel at large text size; all instructions and its close button
+  remain reachable. Expand **Bend options & study data** for experiment controls.
+- With graphics unavailable, the studio explains that it could not start.
+  With audio unavailable, all editing still works.
+
 Give the tester at most the labels present in the build. Do not explain hit regions, the model graph, or the bend algorithm.
 
 1. Start from the empty vessel.

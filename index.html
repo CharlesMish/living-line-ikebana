@@ -30,7 +30,7 @@
             id="experiment-toggle"
             class="icon-button quiet-button"
             type="button"
-            aria-label="About this shaping study"
+            aria-label="How to shape and cut"
             aria-controls="experiment-panel"
             aria-expanded="false"
           >
@@ -54,11 +54,21 @@
       >
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">Shaping study</p>
-            <h1 id="experiment-title">Where should a bend begin?</h1>
+            <p class="eyebrow">Working with a cutting</p>
+            <h1 id="experiment-title">Follow the line.</h1>
           </div>
           <button id="experiment-close" class="icon-button" type="button" aria-label="Close shaping study">×</button>
         </div>
+        <ol class="craft-guide">
+          <li><strong>Place.</strong> Drag a cutting onto the pins.</li>
+          <li><strong>Aim.</strong> Drag a branch to turn its continuation.</li>
+          <li><strong>Bend.</strong> <span data-guide-bend>Drag the pale point into a broad curve. The base ring moves the whole cutting.</span></li>
+          <li><strong>Prune.</strong> Slide along a stem. The faded part will leave when you release. Press Escape, or switch tools, to cancel.</li>
+          <li><strong>Step Back.</strong> Orbit and zoom to see the space you have made.</li>
+        </ol>
+        <p class="panel-note">Changes save on this device when you release. A cut is permanent.</p>
+        <details class="study-options">
+        <summary>Bend options &amp; study data</summary>
         <div class="segmented experiment-switcher" aria-label="Bend interaction variant">
           <button type="button" data-bend-variant="fixed-bead" aria-pressed="true">Fixed point</button>
           <button type="button" data-bend-variant="touch-located" aria-pressed="false">Where touched</button>
@@ -72,6 +82,7 @@
         >
           Export local study data
         </button>
+        </details>
       </section>
 
       <section
@@ -101,6 +112,16 @@
       <p id="status" class="status-pill" data-testid="status" role="status" aria-live="polite" aria-atomic="true">
         Place a cutting.
       </p>
+
+      <aside id="craft-cue" class="craft-cue" role="status" aria-live="off" aria-atomic="true" hidden>
+        <span class="cue-symbol" aria-hidden="true">
+          <svg class="cue-icon cue-cut" viewBox="0 0 24 24"><circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="m8.5 8.5 11 10M8.5 15.5l11-10"/></svg>
+          <svg class="cue-icon cue-aim" viewBox="0 0 24 24"><path d="M4 20 19 5M12 5h7v7"/><circle cx="4" cy="20" r="2"/></svg>
+          <svg class="cue-icon cue-bend" viewBox="0 0 24 24"><path d="M5 21C5 4 18 20 18 3"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="cue-icon cue-base" viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="8" ry="4"/><path d="M12 16V3m-3 3 3-3 3 3"/></svg>
+        </span>
+        <span><strong data-cue-title></strong><span data-cue-detail></span></span>
+      </aside>
 
       <section class="bottom-chrome" aria-label="Craft controls">
         <div class="posture-control segmented" aria-label="Interaction posture">

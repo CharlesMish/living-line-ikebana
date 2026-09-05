@@ -12,6 +12,22 @@ Future flowers, branch structures, and a calm core loop should extend this basel
 
 ## Run it
 
+The single-branch craft refinement adds creased leaves, cupped petals and small
+flower centers, closed stem ends, and corrected outward-facing stem surfaces.
+Detail is seeded by persistent organ identity and remains stable through edits.
+
+Hovering with a mouse shows the action that will acquire. In Prune it previews
+the exact cut and names the affected material; touch receives the same cue once
+acquired. Icons and text accompany color. Escape cancels a live edit. The info
+panel now explains placing, aiming, bending, pruning and inspection, with study
+controls under **Bend options & study data**.
+
+The fixed-point bend default and single material remain in this experiment.
+Draft PR #4's broader touch-default/contextual-control proposal is separate.
+The Above camera is aligned with its orbit meridian to avoid acquisition roll.
+Unavailable graphics now has an explanatory startup state, and unavailable
+audio cannot block editing.
+
 Use Node.js 20.19 or newer.
 
 ```bash

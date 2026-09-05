@@ -68,11 +68,14 @@ function tubeData(
   baseRadius: number,
   referenceNormal: Vec3,
   radialSegments = DEFAULT_RADIAL_SEGMENTS,
+  capEnds = false,
 ) {
   const tangents = pointTangents(points);
   const normalsAtPoints = transportedNormals(tangents, referenceNormal);
-  const positions = new Float32Array(points.length * radialSegments * 3);
-  const normals = new Float32Array(points.length * radialSegments * 3);
+  const vertexCount = points.length * radialSegments + (capEnds ? 2 * (radialSegments + 1) : 0);
+  const positions = new Float32Array(vertexCount * 3);
+  const normals = new Float32Array(vertexCount * 3);
+  const colors = new Float32Array(vertexCount * 3);
 
   let offset = 0;
   points.forEach((plainPoint, pointIndex) => {
@@ -92,6 +95,10 @@ function tubeData(
         .addScaledVector(binormal, Math.sin(angle))
         .normalize();
       const vertex = point.clone().addScaledVector(surfaceNormal, radius);
+      // Longitudinal tone stays in the material frame; neither pruning nor a
+      // changed number of points re-scales or re-seeds the remaining surface.
+      const tone = 0.94 + 0.06 * Math.cos(angle * 3);
+      colors.set([tone, tone * 0.99, tone * 0.96], offset);
       positions[offset] = vertex.x;
       normals[offset] = surfaceNormal.x;
       offset += 1;
@@ -104,8 +111,8 @@ function tubeData(
     }
   });
 
-  const indexCount = Math.max(0, points.length - 1) * radialSegments * 6;
-  const IndexArray = points.length * radialSegments > 65_535 ? Uint32Array : Uint16Array;
+  const indexCount = Math.max(0, points.length - 1) * radialSegments * 6 + (capEnds ? radialSegments * 6 : 0);
+  const IndexArray = vertexCount > 65_535 ? Uint32Array : Uint16Array;
   const indices = new IndexArray(indexCount);
   let indexOffset = 0;
   for (let row = 0; row < points.length - 1; row += 1) {
@@ -116,20 +123,43 @@ function tubeData(
       const c = (row + 1) * radialSegments + column;
       const d = (row + 1) * radialSegments + next;
       indices[indexOffset++] = a;
-      indices[indexOffset++] = c;
-      indices[indexOffset++] = b;
       indices[indexOffset++] = b;
       indices[indexOffset++] = c;
+      indices[indexOffset++] = b;
       indices[indexOffset++] = d;
+      indices[indexOffset++] = c;
     }
   }
 
-  return { positions, normals, indices };
+  if (capEnds) {
+    for (let end = 0; end < 2; end += 1) {
+      const pointIndex = end === 0 ? 0 : points.length - 1;
+      const center = points.length * radialSegments + end * (radialSegments + 1);
+      const point = points[pointIndex];
+      const normal = tangents[pointIndex].clone().multiplyScalar(end === 0 ? -1 : 1);
+      positions.set([point.x, point.y, point.z], center * 3);
+      normals.set(normal.toArray(), center * 3);
+      colors.set([1.6, 1.38, 1.12], center * 3);
+      for (let radial = 0; radial < radialSegments; radial += 1) {
+        const vertex = center + 1 + radial;
+        const source = (pointIndex * radialSegments + radial) * 3;
+        positions.set(positions.subarray(source, source + 3), vertex * 3);
+        normals.set(normal.toArray(), vertex * 3);
+        colors.set([1.25, 1.12, 0.95], vertex * 3);
+        const next = center + 1 + (radial + 1) % radialSegments;
+        indices[indexOffset++] = center;
+        indices[indexOffset++] = end === 0 ? next : vertex;
+        indices[indexOffset++] = end === 0 ? vertex : next;
+      }
+    }
+  }
+
+  return { positions, normals, colors, indices };
 }
 
 function updateAttribute(
   geometry: THREE.BufferGeometry,
-  name: "position" | "normal",
+  name: "position" | "normal" | "color",
   values: Float32Array,
 ) {
   const existing = geometry.getAttribute(name);
@@ -147,6 +177,7 @@ export function updateTubeGeometry(
   baseRadius: number,
   referenceNormal: Vec3,
   radialSegments = DEFAULT_RADIAL_SEGMENTS,
+  capEnds = false,
 ) {
   const safePoints = points.length >= 2 ? points : [points[0], points[0]].filter(Boolean) as Vec3[];
   if (safePoints.length < 2) {
@@ -157,9 +188,10 @@ export function updateTubeGeometry(
     return geometry;
   }
 
-  const data = tubeData(safePoints, baseRadius, referenceNormal, radialSegments);
+  const data = tubeData(safePoints, baseRadius, referenceNormal, radialSegments, capEnds);
   updateAttribute(geometry, "position", data.positions);
   updateAttribute(geometry, "normal", data.normals);
+  updateAttribute(geometry, "color", data.colors);
   const existingIndex = geometry.getIndex();
   if (!existingIndex || existingIndex.array.length !== data.indices.length) {
     geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
@@ -236,6 +268,7 @@ export function splitBranchAtMaterialDistance(branch: Branch, requestedDistance:
 export function disposeObject(root: THREE.Object3D) {
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh) && !(object instanceof THREE.Line)) return;
+    if (object instanceof THREE.InstancedMesh) object.dispose();
     object.geometry.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     materials.forEach((material) => material.dispose());

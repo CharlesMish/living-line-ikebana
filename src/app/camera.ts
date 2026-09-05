@@ -16,7 +16,9 @@ export const cloneCameraPose = (pose: CameraPose): CameraPose => ({
 export function canonicalCameraPose(view: CanonicalView): CameraPose {
   if (view === "above") {
     return {
-      position: { x: 0.02, y: 15.4, z: 0.02 },
+      // Align with the orbit meridian: -Z and projected world-Y then give
+      // the same screen-up. z=.03 also stays above the .002 polar clamp.
+      position: { x: 0, y: 15.4, z: 0.03 },
       target: { x: 0, y: 1.85, z: 0 },
       up: { x: 0, y: 0, z: -1 },
     };

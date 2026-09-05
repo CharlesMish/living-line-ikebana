@@ -1,3 +1,5 @@
+import type { CraftCue } from "./craftCues.ts";
+
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
 export type CanonicalView = "front" | "three-quarter" | "above";
@@ -42,6 +44,7 @@ export interface UIBindings {
   onCommand(listener: UICommandListener): () => void;
   setState(patch: Partial<UIState>): void;
   setStatus(message: string, tone?: StatusTone): void;
+  setCraftCue(cue: CraftCue | null, announce?: boolean): void;
   setExperimentPanelOpen(open: boolean): void;
   setTrayEnabled(enabled: boolean): void;
   setTrayDragging(dragging: boolean, materialId?: string | null): void;
@@ -93,6 +96,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
+  const craftCue = requireElement<HTMLElement>(root, "#craft-cue");
+  const cueTitle = requireElement<HTMLElement>(craftCue, "[data-cue-title]");
+  const cueDetail = requireElement<HTMLElement>(craftCue, "[data-cue-detail]");
+  const bendGuide = requireElement<HTMLElement>(root, "[data-guide-bend]");
   const craftChrome = requireElement<HTMLElement>(root, "#craft-chrome");
   const trayButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-material-id]")];
   if (trayButtons.length === 0) {
@@ -130,6 +137,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
 
   function render(): void {
+    bendGuide.textContent = currentState.bendVariant === "fixed-bead"
+      ? "Drag the pale point into a broad curve. The base ring moves the whole cutting."
+      : "Drag the middle of a selected branch into a broad curve. The base ring moves the whole cutting.";
     root.dataset.posture = currentState.posture;
     root.dataset.tool = currentState.tool;
     root.dataset.view = currentState.view;
@@ -288,6 +298,15 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     setState,
     setStatus(message, tone = "quiet") {
       setState({ status: message, statusTone: tone });
+    },
+    setCraftCue(cue, announce = false) {
+      craftCue.hidden = cue === null;
+      root.dataset.cue = cue?.kind ?? "none";
+      craftCue.setAttribute("aria-live", announce ? "polite" : "off");
+      if (!cue) return;
+      craftCue.dataset.kind = cue.kind;
+      if (cueTitle.textContent !== cue.title) cueTitle.textContent = cue.title;
+      if (cueDetail.textContent !== cue.detail) cueDetail.textContent = cue.detail;
     },
     setExperimentPanelOpen(open) {
       setState({ experimentPanelOpen: open });

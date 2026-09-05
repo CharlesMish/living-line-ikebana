@@ -107,6 +107,29 @@ Base and bend handles may acquire only for the already selected plant. Shape acq
 
 ## 7. Evidence and change gates
 
+### Single-branch presentation experiment
+
+The core graph, generator, fixture, pruning and transaction laws in sections
+1–6 are preserved. New organ surfaces are derived only from stable organ ID and
+graph seed; a surface rebuild cannot reroll them. Visible stems have outward
+faces and end caps without re-tapering stock. Acquisition proxies keep their
+existing envelopes and double-sided material.
+
+Mouse/hover-pen cues are observational: no selection, acquisition, telemetry,
+ordinal change or save. Prune hover calls the same pure preview as acquisition.
+Once acquired, cues follow the frozen target and active plan, never a new hit.
+Color is redundant with action icons, material names and the exact cut preview.
+Escape invokes the existing explicit-cancel path; subsequent pointer release
+cannot commit that cancelled gesture.
+
+The Above canonical position is intentionally adjusted from `(0.02,15.4,0.02)`
+to `(0,15.4,0.03)`, preserving target/up and staying above the polar minimum.
+This aligns its screen-up with orbit and removes the approximately 45-degree
+roll at acquisition. Front/three-quarter poses and orbit limits are unchanged.
+
+Automated geometry/orientation tests do not establish aesthetic quality or
+physical-phone feel; the field checks below remain separate.
+
 Automated verification must cover fixture determinism, serialization, graph validation, stock-length preservation, descendant attachment, prune identity, deterministic arbitration, transaction rollback, insertion ordinal law, persistence, build output, and browser smoke behavior.
 
 Physical-phone evidence is separate. The current field threshold is at least 8 of 10 deliberate first-try acquisitions after two minutes of familiarization, no camera/plant ownership crossover, no cancelled commit, at most one corrective repair among five intended broad bends, and completion of the craft path without spoken developer instruction.

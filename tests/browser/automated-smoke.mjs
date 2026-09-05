@@ -564,6 +564,7 @@ try {
     // finger/click would reach it during a real hold-drag.
     await page.evaluate(() => document.querySelector("#experiment-toggle").click());
     await page.waitForSelector("#experiment-panel:not([hidden])");
+    await page.locator(".study-options > summary").click();
 
     // Begin a hold-drag from the tray (an active, uncommitted insert transaction).
     await page.evaluate(() => {
@@ -830,6 +831,7 @@ try {
       });
       await sharePage.evaluate(() => document.querySelector("#experiment-toggle").click());
       await sharePage.waitForSelector("#experiment-panel:not([hidden])");
+      await sharePage.locator(".study-options > summary").click();
       await sharePage.evaluate(() => document.querySelector("#telemetry-export-trigger").click());
       await sharePage.waitForFunction(
         () => (document.querySelector('[data-testid="status"]')?.textContent ?? "").toLowerCase().includes("cancelled"),

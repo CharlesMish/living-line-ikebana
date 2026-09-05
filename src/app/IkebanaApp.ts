@@ -6,6 +6,7 @@ import {
   fromCanonicalPlantGraph,
   legalBendStation,
   normalize,
+  previewPrune,
   sampleBranch,
   toCanonicalPlantGraph,
   type CanonicalPlantGraph,
@@ -58,6 +59,7 @@ import {
 } from "./metrics.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
+import { cutCue, shapeCue } from "./craftCues.ts";
 import { TelemetryStore, TELEMETRY_INSTRUMENT_VERSION, type PersistedTelemetry } from "./telemetry.ts";
 import { summarizeBendAcquisitions } from "./telemetrySummary.ts";
 import {
@@ -238,6 +240,7 @@ export class IkebanaApp {
   private loadWarning = false;
   private lastSaveSucceeded = true;
   private removeUIListener: (() => void) | null = null;
+  private hovering = false;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -279,6 +282,7 @@ export class IkebanaApp {
     const options = { signal: this.abortController.signal };
     this.removeUIListener = this.ui.onCommand((command, event) => this.handleUICommand(command, event));
     this.canvas.addEventListener("pointerdown", this.onCanvasPointerDown, options);
+    this.canvas.addEventListener("pointerleave", () => { if (!this.gesture) this.clearHover(); }, options);
     this.canvas.addEventListener("wheel", this.onWheel, { ...options, passive: false });
     this.canvas.addEventListener("contextmenu", this.preventDefault, options);
     this.canvas.addEventListener("webglcontextlost", this.onContextLost, options);
@@ -291,6 +295,12 @@ export class IkebanaApp {
     window.addEventListener("pagehide", this.onPageHide, options);
     window.addEventListener("resize", this.onViewportChanged, options);
     window.addEventListener("orientationchange", this.onViewportChanged, options);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && this.gesture) {
+        event.preventDefault();
+        this.interruptActive("explicit-cancel");
+      }
+    }, options);
     window.visualViewport?.addEventListener("resize", this.onVisualViewportChanged, options);
 
     this.ui.setStatus(
@@ -558,7 +568,9 @@ export class IkebanaApp {
     const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(prepared.plantId);
     this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
     this.sound.seat();
-    if (this.lastSaveSucceeded) this.ui.setStatus("Seated.");
+    if (this.lastSaveSucceeded) this.ui.setStatus(this.bendVariant === "bead"
+      ? "Drag a branch to aim. Use the pale point to bend."
+      : "Drag to aim. Bend the middle of a selected branch.");
     this.syncPresentation();
   }
 
@@ -570,6 +582,7 @@ export class IkebanaApp {
       if (this.gesture.kind === "camera") this.addCameraPointer(event);
       return;
     }
+    this.clearHover();
     const debug = this.coordinator.getDebugState();
     if (debug.posture === "step-back") {
       this.beginCamera(event);
@@ -588,24 +601,61 @@ export class IkebanaApp {
       return;
     }
 
-    if (debug.tool === "prune") {
+    const operation = this.operationForCandidate(candidate);
+    if (operation === "cut") {
       this.beginPrune(event, candidate);
       return;
     }
-    if (candidate.kind === "base") {
+    if (operation === "base") {
       this.beginBase(event, candidate);
       return;
     }
-    if (candidate.kind === "bend") {
-      this.beginBend(event, candidate, candidate.materialDistance);
-      return;
-    }
-    if (this.shouldTouchBend(candidate)) {
+    if (operation === "bend") {
       this.beginBend(event, candidate, candidate.materialDistance);
       return;
     }
     this.beginAim(event, candidate);
   };
+
+  private operationForCandidate(candidate: HitCandidate): "aim" | "bend" | "base" | "cut" {
+    if (this.coordinator.getDebugState().tool === "prune") return "cut";
+    if (candidate.kind === "base") return "base";
+    return candidate.kind === "bend" || this.shouldTouchBend(candidate) ? "bend" : "aim";
+  }
+
+  private clearHover() {
+    if (!this.hovering) return;
+    this.hovering = false;
+    this.studio.setCutPreview(null);
+    this.ui.setCraftCue(null);
+  }
+
+  /** Hover is observational: no selection, acquisition, telemetry or save. */
+  private updateHover(event: PointerEvent) {
+    const debug = this.coordinator.getDebugState();
+    if (event.pointerType === "touch" || event.buttons !== 0 || event.target !== this.canvas
+      || debug.posture !== "arrange" || this.ui.state.experimentPanelOpen) {
+      this.clearHover();
+      return;
+    }
+    const candidate = this.studio.collectHitCandidates(event.clientX, event.clientY)[0];
+    const graph = candidate ? this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId) : null;
+    const branch = graph?.branches.get(candidate?.branchId ?? "");
+    if (!candidate || !graph || !branch?.active) {
+      this.clearHover();
+      return;
+    }
+    this.hovering = true;
+    const operation = this.operationForCandidate(candidate);
+    if (operation === "cut") {
+      const plan = previewPrune(graph, branch.id, candidate.materialDistance);
+      this.studio.setCutPreview({ plantId: graph.id, plan });
+      this.ui.setCraftCue(cutCue(graph, plan, false));
+    } else {
+      this.studio.setCutPreview(null);
+      this.ui.setCraftCue(shapeCue(branch, operation));
+    }
+  }
 
   private beginAim(event: PointerEvent, candidate: HitCandidate) {
     const graph = this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId);
@@ -774,7 +824,7 @@ export class IkebanaApp {
 
   private onPointerMove = (event: PointerEvent) => {
     const gesture = this.gesture;
-    if (!gesture) return;
+    if (!gesture) { this.updateHover(event); return; }
     if (gesture.kind === "camera") {
       if (!gesture.pointers.has(event.pointerId)) return;
       event.preventDefault();
@@ -900,7 +950,9 @@ export class IkebanaApp {
         const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(gesture.plantId);
         this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
         this.sound.seat();
-        if (this.lastSaveSucceeded) this.ui.setStatus("Seated.");
+        if (this.lastSaveSucceeded) this.ui.setStatus(this.bendVariant === "bead"
+          ? "Drag a branch to aim. Use the pale point to bend."
+          : "Drag to aim. Bend the middle of a selected branch.");
       } else {
         // An invalid release commits nothing and the coordinator never signals
         // cancellation for it either; that ambiguity would otherwise leave this
@@ -1146,6 +1198,7 @@ export class IkebanaApp {
   }
 
   private interruptActive(reason: CancelReason, announce = true) {
+    this.clearHover();
     const gesture = this.gesture;
     if (gesture) {
       this.gesture = null;
@@ -1260,6 +1313,16 @@ export class IkebanaApp {
         : null,
       showSelection: true,
     });
+
+    const active = presentation.active;
+    if (active?.kind === "prune") {
+      const graph = presentation.document.plants.get(active.plantId);
+      this.ui.setCraftCue(graph ? cutCue(graph, active.plan, true) : null, true);
+    } else if (active && ["aim", "bend", "base"].includes(active.kind) && selectedBranch) {
+      this.ui.setCraftCue(shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true), true);
+    } else {
+      this.ui.setCraftCue(null);
+    }
 
     const camera = presentation.active?.kind === "camera"
       ? presentation.active.camera

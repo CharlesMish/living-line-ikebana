@@ -1,9 +1,19 @@
 export class CraftSound {
   private context: AudioContext | null = null;
+  private unavailable = false;
 
   unlock() {
-    if (!this.context) this.context = new AudioContext();
-    if (this.context.state === "suspended") void this.context.resume();
+    if (this.unavailable) return;
+    try {
+      if (!this.context) this.context = new AudioContext();
+      if (this.context.state === "suspended") {
+        void this.context.resume().catch(() => { this.unavailable = true; });
+      }
+    } catch {
+      // Sound is optional. An unavailable audio device must never block a
+      // pointer acquisition, a committed edit, or its visual feedback.
+      this.unavailable = true;
+    }
   }
 
   seat() {
@@ -18,15 +28,19 @@ export class CraftSound {
 
   private pulse(frequency: number, duration: number, gainValue: number, type: OscillatorType) {
     const context = this.context;
-    if (!context || context.state !== "running") return;
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.type = type;
-    oscillator.frequency.value = frequency;
-    gain.gain.setValueAtTime(gainValue, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
-    oscillator.connect(gain).connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + duration);
+    if (this.unavailable || !context || context.state !== "running") return;
+    try {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(gainValue, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + duration);
+    } catch {
+      this.unavailable = true;
+    }
   }
 }

@@ -4,6 +4,7 @@ import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/a
 import { sampleMaterialFrame } from "../core/frames.ts";
 import type { Vec3 } from "../core/math.ts";
 import type { Branch, CutPlan, Organ, PlantGraph } from "../core/types.ts";
+import { botanicalSeed, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry, createPetalGeometry } from "./botanicalGeometry.ts";
 import {
   disposeObject,
   splitBranchAtMaterialDistance,
@@ -172,7 +173,7 @@ const CANONICAL_CAMERA: Record<CanonicalView, { position: Vec3; target: Vec3; up
     up: { x: 0, y: 1, z: 0 },
   },
   above: {
-    position: { x: 0.02, y: 15.4, z: 0.02 },
+    position: { x: 0, y: 15.4, z: 0.03 },
     target: { x: 0, y: 1.85, z: 0 },
     up: { x: 0, y: 0, z: -1 },
   },
@@ -486,16 +487,24 @@ export class ThreeStudio {
   private buildCutCollar() {
     const collar = new THREE.Mesh(
       new THREE.TorusGeometry(0.16, 0.025, 8, 36),
-      new THREE.MeshBasicMaterial({ color: 0xb84f40, depthTest: false }),
+      new THREE.MeshBasicMaterial({ color: 0xa76a0a, depthTest: false }),
     );
     collar.visible = false;
     collar.renderOrder = 11;
+    // A pale under-ring keeps the cut station legible without hue recognition.
+    const underRing = new THREE.Mesh(
+      new THREE.TorusGeometry(0.16, 0.045, 8, 36),
+      new THREE.MeshBasicMaterial({ color: 0xfff9e9, depthTest: false }),
+    );
+    underRing.renderOrder = 10;
+    collar.add(underRing);
     return collar;
   }
 
   private createBranchVisual(graph: PlantGraph, branch: Branch, pending: boolean): BranchVisual {
     const material = new THREE.MeshStandardMaterial({
       color: branchColor(branch.kind),
+      vertexColors: true,
       roughness: 0.88,
       transparent: pending,
       opacity: pending ? 0.44 : 1,
@@ -533,6 +542,7 @@ export class ThreeStudio {
       new THREE.BufferGeometry(),
       new THREE.MeshStandardMaterial({
         color: branchColor(branch.kind),
+        vertexColors: true,
         roughness: 0.88,
         transparent: true,
         opacity: 0.15,
@@ -547,11 +557,13 @@ export class ThreeStudio {
 
   private createOrganVisual(graph: PlantGraph, organ: Organ, pending: boolean): OrganVisual {
     const group = new THREE.Group();
+    const seed = botanicalSeed(organ.id, graph.seed);
     const bodyMaterials: THREE.MeshStandardMaterial[] = [];
-    const bodyMaterial = (color: number, roughness = 0.76) => {
+    const bodyMaterial = (color: number, roughness = 0.76, vertexColors = false) => {
       const material = new THREE.MeshStandardMaterial({
         color,
         roughness,
+        vertexColors,
         transparent: pending,
         opacity: pending ? 0.44 : 1,
         depthWrite: !pending,
@@ -564,32 +576,42 @@ export class ThreeStudio {
     let hitRadius: number;
     if (organ.kind === "leaf") {
       const leaf = new THREE.Mesh(
-        new THREE.SphereGeometry(0.22, 14, 8),
-        bodyMaterial(0x426d4e, 0.8),
+        createLeafGeometry(seed),
+        bodyMaterial(0x4b7654, 0.72, true),
       );
-      leaf.scale.set(0.72, 1.72, 0.18);
-      leaf.position.y = 0.23;
       leaf.castShadow = !pending;
-      group.add(leaf);
+      const vein = new THREE.Mesh(createLeafVeinGeometry(seed), bodyMaterial(0x819260, 0.8, true));
+      group.add(leaf, vein);
       hitRadius = 0.34;
     } else if (organ.kind === "bloom") {
-      const petalGeometry = new THREE.SphereGeometry(0.25, 14, 8);
-      const petalMaterial = bodyMaterial(0xc76066, 0.7);
+      const petalMaterial = bodyMaterial(0xd7838a, 0.68, true);
       for (let index = 0; index < 7; index += 1) {
         const angle = (index / 7) * Math.PI * 2;
-        const petal = new THREE.Mesh(petalGeometry, petalMaterial);
-        petal.scale.set(1.3, 0.63, 0.2);
-        petal.position.set(Math.cos(angle) * 0.24, Math.sin(angle) * 0.24, 0);
+        const petal = new THREE.Mesh(createPetalGeometry(botanicalSeed(`${organ.id}:petal-${index}`, seed)), petalMaterial);
         petal.rotation.z = angle;
         petal.castShadow = !pending;
         group.add(petal);
       }
+      group.add(new THREE.Mesh(createCalyxGeometry(seed), bodyMaterial(0x57734d, 0.82, true)));
       const center = new THREE.Mesh(
-        new THREE.SphereGeometry(0.115, 12, 8),
-        bodyMaterial(0xd8ad63, 0.72),
+        new THREE.SphereGeometry(0.09, 12, 8),
+        bodyMaterial(0xb68840, 0.78),
       );
+      center.scale.z = 0.52;
       center.position.z = 0.07;
       group.add(center);
+      // One instanced mesh adds a quiet ring of anthers, owned by this bloom.
+      const anthers = new THREE.InstancedMesh(
+        new THREE.SphereGeometry(0.019, 6, 4), bodyMaterial(0xe0bd72, 0.8), 12,
+      );
+      const antherMatrix = new THREE.Matrix4();
+      for (let index = 0; index < 12; index += 1) {
+        const angle = index * Math.PI / 6;
+        antherMatrix.makeTranslation(Math.cos(angle) * 0.105, Math.sin(angle) * 0.105, 0.085);
+        anthers.setMatrixAt(index, antherMatrix);
+      }
+      anthers.instanceMatrix.needsUpdate = true;
+      group.add(anthers);
       hitRadius = 0.46;
     } else {
       const bud = new THREE.Mesh(
@@ -682,6 +704,7 @@ export class ThreeStudio {
             split.proximal,
             branch.radius,
             branch.referenceNormal,
+            10, true,
           );
           if (split.distal.length >= 2) {
             updateTubeGeometry(
@@ -689,6 +712,7 @@ export class ThreeStudio {
               split.distal,
               branch.radius,
               branch.referenceNormal,
+              10, true,
             );
           }
         } else {
@@ -697,6 +721,7 @@ export class ThreeStudio {
             branch.points,
             branch.radius,
             branch.referenceNormal,
+            10, true,
           );
         }
         branchVisual.mainSignature = mainSignature;
@@ -712,7 +737,7 @@ export class ThreeStudio {
         branchVisual.mesh.castShadow = !doomed;
         const selected = this.selection?.plantId === graph.id && this.selection.branchId === branch.id;
         branchVisual.mesh.material.emissive.setHex(selected ? 0x171009 : 0x000000);
-        branchVisual.doomed.visible = isCutBranch;
+        branchVisual.doomed.visible = isCutBranch && plan!.distance < branch.activeLength - EPSILON;
       }
     }
 
@@ -1067,6 +1092,7 @@ export class ThreeStudio {
     if (direction.lengthSq() <= EPSILON) direction.set(0, 0, 1);
     direction.normalize();
     this.cameraTarget.copy(toThree(snapshot.target));
+    this.camera.up.copy(toThree(snapshot.up));
     this.camera.position.copy(this.cameraTarget).addScaledVector(direction, radius);
     this.camera.lookAt(this.cameraTarget);
     this.camera.updateMatrixWorld(true);

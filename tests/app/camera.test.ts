@@ -4,7 +4,7 @@ import test from "node:test";
 import { PerspectiveCamera, Vector3 } from "three";
 
 import { canonicalCameraPose, orbitCameraPose } from "../../src/app/camera.ts";
-import { STUDIO_VERTICAL_FOV } from "../../src/presentation/index.ts";
+import { STUDIO_VERTICAL_FOV, ThreeStudio } from "../../src/presentation/index.ts";
 
 function projectedClientY(point: Vector3, width = 390, height = 844) {
   const pose = canonicalCameraPose("front");
@@ -35,4 +35,57 @@ test("portrait Front keeps both the pin field and stock crown in the craft viewp
   const crownY = projectedClientY(new Vector3(0, 6.53, 0));
   assert.ok(rootY > 520 && rootY < 600, `root projected to ${rootY}`);
   assert.ok(crownY > 105 && crownY < 180, `crown projected to ${crownY}`);
+});
+
+function cameraFor(pose: ReturnType<typeof canonicalCameraPose>) {
+  const camera = new PerspectiveCamera();
+  camera.position.set(pose.position.x, pose.position.y, pose.position.z);
+  camera.up.set(pose.up.x, pose.up.y, pose.up.z);
+  camera.lookAt(pose.target.x, pose.target.y, pose.target.z);
+  return camera;
+}
+
+test("canonical views retain rendered orientation when an orbit is acquired", () => {
+  for (const view of ["front", "three-quarter", "above"] as const) {
+    const pose = canonicalCameraPose(view);
+    const before = cameraFor(pose);
+    const after = cameraFor(orbitCameraPose(pose, 0, 0));
+    assert.ok(before.quaternion.angleTo(after.quaternion) < 1e-6, `${view} rolls`);
+    assert.ok(before.position.distanceTo(after.position) < 1e-8, `${view} moves`);
+  }
+  const above = canonicalCameraPose("above");
+  for (const [dx, dy] of [[0.01, 0], [-0.01, 0], [0, 0.01], [0, -0.01]]) {
+    assert.ok(cameraFor(above).quaternion.angleTo(cameraFor(orbitCameraPose(above, dx, dy)).quaternion) < 1e-4);
+  }
+});
+
+test("renewing small Above orbits stays continuous at polar clamps and azimuth wraps", () => {
+  let pose = canonicalCameraPose("above");
+  for (let step = 0; step < 650; step += 1) {
+    const next = orbitCameraPose(pose, 2, step < 325 ? 2 : -2);
+    assert.ok(cameraFor(pose).quaternion.angleTo(cameraFor(next).quaternion) < 0.02);
+    assert.ok(cameraFor(next).quaternion.angleTo(cameraFor(orbitCameraPose(next, 0, 0)).quaternion) < 1e-6);
+    const offset = new Vector3(next.position.x - next.target.x, next.position.y - next.target.y, next.position.z - next.target.z);
+    assert.ok(offset.length() >= 5.7 - 1e-8 && offset.length() <= 15.5 + 1e-8);
+    const phi = Math.acos(offset.y / offset.length());
+    assert.ok(phi >= 0.002 - 1e-8 && phi <= 1.52 + 1e-8);
+    pose = next;
+  }
+});
+
+test("presentation adapter agrees with the Above pose and does not reintroduce roll", () => {
+  // Exercise the real adapter methods without constructing a GPU renderer.
+  const adapter = Object.assign(Object.create(ThreeStudio.prototype), {
+    camera: new PerspectiveCamera(), cameraTarget: new Vector3(), options: {},
+    updateAffordances() {}, requestRender() {},
+  });
+  adapter.setCanonicalView("above");
+  const before = adapter.camera.quaternion.clone();
+  assert.ok(before.angleTo(cameraFor(canonicalCameraPose("above")).quaternion) < 1e-6);
+  const snapshot = adapter.captureCameraOrbit();
+  adapter.applyInspectOrbit(snapshot, 0, 0);
+  assert.ok(before.angleTo(adapter.camera.quaternion) < 1e-6);
+  adapter.camera.up.set(1, 0, 0);
+  adapter.applyInspectDolly(snapshot, 1);
+  assert.ok(before.angleTo(adapter.camera.quaternion) < 1e-6);
 });

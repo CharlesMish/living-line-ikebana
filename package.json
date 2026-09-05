@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node tools/run-tests.mjs",
     "build": "vite build && node tools/build-standalone.mjs",
-    "verify": "npm run typecheck && npm test && npm run build && node tools/validate-dist.mjs"
+    "verify": "npm run typecheck && npm test && npm run build && node tools/validate-dist.mjs",
+    "cf:dry-run": "wrangler deploy --dry-run --strict"
   },
   "dependencies": {
     "three": "0.181.2"
@@ -20,6 +21,7 @@
     "@types/three": "0.185.4",
     "esbuild": "0.28.2",
     "typescript": "5.9.3",
-    "vite": "7.3.6"
+    "vite": "7.3.6",
+    "wrangler": "^4.128.0"
   }
 }

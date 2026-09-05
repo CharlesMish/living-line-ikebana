@@ -445,6 +445,13 @@ export class IkebanaApp {
         this.ui.setStatus(command.view === "front" ? "Front." : command.view === "above" ? "Above." : "Three-quarter.");
         break;
       }
+      case "set-view-menu": {
+        // A second pointer can open this while the first holds a branch.
+        // Cancel before exposing camera choices; opening never moves the view.
+        this.interruptActive("view-command");
+        this.ui.setState({ viewMenuOpen: command.open, experimentPanelOpen: false });
+        break;
+      }
       case "set-bend-variant": {
         this.interruptActive("experiment-command");
         this.bendVariant = domainVariant(command.bendVariant);
@@ -560,7 +567,7 @@ export class IkebanaApp {
       operation: "insert",
       materialId,
       inputMethod: "keyboard",
-      region: "bottom",
+      region: "top",
     });
     this.lastSaveSucceeded = true;
     const released = this.coordinator.release(owner);
@@ -634,7 +641,7 @@ export class IkebanaApp {
   private updateHover(event: PointerEvent) {
     const debug = this.coordinator.getDebugState();
     if (event.pointerType === "touch" || event.buttons !== 0 || event.target !== this.canvas
-      || debug.posture !== "arrange" || this.ui.state.experimentPanelOpen) {
+      || debug.posture !== "arrange" || this.ui.state.experimentPanelOpen || this.ui.state.viewMenuOpen) {
       this.clearHover();
       return;
     }
@@ -823,8 +830,20 @@ export class IkebanaApp {
   }
 
   private onPointerMove = (event: PointerEvent) => {
+    this.handlePointerMove(event);
+  };
+
+  private handlePointerMove(event: PointerEvent) {
     const gesture = this.gesture;
     if (!gesture) { this.updateHover(event); return; }
+    if (!this.gestureOwnsPointer(event.pointerId)) return;
+    // Capture can be unavailable and a release outside the window can be lost.
+    // Returning mouse hover must roll back the preview, never keep shaping it
+    // or infer a commit. Other pointers cannot cancel the acquired owner.
+    if (event.pointerType === "mouse" && (event.buttons & 1) === 0) {
+      this.interruptActive("pointer-cancel");
+      return;
+    }
     if (gesture.kind === "camera") {
       if (!gesture.pointers.has(event.pointerId)) return;
       event.preventDefault();
@@ -881,7 +900,7 @@ export class IkebanaApp {
       event.clientY,
     );
     if (projected) this.coordinator.updatePrune(event.pointerId, { distance: projected.materialDistance });
-  };
+  }
 
   private updateCamera(gesture: CameraGesture) {
     const points = [...gesture.pointers.values()];
@@ -903,6 +922,10 @@ export class IkebanaApp {
   }
 
   private onPointerUp = (event: PointerEvent) => {
+    this.handlePointerUp(event);
+  };
+
+  private handlePointerUp(event: PointerEvent) {
     const gesture = this.gesture;
     if (!gesture) return;
     if (gesture.kind === "camera") {
@@ -972,7 +995,7 @@ export class IkebanaApp {
       if (this.lastSaveSucceeded) this.ui.setStatus("Set.");
     }
     this.syncPresentation();
-  };
+  }
 
   private onPointerCancel = (event: PointerEvent) => {
     if (!this.gestureOwnsPointer(event.pointerId)) return;
@@ -1333,7 +1356,7 @@ export class IkebanaApp {
     this.root.dataset.transaction = debug.active?.kind ?? "none";
     this.root.dataset.posture = debug.posture;
     this.root.dataset.tool = debug.tool;
-    this.root.dataset.view = this.cameraIsFree ? "orbit" : debug.view;
+    if (this.ui.state.view !== view) this.ui.setState({ view });
     const dragging = debug.active?.kind === "insert";
     const activeMaterialId = this.gesture?.kind === "insert" ? this.gesture.materialId : null;
     if (

@@ -9,7 +9,8 @@ export type StatusTone = "quiet" | "warning";
 export interface UIState {
   posture: Posture;
   tool: CraftTool;
-  view: CanonicalView;
+  view: CanonicalView | "orbit";
+  viewMenuOpen: boolean;
   bendVariant: BendVariant;
   experimentPanelOpen: boolean;
   trayEnabled: boolean;
@@ -23,6 +24,7 @@ export type UICommand =
   | { kind: "set-posture"; posture: Posture }
   | { kind: "set-tool"; tool: CraftTool }
   | { kind: "set-view"; view: CanonicalView }
+  | { kind: "set-view-menu"; open: boolean }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
   | { kind: "set-experiment-panel"; open: boolean }
   | {
@@ -63,6 +65,7 @@ const DEFAULT_STATE: UIState = {
   posture: "arrange",
   tool: "shape",
   view: "front",
+  viewMenuOpen: false,
   bendVariant: "fixed-bead",
   experimentPanelOpen: false,
   trayEnabled: true,
@@ -101,6 +104,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const cueDetail = requireElement<HTMLElement>(craftCue, "[data-cue-detail]");
   const bendGuide = requireElement<HTMLElement>(root, "[data-guide-bend]");
   const craftChrome = requireElement<HTMLElement>(root, "#craft-chrome");
+  const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
+  const viewToggle = requireElement<HTMLButtonElement>(root, "#view-toggle");
+  const viewOptions = requireElement<HTMLElement>(root, "#view-options");
   const trayButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-material-id]")];
   if (trayButtons.length === 0) {
     throw new Error("UI shell is missing required element: [data-material-id]");
@@ -124,6 +130,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const listenerOptions = { signal: controller.signal };
 
   function emit(command: UICommand, sourceEvent: Event): void {
+    if (command.kind !== "set-view-menu" && currentState.viewMenuOpen) {
+      setState({ viewMenuOpen: false });
+      if (command.kind === "set-view") viewToggle.focus({ preventScroll: true });
+    }
     for (const listener of listeners) {
       listener(command, sourceEvent);
     }
@@ -137,6 +147,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
 
   function render(): void {
+    viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
+    viewOptions.hidden = !currentState.viewMenuOpen;
     bendGuide.textContent = currentState.bendVariant === "fixed-bead"
       ? "Drag the pale point into a broad curve. The base ring moves the whole cutting."
       : "Drag the middle of a selected branch into a broad curve. The base ring moves the whole cutting.";
@@ -206,6 +218,29 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     kind: "set-bend-variant",
     bendVariant: button.dataset.bendVariant as BendVariant,
   }));
+
+  viewToggle.addEventListener("click", (event) => {
+    emit({ kind: "set-view-menu", open: !currentState.viewMenuOpen }, event);
+  }, listenerOptions);
+
+  // Dismissal never consumes a scene press or turns it into a UI command.
+  root.ownerDocument.addEventListener("pointerdown", (event) => {
+    if (currentState.viewMenuOpen && !event.composedPath().includes(viewMenu)) {
+      setState({ viewMenuOpen: false });
+    }
+  }, { ...listenerOptions, capture: true });
+
+  viewMenu.addEventListener("focusout", (event) => {
+    if (!viewMenu.contains(event.relatedTarget as Node | null)) setState({ viewMenuOpen: false });
+  }, listenerOptions);
+
+  root.ownerDocument.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && currentState.viewMenuOpen) {
+      event.preventDefault();
+      setState({ viewMenuOpen: false });
+      viewToggle.focus({ preventScroll: true });
+    }
+  }, listenerOptions);
 
   experimentToggle.addEventListener(
     "click",

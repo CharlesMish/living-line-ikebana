@@ -107,6 +107,23 @@ Base and bend handles may acquire only for the already selected plant. Shape acq
 
 ## 7. Evidence and change gates
 
+### Top-controls layout
+
+Posture, tools, the material tray and help share the top rail. Its background
+and spacing own pointer hits, so a press between controls cannot acquire
+material behind the rail. Scene acquisition still requires a canvas press;
+moving from a normal control into the scene does not acquire or retarget.
+
+Front, three-quarter and Above are available in a downward-opening View
+disclosure. Opening it cancels any acquired gesture before showing choices,
+without changing the camera. Choosing a view retains cancel-then-command;
+selection, Escape, outside press and focus leaving the disclosure close it.
+
+An owned mouse move without the primary button held rolls back through the
+pointer-cancel path. A missed release cannot continue shaping on later hover
+or synthesize a commit. Other pointers cannot cancel the acquired owner.
+No botanical solver, fixture, camera pose or persistence schema is revised.
+
 ### Single-branch presentation experiment
 
 The core graph, generator, fixture, pruning and transaction laws in sections

@@ -49,10 +49,11 @@ The generated outputs are `dist/index.html` plus assets and `dist/ikebana-web-al
 
 ## Gesture grammar
 
-- Drag the flowering cutting from the tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
+- Drag the flowering cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
 - In **Arrange · Shape**, drag a branch to aim its continuation, use the temporary base ring to move insertion, and use the current bend interaction to shape a broad curve.
 - In **Arrange · Prune**, touch and slide along a branch, inspect the exact distal material that will leave, and release to cut.
-- In **Step Back**, plant edits are locked. Drag to orbit, pinch to zoom, or use Front, 3/4, and Above.
+- In **Step Back**, plant edits are locked. Drag to orbit or pinch to zoom. The **View** button opens Front, ¾ and Above downward and closes after a selection.
+- Controls share the top rail, including the cutting tray; its gaps cannot pass presses through to a branch. Opening View during a grab cancels the preview before showing choices.
 - Any interruption, lost pointer, view/tool/posture change, or hidden tab cancels the live plant edit. Only an ordinary release commits.
 
 ## Bend experiment

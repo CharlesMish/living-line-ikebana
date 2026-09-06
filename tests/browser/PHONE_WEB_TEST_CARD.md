@@ -36,6 +36,17 @@ Inspect the built page once before physical play. All items are required.
 - The fixed application shell cannot scroll; `html`, `body`, and the application root fill the dynamic viewport and hide overflow.
 - The shell suppresses in-app rubber-band chaining with `overscroll-behavior: none` where WebKit supports it.
 - Safe-area insets do not put tray or state-changing chrome under the home indicator or notch.
+- All action controls and the compact material tray sit in the top rail; no
+  button is between the bottom edge and the vessel. At large text sizes,
+  controls wrap without overlapping labels or leaving the viewport.
+- Press in the top rail's padding or a gap, then drag into the plant: no
+  acquisition. The rail must own its background, not pass through to material.
+- Open View: Front, ¾ and Above expand downward over the scene without moving
+  the scene. Choose one: the choices close. Escape, outside press and tabbing
+  out also close them; selecting or escaping returns focus to View.
+- Drag the top tray down toward the pins in all three views. Above the Front
+  camera's ground-plane horizon, no placement ghost is expected; moving toward
+  the pins reveals it. An invalid release must still return it to the tray.
 - A drag or pinch that begins on the scene never scrolls the document, selects text, or zooms the page.
 - The app listens for `pointercancel`, premature `lostpointercapture`, `visibilitychange`, `pagehide`, relevant viewport/orientation resize, and WebGL context loss.
 
@@ -118,6 +129,8 @@ Cover at least one Shape transaction and one Prune transaction across the matrix
 | `visualViewport.resize` | Move Safari chrome while previewing | Cancel first, then reproject |
 | Orientation change | Rotate during preview | Cancel first; no stale edit plane |
 | Canonical view command | Second finger taps Front/Above/3/4 | Cancel, then change view |
+| Open View disclosure | Second finger opens View during a branch grab | Cancel before opening; camera unchanged; later owner release does nothing |
+| Missed mouse release | Lose release outside window, return with primary button up | Roll back on next owned move; no commit/save, even after a later release |
 | Tool command | Second finger changes Shape/Prune | Cancel, then change tool |
 | Posture command | Second finger changes Arrange/Step Back | Cancel, then change posture |
 | Second scene pointer | Add a second finger to the canvas during an edit | Ignore it; do not pinch, orbit, or retarget |
@@ -318,6 +331,7 @@ Production UI stays quiet. Stable hooks are attributes, not visible QA chrome.
 | Tray material | `[data-testid="material-flowering-branch"]` |
 | Posture commands | `[data-testid="posture-arrange"]`, `[data-testid="posture-step-back"]` |
 | Tool commands | `[data-testid="tool-shape"]`, `[data-testid="tool-prune"]` |
+| View disclosure | `[data-testid="view-toggle"]` (open before choosing a view) |
 | Canonical views | `[data-testid="view-front"]`, `[data-testid="view-three-quarter"]`, `[data-testid="view-above"]` |
 | Experiment variant | root `data-bend-variant="fixed|touch"`; an internal/test selector is optional |
 | Status region | `[data-testid="status"]` with an appropriate live-region role |

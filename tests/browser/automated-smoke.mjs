@@ -120,6 +120,7 @@ try {
       "posture-step-back",
       "tool-shape",
       "tool-prune",
+      "view-toggle",
       "view-front",
       "view-three-quarter",
       "view-above",
@@ -500,7 +501,9 @@ try {
     assert.ok(missCount >= 1, "expected the empty-space tap to record a miss");
 
     // A canonical view change is the boundary under test.
-    await page.evaluate(() => document.querySelector('[data-testid="view-above"]').click());
+    await page.locator('[data-testid="view-toggle"]').click();
+    await page.locator('[data-testid="view-above"]').click();
+    assert.equal(await page.locator('[data-testid="view-toggle"]').getAttribute("aria-expanded"), "false");
 
     // A committed hit (keyboard insert) after the boundary must start its
     // own attempt at zero misses, not inherit the miss from before the view change.
@@ -520,7 +523,8 @@ try {
       "a canonical view change must reset in-progress attempt state, same as posture/tool/variant",
     );
 
-    await page.evaluate(() => document.querySelector('[data-testid="view-front"]').click());
+    await page.locator('[data-testid="view-toggle"]').click();
+    await page.locator('[data-testid="view-front"]').click();
   });
 
   await test("telemetry survives an ordinary reload with neither flag", async () => {

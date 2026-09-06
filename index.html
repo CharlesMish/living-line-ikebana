@@ -19,30 +19,85 @@
     <main id="app" class="app-shell" data-testid="app-root" data-ready="false" data-transaction="none" data-posture="arrange" data-tool="shape" data-view="front">
       <div id="studio" class="studio" aria-label="Ikebana arrangement space"></div>
 
-      <header class="top-chrome" aria-label="View controls">
+      <header class="top-chrome" aria-label="Studio controls">
         <div class="top-row">
           <div class="wordmark" aria-label="Living Line">
             <span class="wordmark-mark" aria-hidden="true"></span>
             <span>Living Line</span>
           </div>
 
-          <button
-            id="experiment-toggle"
-            class="icon-button quiet-button"
-            type="button"
-            aria-label="How to shape and cut"
-            aria-controls="experiment-panel"
-            aria-expanded="false"
-          >
-            <span aria-hidden="true">i</span>
-          </button>
+          <div class="posture-control segmented" aria-label="Interaction posture">
+            <button type="button" data-testid="posture-arrange" data-posture="arrange" aria-pressed="true">Arrange</button>
+            <button type="button" data-testid="posture-step-back" data-posture="step-back" aria-pressed="false">Step Back</button>
+          </div>
+
+          <div class="top-actions">
+            <div class="view-menu">
+              <button id="view-toggle" class="view-toggle" type="button" data-testid="view-toggle" aria-expanded="false" aria-controls="view-options">
+                <span>View</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+              </button>
+              <nav id="view-options" class="segmented view-switcher" aria-label="Intended viewing direction" hidden>
+                <button type="button" data-testid="view-front" data-view="front" aria-pressed="true">Front</button>
+                <button type="button" data-testid="view-three-quarter" data-view="three-quarter" aria-pressed="false" aria-label="Three-quarter view">¾</button>
+                <button type="button" data-testid="view-above" data-view="above" aria-pressed="false">Above</button>
+              </nav>
+            </div>
+            <button
+              id="experiment-toggle"
+              class="icon-button quiet-button"
+              type="button"
+              aria-label="How to shape and cut"
+              aria-controls="experiment-panel"
+              aria-expanded="false"
+            >
+              <span aria-hidden="true">i</span>
+            </button>
+          </div>
         </div>
 
-        <nav class="segmented view-switcher" aria-label="Intended viewing direction">
-          <button type="button" data-testid="view-front" data-view="front" aria-pressed="true">Front</button>
-          <button type="button" data-testid="view-three-quarter" data-view="three-quarter" aria-pressed="false" aria-label="Three-quarter view">3/4</button>
-          <button type="button" data-testid="view-above" data-view="above" aria-pressed="false">Above</button>
-        </nav>
+        <div id="craft-chrome" class="craft-chrome">
+          <div class="tool-control segmented" aria-label="Craft tool">
+            <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
+            <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
+          </div>
+
+          <div class="material-tray" aria-label="Living materials">
+            <button
+              id="flowering-cutting"
+              class="material-card"
+              type="button"
+              data-testid="material-flowering-branch"
+              data-material-id="flowering-branch"
+              aria-label="Drag flowering branch to the kenzan"
+            >
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M18 58 C78 60 117 42 167 31 C207 22 245 14 283 9" />
+                <path class="cutting-twig" d="M114 43 C111 27 104 17 94 9" />
+                <path class="cutting-twig" d="M173 30 C183 18 194 12 207 8" />
+                <path class="cutting-twig" d="M217 20 C225 30 236 36 249 38" />
+                <ellipse class="cutting-leaf" cx="91" cy="12" rx="12" ry="5" transform="rotate(35 91 12)" />
+                <ellipse class="cutting-leaf" cx="117" cy="35" rx="14" ry="5" transform="rotate(-31 117 35)" />
+                <ellipse class="cutting-leaf" cx="202" cy="10" rx="13" ry="5" transform="rotate(-22 202 10)" />
+                <ellipse class="cutting-leaf" cx="245" cy="36" rx="14" ry="5" transform="rotate(21 245 36)" />
+                <g class="cutting-bloom" transform="translate(282 9)">
+                  <circle cx="-5" cy="0" r="5" />
+                  <circle cx="0" cy="-5" r="5" />
+                  <circle cx="5" cy="0" r="5" />
+                  <circle cx="0" cy="5" r="5" />
+                  <circle class="cutting-bloom-center" cx="0" cy="0" r="3" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Flowering branch</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+            </button>
+          </div>
+        </div>
       </header>
 
       <section
@@ -60,11 +115,11 @@
           <button id="experiment-close" class="icon-button" type="button" aria-label="Close shaping study">×</button>
         </div>
         <ol class="craft-guide">
-          <li><strong>Place.</strong> Drag a cutting onto the pins.</li>
+          <li><strong>Place.</strong> Drag a cutting down from the top tray onto the pins.</li>
           <li><strong>Aim.</strong> Drag a branch to turn its continuation.</li>
           <li><strong>Bend.</strong> <span data-guide-bend>Drag the pale point into a broad curve. The base ring moves the whole cutting.</span></li>
           <li><strong>Prune.</strong> Slide along a stem. The faded part will leave when you release. Press Escape, or switch tools, to cancel.</li>
-          <li><strong>Step Back.</strong> Orbit and zoom to see the space you have made.</li>
+          <li><strong>Step Back.</strong> Orbit and zoom to see the space you have made. Open View for Front, ¾ or Above.</li>
         </ol>
         <p class="panel-note">Changes save on this device when you release. A cut is permanent.</p>
         <details class="study-options">
@@ -122,56 +177,6 @@
         </span>
         <span><strong data-cue-title></strong><span data-cue-detail></span></span>
       </aside>
-
-      <section class="bottom-chrome" aria-label="Craft controls">
-        <div class="posture-control segmented" aria-label="Interaction posture">
-          <button type="button" data-testid="posture-arrange" data-posture="arrange" aria-pressed="true">Arrange</button>
-          <button type="button" data-testid="posture-step-back" data-posture="step-back" aria-pressed="false">Step Back</button>
-        </div>
-
-        <div id="craft-chrome" class="craft-chrome">
-          <div class="tool-control segmented" aria-label="Craft tool">
-            <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
-            <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
-          </div>
-
-          <div class="material-tray" aria-label="Living materials">
-            <button
-              id="flowering-cutting"
-              class="material-card"
-              type="button"
-              data-testid="material-flowering-branch"
-              data-material-id="flowering-branch"
-              aria-label="Drag flowering branch to the kenzan"
-            >
-              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
-                <path class="cutting-stem" d="M18 58 C78 60 117 42 167 31 C207 22 245 14 283 9" />
-                <path class="cutting-twig" d="M114 43 C111 27 104 17 94 9" />
-                <path class="cutting-twig" d="M173 30 C183 18 194 12 207 8" />
-                <path class="cutting-twig" d="M217 20 C225 30 236 36 249 38" />
-                <ellipse class="cutting-leaf" cx="91" cy="12" rx="12" ry="5" transform="rotate(35 91 12)" />
-                <ellipse class="cutting-leaf" cx="117" cy="35" rx="14" ry="5" transform="rotate(-31 117 35)" />
-                <ellipse class="cutting-leaf" cx="202" cy="10" rx="13" ry="5" transform="rotate(-22 202 10)" />
-                <ellipse class="cutting-leaf" cx="245" cy="36" rx="14" ry="5" transform="rotate(21 245 36)" />
-                <g class="cutting-bloom" transform="translate(282 9)">
-                  <circle cx="-5" cy="0" r="5" />
-                  <circle cx="0" cy="-5" r="5" />
-                  <circle cx="5" cy="0" r="5" />
-                  <circle cx="0" cy="5" r="5" />
-                  <circle class="cutting-bloom-center" cx="0" cy="0" r="3" />
-                </g>
-              </svg>
-              <span class="material-copy">
-                <span class="material-name">Flowering branch</span>
-                <span class="material-verb">drag to the pins</span>
-              </span>
-              <span class="material-grip" aria-hidden="true">
-                <i></i><i></i><i></i>
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
     </main>
 
     <noscript>This study needs JavaScript to shape the branch.</noscript>

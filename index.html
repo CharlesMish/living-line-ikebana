@@ -47,7 +47,7 @@
               id="experiment-toggle"
               class="icon-button quiet-button"
               type="button"
-              aria-label="How to shape and cut"
+              aria-label="Working with a cutting"
               aria-controls="experiment-panel"
               aria-expanded="false"
             >
@@ -56,9 +56,9 @@
           </div>
         </div>
 
-        <div id="camera-chrome" class="camera-chrome segmented" aria-label="Camera movement" hidden>
+        <div id="camera-chrome" class="camera-chrome segmented" aria-label="View controls" hidden>
           <button type="button" data-testid="camera-orbit" data-camera-mode="orbit" aria-pressed="true">Orbit</button>
-          <button type="button" data-testid="camera-move" data-camera-mode="move" aria-pressed="false">Move</button>
+          <button type="button" data-testid="camera-move" data-camera-mode="move" aria-pressed="false">Pan</button>
         </div>
 
         <div id="craft-chrome" class="craft-chrome">
@@ -101,6 +101,27 @@
                 <i></i><i></i><i></i>
               </span>
             </button>
+            <button
+              id="leafy-cutting" class="material-card" type="button"
+              data-testid="material-leafy-shoot" data-material-id="leafy-shoot"
+              aria-label="Drag leafy shoot to the kenzan"
+            >
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-twig" d="M18 60 Q150 52 280 14" />
+                <g class="cutting-leaf">
+                  <ellipse cx="86" cy="40" rx="25" ry="8" transform="rotate(40 86 40)" />
+                  <ellipse cx="130" cy="57" rx="24" ry="8" transform="rotate(-20 130 57)" />
+                  <ellipse cx="170" cy="23" rx="24" ry="7" transform="rotate(42 170 23)" />
+                  <ellipse cx="209" cy="36" rx="22" ry="7" transform="rotate(-15 209 36)" />
+                  <ellipse cx="248" cy="12" rx="18" ry="6" transform="rotate(30 248 12)" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Leafy shoot</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </button>
           </div>
         </div>
       </header>
@@ -117,18 +138,25 @@
             <p class="eyebrow">Working with a cutting</p>
             <h1 id="experiment-title">Follow the line.</h1>
           </div>
-          <button id="experiment-close" class="icon-button" type="button" aria-label="Close shaping study">×</button>
+          <button id="experiment-close" class="icon-button" type="button" aria-label="Close guide">×</button>
         </div>
         <ol class="craft-guide">
           <li><strong>Place.</strong> Drag a cutting down from the top tray onto the pins.</li>
           <li><strong>Aim.</strong> Drag a branch to turn its continuation.</li>
-          <li><strong>Bend.</strong> <span data-guide-bend>Drag the pale point into a broad curve. The base ring moves the whole cutting.</span></li>
+          <li><strong>Bend.</strong> <span data-guide-bend>Drag the pale point into a broad curve. The stem keeps its length.</span></li>
+          <li><strong>Slide the base.</strong> Drag the base ring to slide the cutting across the pins.</li>
           <li><strong>Prune.</strong> Slide along a stem. The faded part will leave when you release. Press Escape, or switch tools, to cancel.</li>
-          <li><strong>Step Back.</strong> Choose Orbit to turn around the arrangement, or Move to drag the view up, down or sideways. Pinch or scroll to zoom. Open View for Front, ¾ or Above to recenter.</li>
+          <li><strong>Step Back.</strong> Choose Orbit to turn around the arrangement, or Pan to shift your view up, down or sideways. The bowl and cuttings stay together. Pinch or scroll to zoom. Open View for Front, ¾ or Above to recenter.</li>
         </ol>
         <p class="panel-note">Changes save on this device when you release. A cut is permanent.</p>
-        <details class="study-options">
-        <summary>Bend options &amp; study data</summary>
+        <details class="looking-study" data-testid="looking-study">
+          <summary>Optional study · Line and water</summary>
+          <p class="looking-prompt">Reveal one strong leaning line. Leave a shape of water visible.</p>
+          <p class="panel-note">Use either cutting, and as many copies as you like. Look from Front and Above. You choose when it feels finished.</p>
+          <p class="panel-note">Close this guide to begin. You can return to the prompt here at any time.</p>
+        </details>
+        <details id="study-tools" class="study-options" hidden>
+        <summary>Testing tools</summary>
         <div class="segmented experiment-switcher" aria-label="Bend interaction variant">
           <button type="button" data-bend-variant="fixed-bead" aria-pressed="true">Fixed point</button>
           <button type="button" data-bend-variant="touch-located" aria-pressed="false">Where touched</button>

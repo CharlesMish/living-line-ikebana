@@ -6,7 +6,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 1. Canonical identity and determinism
 
-- The current graph uses `schemaVersion: 1` and `generatorVersion: "one-branch-v1"`.
+- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1` and `leafy-shoot-v1`; material choice never changes the global successful-seat ordinal.
 - Successful seat ordinal `N`, starting at 1, reserves `plant-N` with seed `(7301 + N * 977) >>> 0`. Thus `plant-1` is seed `8278` and `plant-2` is seed `9255`.
 - A cancelled or invalid insertion does not advance `N`.
 - The pending ghost is the complete reserved graph, including branch continuations, petioles, pedicels, leaves, buds, and blooms. A valid release commits that graph at the exact valid previewed translation. It does not regenerate it.
@@ -56,7 +56,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - The solver reconstructs from unchanged rest lengths and remaps active descendants coherently. It does not stretch stock.
 - In the touch variant, material fractions `0.24` through `0.72` inclusive acquire bend; other material hits acquire aim.
 
-### Move base
+### Slide the base
 
 - Base movement keeps the root height and clamps the requested radial position to the usable kenzan radius, currently `1.22` domain units.
 - It translates every active point by one coherent vector and does not mutate inactive history.
@@ -80,7 +80,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - A tool, view, posture, selection, or bend-experiment command cancels first, then applies the command.
 - Persistent chrome remains usable as an interrupt command during a scene grab. A second scene pointer during a plant transaction is ignored.
 - Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing except explain Step Back.
-- Step Back permits constrained orbit, screen-space Move and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.
+- Step Back permits constrained orbit, screen-space Pan and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.
 
 ## 5. Deterministic target arbitration
 
@@ -107,9 +107,9 @@ Base and bend handles may acquire only for the already selected plant. Shape acq
 
 ## 7. Evidence and change gates
 
-### Step Back Move extension
+### Step Back Pan extension
 
-Orbit (the default) and Move share the Step Back camera transaction. Move
+Orbit (the default) and Pan share the Step Back camera transaction. Pan
 translates camera position and target together along camera right/screen-up,
 preserving orientation and camera distance. At target depth the arrangement
 follows pointer displacement in CSS pixels, scaled from the acquired viewport
@@ -119,10 +119,10 @@ The acquired camera mode and viewport height freeze until release/cancel.
 Pinch continues to zoom in either mode; with two fingers down, one-finger pan
 or orbit pauses. Lifting the secondary finger establishes a fresh local drag
 anchor at the current preview without replacing the transaction's original
-rollback snapshot. An Orbit/Move command cancels first, then changes mode.
+rollback snapshot. An Orbit/Pan command cancels first, then changes mode.
 Cancellation restores camera pose and whether a preset was selected.
 
-View presets recenter the camera. The chosen Orbit/Move mode is remembered
+View presets recenter the camera. The chosen Orbit/Pan mode is remembered
 within the session and resets to Orbit on reload or test reset. Neither pan
 nor zoom edits botanical graphs, advances insertion ordinals or writes plant
 autosave. No solver, generator, fixture or persistence schema is changed.
@@ -189,3 +189,21 @@ This section is provisional: it documents diagnostic instrumentation, not a craf
 - **Comparative summaries are bend-scoped only**: they count only resolved bend hits — `operation === "bend"` and `outcome` is `committed` or `cancelled`, never `released`, never `declined`, and never a still-pending/unresolved hit — and explicitly exclude camera and both insertion paths (pointer-drag and keyboard activation) — those remain in the raw per-acquisition records for debugging, but are never treated as a craft-acquisition comparison. This instrumentation does **not** establish which bend variant is faster or easier to use, and must not be described that way anywhere (UI copy, exports, or docs): it has no notion of the tester's intended target, whether a touch matched that intent, or whether the resulting silhouette was correct. First-try acquisition, intended target, correction count, and silhouette completion remain observer-recorded per `tests/browser/PHONE_WEB_TEST_CARD.md` unless a future explicit trial lifecycle records intent directly — that would be a new, separately-tested capability, not an extension of this one.
 - A fresh specimen (`?fresh=1`) never deletes study telemetry — that would silently destroy the comparison data a test block exists to produce. Deleting study telemetry is a separate, explicit, one-shot action (`?clearStudyData=1`): the app clears it once and immediately strips the flag from the current URL (`history.replaceState`) and from every URL-construction helper, so an ordinary reload of that same address, or a later variant switch, never re-clears it. The test bridge's `resetForTest` exposes `clearAutosave` and `clearTelemetry` as independent flags for the same reason.
 - Export ("Export local study data") is a deliberate, user-triggered action, is treated as persistent chrome (it cancels any active transaction first, resolving that acquisition as cancelled, before proceeding), and is never an automatic upload. It tries the Web Share API with a file payload first; a tester dismissing that share sheet is a distinct, honestly-reported cancellation and never silently falls through to a download. Failing or unavailable Share falls back to an anchor/blob download, then to an on-screen read-only manual-copy view. See `README.md` for why. The export payload includes the same `instrumentVersion` persisted with the dataset (bumped when recording/storage semantics change, independent of `storageVersion`) and a precise disclosure: the export contains timestamps and a randomly generated session ID, and does not contain any direct identifier (name, email, account) or the arrangement's actual botanical content.
+
+
+## 9. Normal play and optional looking study
+
+- Player-facing camera language is Orbit / Pan. Plant placement language is
+  Slide the base. The internal camera token `move` and existing automation hook
+  `camera-move` are retained; the naming change does not alter camera/edit laws.
+- Normal help presents the fixed-point bend grammar. `?debug=1` explicitly reveals
+  Testing tools for comparing bend variants and exporting telemetry. Hidden tools
+  are inert and cannot dispatch variant/export commands from their controls. Explicit `?bend=touch`
+  links and the test bridge remain available; help describes the active grammar.
+- The optional Line and water study is a native disclosure in the help panel.
+  Opening/closing it changes no graph, camera, saved data, inventory or ordinal.
+  Opening the containing guide cancels an active gesture through the existing
+  interruption path. Escape closes the guide and returns focus to its opener.
+- The prompt imposes no count, school roles, target angles, completion detector or
+  correctness score. Any number of copies of either existing material is allowed.
+  Finishing is the player's decision. Open play is the default.

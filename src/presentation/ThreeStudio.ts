@@ -1,3 +1,4 @@
+import { getMaterialAppearance } from "./materialAppearance.ts";
 import * as THREE from "three";
 
 import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/arcLength.ts";
@@ -178,13 +179,6 @@ const CANONICAL_CAMERA: Record<CanonicalView, { position: Vec3; target: Vec3; up
     up: { x: 0, y: 0, z: -1 },
   },
 };
-
-function branchColor(kind: Branch["kind"]) {
-  if (kind === "trunk") return 0x4e3529;
-  if (kind === "lateral") return 0x5e3f30;
-  if (kind === "twig") return 0x6d4934;
-  return kind === "pedicel" ? 0x687551 : 0x53704d;
-}
 
 function branchGeometrySignature(branch: Branch) {
   const points = branch.points
@@ -502,10 +496,11 @@ export class ThreeStudio {
   }
 
   private createBranchVisual(graph: PlantGraph, branch: Branch, pending: boolean): BranchVisual {
+    const appearance = getMaterialAppearance(graph.generatorVersion);
     const material = new THREE.MeshStandardMaterial({
-      color: branchColor(branch.kind),
+      color: appearance.branchColors[branch.kind],
       vertexColors: true,
-      roughness: 0.88,
+      roughness: appearance.stemRoughness,
       transparent: pending,
       opacity: pending ? 0.44 : 1,
       depthWrite: !pending,
@@ -541,9 +536,9 @@ export class ThreeStudio {
     const doomed = new THREE.Mesh(
       new THREE.BufferGeometry(),
       new THREE.MeshStandardMaterial({
-        color: branchColor(branch.kind),
+        color: appearance.branchColors[branch.kind],
         vertexColors: true,
-        roughness: 0.88,
+        roughness: appearance.stemRoughness,
         transparent: true,
         opacity: 0.15,
         depthWrite: false,
@@ -556,6 +551,7 @@ export class ThreeStudio {
   }
 
   private createOrganVisual(graph: PlantGraph, organ: Organ, pending: boolean): OrganVisual {
+    const appearance = getMaterialAppearance(graph.generatorVersion);
     const group = new THREE.Group();
     const seed = botanicalSeed(organ.id, graph.seed);
     const bodyMaterials: THREE.MeshStandardMaterial[] = [];
@@ -576,15 +572,15 @@ export class ThreeStudio {
     let hitRadius: number;
     if (organ.kind === "leaf") {
       const leaf = new THREE.Mesh(
-        createLeafGeometry(seed),
-        bodyMaterial(0x4b7654, 0.72, true),
+        createLeafGeometry(seed, appearance.leaf.form),
+        bodyMaterial(appearance.leaf.color, appearance.leaf.roughness, true),
       );
       leaf.castShadow = !pending;
-      const vein = new THREE.Mesh(createLeafVeinGeometry(seed), bodyMaterial(0x819260, 0.8, true));
+      const vein = new THREE.Mesh(createLeafVeinGeometry(seed, appearance.leaf.form), bodyMaterial(appearance.leaf.veinColor, 0.8, true));
       group.add(leaf, vein);
-      hitRadius = 0.34;
+      hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
-      const petalMaterial = bodyMaterial(0xd7838a, 0.68, true);
+      const petalMaterial = bodyMaterial(appearance.bloom.color, appearance.bloom.roughness, true);
       for (let index = 0; index < 7; index += 1) {
         const angle = (index / 7) * Math.PI * 2;
         const petal = new THREE.Mesh(createPetalGeometry(botanicalSeed(`${organ.id}:petal-${index}`, seed)), petalMaterial);
@@ -629,6 +625,7 @@ export class ThreeStudio {
       new THREE.SphereGeometry(hitRadius, 10, 8),
       invisibleHitMaterial(this.options.debugHitTargets, 0xa96ab3),
     );
+    if (organ.kind === "leaf") hit.position.y = appearance.leaf.hitCenterY;
     hit.userData = {
       plantId: graph.id,
       branchId: organ.branchId,

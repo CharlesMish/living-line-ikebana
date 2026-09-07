@@ -87,3 +87,41 @@ test("disposing botanical groups releases instanced flower detail", () => {
   disposeObject(group);
   assert.ok(instanceDisposed && geometryDisposed);
 });
+
+test("both material appearances rebuild consistently and leafy hit proxies cover their blades", async () => {
+  const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
+  const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
+  const stemColors = [];
+  for (const material of ["flowering-branch", "leafy-shoot"]) {
+    const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
+    assert.ok(prepared.ok);
+    const graph = prepared.graph;
+    const root = graph.branches.get(graph.rootBranchId)!;
+    const branch = studio.createBranchVisual(graph, root, false);
+    stemColors.push(branch.mesh.material.color.getHex());
+    assert.equal(branch.doomed.material.color.getHex(), branch.mesh.material.color.getHex());
+    const bent = bendBranch(graph, { branchId: root.id, stationDistance: root.activeLength * 0.54, target: { x: 1, y: 3, z: 0 } });
+    for (const organ of graph.organs.values()) {
+      const original = studio.createOrganVisual(graph, organ, false);
+      const rebuild = studio.createOrganVisual(bent, bent.organs.get(organ.id), true);
+      for (let index = 0; index < original.group.children.length; index += 1) {
+        const a = original.group.children[index] as THREE.Mesh;
+        const b = rebuild.group.children[index] as THREE.Mesh;
+        for (const key of ["position", "normal", "color"]) {
+          assert.deepEqual(a.geometry.getAttribute(key)?.array, b.geometry.getAttribute(key)?.array);
+        }
+      }
+      if (material === "leafy-shoot") {
+        const blade = (original.group.children[0] as THREE.Mesh).geometry.getAttribute("position");
+        const radius = original.hit.geometry.parameters.radius;
+        for (let index = 0; index < blade.count; index += 1) {
+          const point = new THREE.Vector3().fromBufferAttribute(blade, index);
+          assert.ok(point.distanceTo(original.hit.position) <= radius, "blade outside acquisition proxy");
+        }
+      }
+      disposeObject(original.group); disposeObject(rebuild.group);
+    }
+    for (const key of ["mesh", "hit", "selection", "doomed"]) disposeObject(branch[key]);
+  }
+  assert.notEqual(stemColors[0], stemColors[1], "green main stems must not inherit woody trunk appearance");
+});

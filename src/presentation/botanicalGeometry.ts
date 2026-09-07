@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 /**
- * Presentation-only botanical surfaces for the existing one-branch-v1 organs.
+ * Presentation-only botanical surfaces for versioned material organs.
  *
  * Integration:
  * - Call once when creating an organ, with botanicalSeed(organ.id, graph.seed).
@@ -103,7 +103,9 @@ function bladeSurface(
   return geometry;
 }
 
-function leafSample(seed: number, t: number, across: number): SurfaceSample {
+export type LeafForm = "elliptic" | "lanceolate";
+
+function leafSample(seed: number, t: number, across: number, form: LeafForm): SurfaceSample {
   const envelope = Math.sin(Math.PI * t);
   const lean = (variation(seed, 0) - 0.5) * 0.027;
   const uneven = (variation(seed, 1) - 0.5) * 0.13;
@@ -121,23 +123,25 @@ function leafSample(seed: number, t: number, across: number): SurfaceSample {
   const edge = Math.pow(Math.abs(across), 3);
   const value = 0.82 + ridge * 0.15 - edge * 0.06 + t * 0.055;
   return {
-    position: [x, y, z],
+    position: form === "lanceolate"
+      ? [x * 0.94 * (1.12 - 0.28 * t), (y + 0.115) * 1.38, z * 1.35 - 0.035 * t * t]
+      : [x, y, z],
     color: [value * 0.95, Math.min(1, value * 1.035), value * 0.90],
   };
 }
 
 /** 119 vertices, 208 triangles. Local Y follows the leaf's long axis. */
-export function createLeafGeometry(seed = 0): THREE.BufferGeometry {
-  return bladeSurface("living-line/creased-leaf", (t, u) => leafSample(seed, t, u));
+export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic"): THREE.BufferGeometry {
+  return bladeSurface("living-line/creased-leaf", (t, u) => leafSample(seed, t, u, form));
 }
 
 /**
  * Raised midrib as one tiny tapered ribbon; opt in when close-up reading needs
  * it. At its widest it is 0.0056 units, so it remains a vein rather than a stripe.
  */
-export function createLeafVeinGeometry(seed = 0): THREE.BufferGeometry {
+export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic"): THREE.BufferGeometry {
   return bladeSurface("living-line/leaf-midrib", (t, across) => {
-    const sample = leafSample(seed, 0.025 + t * 0.94, 0);
+    const sample = leafSample(seed, 0.025 + t * 0.94, 0, form);
     const width = 0.0028 * Math.sin(Math.PI * t) * (1 - t * 0.55);
     return {
       position: [sample.position[0] + across * width, sample.position[1], sample.position[2] + 0.0016],

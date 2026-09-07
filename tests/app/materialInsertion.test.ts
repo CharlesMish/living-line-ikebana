@@ -9,8 +9,9 @@ import {
 } from "../../src/app/materialInsertion.ts";
 import { createDomainAdapters } from "../../src/app/domainAdapters.ts";
 import {
-  clonePlantGraph,
+  clonePlantGraph, toCanonicalPlantGraph, validatePlantGraph,
 } from "../../src/core/index.ts";
+import { IkebanaApp } from "../../src/app/IkebanaApp.ts";
 import { TransactionCoordinator } from "../../src/input/index.ts";
 
 const BASE = { x: 0, y: 0.55, z: 0 };
@@ -128,4 +129,67 @@ test("shared material preparation resolves exact catalog IDs and selection follo
     reason: "unknown-material",
     materialId: "flowering-branch ",
   });
+});
+
+test("mixed materials share successful ordinals and cancelled leafy ghosts never enter saves", () => {
+  const saves = [];
+  const coordinator = new TransactionCoordinator(createDomainAdapters(), {
+    plants: new Map(), camera: canonicalCameraPose("front"),
+    selectedPlantId: null, successfulPlantOrdinal: 0,
+  }, { onAutosave: event => saves.push(event) });
+  const flower = prepareMaterialInsertionForApp("flowering-branch", 0);
+  assert.ok(flower.ok);
+  coordinator.beginInsert("flower", reservationFrom(flower), {}, { base: { ...BASE, x: -0.45 }, valid: true });
+  coordinator.release("flower");
+  const flowerBefore = coordinator.getDocumentSnapshot().plants.get("plant-1");
+  const shoot = prepareMaterialInsertionForApp("leafy-shoot", 1);
+  assert.ok(shoot.ok);
+  assert.equal(shoot.seed, 9255);
+  coordinator.beginInsert("shoot-cancel", reservationFrom(shoot), {}, { base: BASE, valid: true });
+  coordinator.pointerCancel("shoot-cancel");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+  assert.equal(saves.length, 1);
+  coordinator.beginInsert("shoot", reservationFrom(shoot), {}, { base: { ...BASE, x: 0.45 }, valid: true });
+  coordinator.release("shoot");
+  const document = coordinator.getDocumentSnapshot();
+  assert.equal(document.plants.size, 2);
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 2);
+  assert.equal(saves.length, 2);
+  assert.deepEqual(document.plants.get("plant-1"), flowerBefore);
+  assert.equal(document.plants.get("plant-2").generatorVersion, "leafy-shoot-v1");
+  const root = document.plants.get("plant-2").branches.get("plant-2:stem");
+  const bendCandidate = {
+    plantId: "plant-2", branchId: root.id, beadStationDistance: root.activeLength * 0.54,
+    touchMaterialDistance: root.activeLength * 0.54, context: {},
+  };
+  assert.deepEqual(coordinator.beginBend("bend-cancel", bendCandidate, { target: { x: 1.5, y: 3, z: 0.4 } }), { ok: true });
+  coordinator.pointerCancel("bend-cancel");
+  assert.deepEqual(coordinator.getDocumentSnapshot().plants, document.plants);
+  assert.equal(saves.length, 2);
+  coordinator.beginBend("bend", bendCandidate, { target: { x: 1.5, y: 3, z: 0.4 } });
+  coordinator.release("bend");
+  coordinator.commandTool("prune");
+  const cutSpec = { plantId: "plant-2", branchId: root.id, acquiredMaterialDistance: 3, context: {} };
+  coordinator.beginPrune("prune-cancel", cutSpec, { distance: 3 });
+  coordinator.pointerCancel("prune-cancel");
+  assert.equal(saves.length, 3);
+  coordinator.beginPrune("prune", cutSpec, { distance: 3 });
+  coordinator.release("prune");
+  const edited = coordinator.getDocumentSnapshot();
+  assert.deepEqual(edited.plants.get("plant-1"), flowerBefore);
+  assert.equal(saves.length, 4);
+  const payload = JSON.parse(JSON.stringify({
+    storageVersion: 1, nextSuccessfulOrdinal: 3,
+    plants: [...edited.plants.values()].map(toCanonicalPlantGraph),
+  }));
+  const app = Object.assign(Object.create(IkebanaApp.prototype), {
+    config: { fresh: false }, store: { load: () => payload },
+  });
+  const loaded = app.loadInitialDocument();
+  assert.equal(app.restored, true);
+  assert.equal(app.loadWarning, undefined);
+  assert.equal(loaded.successfulPlantOrdinal, 2);
+  for (const graph of loaded.plants.values()) assert.deepEqual(validatePlantGraph(graph), []);
+  assert.deepEqual([...loaded.plants.values()].map(toCanonicalPlantGraph), payload.plants);
+
 });

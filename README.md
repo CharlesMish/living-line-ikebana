@@ -1,14 +1,26 @@
 # Living Line — Three.js web alpha
 
-A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and one persistent flowering cutting. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
+A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and two persistent cutting materials. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
 
-This is deliberately a craft-verb study, not a flower decorator. It has no score, progression, shop, judgement, or content library.
+A quiet botanical arrangement study influenced by shallow-vessel moribana and the
+expressive openness of modern ikebana. These are influences, not a school curriculum.
+The current experience has no score, progression, shop or correctness judgment.
+
+The [looking refinement and phone card](docs/LOOKING_REFINEMENT.md) records what
+changed after the combined review, what remains a hypothesis, and what to observe
+before choosing a third material.
 
 ## Current alpha
 
-The protected baseline contains one deterministic flowering material, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. It is an interaction instrument, not yet the complete game loop.
+The protected baseline contains a deterministic flowering branch and leafy shoot, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. It is an interaction instrument, not yet the complete game loop.
 
 Future flowers, branch structures, and a calm core loop should extend this baseline without replacing its identity, length, pruning, transaction, or camera-ownership laws. Those laws are collected in [`docs/BEHAVIORAL_CONTRACT.md`](docs/BEHAVIORAL_CONTRACT.md); contributors and coding agents should also read [`AGENTS.md`](AGENTS.md).
+
+The first reference pair contrasts a woody flowering branch with a slimmer,
+more yielding green shoot and seven alternating leaves. Both can share the bowl.
+Appearance tuning is an initial pass; numeric checks do not establish phone feel.
+See [material extension notes](docs/MATERIAL_REFERENCES.md) and the
+[short direction brief for external review](docs/DIRECTION_REVIEW.md).
 
 ## Run it
 
@@ -19,10 +31,12 @@ Detail is seeded by persistent organ identity and remains stable through edits.
 Hovering with a mouse shows the action that will acquire. In Prune it previews
 the exact cut and names the affected material; touch receives the same cue once
 acquired. Icons and text accompany color. Escape cancels a live edit. The info
-panel now explains placing, aiming, bending, pruning and inspection, with study
-controls under **Bend options & study data**.
+guide explains placing, aiming, bending, sliding the base, pruning and inspection.
+An optional **Line and water** prompt lives in the guide; open play remains the default.
+Bend comparison and telemetry export controls appear only with `?debug=1`, under
+**Testing tools**. `?test=1` alone does not expose them.
 
-The fixed-point bend default and single material remain in this experiment.
+The fixed-point bend default remains in this experiment. Both materials use the same craft verbs.
 Draft PR #4's broader touch-default/contextual-control proposal is separate.
 The Above camera is aligned with its orbit meridian to avoid acquisition roll.
 Unavailable graphics now has an explanatory startup state, and unavailable
@@ -49,17 +63,18 @@ The generated outputs are `dist/index.html` plus assets and `dist/ikebana-web-al
 
 ## Gesture grammar
 
-- Drag the flowering cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
+- Drag either cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
 - In **Arrange · Shape**, drag a branch to aim its continuation, use the temporary base ring to move insertion, and use the current bend interaction to shape a broad curve.
 - In **Arrange · Prune**, touch and slide along a branch, inspect the exact distal material that will leave, and release to cut.
-- In **Step Back**, choose **Orbit** to rotate or **Move** to drag the view up, down or sideways. Pinch or scroll to zoom in either mode. These controls replace the craft row; moving the view leaves the stems seated where they were. The **View** button opens Front, ¾ and Above; choosing a preset recenters the camera.
-- Camera mode freezes when a drag begins. Switching Orbit/Move during a drag cancels its preview first. After lifting a second pinch finger, the remaining finger resumes its chosen mode without jumping. Cancelled camera movement restores the view from before the gesture; camera-only changes never autosave plant data.
+- In **Step Back**, choose **Orbit** to rotate or **Pan** to drag the view up, down or sideways. Pinch or scroll to zoom in either mode. These controls replace the craft row; moving the view leaves the stems seated where they were. The **View** button opens Front, ¾ and Above; choosing a preset recenters the camera.
+- Camera mode freezes when a drag begins. Switching Orbit/Pan during a drag cancels its preview first. After lifting a second pinch finger, the remaining finger resumes its chosen mode without jumping. Cancelled camera movement restores the view from before the gesture; camera-only changes never autosave plant data.
 - Controls share the top rail, including the cutting tray; its gaps cannot pass presses through to a branch. Opening View during a grab cancels the preview before showing choices.
 - Any interruption, lost pointer, view/tool/posture change, or hidden tab cancels the live plant edit. Only an ordinary release commits.
 
 ## Bend experiment
 
-The info panel switches between two acquisition hypotheses. They share the same material-distance addressing, stiffness cap, broad smootherstep solver, and segment-length constraints.
+The normal interface presents one bend grammar. With `?debug=1`, the guide exposes
+the two acquisition hypotheses under **Testing tools**. They share the same material-distance addressing, stiffness cap, broad smootherstep solver, and segment-length constraints.
 
 - **Fixed point** (default): a subordinate bead appears at 54% of the selected eligible branch’s active rest arc.
 - **Where touched**: touching the eligible middle span freezes that exact material distance for the bend transaction; the bead is absent until acquisition.
@@ -96,7 +111,7 @@ Every hydrated or appended record is reconstructed from an explicit field allowl
 
 Telemetry persists locally (`ikebana-web-alpha:telemetry-v1`), keyed by variant, alongside but separate from the committed-graph autosave, bounded to 256 KiB total (oldest records drop first once appending would exceed that), and tagged with an `instrumentVersion` stored with the dataset itself — a payload from an incompatible instrument version fails closed to empty rather than mixing schemas. Recording an acquisition only touches an in-memory buffer and schedules a deferred flush; it never performs a synchronous whole-history rewrite on the craft-critical commit path. The committed graph always saves first; if a graph save fails (e.g. a shared quota that telemetry has been occupying), telemetry yields storage — it is evicted — and the save is retried once before ever reporting a failure. Telemetry survives an ordinary reload and `?fresh=1`. Deleting it is a separate, explicit, **one-shot** action: add `?clearStudyData=1` once — the app clears it and immediately strips the flag from the URL, so it can never re-clear on a later reload or variant switch.
 
-The info panel's **Export local study data** button gets a session's records off the phone for comparison. It is treated as persistent chrome: tapping it while a plant edit is in progress cancels that edit first (recording it as cancelled), then proceeds. It tries, in order:
+With `?debug=1`, the guide's **Testing tools → Export local study data** button gets a session's records off the phone for comparison. It is treated as persistent chrome: tapping it while a plant edit is in progress cancels that edit first (recording it as cancelled), then proceeds. It tries, in order:
 
 1. The Web Share API with a JSON file payload — iOS Safari's native share sheet (Save to Files, AirDrop, Messages, Mail). This is the only one of the three that reliably moves an actual file off an iPhone without a server. Dismissing the share sheet is reported honestly as a cancelled export and never silently falls through to a download.
 2. An anchor/blob `download` — works in a regular Safari tab when Share is unavailable, saving to Files/Downloads.

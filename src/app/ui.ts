@@ -2,6 +2,7 @@ import type { CraftCue } from "./craftCues.ts";
 
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
+// The retained internal "move" token is labeled Pan in the interface.
 export type CameraMode = "orbit" | "move";
 export type CanonicalView = "front" | "three-quarter" | "above";
 export type BendVariant = "fixed-bead" | "touch-located";
@@ -116,6 +117,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   if (trayButtons.length === 0) {
     throw new Error("UI shell is missing required element: [data-material-id]");
   }
+  const studyTools = requireElement<HTMLElement>(root, "#study-tools");
   const experimentPanel = requireElement<HTMLElement>(root, "#experiment-panel");
   const experimentToggle = requireElement<HTMLButtonElement>(root, "#experiment-toggle");
   const experimentClose = requireElement<HTMLButtonElement>(root, "#experiment-close");
@@ -125,6 +127,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const telemetryExportClose = requireElement<HTMLButtonElement>(root, "#telemetry-export-close");
 
   const search = options.search ?? globalThis.location?.search ?? "";
+  const showTestingTools = new URLSearchParams(search).get("debug") === "1";
+  studyTools.hidden = !showTestingTools;
+  studyTools.inert = !showTestingTools;
   let currentState: UIState = {
     ...DEFAULT_STATE,
     bendVariant: bendVariantFromSearch(search),
@@ -155,8 +160,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
     viewOptions.hidden = !currentState.viewMenuOpen;
     bendGuide.textContent = currentState.bendVariant === "fixed-bead"
-      ? "Drag the pale point into a broad curve. The base ring moves the whole cutting."
-      : "Drag the middle of a selected branch into a broad curve. The base ring moves the whole cutting.";
+      ? "Drag the pale point into a broad curve. The stem keeps its length."
+      : "Drag the middle of a selected branch into a broad curve. The stem keeps its length.";
     root.dataset.posture = currentState.posture;
     root.dataset.tool = currentState.tool;
     root.dataset.cameraMode = currentState.cameraMode;
@@ -228,7 +233,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     cameraMode: button.dataset.cameraMode as CameraMode,
   }));
 
-  commandClick<HTMLButtonElement>("[data-bend-variant]", (button) => ({
+  if (showTestingTools) commandClick<HTMLButtonElement>("[data-bend-variant]", (button) => ({
     kind: "set-bend-variant",
     bendVariant: button.dataset.bendVariant as BendVariant,
   }));
@@ -253,6 +258,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       event.preventDefault();
       setState({ viewMenuOpen: false });
       viewToggle.focus({ preventScroll: true });
+    } else if (event.key === "Escape" && currentState.experimentPanelOpen) {
+      event.preventDefault();
+      emit({ kind: "set-experiment-panel", open: false }, event);
+      experimentToggle.focus({ preventScroll: true });
     }
   }, listenerOptions);
 
@@ -268,6 +277,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       emit({ kind: "set-experiment-panel", open: false }, event);
+      experimentToggle.focus({ preventScroll: true });
     },
     listenerOptions,
   );
@@ -275,7 +285,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   telemetryExportTrigger.addEventListener(
     "click",
     (event) => {
-      emit({ kind: "export-telemetry" }, event);
+      if (showTestingTools) emit({ kind: "export-telemetry" }, event);
     },
     listenerOptions,
   );

@@ -40,7 +40,7 @@ export function cutCue(graph: PlantGraph, plan: CutPlan, acquired: boolean): Cra
 }
 
 export function shapeCue(branch: Branch, kind: "aim" | "bend" | "base", acquired = false): CraftCue {
-  if (kind === "base") return { kind, title: "Move the base", detail: "Slide the ring across the pins." };
+  if (kind === "base") return { kind, title: "Slide the base", detail: "Slide the ring across the pins." };
   if (kind === "bend") return {
     kind, title: `Bend ${materialName(branch).toLowerCase()}`,
     detail: acquired ? "A broad curve · release to keep it." : "Drag here to curve the line.",

@@ -48,8 +48,8 @@ Inspect the built page once before physical play. All items are required.
   camera's ground-plane horizon, no placement ghost is expected; moving toward
   the pins reveals it. An invalid release must still return it to the tray.
 - A drag or pinch that begins on the scene never scrolls the document, selects text, or zooms the page.
-- In Step Back, Orbit/Move replaces Shape/Prune and the tray. In Arrange,
-  Orbit/Move is hidden and cannot receive keyboard focus.
+- In Step Back, Orbit/Pan replaces Shape/Prune and the tray. In Arrange,
+  Orbit/Pan is hidden and cannot receive keyboard focus.
 - In Move, drag up/down/sideways in Front, ¾ and Above, including a short
   landscape window. The arrangement should follow the finger; its seated
   position and shape must remain unchanged. Select a View preset to recenter.
@@ -140,7 +140,7 @@ Cover at least one Shape transaction and one Prune transaction across the matrix
 | Open View disclosure | Second finger opens View during a branch grab | Cancel before opening; camera unchanged; later owner release does nothing |
 | Missed mouse release | Lose release outside window, return with primary button up | Roll back on next owned move; no commit/save, even after a later release |
 | Tool command | Second finger changes Shape/Prune | Cancel, then change tool |
-| Camera mode command | Second finger switches Orbit/Move during camera drag | Cancel camera preview first; later owner release is inert |
+| Camera mode command | Second finger switches Orbit/Pan during camera drag | Cancel camera preview first; later owner release is inert |
 | Posture command | Second finger changes Arrange/Step Back | Cancel, then change posture |
 | Second scene pointer | Add a second finger to the canvas during an edit | Ignore it; do not pinch, orbit, or retarget |
 | WebGL context loss | Harness extension or background/resume | Cancel preview; retain committed graph; rebuild presentation |
@@ -453,3 +453,25 @@ Recommended in-memory metric events, enabled only for QA/debug builds:
 These hooks diagnose the experiment. They must not become visible developer narration or an analytics dependency in the toy.
 
 Acquisition telemetry (bend variant, material id/input method for insertions, attempt miss count, time-to-acquire, and committed/cancelled/declined/released outcome) is durable rather than in-memory-only — see "Acquisition telemetry and export" above — but the same rule applies: it stays a diagnostic layer, never a visible analytics dashboard, and never a gate on any craft operation. Comparative summaries stay bend-scoped and never claim to measure which variant is faster or easier.
+
+
+## Two-material reference pass
+
+Run the mixed-bowl checks in [Material references](../../docs/MATERIAL_REFERENCES.md)
+before commissioning another material. The second tray hook is
+`[data-testid="material-leafy-shoot"]`; both cards must remain independently
+reachable by touch and keyboard. Record short-window toolbar clearance, leaf
+acquisition and whether Step Back Pan reads as reframing the whole scene.
+This pass has automated coverage but no physical-phone sign-off yet.
+
+
+## Looking and normal-play cleanup
+
+Use [the short observational card](../../docs/LOOKING_REFINEMENT.md) before any
+further material work. Start without `debug`, `test` or `bend` URL flags. The guide
+must show Pan / Slide the base language and the optional Line and water disclosure;
+it must not show a bend chooser or telemetry export. Close the guide by its button
+and Escape, then verify a new gesture works. Opening the guide during an edit must
+cancel, never commit. In a separate diagnostic session use `?debug=1` to check the
+retained Testing tools. The automated diagnostic suite explicitly opts into that
+flag, so it is not evidence about the uncluttered normal-play interface.

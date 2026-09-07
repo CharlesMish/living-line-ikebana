@@ -775,7 +775,7 @@ export class IkebanaApp {
     );
     if (!result.ok) return this.abortFailedBegin(gesture);
     this.recordHit(event, "base");
-    this.ui.setStatus("Move the insertion.");
+    this.ui.setStatus("Slide the base across the pins.");
   }
 
   private beginPrune(event: PointerEvent, candidate: HitCandidate) {
@@ -1252,7 +1252,7 @@ export class IkebanaApp {
 
   private cameraModeHint() {
     return this.ui.state.cameraMode === "move"
-      ? "Drag to move the view. Pinch or scroll to zoom."
+      ? "Pan the view. The bowl and cuttings stay together. Pinch or scroll to zoom."
       : "Drag to orbit. Pinch or scroll to zoom.";
   }
 

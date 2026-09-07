@@ -44,6 +44,8 @@ try {
 const rawUrl = process.env.IKEBANA_URL ?? "http://127.0.0.1:4173/";
 const url = new URL(rawUrl);
 url.searchParams.set("test", "1");
+// This diagnostic suite exercises the deliberately opt-in export/variant tools.
+url.searchParams.set("debug", "1");
 if (!url.searchParams.has("bend")) url.searchParams.set("bend", "fixed");
 
 const browserName = process.env.IKEBANA_BROWSER ?? "webkit";

@@ -1,17 +1,7 @@
-import { segmentLengths, sampleBranch } from "./arcLength.ts";
-import { generatorReferenceNormal } from "./frames.ts";
-import {
-  X_AXIS,
-  Y_AXIS,
-  add,
-  addScaled,
-  cloneVec3,
-  cross,
-  normalize,
-  scale,
-  subtract,
-  vec3,
-} from "./math.ts";
+import { sampleBranch } from "./arcLength.ts";
+import { add, normalize, scale, vec3 } from "./math.ts";
+import { addBranch, basisFor, makeChain } from "./generatorSupport.ts";
+import { FLOWERING_RESPONSE } from "./materialResponse.ts";
 import type { Vec3 } from "./math.ts";
 import { Mulberry32 } from "./prng.ts";
 import {
@@ -22,57 +12,6 @@ import {
   type OrganKind,
   type PlantGraph,
 } from "./types.ts";
-
-const makeChain = (
-  base: Vec3,
-  length: number,
-  segments: number,
-  direction: Vec3,
-  curve: Vec3,
-): Vec3[] => {
-  const points = [cloneVec3(base)];
-  const step = length / segments;
-  for (let index = 1; index <= segments; index += 1) {
-    const t = (index - 0.5) / segments;
-    const envelope = Math.sin(Math.PI * t) * 0.66 + t * t * 0.34;
-    const tangent = normalize(addScaled(direction, curve, envelope));
-    points.push(addScaled(points[index - 1], tangent, step));
-  }
-  return points;
-};
-
-interface BranchInput {
-  id: string;
-  label: string;
-  kind: BranchKind;
-  parentId: string | null;
-  parentDistance: number;
-  points: Vec3[];
-  radius: number;
-  stiffness: number;
-}
-
-const addBranch = (plant: PlantGraph, input: BranchInput): Branch => {
-  const restLengths = segmentLengths(input.points);
-  const firstTangent = normalize(subtract(input.points[1], input.points[0]), Y_AXIS);
-  const branch: Branch = {
-    ...input,
-    restLengths,
-    activeLength: restLengths.reduce((sum, value) => sum + value, 0),
-    referenceNormal: generatorReferenceNormal(firstTangent),
-    active: true,
-  };
-  plant.branches.set(branch.id, branch);
-  return branch;
-};
-
-const basisFor = (tangentInput: Vec3, spin: number): Vec3 => {
-  const tangent = normalize(tangentInput);
-  const reference = Math.abs(tangent.y) < 0.9 ? Y_AXIS : X_AXIS;
-  const side = normalize(cross(tangent, reference));
-  const forward = normalize(cross(side, tangent));
-  return normalize(add(scale(side, Math.cos(spin)), scale(forward, Math.sin(spin))));
-};
 
 export const createFloweringBranch = (id: string, seed: number, base: Vec3): PlantGraph => {
   const random = new Mulberry32(seed);
@@ -94,7 +33,7 @@ export const createFloweringBranch = (id: string, seed: number, base: Vec3): Pla
     parentDistance: 0,
     points: makeChain(base, 6.15, 18, vec3(-0.1, 0.994, 0.035), vec3(-0.21, -0.01, 0.12)),
     radius: 0.105,
-    stiffness: 0.72,
+    stiffness: FLOWERING_RESPONSE.trunk,
   });
 
   const addChild = (
@@ -130,19 +69,19 @@ export const createFloweringBranch = (id: string, seed: number, base: Vec3): Pla
 
   const left = addChild(
     "lateral-a", "lower side branch", "lateral", trunk, 2.15, 2.35,
-    vec3(-0.94, 0.48, 0.1), vec3(-0.15, 0.05, 0.12), 0.064, 0.52, 9,
+    vec3(-0.94, 0.48, 0.1), vec3(-0.15, 0.05, 0.12), 0.064, FLOWERING_RESPONSE.lowerLateral, 9,
   );
   const right = addChild(
     "lateral-b", "upper side branch", "lateral", trunk, 3.62, 2.2,
-    vec3(0.92, 0.5, -0.08), vec3(0.12, 0.02, -0.12), 0.06, 0.5, 9,
+    vec3(0.92, 0.5, -0.08), vec3(0.12, 0.02, -0.12), 0.06, FLOWERING_RESPONSE.upperLateral, 9,
   );
   const crown = addChild(
     "lateral-c", "crown twig", "twig", trunk, 4.78, 1.42,
-    vec3(-0.62, 0.76, -0.12), vec3(-0.08, 0.02, 0.08), 0.044, 0.38, 7,
+    vec3(-0.62, 0.76, -0.12), vec3(-0.08, 0.02, 0.08), 0.044, FLOWERING_RESPONSE.crown, 7,
   );
   const leftTwig = addChild(
     "twig-a", "small twig", "twig", left, 1.15, 1.2,
-    vec3(0.48, 0.84, 0.12), vec3(0.08, -0.02, 0.06), 0.038, 0.34, 6,
+    vec3(0.48, 0.84, 0.12), vec3(0.08, -0.02, 0.06), 0.038, FLOWERING_RESPONSE.twig, 6,
   );
 
   const addOrganBranch = (
@@ -165,7 +104,7 @@ export const createFloweringBranch = (id: string, seed: number, base: Vec3): Pla
       vec3(Math.cos(spin) * 0.9, 0.38, Math.sin(spin) * 0.2),
       vec3(0, -0.05, 0),
       kind === "pedicel" ? 0.022 : 0.018,
-      0.18,
+      FLOWERING_RESPONSE.stalk,
       3,
     );
     plant.organs.set(`${id}:organ-${suffix}`, {

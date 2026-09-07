@@ -467,11 +467,16 @@ button:focus-visible {
 .app-shell[data-posture="step-back"][data-camera-mode="move"] .studio { cursor: move; }
 .app-shell[data-posture="step-back"] .status-pill { opacity: 0.6; }
 
-.material-tray { min-width: 0; }
+.material-tray {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
 .material-card {
   position: relative;
   display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.4rem;
   width: 100%;
@@ -498,7 +503,7 @@ button:focus-visible {
 
 .cutting-silhouette {
   display: block;
-  width: 4.5rem;
+  width: 3rem;
   height: 2rem;
   overflow: visible;
   filter: drop-shadow(0 2px 1px rgba(37, 46, 32, 0.08));
@@ -605,7 +610,11 @@ noscript {
 @media (max-width: 28rem) {
   .top-row { flex-wrap: wrap; }
   .top-actions { flex-wrap: wrap; }
-  .craft-chrome { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+  .craft-chrome { grid-template-columns: auto minmax(0, 1fr); }
+  .material-card { grid-template-columns: minmax(0, 1fr); }
+  .material-grip { display: none; }
+  .material-name { font-size: 0.8125rem; }
+  .material-verb { font-size: 0.7rem; letter-spacing: 0; }
   .tool-control button, .posture-control button { white-space: normal; }
 }
 

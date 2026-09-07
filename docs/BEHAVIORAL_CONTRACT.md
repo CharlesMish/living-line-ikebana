@@ -6,7 +6,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 1. Canonical identity and determinism
 
-- The current graph uses `schemaVersion: 1` and `generatorVersion: "one-branch-v1"`.
+- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1` and `leafy-shoot-v1`; material choice never changes the global successful-seat ordinal.
 - Successful seat ordinal `N`, starting at 1, reserves `plant-N` with seed `(7301 + N * 977) >>> 0`. Thus `plant-1` is seed `8278` and `plant-2` is seed `9255`.
 - A cancelled or invalid insertion does not advance `N`.
 - The pending ghost is the complete reserved graph, including branch continuations, petioles, pedicels, leaves, buds, and blooms. A valid release commits that graph at the exact valid previewed translation. It does not regenerate it.

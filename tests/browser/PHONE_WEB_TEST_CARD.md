@@ -453,3 +453,13 @@ Recommended in-memory metric events, enabled only for QA/debug builds:
 These hooks diagnose the experiment. They must not become visible developer narration or an analytics dependency in the toy.
 
 Acquisition telemetry (bend variant, material id/input method for insertions, attempt miss count, time-to-acquire, and committed/cancelled/declined/released outcome) is durable rather than in-memory-only — see "Acquisition telemetry and export" above — but the same rule applies: it stays a diagnostic layer, never a visible analytics dashboard, and never a gate on any craft operation. Comparative summaries stay bend-scoped and never claim to measure which variant is faster or easier.
+
+
+## Two-material reference pass
+
+Run the mixed-bowl checks in [Material references](../../docs/MATERIAL_REFERENCES.md)
+before commissioning another material. The second tray hook is
+`[data-testid="material-leafy-shoot"]`; both cards must remain independently
+reachable by touch and keyboard. Record short-window toolbar clearance, leaf
+acquisition and whether Step Back Move reads as reframing the whole scene.
+This pass has automated coverage but no physical-phone sign-off yet.

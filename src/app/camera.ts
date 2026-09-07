@@ -1,4 +1,4 @@
-import { add, clamp, cloneVec3, length, scale, subtract, type Vec3 } from "../core/index.ts";
+import { add, clamp, cloneVec3, cross, length, normalize, scale, subtract, type Vec3 } from "../core/index.ts";
 import type { CanonicalView } from "../input/index.ts";
 
 export interface CameraPose {
@@ -70,6 +70,36 @@ export function dollyCameraPose(acquired: CameraPose, zoomScale: number): Camera
   return {
     position: add(acquired.target, scale(offset, clamp(radius * zoomScale, 5.7, 15.5) / radius)),
     target: cloneVec3(acquired.target),
+    up: cloneVec3(acquired.up),
+  };
+}
+
+/** Translate the camera and its target together in screen space. Material at
+ * the target depth follows the pointer in CSS pixels, including in Above.
+ * Always evaluate from the acquired pose (or the new anchor after a pinch).
+ */
+export function panCameraPose(
+  acquired: CameraPose,
+  deltaX: number,
+  deltaY: number,
+  viewportHeight: number,
+  verticalFovDegrees: number,
+): CameraPose {
+  if (![deltaX, deltaY, viewportHeight, verticalFovDegrees].every(Number.isFinite)
+    || viewportHeight <= 0 || verticalFovDegrees <= 0 || verticalFovDegrees >= 180) {
+    return cloneCameraPose(acquired);
+  }
+  const forward = subtract(acquired.target, acquired.position);
+  const distance = length(forward);
+  const rightDirection = cross(forward, acquired.up);
+  if (distance <= 1e-8 || length(rightDirection) <= 1e-8) return cloneCameraPose(acquired);
+  const right = normalize(rightDirection);
+  const screenUp = normalize(cross(right, forward));
+  const unitsPerPixel = 2 * distance * Math.tan(verticalFovDegrees * Math.PI / 360) / viewportHeight;
+  const translation = add(scale(right, -deltaX * unitsPerPixel), scale(screenUp, deltaY * unitsPerPixel));
+  return {
+    position: add(acquired.position, translation),
+    target: add(acquired.target, translation),
     up: cloneVec3(acquired.up),
   };
 }

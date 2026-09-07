@@ -2,6 +2,7 @@ import type { CraftCue } from "./craftCues.ts";
 
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
+export type CameraMode = "orbit" | "move";
 export type CanonicalView = "front" | "three-quarter" | "above";
 export type BendVariant = "fixed-bead" | "touch-located";
 export type StatusTone = "quiet" | "warning";
@@ -9,6 +10,7 @@ export type StatusTone = "quiet" | "warning";
 export interface UIState {
   posture: Posture;
   tool: CraftTool;
+  cameraMode: CameraMode;
   view: CanonicalView | "orbit";
   viewMenuOpen: boolean;
   bendVariant: BendVariant;
@@ -23,6 +25,7 @@ export interface UIState {
 export type UICommand =
   | { kind: "set-posture"; posture: Posture }
   | { kind: "set-tool"; tool: CraftTool }
+  | { kind: "set-camera-mode"; cameraMode: CameraMode }
   | { kind: "set-view"; view: CanonicalView }
   | { kind: "set-view-menu"; open: boolean }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
@@ -64,6 +67,7 @@ export interface CreateUIBindingsOptions {
 const DEFAULT_STATE: UIState = {
   posture: "arrange",
   tool: "shape",
+  cameraMode: "orbit",
   view: "front",
   viewMenuOpen: false,
   bendVariant: "fixed-bead",
@@ -104,6 +108,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const cueDetail = requireElement<HTMLElement>(craftCue, "[data-cue-detail]");
   const bendGuide = requireElement<HTMLElement>(root, "[data-guide-bend]");
   const craftChrome = requireElement<HTMLElement>(root, "#craft-chrome");
+  const cameraChrome = requireElement<HTMLElement>(root, "#camera-chrome");
   const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
   const viewToggle = requireElement<HTMLButtonElement>(root, "#view-toggle");
   const viewOptions = requireElement<HTMLElement>(root, "#view-options");
@@ -141,7 +146,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   function setPressed(selector: string, value: string): void {
     for (const button of root.querySelectorAll<HTMLButtonElement>(selector)) {
-      const key = button.dataset.posture ?? button.dataset.tool ?? button.dataset.view ?? button.dataset.bendVariant;
+      const key = button.dataset.posture ?? button.dataset.tool ?? button.dataset.view ?? button.dataset.bendVariant ?? button.dataset.cameraMode;
       button.setAttribute("aria-pressed", String(key === value));
     }
   }
@@ -154,11 +159,13 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       : "Drag the middle of a selected branch into a broad curve. The base ring moves the whole cutting.";
     root.dataset.posture = currentState.posture;
     root.dataset.tool = currentState.tool;
+    root.dataset.cameraMode = currentState.cameraMode;
     root.dataset.view = currentState.view;
     root.dataset.bendVariant = currentState.bendVariant === "fixed-bead" ? "fixed" : "touch";
 
     setPressed("[data-posture]", currentState.posture);
     setPressed("[data-tool]", currentState.tool);
+    setPressed("[data-camera-mode]", currentState.cameraMode);
     setPressed("[data-view]", currentState.view);
     setPressed("[data-bend-variant]", currentState.bendVariant);
 
@@ -166,6 +173,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     experimentToggle.setAttribute("aria-expanded", String(currentState.experimentPanelOpen));
 
     craftChrome.inert = currentState.posture === "step-back";
+    cameraChrome.hidden = currentState.posture !== "step-back";
+    cameraChrome.inert = currentState.posture !== "step-back";
     craftChrome.setAttribute("aria-hidden", String(currentState.posture === "step-back"));
     for (const trayButton of trayButtons) {
       const buttonDragging = currentState.trayDragging
@@ -212,6 +221,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   commandClick<HTMLButtonElement>("[data-view]", (button) => ({
     kind: "set-view",
     view: button.dataset.view as CanonicalView,
+  }));
+
+  commandClick<HTMLButtonElement>("[data-camera-mode]", (button) => ({
+    kind: "set-camera-mode",
+    cameraMode: button.dataset.cameraMode as CameraMode,
   }));
 
   commandClick<HTMLButtonElement>("[data-bend-variant]", (button) => ({

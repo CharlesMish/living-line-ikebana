@@ -21,6 +21,7 @@ import {
 } from "../input/index.ts";
 import {
   ThreeStudio,
+  STUDIO_VERTICAL_FOV,
   compareHitCandidates,
   type HitCandidate,
   type KenzanIntersection,
@@ -32,6 +33,7 @@ import {
   cloneCameraPose,
   dollyCameraPose,
   orbitCameraPose,
+  panCameraPose,
   type CameraPose,
 } from "./camera.ts";
 import {
@@ -65,6 +67,7 @@ import { summarizeBendAcquisitions } from "./telemetrySummary.ts";
 import {
   createUIBindings,
   type BendVariant as UIBendVariant,
+  type CameraMode,
   type UICommand,
   type UIBindings,
 } from "./ui.ts";
@@ -121,6 +124,9 @@ type PruneGesture = PointerBase & {
 
 type CameraGesture = PointerBase & {
   kind: "camera";
+  mode: CameraMode;
+  viewportHeight: number;
+  startedFree: boolean;
   pointers: Map<number, { x: number; y: number }>;
   startClientX: number;
   startClientY: number;
@@ -421,7 +427,7 @@ export class IkebanaApp {
         this.metrics.resetAttempt();
         this.coordinator.commandPosture(command.posture);
         this.ui.setState({ posture: command.posture });
-        this.ui.setStatus(command.posture === "step-back" ? "Drag to look." : "Touch the material.");
+        this.ui.setStatus(command.posture === "step-back" ? this.cameraModeHint() : "Touch the material.");
         break;
       }
       case "set-tool": {
@@ -431,6 +437,14 @@ export class IkebanaApp {
         this.coordinator.commandTool(command.tool);
         this.ui.setState({ tool: command.tool });
         this.ui.setStatus(command.tool === "shape" ? "Shape the line." : "Choose where to cut.");
+        break;
+      }
+      case "set-camera-mode": {
+        if (this.coordinator.getDebugState().posture !== "step-back") return;
+        this.interruptActive("view-command");
+        this.metrics.resetAttempt();
+        this.ui.setState({ cameraMode: command.cameraMode });
+        this.ui.setStatus(this.cameraModeHint());
         break;
       }
       case "set-view": {
@@ -798,6 +812,9 @@ export class IkebanaApp {
     const startPose = this.coordinator.getDocumentSnapshot().camera;
     const gesture: CameraGesture = {
       kind: "camera",
+      mode: this.ui.state.cameraMode,
+      viewportHeight: this.canvas.getBoundingClientRect().height,
+      startedFree: this.cameraIsFree,
       owner: event.pointerId,
       capture: this.canvas,
       acquisitionHash: this.canonicalHash(),
@@ -911,11 +928,11 @@ export class IkebanaApp {
     } else {
       const primary = gesture.pointers.get(gesture.owner);
       if (!primary) return;
-      pose = orbitCameraPose(
-        gesture.startPose,
-        primary.x - gesture.startClientX,
-        primary.y - gesture.startClientY,
-      );
+      const dx = primary.x - gesture.startClientX;
+      const dy = primary.y - gesture.startClientY;
+      pose = gesture.mode === "move"
+        ? panCameraPose(gesture.startPose, dx, dy, gesture.viewportHeight, STUDIO_VERTICAL_FOV)
+        : orbitCameraPose(gesture.startPose, dx, dy);
     }
     this.cameraIsFree = true;
     this.coordinator.updateCamera(gesture.owner, { pose });
@@ -1224,12 +1241,19 @@ export class IkebanaApp {
     this.clearHover();
     const gesture = this.gesture;
     if (gesture) {
+      if (gesture.kind === "camera") this.cameraIsFree = gesture.startedFree;
       this.gesture = null;
       this.releaseGesturePointers(gesture);
     }
     const result = this.coordinator.interrupt(reason);
     if (result.ok && announce) this.ui.setStatus("Kept as it was.");
     this.syncPresentation();
+  }
+
+  private cameraModeHint() {
+    return this.ui.state.cameraMode === "move"
+      ? "Drag to move the view. Pinch or scroll to zoom."
+      : "Drag to orbit. Pinch or scroll to zoom.";
   }
 
   private gestureOwnsPointer(pointerId: number) {
@@ -1410,6 +1434,7 @@ export class IkebanaApp {
           ready: this.root.dataset.ready === "true",
           posture: debug.posture,
           tool: debug.tool,
+          cameraMode: this.ui.state.cameraMode,
           view: this.cameraIsFree ? "orbit" : debug.view,
           bendVariant: debug.bendVariant === "touch" ? "touch" : "fixed",
           transaction: this.testTransaction(debug),
@@ -1460,6 +1485,7 @@ export class IkebanaApp {
         this.ui.setState({
           posture: "arrange",
           tool: "shape",
+          cameraMode: "orbit",
           view: "front",
           bendVariant: uiVariant(this.bendVariant),
           experimentPanelOpen: false,

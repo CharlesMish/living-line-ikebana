@@ -48,6 +48,14 @@ Inspect the built page once before physical play. All items are required.
   camera's ground-plane horizon, no placement ghost is expected; moving toward
   the pins reveals it. An invalid release must still return it to the tray.
 - A drag or pinch that begins on the scene never scrolls the document, selects text, or zooms the page.
+- In Step Back, Orbit/Move replaces Shape/Prune and the tray. In Arrange,
+  Orbit/Move is hidden and cannot receive keyboard focus.
+- In Move, drag up/down/sideways in Front, ¾ and Above, including a short
+  landscape window. The arrangement should follow the finger; its seated
+  position and shape must remain unchanged. Select a View preset to recenter.
+- During Move, add a second finger to zoom, lift that secondary finger, then
+  continue moving with the owner: no jump at either transition. Cancel after
+  this sequence: the entire gesture rolls back to its original camera.
 - The app listens for `pointercancel`, premature `lostpointercapture`, `visibilitychange`, `pagehide`, relevant viewport/orientation resize, and WebGL context loss.
 
 `lostpointercapture` needs one nuance: after an ordinary `pointerup`, commit and finish happen first, so the later implicit capture loss is a no-op. Capture lost while a transaction is still active is cancellation.
@@ -84,7 +92,7 @@ Give the tester at most the labels present in the build. Do not explain hit regi
 6. Move the insertion to a different part of the usable pin field.
 7. Enter Prune, preview a distal cut, slide its station, and release.
 8. Prune through one pedicel so its bloom leaves with the stalk.
-9. Step Back, orbit, pinch, use Above, return to Front, and then return to Arrange.
+9. Step Back, orbit, switch to Move, reframe up/down, pinch, use Above, move again, return to Front, and then return to Arrange.
 10. Revisit an earlier continuation and shape it again.
 11. Add a second plant. Confirm that the first plant remains unchanged, selectable, and editable.
 
@@ -132,6 +140,7 @@ Cover at least one Shape transaction and one Prune transaction across the matrix
 | Open View disclosure | Second finger opens View during a branch grab | Cancel before opening; camera unchanged; later owner release does nothing |
 | Missed mouse release | Lose release outside window, return with primary button up | Roll back on next owned move; no commit/save, even after a later release |
 | Tool command | Second finger changes Shape/Prune | Cancel, then change tool |
+| Camera mode command | Second finger switches Orbit/Move during camera drag | Cancel camera preview first; later owner release is inert |
 | Posture command | Second finger changes Arrange/Step Back | Cancel, then change posture |
 | Second scene pointer | Add a second finger to the canvas during an edit | Ignore it; do not pinch, orbit, or retarget |
 | WebGL context loss | Harness extension or background/resume | Cancel preview; retain committed graph; rebuild presentation |
@@ -332,6 +341,7 @@ Production UI stays quiet. Stable hooks are attributes, not visible QA chrome.
 | Posture commands | `[data-testid="posture-arrange"]`, `[data-testid="posture-step-back"]` |
 | Tool commands | `[data-testid="tool-shape"]`, `[data-testid="tool-prune"]` |
 | View disclosure | `[data-testid="view-toggle"]` (open before choosing a view) |
+| Camera movement | `[data-testid="camera-orbit"]`, `[data-testid="camera-move"]` (Step Back only) |
 | Canonical views | `[data-testid="view-front"]`, `[data-testid="view-three-quarter"]`, `[data-testid="view-above"]` |
 | Experiment variant | root `data-bend-variant="fixed|touch"`; an internal/test selector is optional |
 | Status region | `[data-testid="status"]` with an appropriate live-region role |

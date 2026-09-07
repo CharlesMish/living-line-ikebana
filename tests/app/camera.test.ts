@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { PerspectiveCamera, Vector3 } from "three";
 
-import { canonicalCameraPose, orbitCameraPose } from "../../src/app/camera.ts";
+import { canonicalCameraPose, dollyCameraPose, orbitCameraPose, panCameraPose } from "../../src/app/camera.ts";
 import { STUDIO_VERTICAL_FOV, ThreeStudio } from "../../src/presentation/index.ts";
 
 function projectedClientY(point: Vector3, width = 390, height = 844) {
@@ -88,4 +88,41 @@ test("presentation adapter agrees with the Above pose and does not reintroduce r
   adapter.camera.up.set(1, 0, 0);
   adapter.applyInspectDolly(snapshot, 1);
   assert.ok(before.angleTo(adapter.camera.quaternion) < 1e-6);
+});
+
+test("Move follows CSS pixels in all views, short windows and zoom levels without rotation or scaling", () => {
+  for (const view of ["front", "three-quarter", "above"] as const) {
+    for (const [width, height] of [[390, 844], [844, 390], [320, 480]]) {
+      for (const zoom of [1, 0.5]) {
+        const acquired = dollyCameraPose(canonicalCameraPose(view), zoom);
+        const frozen = JSON.stringify(acquired);
+        const shifted = panCameraPose(acquired, 73, -61, height, STUDIO_VERTICAL_FOV);
+        const before = cameraFor(acquired);
+        const after = cameraFor(shifted);
+        for (const camera of [before, after]) {
+          camera.fov = STUDIO_VERTICAL_FOV;
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          camera.updateMatrixWorld(true);
+        }
+        const target = new Vector3(acquired.target.x, acquired.target.y, acquired.target.z);
+        const a = target.clone().project(before);
+        const b = target.clone().project(after);
+        assert.ok(Math.abs((b.x - a.x) * width / 2 - 73) < 1e-8);
+        assert.ok(Math.abs(-(b.y - a.y) * height / 2 + 61) < 1e-8);
+        assert.ok(before.quaternion.angleTo(after.quaternion) < 1e-6);
+        const offset = (pose: typeof acquired) => new Vector3(pose.position.x - pose.target.x, pose.position.y - pose.target.y, pose.position.z - pose.target.z);
+        assert.ok(offset(acquired).distanceTo(offset(shifted)) < 1e-10);
+        assert.equal(JSON.stringify(acquired), frozen);
+        assert.deepEqual(panCameraPose(acquired, 0, 0, height, STUDIO_VERTICAL_FOV), acquired);
+      }
+    }
+  }
+});
+
+test("Move ignores unavailable viewport dimensions and non-finite pointer deltas", () => {
+  const acquired = canonicalCameraPose("above");
+  for (const [dx, height, fov] of [[100, 0, 44], [NaN, 390, 44], [Infinity, 390, 44], [100, 390, 180]]) {
+    assert.deepEqual(panCameraPose(acquired, dx, 20, height, fov), acquired);
+  }
 });

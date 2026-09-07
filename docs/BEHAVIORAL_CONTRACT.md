@@ -80,7 +80,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - A tool, view, posture, selection, or bend-experiment command cancels first, then applies the command.
 - Persistent chrome remains usable as an interrupt command during a scene grab. A second scene pointer during a plant transaction is ignored.
 - Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing except explain Step Back.
-- Step Back permits constrained orbit and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.
+- Step Back permits constrained orbit, screen-space Move and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.
 
 ## 5. Deterministic target arbitration
 
@@ -106,6 +106,26 @@ Base and bend handles may acquire only for the already selected plant. Shape acq
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
 
 ## 7. Evidence and change gates
+
+### Step Back Move extension
+
+Orbit (the default) and Move share the Step Back camera transaction. Move
+translates camera position and target together along camera right/screen-up,
+preserving orientation and camera distance. At target depth the arrangement
+follows pointer displacement in CSS pixels, scaled from the acquired viewport
+height and vertical field of view. Above uses screen-up, not world vertical.
+
+The acquired camera mode and viewport height freeze until release/cancel.
+Pinch continues to zoom in either mode; with two fingers down, one-finger pan
+or orbit pauses. Lifting the secondary finger establishes a fresh local drag
+anchor at the current preview without replacing the transaction's original
+rollback snapshot. An Orbit/Move command cancels first, then changes mode.
+Cancellation restores camera pose and whether a preset was selected.
+
+View presets recenter the camera. The chosen Orbit/Move mode is remembered
+within the session and resets to Orbit on reload or test reset. Neither pan
+nor zoom edits botanical graphs, advances insertion ordinals or writes plant
+autosave. No solver, generator, fixture or persistence schema is changed.
 
 ### Top-controls layout
 

@@ -457,6 +457,14 @@ button:focus-visible {
 }
 
 .app-shell[data-posture="step-back"] .craft-chrome { display: none; }
+.camera-chrome {
+  grid-template-columns: repeat(2, 1fr);
+  width: min(100%, 15rem);
+  margin: 0.4rem auto 0;
+}
+.camera-chrome[hidden] { display: none; }
+.camera-chrome button { min-height: 2.75rem; }
+.app-shell[data-posture="step-back"][data-camera-mode="move"] .studio { cursor: move; }
 .app-shell[data-posture="step-back"] .status-pill { opacity: 0.6; }
 
 .material-tray { min-width: 0; }

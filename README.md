@@ -52,7 +52,8 @@ The generated outputs are `dist/index.html` plus assets and `dist/ikebana-web-al
 - Drag the flowering cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
 - In **Arrange · Shape**, drag a branch to aim its continuation, use the temporary base ring to move insertion, and use the current bend interaction to shape a broad curve.
 - In **Arrange · Prune**, touch and slide along a branch, inspect the exact distal material that will leave, and release to cut.
-- In **Step Back**, plant edits are locked. Drag to orbit or pinch to zoom. The **View** button opens Front, ¾ and Above downward and closes after a selection.
+- In **Step Back**, choose **Orbit** to rotate or **Move** to drag the view up, down or sideways. Pinch or scroll to zoom in either mode. These controls replace the craft row; moving the view leaves the stems seated where they were. The **View** button opens Front, ¾ and Above; choosing a preset recenters the camera.
+- Camera mode freezes when a drag begins. Switching Orbit/Move during a drag cancels its preview first. After lifting a second pinch finger, the remaining finger resumes its chosen mode without jumping. Cancelled camera movement restores the view from before the gesture; camera-only changes never autosave plant data.
 - Controls share the top rail, including the cutting tray; its gaps cannot pass presses through to a branch. Opening View during a grab cancels the preview before showing choices.
 - Any interruption, lost pointer, view/tool/posture change, or hidden tab cancels the live plant edit. Only an ordinary release commits.
 

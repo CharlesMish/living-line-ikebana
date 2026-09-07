@@ -56,6 +56,11 @@
           </div>
         </div>
 
+        <div id="camera-chrome" class="camera-chrome segmented" aria-label="Camera movement" hidden>
+          <button type="button" data-testid="camera-orbit" data-camera-mode="orbit" aria-pressed="true">Orbit</button>
+          <button type="button" data-testid="camera-move" data-camera-mode="move" aria-pressed="false">Move</button>
+        </div>
+
         <div id="craft-chrome" class="craft-chrome">
           <div class="tool-control segmented" aria-label="Craft tool">
             <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
@@ -119,7 +124,7 @@
           <li><strong>Aim.</strong> Drag a branch to turn its continuation.</li>
           <li><strong>Bend.</strong> <span data-guide-bend>Drag the pale point into a broad curve. The base ring moves the whole cutting.</span></li>
           <li><strong>Prune.</strong> Slide along a stem. The faded part will leave when you release. Press Escape, or switch tools, to cancel.</li>
-          <li><strong>Step Back.</strong> Orbit and zoom to see the space you have made. Open View for Front, ¾ or Above.</li>
+          <li><strong>Step Back.</strong> Choose Orbit to turn around the arrangement, or Move to drag the view up, down or sideways. Pinch or scroll to zoom. Open View for Front, ¾ or Above to recenter.</li>
         </ol>
         <p class="panel-note">Changes save on this device when you release. A cut is permanent.</p>
         <details class="study-options">

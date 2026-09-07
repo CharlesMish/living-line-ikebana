@@ -120,6 +120,8 @@ try {
       "posture-step-back",
       "tool-shape",
       "tool-prune",
+      "camera-orbit",
+      "camera-move",
       "view-toggle",
       "view-front",
       "view-three-quarter",

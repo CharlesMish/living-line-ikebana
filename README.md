@@ -1,14 +1,20 @@
 # Living Line — Three.js web alpha
 
-A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and one persistent flowering cutting. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
+A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and two persistent cutting materials. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
 
 This is deliberately a craft-verb study, not a flower decorator. It has no score, progression, shop, judgement, or content library.
 
 ## Current alpha
 
-The protected baseline contains one deterministic flowering material, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. It is an interaction instrument, not yet the complete game loop.
+The protected baseline contains a deterministic flowering branch and leafy shoot, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. It is an interaction instrument, not yet the complete game loop.
 
 Future flowers, branch structures, and a calm core loop should extend this baseline without replacing its identity, length, pruning, transaction, or camera-ownership laws. Those laws are collected in [`docs/BEHAVIORAL_CONTRACT.md`](docs/BEHAVIORAL_CONTRACT.md); contributors and coding agents should also read [`AGENTS.md`](AGENTS.md).
+
+The first reference pair contrasts a woody flowering branch with a slimmer,
+more yielding green shoot and seven alternating leaves. Both can share the bowl.
+Appearance tuning is an initial pass; numeric checks do not establish phone feel.
+See [material extension notes](docs/MATERIAL_REFERENCES.md) and the
+[short direction brief for external review](docs/DIRECTION_REVIEW.md).
 
 ## Run it
 
@@ -22,7 +28,7 @@ acquired. Icons and text accompany color. Escape cancels a live edit. The info
 panel now explains placing, aiming, bending, pruning and inspection, with study
 controls under **Bend options & study data**.
 
-The fixed-point bend default and single material remain in this experiment.
+The fixed-point bend default remains in this experiment. Both materials use the same craft verbs.
 Draft PR #4's broader touch-default/contextual-control proposal is separate.
 The Above camera is aligned with its orbit meridian to avoid acquisition roll.
 Unavailable graphics now has an explanatory startup state, and unavailable
@@ -49,7 +55,7 @@ The generated outputs are `dist/index.html` plus assets and `dist/ikebana-web-al
 
 ## Gesture grammar
 
-- Drag the flowering cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
+- Drag either cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
 - In **Arrange · Shape**, drag a branch to aim its continuation, use the temporary base ring to move insertion, and use the current bend interaction to shape a broad curve.
 - In **Arrange · Prune**, touch and slide along a branch, inspect the exact distal material that will leave, and release to cut.
 - In **Step Back**, choose **Orbit** to rotate or **Move** to drag the view up, down or sideways. Pinch or scroll to zoom in either mode. These controls replace the craft row; moving the view leaves the stems seated where they were. The **View** button opens Front, ¾ and Above; choosing a preset recenters the camera.

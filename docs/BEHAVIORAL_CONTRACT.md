@@ -207,3 +207,14 @@ This section is provisional: it documents diagnostic instrumentation, not a craf
 - The prompt imposes no count, school roles, target angles, completion detector or
   correctness score. Any number of copies of either existing material is allowed.
   Finishing is the player's decision. Open play is the default.
+
+### Optional studies and stopping
+
+The guide offers Line and water, Two voices, and Before one more cut as freely
+available disclosures. They are original prompts, not a school curriculum.
+Stop and look cancels any acquired transaction, resets acquisition-attempt
+metrics, closes the guide/view menu and enters Step Back. It preserves the last
+released camera pose and chosen Orbit/Pan mode. It does not finish a live edit,
+write a save, advance an ordinal, certify a composition, or archive an arrangement.
+The DOM returns focus to Arrange, which remains immediately available. No tools
+or materials are gated, and no cut, view visit, angle or water threshold is required.

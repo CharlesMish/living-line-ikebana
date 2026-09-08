@@ -24,6 +24,7 @@ export interface UIState {
 }
 
 export type UICommand =
+  | { kind: "stop-and-look" }
   | { kind: "set-posture"; posture: Posture }
   | { kind: "set-tool"; tool: CraftTool }
   | { kind: "set-camera-mode"; cameraMode: CameraMode }
@@ -281,6 +282,12 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     },
     listenerOptions,
   );
+
+  requireElement<HTMLButtonElement>(root, "#stop-and-look").addEventListener("click", (event) => {
+    emit({ kind: "stop-and-look" }, event);
+    // The guide closes: return keyboard focus to a visible way back to making.
+    requireElement<HTMLButtonElement>(root, '[data-posture="arrange"]').focus({ preventScroll: true });
+  }, listenerOptions);
 
   telemetryExportTrigger.addEventListener(
     "click",

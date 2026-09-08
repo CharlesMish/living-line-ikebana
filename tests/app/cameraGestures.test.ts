@@ -105,3 +105,21 @@ test("camera mode commands cancel first, and a canonical view recenters a releas
   assert.equal(app.cameraIsFree, false);
   assert.equal(saves.length, 0);
 });
+
+test("Stop and look retains a released pan and rolls back an unfinished camera drag", () => {
+  const { app, coordinator, saves } = harness();
+  app.beginCamera(pointer(1, 200, 180));
+  app.handlePointerMove(pointer(1, 240, 150));
+  app.handlePointerUp(pointer(1, 240, 150));
+  const keptCamera = coordinator.getDocumentSnapshot().camera;
+  app.handleUICommand({ kind: "stop-and-look" }, {});
+  assert.deepEqual(coordinator.getDocumentSnapshot().camera, keptCamera);
+  assert.equal(app.cameraIsFree, true);
+  app.beginCamera(pointer(2, 200, 180));
+  app.handlePointerMove(pointer(2, 270, 120));
+  app.handleUICommand({ kind: "stop-and-look" }, {});
+  app.handlePointerUp(pointer(2, 270, 120));
+  assert.deepEqual(coordinator.getDocumentSnapshot().camera, keptCamera);
+  assert.equal(app.cameraIsFree, true);
+  assert.equal(saves.length, 0);
+});

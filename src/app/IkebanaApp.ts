@@ -420,6 +420,14 @@ export class IkebanaApp {
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
     switch (command.kind) {
+      case "stop-and-look": {
+        this.interruptActive("posture-command");
+        this.metrics.resetAttempt();
+        this.coordinator.commandPosture("step-back");
+        this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false });
+        this.ui.setStatus("Let it rest. What would another change add? Return to Arrange whenever you wish.");
+        break;
+      }
       case "set-posture": {
         this.interruptActive("posture-command");
         // A miss recorded under the old posture must never attach to a hit

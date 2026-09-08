@@ -92,3 +92,29 @@ test("opening view choices cancels the acquired branch before showing the menu w
   app.handlePointerUp(move(7, 0));
   assert.equal(saves.length, 0);
 });
+
+test("Stop and look cancels plant work, preserves the current view and leaves no completion save", () => {
+  for (const kind of ["aim", "insert"] as const) {
+    const { app, coordinator, saves, cancellations, initial } = harness(kind);
+    const camera = coordinator.getDocumentSnapshot().camera;
+    let reset = 0;
+    const state: Record<string, unknown> = { experimentPanelOpen: true };
+    app.metrics = { resetAttempt() { reset += 1; } };
+    app.ui.setState = (patch: object) => Object.assign(state, patch);
+    app.handlePointerMove(move());
+    app.handleUICommand({ kind: "stop-and-look" }, {});
+    assert.equal(coordinator.getDebugState().active, null);
+    assert.equal(coordinator.getDebugState().posture, "step-back");
+    assert.equal(state.experimentPanelOpen, false);
+    assert.equal(state.viewMenuOpen, false);
+    assert.equal(reset, 1);
+    assert.deepEqual(cancellations, ["posture-command"]);
+    assert.deepEqual(coordinator.getDocumentSnapshot().camera, camera);
+    assert.deepEqual([...coordinator.getDocumentSnapshot().plants.values()].map(toCanonicalPlantGraph), initial);
+    app.handlePointerUp(move(7, 0));
+    assert.equal(saves.length, 0);
+    assert.equal(coordinator.getDebugState().successfulPlantOrdinal, kind === "aim" ? 1 : 0);
+    app.handleUICommand({ kind: "set-posture", posture: "arrange" }, {});
+    assert.equal(coordinator.getDebugState().posture, "arrange");
+  }
+});

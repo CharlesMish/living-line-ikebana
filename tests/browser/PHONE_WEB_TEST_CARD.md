@@ -475,3 +475,14 @@ and Escape, then verify a new gesture works. Opening the guide during an edit mu
 cancel, never commit. In a separate diagnostic session use `?debug=1` to check the
 retained Testing tools. The automated diagnostic suite explicitly opts into that
 flag, so it is not evidence about the uncluttered normal-play interface.
+
+## Optional studies / Stop and look
+
+In normal play, open the guide and expand each study on a short phone viewport;
+all text and Stop and look must be reachable by scrolling the guide. Activate
+Stop and look by touch and keyboard. The guide closes, focus returns to Arrange,
+Step Back has no shaping handles, and the existing framing stays put. Pan/Orbit
+still work. Return to Arrange and continue shaping. Confirm the pause reads as
+permission to leave the composition alone, not a warning or a passed test.
+Opening the guide during a held edit must discard that preview. Stopping must
+not revive it, advance a pending insertion, or imply a separate collection save.

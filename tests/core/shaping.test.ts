@@ -160,3 +160,44 @@ test("separate plant instances never share mutable geometry", () => {
   bendBranch(first, { branchId: branch.id, stationDistance, target: { x: station.position.x + 1, y: station.position.y, z: station.position.z } });
   assertRecordsUnchanged(second, secondBefore, [...second.branches.keys()], [...second.organs.keys()]);
 });
+
+test("both stems gain end-of-drag bend range without increasing small-drag sensitivity", async () => {
+  const { prepareMaterialInsertion, cross, normalize, add, scale, serializePlantGraph } = await import("../../src/core/index.ts");
+  for (const material of ["flowering-branch", "leafy-shoot"]) {
+    const prepared = prepareMaterialInsertion(material, 2, vec3(0, 0.55, 0));
+    assert.ok(prepared.ok);
+    const graph = prepared.graph;
+    const original = serializePlantGraph(graph);
+    const stem = graph.branches.get(graph.rootBranchId);
+    const stationDistance = bendStationAtFraction(stem);
+    const station = sampleBranch(stem, stationDistance);
+    const side = normalize(cross(station.tangent, vec3(0, 0, 1)));
+    const bend = amount => bendBranch(graph, {
+      branchId: stem.id, stationDistance, target: add(station.position, scale(side, amount)),
+    });
+    const oldDirections = segmentDirections(stem.points);
+    function endTurn(result) {
+      const a = oldDirections.at(-1);
+      const b = segmentDirections(result.branches.get(stem.id).points).at(-1);
+      return Math.acos(Math.max(-1, Math.min(1, a.x*b.x + a.y*b.y + a.z*b.z)));
+    }
+    // The distal tangent need not be perpendicular to the rotation axis.
+    const axis = normalize(cross(station.tangent, side));
+    const end = oldDirections.at(-1);
+    const axial = axis.x * end.x + axis.y * end.y + axis.z * end.z;
+    const expectedTurn = angle => Math.acos(Math.max(-1, Math.min(1,
+      axial * axial + (1 - axial * axial) * Math.cos(angle))));
+    const gain = 0.58 + (1 - stem.stiffness) * 0.25;
+    assertClose(endTurn(bend(0.1)), expectedTurn(0.1 * gain * 1.05), 1e-8);
+    const oldLimit = Math.min(0.28 + (1 - stem.stiffness) * 0.55,
+      (0.55 + (1 - stem.stiffness) * 0.45) * gain * 1.05);
+    const extended = bend(100);
+    assertClose(endTurn(extended), expectedTurn(oldLimit * 1.2), 1e-8);
+    assert.ok(endTurn(extended) > expectedTurn(oldLimit) * 1.15);
+    assertClose(endTurn(bend(1000)), endTurn(extended), 1e-8);
+    assertRestLengthsPreserved(graph, extended);
+    assertAttachmentCoincidence(extended);
+    for (const turn of localTurns(extended.branches.get(stem.id).points)) assert.ok(turn < 0.38);
+    assert.equal(serializePlantGraph(graph), original);
+  }
+});

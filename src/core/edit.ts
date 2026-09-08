@@ -124,10 +124,13 @@ export const bendBranch = (snapshot: PlantGraph, request: BendRequest): PlantGra
   let perpendicular = projectPerpendicular(requested, station.tangent);
   if (lengthSquared(perpendicular) < GEOMETRY_EPSILON * GEOMETRY_EPSILON) return graph;
 
-  const maximumInput = 0.55 + (1 - source.stiffness) * 0.45;
+  // Extend the end of the gesture by 20%, retaining small-drag sensitivity.
+  // This is an authored shaping limit, not a physical fracture threshold.
+  const rangeExtension = 1.2;
+  const maximumInput = (0.55 + (1 - source.stiffness) * 0.45) * rangeExtension;
   perpendicular = scale(clampLength(perpendicular, maximumInput), 0.58 + (1 - source.stiffness) * 0.25);
   const axis = normalize(cross(station.tangent, perpendicular));
-  const maximumRotation = 0.28 + (1 - source.stiffness) * 0.55;
+  const maximumRotation = (0.28 + (1 - source.stiffness) * 0.55) * rangeExtension;
   const totalRotation = Math.min(maximumRotation, length(perpendicular) * 1.05);
   const activeLength = source.restLengths.reduce((sum, value) => sum + value, 0);
   const meanSegmentLength = activeLength / source.restLengths.length;

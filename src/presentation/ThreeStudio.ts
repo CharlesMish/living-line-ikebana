@@ -1,3 +1,4 @@
+import { createVesselGeometry } from "./vessel.ts";
 import { getMaterialAppearance } from "./materialAppearance.ts";
 import * as THREE from "three";
 
@@ -331,23 +332,22 @@ export class ThreeStudio {
     this.scene.add(floor);
 
     const vessel = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.5, 2.64, 0.34, 72),
-      new THREE.MeshStandardMaterial({ color: 0xc4b299, roughness: 0.84 }),
+      createVesselGeometry(),
+      new THREE.MeshPhysicalMaterial({ color: 0xbcb09b, roughness: 0.38, clearcoat: 0.65 }),
     );
-    vessel.position.y = 0.19;
     vessel.castShadow = true;
     vessel.receiveShadow = true;
     this.scene.add(vessel);
 
     const water = new THREE.Mesh(
-      new THREE.CircleGeometry(2.29, 72),
+      new THREE.CircleGeometry(2.345, 72),
       new THREE.MeshPhysicalMaterial({
-        color: 0x77908d,
-        opacity: 0.67,
+        color: 0x497d82,
+        opacity: 0.82,
         transparent: true,
         depthWrite: false,
-        roughness: 0.22,
-        clearcoat: 0.45,
+        roughness: 0.16,
+        clearcoat: 1,
       }),
     );
     water.rotation.x = -Math.PI / 2;
@@ -355,18 +355,19 @@ export class ThreeStudio {
     this.scene.add(water);
 
     const rim = new THREE.Mesh(
-      new THREE.TorusGeometry(2.5, 0.075, 10, 72),
-      new THREE.MeshStandardMaterial({ color: 0xac9579, roughness: 0.74 }),
+      new THREE.TorusGeometry(2.48, 0.035, 10, 72),
+      new THREE.MeshStandardMaterial({ color: 0xd2c7b3, roughness: 0.35 }),
     );
     rim.rotation.x = Math.PI / 2;
-    rim.position.y = 0.39;
+    rim.position.y = 0.635;
     this.scene.add(rim);
 
     const kenzan = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.34, 1.34, 0.18, 64),
+      new THREE.CylinderGeometry(1.34, 1.34, 0.36, 64),
       new THREE.MeshStandardMaterial({ color: 0x4c4943, roughness: 0.44, metalness: 0.56 }),
     );
-    kenzan.position.y = 0.46;
+    // Extend down to the basin floor while retaining the original top at 0.55.
+    kenzan.position.y = 0.37;
     this.scene.add(kenzan);
 
     const pinCoordinates: Array<[number, number]> = [];

@@ -52,7 +52,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Bending edits an actual branch curve. It is not a scale, point-index joint, free-chain IK solve, or cumulative drag.
 - Eligible branches are active `trunk`, `lateral`, or `twig` records with at least four points, at least three rest segments, and a nondegenerate legal interior rest-arc interval. Petioles and pedicels are not bend-handle targets.
 - The fixed experiment station is `0.54 * activeLength`, clamped between the first and last rest segments. The touch experiment samples an eligible middle span. In both cases, the chosen material distance freezes at acquisition.
-- Both variants call the same broad smootherstep, stiffness-capped solver. Extreme input saturates instead of folding into free pretzel geometry.
+- Both variants call the same broad smootherstep, stiffness-capped solver. Extreme input saturates instead of folding into free pretzel geometry. The September 8 tuning intentionally extends the per-gesture input and rotation limits by 20%; small-drag gain and the broad influence profile are unchanged. This is an authored shaping range, not a fracture or elasticity simulation.
 - The solver reconstructs from unchanged rest lengths and remaps active descendants coherently. It does not stretch stock.
 - In the touch variant, material fractions `0.24` through `0.72` inclusive acquire bend; other material hits acquire aim.
 

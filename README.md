@@ -10,6 +10,10 @@ The [looking refinement and phone card](docs/LOOKING_REFINEMENT.md) records what
 changed after the combined review, what remains a hypothesis, and what to observe
 before choosing a third material.
 
+The bend now has 20% more range at the end of a drag, with the same small-drag
+sensitivity. The shallow vessel has an open basin and raised lip, with a more
+distinct teal water surface. These are initial feel/readability adjustments.
+
 ## Current alpha
 
 The protected baseline contains a deterministic flowering branch and leafy shoot, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. It is an interaction instrument, not yet the complete game loop.

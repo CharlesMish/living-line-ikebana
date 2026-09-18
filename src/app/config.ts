@@ -3,6 +3,7 @@ export type BendVariant = "bead" | "touch";
 export type ExperimentConfig = {
   bendVariant: BendVariant;
   debug: boolean;
+  workbench: boolean;
   /** Starts a clean specimen/arrangement session. Never touches study telemetry. */
   fresh: boolean;
   /**
@@ -19,6 +20,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
   return {
     bendVariant: bend === "touch" ? "touch" : "bead",
     debug: url.searchParams.get("debug") === "1",
+    workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
   };

@@ -55,7 +55,16 @@ and neither tray card crowds the top rail. In a short landscape window, Step Bac
 and confirm both bases are still seated. Check that water and pin access are useful
 from Above. Numeric tests cannot sign off these observations.
 
-## Further materials are paused
+## Current external prototype round
+
+The Garden/workbench handoff now authorizes **two separate prototype candidates**:
+a sparse bare woody line and a single flower face. See
+[bounded briefs](development/MATERIAL_BRIEFS.md) and
+[orchestration prompt](development/GROK_BOT_HANDOFF.md). These are candidates for
+review, not an expanded shipping palette. The paragraphs below record the earlier
+pause and still explain the evaluation principle.
+
+## Earlier palette pause
 
 The consolidated review supersedes the earlier bare-twig-first recommendation.
 No third material has been selected or commissioned. Multiple copies of either

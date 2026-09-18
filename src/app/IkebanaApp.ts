@@ -59,6 +59,9 @@ import {
   type AcquisitionRecord,
   type TransactionOutcome,
 } from "./metrics.ts";
+import { GardenStore, validateArrangement, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
+import { GardenUI } from "./gardenUI.ts";
+import { describeFixture } from "./workbench.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
 import { cutCue, shapeCue } from "./craftCues.ts";
@@ -224,12 +227,12 @@ export class IkebanaApp {
   private readonly ui: UIBindings;
   private readonly canvas: HTMLCanvasElement;
   private readonly studio: ThreeStudio;
-  private readonly store = new CommittedStore<CanonicalPlantGraph>();
-  private readonly sound = new CraftSound();
   private readonly config = readExperimentConfig();
+  private readonly store = new CommittedStore<CanonicalPlantGraph>(this.config.workbench ? "ikebana-web-alpha:workbench-studio-v1" : undefined);
+  private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
   private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
-  private readonly telemetryStore = new TelemetryStore();
+  private readonly telemetryStore = new TelemetryStore(this.config.workbench ? "ikebana-web-alpha:workbench-telemetry-v1" : undefined);
   private readonly autosaveWrites: AutosaveAuditRecord[] = [];
   private readonly abortController = new AbortController();
 
@@ -247,6 +250,8 @@ export class IkebanaApp {
   private lastSaveSucceeded = true;
   private removeUIListener: (() => void) | null = null;
   private hovering = false;
+  private gardenUI!: GardenUI;
+  private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean } | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -280,6 +285,16 @@ export class IkebanaApp {
 
     const initial = this.loadInitialDocument();
     this.replaceCoordinator(initial.plants, initial.successfulPlantOrdinal);
+    this.gardenUI = new GardenUI(root, new GardenStore(this.config.workbench ? "ikebana-web-alpha:workbench-garden-v1" : undefined), {
+      pause: () => this.pauseForGarden(),
+      snapshot: () => this.arrangementSnapshot(),
+      thumbnail: () => this.studio.captureThumbnail(),
+      isViewing: () => Boolean(this.workingSession),
+      view: (entry) => this.viewGardenEntry(entry),
+      returnToWork: () => this.returnToWorkingBowl(),
+      replace: (snapshot) => this.replaceWorkingBowl(snapshot),
+      report: () => this.workbenchReport(),
+    }, this.config.workbench);
   }
 
   start() {
@@ -332,6 +347,7 @@ export class IkebanaApp {
     this.abortController.abort();
     this.removeUIListener?.();
     this.removeUIListener = null;
+    this.gardenUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
     if (window.__IKEBANA_TEST__) delete window.__IKEBANA_TEST__;
@@ -379,6 +395,7 @@ export class IkebanaApp {
           this.resolvePendingAcquisition("cancelled", event.reason);
         },
         onAutosave: (event) => {
+          if (this.workingSession) return; // Garden viewing can never write the working bowl.
           const plantsToSave = [...event.document.plants.values()]
             .sort((left, right) => left.id.localeCompare(right.id))
             .map(toCanonicalPlantGraph);
@@ -417,8 +434,90 @@ export class IkebanaApp {
     );
   }
 
+  private pauseForGarden() {
+    this.interruptActive("posture-command", false);
+    this.metrics.resetAttempt();
+    this.coordinator.commandPosture("step-back");
+    this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false });
+    this.syncPresentation();
+  }
+
+  private arrangementSnapshot(): ArrangementSnapshot {
+    const document = this.coordinator.getDocumentSnapshot();
+    return validateArrangement({
+      plants: [...document.plants.values()].map(toCanonicalPlantGraph),
+      successfulPlantOrdinal: document.successfulPlantOrdinal,
+      camera: document.camera,
+    });
+  }
+
+  private viewGardenEntry(entry: GardenEntry) {
+    const snapshot = validateArrangement(entry.arrangement);
+    this.pauseForGarden();
+    if (!this.workingSession) this.workingSession = {
+      coordinator: this.coordinator, selectedBranchId: this.selectedBranchId, cameraIsFree: this.cameraIsFree,
+    };
+    this.selectedBranchId = null;
+    this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
+    this.coordinator.commandPosture("step-back");
+    this.cameraIsFree = true;
+    this.coordinator.commandView("front", snapshot.camera);
+    this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false });
+    this.ui.setStatus("A kept moment. Orbit or pan to look; make a copy to change it.");
+    this.syncPresentation();
+  }
+
+  private returnToWorkingBowl() {
+    if (!this.workingSession) return;
+    this.interruptActive("system-interruption", false);
+    const saved = this.workingSession;
+    this.workingSession = null;
+    this.coordinator = saved.coordinator;
+    this.selectedBranchId = saved.selectedBranchId;
+    this.cameraIsFree = saved.cameraIsFree;
+    this.ui.setState({ posture: "step-back", tool: this.coordinator.getDebugState().tool, trayEnabled: true });
+    this.ui.setStatus("Your working bowl is here.");
+    this.syncPresentation();
+  }
+
+  /** Explicit bowl replacement, separate from gesture commits. Persist first;
+   * a failed write must not destroy the current in-memory working bowl. */
+  private replaceWorkingBowl(value: ArrangementSnapshot | null) {
+    this.interruptActive("system-interruption", false);
+    const snapshot = value ? validateArrangement(value) : {
+      plants: [], successfulPlantOrdinal: this.coordinator.getDebugState().successfulPlantOrdinal,
+      camera: canonicalCameraPose("front"),
+    };
+    if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
+    if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
+    if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants)) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    this.selectedBranchId = null;
+    this.cameraIsFree = value !== null;
+    this.metrics.resetAttempt();
+    this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
+    this.coordinator.commandView("front", snapshot.camera);
+    this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false });
+    this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : "A fresh bowl. Place a cutting.");
+    this.syncPresentation();
+  }
+
+  private workbenchReport() {
+    this.pauseForGarden();
+    const snapshot = this.arrangementSnapshot();
+    return { reportVersion: 1, mode: this.config.workbench ? "workbench" : "player", capturedAt: new Date().toISOString(),
+      fixture: describeFixture(snapshot), arrangement: snapshot, renderer: this.studio.getRendererStats(),
+      presentation: this.studio.getPresentationInventory(),
+      checks: { bend: "not recorded", cut: "not recorded", cancel: "not recorded", reload: "not recorded", physicalPhone: "not recorded" },
+    };
+  }
+
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
+    if (this.workingSession && (command.kind === "set-posture" && command.posture === "arrange"
+      || ["set-tool", "begin-material-drag", "activate-material", "set-bend-variant"].includes(command.kind))) {
+      this.ui.setStatus("This is a kept arrangement. Make a working copy to change it.");
+      return;
+    }
     switch (command.kind) {
       case "stop-and-look": {
         this.interruptActive("posture-command");

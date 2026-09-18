@@ -16,7 +16,7 @@ distinct teal water surface. These are initial feel/readability adjustments.
 
 ## Current alpha
 
-The protected baseline contains a deterministic flowering branch and leafy shoot, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. It is an interaction instrument, not yet the complete game loop.
+The protected baseline contains a deterministic flowering branch and leafy shoot, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. Garden now adds a first creative loop: keep a moment, revisit it, make a working copy, or begin a fresh bowl.
 
 Future flowers, branch structures, and a calm core loop should extend this baseline without replacing its identity, length, pruning, transaction, or camera-ownership laws. Those laws are collected in [`docs/BEHAVIORAL_CONTRACT.md`](docs/BEHAVIORAL_CONTRACT.md); contributors and coding agents should also read [`AGENTS.md`](AGENTS.md).
 
@@ -25,6 +25,21 @@ more yielding green shoot and seven alternating leaves. Both can share the bowl.
 Appearance tuning is an initial pass; numeric checks do not establish phone feel.
 See [material extension notes](docs/MATERIAL_REFERENCES.md) and the
 [short direction brief for external review](docs/DIRECTION_REVIEW.md).
+
+## Garden and development handoff
+
+Open **Garden** in the top rail to keep the current arrangement and view with an
+optional name. Saved cards open in a read-only 3D view; **Make a working copy**
+leaves the original intact. Fresh/copy actions offer to keep the existing bowl
+first. Download/import Garden backups to move collections between browsers.
+See [Garden behavior and phone checks](docs/GARDEN.md).
+
+Developers can add `?workbench=1` to the app URL for a separate saved bowl, fixed
+seeds, mixed fixtures and rendering reports. See [Workbench](docs/development/WORKBENCH.md).
+The [Grok Bot handoff](docs/development/GROK_BOT_HANDOFF.md) commissions two bounded
+candidates using [material briefs](docs/development/MATERIAL_BRIEFS.md), an
+[independent review template](docs/development/REVIEW_TEMPLATE.md), and a
+[proposed learning direction](docs/development/DIRECTION.md).
 
 ## Run it
 

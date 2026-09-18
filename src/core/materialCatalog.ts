@@ -68,6 +68,8 @@ export function isSupportedGeneratorVersion(generatorVersion: string): boolean {
   return getGeneratorDefinition(generatorVersion) !== null;
 }
 
+export function getMaterialDefinitions(): readonly MaterialDefinition[] { return materialCatalog; }
+
 export function getMaterialDefinition(materialId: string): MaterialDefinition | null {
   return materialCatalog.find((definition) => definition.materialId === materialId) ?? null;
 }

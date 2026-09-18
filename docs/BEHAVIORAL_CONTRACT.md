@@ -105,6 +105,24 @@ Base and bend handles may acquire only for the already selected plant. Shape acq
 - Corrupt or unsupported stored data fails closed to an empty session with a terse warning; it never partially hydrates a graph.
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
 
+### Garden and explicit bowl commands
+
+The Garden extension consumes committed snapshots; it does not change gesture
+commit laws. Opening Garden cancels any live gesture before reading state. Keep
+writes a separate versioned collection with canonical plants, retained cut history,
+ordinal, camera and optional thumbnail. Viewing is Step Back only and writes no
+working save. Make a working copy and Start a fresh bowl are explicit document
+replacement commands: offer to preserve a nonempty working bowl, validate data,
+write the new working save first, then replace in-memory state. A failed write
+keeps the current working bowl intact. Originals are not mutated by copies.
+
+Player replacements preserve a safe insertion ordinal. Workbench fixture loading
+explicitly resets developer fixture identities in an isolated storage namespace;
+ordinary insertion laws stay unchanged. Garden import is bounded, validates every
+graph, and fails atomically. Unknown/corrupt Garden data is preserved, not replaced
+with an empty collection. See [Garden](GARDEN.md) and
+[Workbench](development/WORKBENCH.md) for exact schemas, limits and evidence.
+
 ## 7. Evidence and change gates
 
 ### Step Back Pan extension

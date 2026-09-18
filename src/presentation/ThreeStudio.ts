@@ -1357,6 +1357,35 @@ export class ThreeStudio {
     });
   }
 
+  /** Small actual-view JPEG; thumbnail failure never prevents keeping the graph. */
+  captureThumbnail(): string | null {
+    const selection = this.getSelection();
+    try {
+      this.setSelection(null);
+      this.renderNow();
+      const thumbnail = document.createElement("canvas");
+      thumbnail.width = 360; thumbnail.height = 270;
+      const context = thumbnail.getContext("2d");
+      if (!context || !this.canvas.width || !this.canvas.height) return null;
+      context.fillStyle = "#e8e3d7"; context.fillRect(0, 0, 360, 270);
+      const scale = Math.min(360 / this.canvas.width, 270 / this.canvas.height);
+      const width = this.canvas.width * scale, height = this.canvas.height * scale;
+      context.drawImage(this.canvas, (360 - width) / 2, (270 - height) / 2, width, height);
+      const data = thumbnail.toDataURL("image/jpeg", 0.78);
+      return data.length <= 80_000 ? data : null;
+    } catch { return null; }
+    finally { this.setSelection(selection); }
+  }
+
+  getRendererStats() {
+    this.renderNow();
+    const { render, memory } = this.renderer.info;
+    return { calls: render.calls, triangles: render.triangles, lines: render.lines,
+      geometries: memory.geometries, textures: memory.textures, programs: this.renderer.info.programs?.length ?? 0,
+      drawingBuffer: { width: this.canvas.width, height: this.canvas.height },
+      note: "Counts from one render, not frame-rate or phone-performance measurements." };
+  }
+
   renderNow() {
     if (this.disposed) return;
     if (this.bendHandle.group.visible) this.bendHandle.group.quaternion.copy(this.camera.quaternion);

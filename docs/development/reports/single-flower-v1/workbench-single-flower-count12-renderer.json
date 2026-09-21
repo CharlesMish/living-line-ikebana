@@ -1,0 +1,11 @@
+{
+  "status": "browser JSON download for count 12 was mixed-6; screenshot is authentic",
+  "screenshot": "screenshots/count12-front.webp",
+  "graphInventory": {
+    "material": "single-flower",
+    "seed": 8278,
+    "count": 12,
+    "totals": { "branches": 48, "organs": 36 }
+  },
+  "note": "Renderer draw-call/triangle counts for the 12-cutting single-flower stress scene were not captured. Use the count-1 and mixed-6 renderer files plus the count-12 screenshot. Graph inventory is from createWorkbenchFixture."
+}

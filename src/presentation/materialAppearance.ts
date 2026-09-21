@@ -1,5 +1,5 @@
 import type { BranchKind } from "../core/types.ts";
-import type { LeafForm } from "./botanicalGeometry.ts";
+import type { BloomForm, LeafForm } from "./botanicalGeometry.ts";
 
 /** Rebuildable appearance keyed by the durable generator version, never topology
  * heuristics (a trunk may be green). No construction or bend settings live here.
@@ -11,7 +11,9 @@ export interface MaterialAppearance {
     form: LeafForm; color: number; veinColor: number; roughness: number;
     hitRadius: number; hitCenterY: number;
   }>;
-  readonly bloom: Readonly<{ color: number; roughness: number }>;
+  readonly bloom: Readonly<{
+    form: BloomForm; color: number; roughness: number; hitRadius: number;
+  }>;
 }
 
 const flowering: MaterialAppearance = Object.freeze({
@@ -20,7 +22,7 @@ const flowering: MaterialAppearance = Object.freeze({
   stemRoughness: 0.88,
   leaf: Object.freeze({ form: "elliptic", color: 0x56755a, veinColor: 0x819260,
     roughness: 0.78, hitRadius: 0.34, hitCenterY: 0 }),
-  bloom: Object.freeze({ color: 0xe2a0a4, roughness: 0.74 }),
+  bloom: Object.freeze({ form: "cupped", color: 0xe2a0a4, roughness: 0.74, hitRadius: 0.46 }),
 });
 const leafy: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x69804b, lateral: 0x69804b,
@@ -30,9 +32,18 @@ const leafy: MaterialAppearance = Object.freeze({
     roughness: 0.62, hitRadius: 0.56, hitCenterY: 0.5 }),
   bloom: flowering.bloom,
 });
+const singleFlower: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x5c7048, lateral: 0x5c7048,
+    twig: 0x6a7d52, pedicel: 0x6d8454, petiole: 0x6a7d52 }),
+  stemRoughness: 0.64,
+  leaf: Object.freeze({ form: "elliptic", color: 0x4d6848, veinColor: 0x8a9a62,
+    roughness: 0.7, hitRadius: 0.34, hitCenterY: 0 }),
+  bloom: Object.freeze({ form: "open-face", color: 0xf0d2ae, roughness: 0.62, hitRadius: 0.7 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
+  "single-flower-v1": singleFlower,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

@@ -1,0 +1,8 @@
+Baseline SHA: 251a94a1b176fb5f32cdbabfaed009deb92c7f57
+Command: npm ci && npm run verify
+Result: pass
+Tests: 112 passed, 0 failed
+Typecheck: pass
+Build: pass
+Distribution: valid (5 files; standalone is self-contained)
+Notes: Recorded on the untouched baseline before Candidate B edits. No baseline failures.

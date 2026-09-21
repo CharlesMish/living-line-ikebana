@@ -1,0 +1,67 @@
+{
+  "source": "report-single-flower-count1.json",
+  "reportVersion": 1,
+  "mode": "workbench",
+  "capturedAt": "2026-09-21T14:15:32.102Z",
+  "fixture": {
+    "successfulPlantOrdinal": 1,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "single-flower-v1",
+        "seed": 8278,
+        "branches": 4,
+        "organs": 3,
+        "activeBranches": 4,
+        "activeOrgans": 3
+      }
+    ]
+  },
+  "renderer": {
+    "calls": 37,
+    "triangles": 11906,
+    "lines": 0,
+    "geometries": 30,
+    "textures": 2,
+    "programs": 13,
+    "drawingBuffer": {
+      "width": 1785,
+      "height": 996
+    },
+    "note": "Counts from one render, not frame-rate or phone-performance measurements."
+  },
+  "presentation": {
+    "plantIds": [
+      "plant-1"
+    ],
+    "pendingPlantId": null,
+    "pendingBranchVisualCount": 0,
+    "pendingOrganVisualCount": 0,
+    "branchVisualCount": 4,
+    "organVisualCount": 3
+  },
+  "checks": {
+    "bend": "not recorded",
+    "cut": "not recorded",
+    "cancel": "not recorded",
+    "reload": "not recorded",
+    "physicalPhone": "not recorded"
+  },
+  "camera": {
+    "position": {
+      "x": 0,
+      "y": 3.7,
+      "z": 15
+    },
+    "target": {
+      "x": 0,
+      "y": 2.55,
+      "z": 0
+    },
+    "up": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    }
+  }
+}

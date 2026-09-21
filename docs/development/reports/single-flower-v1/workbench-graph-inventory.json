@@ -1,0 +1,3138 @@
+{
+  "baselineSha": "251a94a1b176fb5f32cdbabfaed009deb92c7f57",
+  "captured": "graph-only",
+  "scenes": [
+    {
+      "material": "single-flower",
+      "seed": 8278,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 4,
+        "organs": 3
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 8278,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 8278,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 24,
+        "organs": 18
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 8278,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "single-flower-v1",
+          "seed": 9255,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 8278,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 48,
+        "organs": 36
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 8278,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "single-flower-v1",
+          "seed": 17071,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "single-flower-v1",
+          "seed": 18048,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "single-flower-v1",
+          "seed": 19025,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "single-flower-v1",
+          "seed": 9255,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "single-flower-v1",
+          "seed": 15117,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "single-flower-v1",
+          "seed": 16094,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 9255,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 4,
+        "organs": 3
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 9255,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 9255,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 24,
+        "organs": 18
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 9255,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 9255,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 48,
+        "organs": 36
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 9255,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "single-flower-v1",
+          "seed": 18048,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "single-flower-v1",
+          "seed": 19025,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "single-flower-v1",
+          "seed": 20002,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "single-flower-v1",
+          "seed": 15117,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "single-flower-v1",
+          "seed": 16094,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "single-flower-v1",
+          "seed": 17071,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 10232,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 4,
+        "organs": 3
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 10232,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 24,
+        "organs": 18
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 15117,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "single-flower",
+      "seed": 10232,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 48,
+        "organs": 36
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "single-flower-v1",
+          "seed": 19025,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "single-flower-v1",
+          "seed": 20002,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "single-flower-v1",
+          "seed": 20979,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 15117,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "single-flower-v1",
+          "seed": 16094,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "single-flower-v1",
+          "seed": 17071,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "single-flower-v1",
+          "seed": 18048,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 8278,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 15,
+        "organs": 10
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 8278,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 8278,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 90,
+        "organs": 60
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 8278,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 8278,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 180,
+        "organs": 120
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 8278,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "one-branch-v1",
+          "seed": 17071,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "one-branch-v1",
+          "seed": 18048,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "one-branch-v1",
+          "seed": 19025,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "one-branch-v1",
+          "seed": 14140,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "one-branch-v1",
+          "seed": 15117,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "one-branch-v1",
+          "seed": 16094,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 9255,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 15,
+        "organs": 10
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 9255,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 90,
+        "organs": 60
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "one-branch-v1",
+          "seed": 14140,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 9255,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 180,
+        "organs": 120
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "one-branch-v1",
+          "seed": 18048,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "one-branch-v1",
+          "seed": 19025,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "one-branch-v1",
+          "seed": 20002,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "one-branch-v1",
+          "seed": 14140,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "one-branch-v1",
+          "seed": 15117,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "one-branch-v1",
+          "seed": 16094,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "one-branch-v1",
+          "seed": 17071,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 10232,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 15,
+        "organs": 10
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 10232,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 90,
+        "organs": 60
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "one-branch-v1",
+          "seed": 14140,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "one-branch-v1",
+          "seed": 15117,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 10232,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 180,
+        "organs": 120
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "one-branch-v1",
+          "seed": 19025,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "one-branch-v1",
+          "seed": 20002,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "one-branch-v1",
+          "seed": 20979,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "one-branch-v1",
+          "seed": 14140,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "one-branch-v1",
+          "seed": 15117,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "one-branch-v1",
+          "seed": 16094,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "one-branch-v1",
+          "seed": 17071,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "one-branch-v1",
+          "seed": 18048,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 8278,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 8,
+        "organs": 7
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 8278,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 8278,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 48,
+        "organs": 42
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 8278,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 8278,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 96,
+        "organs": 84
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 8278,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 17071,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 18048,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 19025,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 15117,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 16094,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 9255,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 8,
+        "organs": 7
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 9255,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 48,
+        "organs": 42
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 9255,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 96,
+        "organs": 84
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 18048,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 19025,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 20002,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 15117,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 16094,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 17071,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 10232,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 8,
+        "organs": 7
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 10232,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 48,
+        "organs": 42
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 15117,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 10232,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 96,
+        "organs": 84
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 19025,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 20002,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 20979,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 15117,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 16094,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 17071,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 18048,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 8278,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 15,
+        "organs": 10
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 8278,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 8278,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 54,
+        "organs": 40
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 8278,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 8278,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 108,
+        "organs": 80
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 8278,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "one-branch-v1",
+          "seed": 17071,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 18048,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "single-flower-v1",
+          "seed": 19025,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 9255,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 10232,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 11209,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 12186,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 13163,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "one-branch-v1",
+          "seed": 14140,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 15117,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "single-flower-v1",
+          "seed": 16094,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 9255,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 15,
+        "organs": 10
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 9255,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 54,
+        "organs": 40
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 9255,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 108,
+        "organs": 80
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 9255,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "one-branch-v1",
+          "seed": 18048,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 19025,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "single-flower-v1",
+          "seed": 20002,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 10232,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 11209,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 12186,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 13163,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 14140,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "one-branch-v1",
+          "seed": 15117,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 16094,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "single-flower-v1",
+          "seed": 17071,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 10232,
+      "count": 1,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 1,
+      "totals": {
+        "branches": 15,
+        "organs": 10
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 10232,
+      "count": 6,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 6,
+      "totals": {
+        "branches": 54,
+        "organs": 40
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 15117,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    },
+    {
+      "material": "mixed",
+      "seed": 10232,
+      "count": 12,
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "successfulPlantOrdinal": 12,
+      "totals": {
+        "branches": 108,
+        "organs": 80
+      },
+      "plants": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "one-branch-v1",
+          "seed": 10232,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-10",
+          "generatorVersion": "one-branch-v1",
+          "seed": 19025,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-11",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 20002,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-12",
+          "generatorVersion": "single-flower-v1",
+          "seed": 20979,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 11209,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "single-flower-v1",
+          "seed": 12186,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-4",
+          "generatorVersion": "one-branch-v1",
+          "seed": 13163,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-5",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 14140,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-6",
+          "generatorVersion": "single-flower-v1",
+          "seed": 15117,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        },
+        {
+          "id": "plant-7",
+          "generatorVersion": "one-branch-v1",
+          "seed": 16094,
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        },
+        {
+          "id": "plant-8",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 17071,
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        },
+        {
+          "id": "plant-9",
+          "generatorVersion": "single-flower-v1",
+          "seed": 18048,
+          "branches": 4,
+          "organs": 3,
+          "activeBranches": 4,
+          "activeOrgans": 3
+        }
+      ],
+      "note": "Graph inventory only. Renderer draw-call/triangle counts require a browser report."
+    }
+  ]
+}

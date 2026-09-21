@@ -9,7 +9,7 @@ Review-only. No candidate code was implemented here. No merge to `main`.
 | Baseline SHA | `251a94a1b176fb5f32cdbabfaed009deb92c7f57` |
 | Review branch | `cursor/review-material-round-1-64cb` |
 | Proposed-fix branch | none (no storage-loss or transaction-ownership blocker found) |
-| Candidate A branch / head | `cursor/experiment-bare-branch-v1-2e72` / `30d577d221354cbc26db422e6216e1587387034e` |
+| Candidate A branch / head | `cursor/experiment-bare-branch-v1-2e72` / `703175a1ce3a1d48cc5b14166278168282fe2fa1` (implementation still `30d577d`; later commits are evidence docs only) |
 | Candidate A PR | https://github.com/CharlesMish/living-line-ikebana/pull/15 (draft) |
 | Candidate B branch / head | `cursor/experiment-material-single-flower-v1-bd04` / `98e71cb075d2dc5f40e1494a2e0c46e0d73d4605` |
 | Candidate B PR | https://github.com/CharlesMish/living-line-ikebana/pull/16 (draft) |
@@ -85,7 +85,7 @@ Mixed workbench fixtures **do** change identity when a third catalog entry is re
 
 | Candidate | Recommendation | Why |
 | --- | --- | --- |
-| A bare woody line | **Revise**, then consider integrate | Real sparse woody graph (5 branches, 0 organs), not hidden flowering organs. `verify` 119/119. Desktop Front/¾/Above and mixed 6/12 render. 320px tray wraps and drops silhouettes. Phone unrun. Shared CSS untouched. |
+| A bare woody line | **Revise**, then consider integrate | Generator unchanged since `30d577d` (`verify` 119/119). New evidence stills show desktop aim/bend, an answering-fork cut, Garden keep+view, and bare×12 WebGL 187 calls / 32882 triangles at 360×924. Tray wrap and crown-covering chrome remain (Agent A’s 360px still agrees). Phone unrun. |
 | B single flower face | **Revise**, then consider integrate | Distinct cream open-face bloom; reads clearly in mixed scenes and from Above. `verify` 119/119. Shared `ThreeStudio` bloom path is form-driven (cupped source matches the 7-sepal baseline). Shared tray `auto-fit` CSS is an integrator concern: at 320px it stacks all cards and would also restack a two-card tray. Phone unrun. |
 
 Neither is idea-only. Neither is a clean integrate until a tray pass and a physical-phone clip exist. Do not land both without reconciling tray layout and mixed-fixture identity on a separate integration branch.
@@ -97,6 +97,18 @@ Neither is idea-only. Neither is a clean integrate until a tray pass and a physi
 3. Integrator-owned tray layout (do not bake competing CSS into both material PRs).
 4. Downloaded workbench reports (renderer calls/triangles) at seed 8278 counts 1 / mixed 6 / 12 under matched viewport.
 
+## Resync — Candidate A `703175a` (2026-09-21)
+
+PR #15 synchronized with two commits after the first Agent C pass: verify log, workbench ×12 report, browser stills, and SHA stamps. Diff vs reviewed implementation `30d577d` is **docs and images only** (`src/`, `index.html`, tests, fixtures unchanged). `npm run verify` was not re-run on `703175a`; the runtime tree is identical to the 119/119 pass at `30d577d`. Merge-base remains `251a94a1`.
+
+Independent look at Agent A’s new stills:
+
+- `bare_8278_after_answering_cut.webp`: lower fork is a short stub; space to the right of the trunk is open; status “Cut.”
+- `garden_view_kept_bare_line_study.webp`: mixed bowl kept as “Bare line study”; Step Back / Orbit / Pan; Arrange chrome hidden.
+- `tray_360px_portrait.webp`: third card wraps, silhouettes missing, chrome covers the plant crown. Agent A marked this pass; Agent C still scores it a tray defect, not a graph defect.
+
+Candidate B head remains `98e71cb`. Recommendation for A is unchanged: **revise tray on an integrator branch**; the generator itself is still integrate-ready.
+
 ## Waiting / follow-up
 
-Heads above were current when this package was written. If A or B push revisions, re-diff against `251a94a1` and re-run `npm run verify` on the new head. Do not review code that is not on a remote head.
+Candidate B is still `98e71cb`. Further A/B code changes will be re-diffed against `251a94a1`. Do not review code that is not on a remote head.

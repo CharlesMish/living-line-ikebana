@@ -1,7 +1,7 @@
 # Candidate review
 
 - Candidate / role: Candidate A — bare woody line / independent reviewer (Agent C)
-- Baseline SHA / head SHA / branch: `251a94a1b176fb5f32cdbabfaed009deb92c7f57` / `30d577d221354cbc26db422e6216e1587387034e` / `cursor/experiment-bare-branch-v1-2e72`
+- Baseline SHA / head SHA / branch: `251a94a1b176fb5f32cdbabfaed009deb92c7f57` / `703175a1ce3a1d48cc5b14166278168282fe2fa1` (runtime/code still `30d577d221354cbc26db422e6216e1587387034e`) / `cursor/experiment-bare-branch-v1-2e72`
 - Author / independent reviewer: Agent A implementation; Agent C review
 - New compositional choice: A sparse woody line with a clear basal stem and a few forks, no leaves or flowers. Cutting the answering fork drops the spur and opens space. It is a different branching rhythm from `one-branch-v1`, not the flowering graph with organs hidden.
 - Main weakness: At 320px the third tray card wraps in the existing two-column grid, silhouettes disappear, and cards become cramped. Physical-phone feel is unknown. In mixed bowls the darker wood can sit next to flowering trunks without a strong color break.
@@ -26,17 +26,17 @@ Protected files untouched: `src/input/`, Garden store, persistence schema, golde
 
 | Check | Result (pass / fail / not run) | Reproduction or artifact |
 | --- | --- | --- |
-| npm ci + npm run verify | pass (Agent C, worktree at head) | 119 tests, 0 fail; typecheck; build; dist valid |
+| npm ci + npm run verify | pass at implementation `30d577d`; not re-run on evidence-only `703175a` | 119 tests, 0 fail. Src/index/tests/fixtures empty vs `30d577d` |
 | Existing golden fixtures unchanged | pass | SHA-256 of `fixtures/plant-1-one-branch-v1.json` and `plant-2-leafy-shoot-v1.json` match baseline |
 | Seeds 8278 / 9255 / 10232 | pass | `tests/core/bareBranch.test.ts`; fixture `fixtures/plant-1-bare-branch-v1.json` |
-| Aim / bend preserve stock and attachments | pass (automated) | same test file |
-| Exact prune and retained history | pass (automated) | answering cut at 0.08 deactivates `plant-1:spur`; 5 records remain |
+| Aim / bend preserve stock and attachments | pass (automated) / observed (author desktop stills) | unit rest lengths; `bare_8278_after_aim_bend.webp` on #15 |
+| Exact prune and retained history | pass (automated) / observed (author desktop stills) | unit answering cut; `bare_8278_after_answering_cut.webp` shows a short stub and open space |
 | Cancel / invalid insert preserve ordinal and save | pass (automated) | `tests/app/materialInsertion.test.ts` |
 | Reload after a committed edit | pass (automated) | restored spur remains inactive |
-| Garden original survives edited copy | pass (automated) / not run (browser with this material) | `bareBranch.test.ts` keep-then-cut-copy |
+| Garden original survives edited copy | pass (automated) / partial browser | Unit keep-then-cut-copy. Author still: Keep+View “Bare line study”. Copy → change → reload of original not shown |
 | Front / ¾ / Above | pass (desktop Chrome, workbench 8278×1) | `reports/agent-c-round-1/A_count1_*.png` |
 | Mixed reference scene | pass (desktop graph + render) | mixed 8278×6 and ×12; `A_mixed6_front.png`, `A_mixed12_front.png` |
-| Narrow portrait / short landscape / large text | fail (320px tray crowding) / not run (large text, short landscape) | `A_tray_320.png`; silhouettes dropped; third card wraps |
+| Narrow portrait / short landscape / large text | fail (320px and 360px tray crowding) / not run (large text, short landscape) | Agent C `A_tray_320.png`; Agent A `tray_360px_portrait.webp` independently confirms wrap, missing silhouettes, chrome over the crown |
 | Physical phone | not run | no device |
 
 ## Rendering comparison
@@ -44,16 +44,16 @@ Protected files untouched: `src/input/`, Garden store, persistence schema, golde
 - Browser/device/OS/viewport/pixel ratio: Google Chrome, Linux, desktop ~1280×800 for workbench views; 320×640 device metrics for tray check; SwiftShader WebGL
 - Same seed, count, camera: workbench flowering-equivalent is not pixel-matched in one capture; baseline mixed-6 was captured in the same Chrome session (`baseline_workbench_mixed6_front.png`)
 - Report files for count 1 / mixed 6 / stress 12: Agent A graph JSON on the candidate branch; Agent C did not download WebGL reports for this head. Graph at seed 8278: count 1 = 5 branches / 0 organs; mixed 6 = flowering+leafy+bare twice; bare×12 = 60 / 0 vs flowering×12 = 180 / 120
-- Resource-count differences (WebGL): not captured for this candidate head
+- Resource-count differences (WebGL): Agent A bare×12 at 360×924 device mode, drawingBuffer 649×1663: 187 calls, 32882 triangles, 136 geometries, 60 branch visuals, 0 organ visuals. Not a matched-viewport flowering/leafy comparison
 - Observed response/stalls: mixed 12 loaded without a crash in desktop Chrome; no frame-time measurement
-- Missing measurements: draw calls/triangles at matched viewport; phone; insert→aim→bend pointer path
+- Missing measurements: matched-viewport flowering/leafy/mixed draw-call reports; phone; Agent C did not independently drive the pointer craft path (author stills reviewed)
 
 ## Independent findings
 
 1. **Medium — 320px tray wrap drops silhouettes.**
    - Steps: open `?workbench=1&fresh=1` at 320×640. Inspect `.material-tray`.
    - Expected: three labeled cards remain independently reachable with usable hit targets and visible silhouettes.
-   - Observed: two columns ~81px; third card wraps; SVG silhouettes not visible; Bare branch still labeled.
+   - Observed: two columns ~81px; third card wraps; SVG silhouettes not visible; Bare branch still labeled. Agent A’s 360×924 still shows the same wrap and chrome covering the plant crown. Cards remain labeled. This is not a graph-correctness failure.
    - IDs: tray cards `material-flowering-branch`, `material-leafy-shoot`, `material-bare-branch`.
    - Scope: integrator tray layout, not the generator. Do not “fix” this by deleting the card or adding a second gesture engine.
 
@@ -66,9 +66,9 @@ Protected files untouched: `src/input/`, Garden store, persistence schema, golde
 3. **Observation — mixed fixture identity shift.**
    - Workbench mixed now cycles three materials. Mixed-6 graphs are not comparable to the two-material baseline. Expected once a third catalog entry exists.
 
-4. **Gap — no physical-phone or live pointer craft path.**
-   - Automated aim/bend/prune exist. Desktop screenshots are fixture-loaded, not drag-shaped. Do not treat that as phone signoff.
+4. **Gap — no physical-phone signoff.**
+   - Author desktop stills now show aim/bend and a committed answering-fork cut. Agent C viewed those stills; they do not replace a phone clip. Copy → change → reload of a Garden original is still unshown in browser.
 
 ## Recommendation
 
-**Revise**, then consider integrate. The candidate is a real line: different topology, taper, stiffness, and zero organs. One useful answering-fork cut is defined and tested. Smallest next pass: tray layout (integrator), Front/¾/Above already captured here, then a phone clip of insert → bend → answering-fork cut → cancel → commit → reload beside both references. Do not add microtwigs or fake breakage.
+**Revise**, then consider integrate. Runtime code is unchanged and still a real line. New evidence strengthens desktop craft observation and does not fix the tray. Smallest next pass: integrator tray layout (not a generator rewrite), then a phone clip of insert → bend → answering-fork cut → cancel → commit → reload beside both references. Do not add microtwigs or fake breakage. Agent A’s “consider integrate” is reasonable for the graph; it is not a tray or phone pass.

@@ -71,8 +71,9 @@ test("adding an unrelated registered material cannot change reference-pair graph
   assert.deepEqual(describeFixture(dynamic).plantsInIdentityOrder.map((plant) => plant.id), [
     "plant-1", "plant-2", "plant-3", "plant-4", "plant-5", "plant-6",
   ]);
-  assert.equal(describeFixture(dynamic).plantsInIdentityOrder[2]?.generatorVersion, "leafy-shoot-v1");
   assert.equal(describeFixture(pair).plantsInIdentityOrder[2]?.generatorVersion, "one-branch-v1");
+  assert.equal(describeFixture(dynamic).plantsInIdentityOrder[2]?.generatorVersion, "bare-branch-v1");
+  assert.equal(describeFixture(dynamic).plantsInIdentityOrder[4]?.generatorVersion, "leafy-shoot-v1");
   const pairSequence = planWorkbenchCuttings(["flowering-branch", "leafy-shoot"], 8278, 6);
   const dynamicSequence = planWorkbenchCuttings(
     catalog.map((material) => material.materialId),
@@ -80,8 +81,9 @@ test("adding an unrelated registered material cannot change reference-pair graph
     6,
   );
   assert.equal(pairSequence[2]?.materialId, "flowering-branch");
-  assert.equal(dynamicSequence[2]?.materialId, "unrelated-candidate");
-  assert.notEqual(pairSequence[2]?.materialId, dynamicSequence[2]?.materialId);
+  assert.equal(dynamicSequence[2]?.materialId, "bare-branch");
+  assert.equal(dynamicSequence[4]?.materialId, "unrelated-candidate");
+  assert.notEqual(pairSequence[4]?.materialId, dynamicSequence[4]?.materialId);
 });
 
 test("all-four six-cutting composition is 2+2+1+1, not two of each; twelve is three of each", () => {

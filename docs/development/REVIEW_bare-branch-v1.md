@@ -1,7 +1,7 @@
 # Candidate review
 
 - Candidate / role: Candidate A — bare woody line / Agent A
-- Baseline SHA / head SHA / branch: `251a94a1b176fb5f32cdbabfaed009deb92c7f57` / (PR head; see last commit on `cursor/experiment-bare-branch-v1-2e72`) / `cursor/experiment-bare-branch-v1-2e72`
+- Baseline SHA / head SHA / branch: `251a94a1b176fb5f32cdbabfaed009deb92c7f57` / `cd6484f79eac82ceb6890c655e95d52e58c84208` / `cursor/experiment-bare-branch-v1-2e72`
 - Author / independent reviewer: Agent A implementation; independent review is Agent C's job
 - New compositional choice: A sparse woody line with a clear basal stem, one answering fork, a shorter counter, a restrained distal fork, and one short spur. Cutting the answering fork removes the spur and opens empty space beside the main line. There are no leaves or flowers to hide that decision.
 - Main weakness: The third tray card wraps in the existing two-column grid. At 360px the chrome is tall. Physical-phone feel was not measured. WebGL stats exist only for bare ×12 in a 360×924 device-mode viewport, not a matched desktop comparison against flowering/leafy.

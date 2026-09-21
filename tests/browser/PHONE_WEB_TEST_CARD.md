@@ -24,7 +24,19 @@ Record:
 - fresh session or restored local specimen:
 - tester and whether they helped design the controls:
 
-For a clean run, clear this origin's site data or use the test-only reset hook. Do not clear storage between the persistence steps.
+### Data-safety preflight
+
+Prefer a disposable preview origin for this card: a local/preview host or a
+temporary deployment origin that is not the player's usual origin. The
+workbench uses a separate storage namespace, but the player bowl, Garden and
+telemetry still belong to the browser origin.
+
+If an isolated origin is not available, **back up before clearing anything**:
+download the Garden backup, and export any study data that must be retained.
+Clearing site data can wipe the player's saved bowl, Garden collection and
+telemetry for that origin. `?fresh=1` and the test-only reset hook are safer
+test resets when available; do not clear storage between the persistence steps.
+Confirm the backup exists before using browser settings to clear site data.
 
 ## Required web-shell preflight
 
@@ -337,7 +349,8 @@ Production UI stays quiet. Stable hooks are attributes, not visible QA chrome.
 | --- | --- |
 | Application shell | `[data-testid="app-root"]`, plus `data-ready`, `data-posture`, `data-tool`, `data-view`, `data-bend-variant`, `data-transaction` |
 | Scene | `[data-testid="scene-canvas"]` |
-| Tray material | `[data-testid="material-flowering-branch"]` |
+| Selected cutting source | `[data-testid="material-source"]` with `[data-material-id]` |
+| Materials picker | `[data-testid="materials-toggle"]`; choices are `[data-testid="material-choice-<id>"]` and must not carry `[data-material-id]` |
 | Posture commands | `[data-testid="posture-arrange"]`, `[data-testid="posture-step-back"]` |
 | Tool commands | `[data-testid="tool-shape"]`, `[data-testid="tool-prune"]` |
 | View disclosure | `[data-testid="view-toggle"]` (open before choosing a view) |
@@ -458,11 +471,12 @@ Acquisition telemetry (bend variant, material id/input method for insertions, at
 ## Two-material reference pass
 
 Run the mixed-bowl checks in [Material references](../../docs/MATERIAL_REFERENCES.md)
-before commissioning another material. The second tray hook is
-`[data-testid="material-leafy-shoot"]`; both cards must remain independently
-reachable by touch and keyboard. Record short-window toolbar clearance, leaf
-acquisition and whether Step Back Pan reads as reframing the whole scene.
-This pass has automated coverage but no physical-phone sign-off yet.
+before commissioning another material. Palette choices stay independently
+reachable under `[data-testid="material-choice-leafy-shoot"]` (and the other
+registered materials). Insertion is only from the selected source card.
+Record short-window toolbar clearance, leaf acquisition and whether Step Back
+Pan reads as reframing the whole scene. This pass has automated coverage but
+no physical-phone sign-off yet.
 
 
 ## Looking and normal-play cleanup

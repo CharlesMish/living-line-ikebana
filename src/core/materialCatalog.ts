@@ -1,5 +1,7 @@
+import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
+import { createSingleFlower, SINGLE_FLOWER_VERSION } from "./singleFlower.ts";
 import type { Vec3 } from "./math.ts";
 import { GENERATOR_VERSION, type PlantGraph } from "./types.ts";
 
@@ -47,17 +49,32 @@ const leafyShootV1: GeneratorDefinition = Object.freeze({
   generate: createLeafyShoot,
 });
 
+const bareBranchV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: BARE_BRANCH_VERSION,
+  generate: createBareBranch,
+});
+
+const singleFlowerV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: SINGLE_FLOWER_VERSION,
+  generate: createSingleFlower,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
 const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   oneBranchV1,
   leafyShootV1,
+  bareBranchV1,
+  singleFlowerV1,
 ]);
 
+/** Provisional Round 2 catalog order: flowering → leafy → bare-branch → single-flower. */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
   Object.freeze({ materialId: "leafy-shoot", generator: leafyShootV1 }),
+  Object.freeze({ materialId: "bare-branch", generator: bareBranchV1 }),
+  Object.freeze({ materialId: "single-flower", generator: singleFlowerV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

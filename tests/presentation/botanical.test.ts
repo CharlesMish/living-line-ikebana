@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as THREE from "three";
-import { createFloweringBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
+import { createFloweringBranch, aimBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
-import { botanicalSeed, createLeafGeometry, createPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
+import { botanicalSeed, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
 import { disposeObject, splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
 
 test("rendered stems have outward faces, closed ends, and stable proximal stock after a cut", () => {
@@ -88,11 +88,11 @@ test("disposing botanical groups releases instanced flower detail", () => {
   assert.ok(instanceDisposed && geometryDisposed);
 });
 
-test("both material appearances rebuild consistently and leafy hit proxies cover their blades", async () => {
+test("registered material appearances rebuild consistently and leafy hit proxies cover their blades", async () => {
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -111,17 +111,162 @@ test("both material appearances rebuild consistently and leafy hit proxies cover
           assert.deepEqual(a.geometry.getAttribute(key)?.array, b.geometry.getAttribute(key)?.array);
         }
       }
-      if (material === "leafy-shoot") {
-        const blade = (original.group.children[0] as THREE.Mesh).geometry.getAttribute("position");
+      if (material === "leafy-shoot" || (material === "single-flower" && organ.kind === "bloom")) {
+        original.group.updateMatrixWorld(true);
         const radius = original.hit.geometry.parameters.radius;
-        for (let index = 0; index < blade.count; index += 1) {
-          const point = new THREE.Vector3().fromBufferAttribute(blade, index);
-          assert.ok(point.distanceTo(original.hit.position) <= radius, "blade outside acquisition proxy");
-        }
+        original.group.traverse((node: THREE.Object3D) => {
+          if (!(node instanceof THREE.Mesh) || node === original.hit) return;
+          const positions = node.geometry.getAttribute("position");
+          if (!positions) return;
+          const local = new THREE.Vector3();
+          for (let index = 0; index < positions.count; index += 1) {
+            local.fromBufferAttribute(positions, index);
+            node.localToWorld(local);
+            original.group.worldToLocal(local);
+            assert.ok(local.distanceTo(original.hit.position) <= radius + 1e-6, `${material} ${organ.kind} outside acquisition proxy`);
+          }
+        });
       }
       disposeObject(original.group); disposeObject(rebuild.group);
     }
     for (const key of ["mesh", "hit", "selection", "doomed"]) disposeObject(branch[key]);
   }
   assert.notEqual(stemColors[0], stemColors[1], "green main stems must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[0], stemColors[2], "bare wood must not inherit flowering trunk appearance");
+  assert.notEqual(stemColors[1], stemColors[2], "bare wood must not inherit leafy stem appearance");
+  assert.notEqual(stemColors[0], stemColors[3], "single-flower stem must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[1], stemColors[3], "single-flower stem must remain distinct from leafy shoot");
+});
+
+test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {
+  const { prepareMaterialInsertion, sampleMaterialFrame, bendBranch, sampleBranch, add } = await import("../../src/core/index.ts");
+  const cupped = createPetalGeometry(3);
+  const open = createOpenFacePetalGeometry(3);
+  const maxZ = (geometry: THREE.BufferGeometry) => {
+    const positions = geometry.getAttribute("position");
+    let peak = 0;
+    for (let index = 0; index < positions.count; index += 1) peak = Math.max(peak, Math.abs(positions.getZ(index)));
+    return peak;
+  };
+  assert.ok(maxZ(open) < maxZ(cupped) * 0.7, "open-face petal must be a shallower dish than the cupped bloom");
+  cupped.dispose();
+  open.dispose();
+
+  const prepared = prepareMaterialInsertion("single-flower", 1, { x: 0, y: 0.55, z: 0 });
+  assert.ok(prepared.ok);
+  const graph = prepared.graph;
+  const bloom = [...graph.organs.values()].find((organ) => organ.kind === "bloom")!;
+  const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
+
+  function faceFrom(frame: { tangent: { x: number; y: number; z: number }; normal: { x: number; y: number; z: number }; binormal: { x: number; y: number; z: number } }, spin: number) {
+    const tangent = new THREE.Vector3(frame.tangent.x, frame.tangent.y, frame.tangent.z).normalize();
+    const normal = new THREE.Vector3(frame.normal.x, frame.normal.y, frame.normal.z).normalize();
+    const binormal = new THREE.Vector3(frame.binormal.x, frame.binormal.y, frame.binormal.z).normalize();
+    const group = new THREE.Group();
+    group.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(binormal, tangent, normal));
+    group.rotateY(spin);
+    return new THREE.Vector3(0, 0, 1).applyQuaternion(group.quaternion);
+  }
+
+  const pedicel = graph.branches.get(bloom.branchId)!;
+  const beforeFace = faceFrom(sampleMaterialFrame(pedicel, bloom.distance), bloom.spin);
+  const stem = graph.branches.get(graph.rootBranchId)!;
+  const bent = bendBranch(graph, {
+    branchId: stem.id,
+    stationDistance: stem.activeLength * 0.54,
+    target: add(sampleBranch(stem, stem.activeLength * 0.54).position, { x: 1.3, y: 0.2, z: -0.5 }),
+  });
+  const bentBloom = bent.organs.get(bloom.id)!;
+  const bentPedicel = bent.branches.get(bentBloom.branchId)!;
+  const afterFace = faceFrom(sampleMaterialFrame(bentPedicel, bentBloom.distance), bentBloom.spin);
+  assert.equal(bentBloom.spin, bloom.spin);
+  assert.ok(afterFace.distanceTo(beforeFace) > 0.02, "bloom face must move with the supporting stem, not stay locked in world");
+  const cameraForward = new THREE.Vector3(0, 0, 1);
+  assert.ok(Math.abs(afterFace.dot(cameraForward) - beforeFace.dot(cameraForward)) > 1e-6 || afterFace.distanceTo(beforeFace) > 0.02);
+
+  const visual = studio.createOrganVisual(graph, bloom, false);
+  const rebuilt = studio.createOrganVisual(bent, bentBloom, false);
+  const originalPetal = visual.group.children[0] as THREE.Mesh;
+  const rebuiltPetal = rebuilt.group.children[0] as THREE.Mesh;
+  assert.deepEqual(originalPetal.geometry.getAttribute("position").array, rebuiltPetal.geometry.getAttribute("position").array);
+  disposeObject(visual.group);
+  disposeObject(rebuilt.group);
+});
+
+test("production organ groups ignore camera changes and follow stem aim and bend", async () => {
+  const { prepareMaterialInsertion, sampleBranch } = await import("../../src/core/index.ts");
+  const prepared = prepareMaterialInsertion("single-flower", 1, { x: 0, y: 0.55, z: 0 });
+  assert.ok(prepared.ok);
+  const graph = prepared.graph;
+  const bloom = graph.organs.get("plant-1:bloom")!;
+  const root = graph.branches.get(graph.rootBranchId)!;
+
+  // This is the real production group created by createPlantVisual/syncPlantVisual.
+  // The small harness supplies only the disposable scene roots and presentation
+  // affordances that a headless test cannot obtain from a WebGL canvas.
+  const studio = Object.create(ThreeStudio.prototype) as any;
+  Object.assign(studio, {
+    options: { debugHitTargets: false },
+    botanicalRoot: new THREE.Group(),
+    pendingRoot: new THREE.Group(),
+    plants: new Map(),
+    selection: null,
+    cutPreview: null,
+    pendingValidity: null,
+    shapeAffordances: { visible: false, bendVariant: "bead", transactionActive: false, touchCueDistance: null, showSelection: true },
+    baseHandle: { group: new THREE.Group() },
+    bendHandle: { group: new THREE.Group() },
+    touchCue: new THREE.Group(),
+    cutCollar: { visible: false },
+    camera: new THREE.PerspectiveCamera(),
+    cameraTarget: new THREE.Vector3(),
+    requestRender() {},
+    updateAffordances() {},
+    updateCutCollar() {},
+  });
+
+  const visual = studio.createPlantVisual(graph, false);
+  studio.plants.set(graph.id, visual);
+  const organGroup = visual.organs.get(bloom.id).group as THREE.Group;
+  visual.group.updateMatrixWorld(true);
+  const frontMatrix = organGroup.matrixWorld.clone();
+
+  studio.setCanonicalView("above", false);
+  visual.group.updateMatrixWorld(true);
+  assert.deepEqual(organGroup.matrixWorld.elements, frontMatrix.elements, "camera-only changes must not move the organ group");
+
+  const grabbed = sampleBranch(root, root.activeLength * 0.82).position;
+  const aimed = aimBranch(
+    graph,
+    root.id,
+    grabbed,
+    { x: 1.2, y: 3.7, z: -0.7 },
+  );
+  visual.graph = aimed;
+  studio.syncPlantVisual(visual);
+  visual.group.updateMatrixWorld(true);
+  const aimedMatrix = organGroup.matrixWorld.clone();
+  assert.ok(
+    new THREE.Vector3().setFromMatrixPosition(aimedMatrix)
+      .distanceTo(new THREE.Vector3().setFromMatrixPosition(frontMatrix)) > 0.02,
+    "aiming the stem must move the production organ group coherently",
+  );
+
+  const aimedRoot = aimed.branches.get(aimed.rootBranchId)!;
+  const bent = bendBranch(aimed, {
+    branchId: aimedRoot.id,
+    stationDistance: aimedRoot.activeLength * 0.54,
+    target: { x: 1.7, y: 3.1, z: -0.4 },
+  });
+  visual.graph = bent;
+  studio.syncPlantVisual(visual);
+  visual.group.updateMatrixWorld(true);
+  const bentMatrix = organGroup.matrixWorld.clone();
+  assert.ok(
+    new THREE.Vector3().setFromMatrixPosition(bentMatrix)
+      .distanceTo(new THREE.Vector3().setFromMatrixPosition(aimedMatrix)) > 0.01,
+    "bending the stem must move the production organ group coherently",
+  );
+
+  disposeObject(visual.group);
 });

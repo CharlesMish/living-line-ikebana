@@ -6,7 +6,7 @@ import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/a
 import { sampleMaterialFrame } from "../core/frames.ts";
 import type { Vec3 } from "../core/math.ts";
 import type { Branch, CutPlan, Organ, PlantGraph } from "../core/types.ts";
-import { botanicalSeed, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry, createPetalGeometry } from "./botanicalGeometry.ts";
+import { bloomPetalCount, botanicalSeed, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
 import {
   disposeObject,
   splitBranchAtMaterialDistance,
@@ -581,35 +581,43 @@ export class ThreeStudio {
       group.add(leaf, vein);
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
-      const petalMaterial = bodyMaterial(appearance.bloom.color, appearance.bloom.roughness, true);
-      for (let index = 0; index < 7; index += 1) {
-        const angle = (index / 7) * Math.PI * 2;
-        const petal = new THREE.Mesh(createPetalGeometry(botanicalSeed(`${organ.id}:petal-${index}`, seed)), petalMaterial);
+      const bloom = appearance.bloom;
+      const openFace = bloom.form === "open-face";
+      const petalCount = bloomPetalCount(bloom.form);
+      const petalMaterial = bodyMaterial(bloom.color, bloom.roughness, true);
+      for (let index = 0; index < petalCount; index += 1) {
+        const angle = (index / petalCount) * Math.PI * 2;
+        const petal = new THREE.Mesh(
+          createBloomPetalGeometry(botanicalSeed(`${organ.id}:petal-${index}`, seed), bloom.form),
+          petalMaterial,
+        );
         petal.rotation.z = angle;
         petal.castShadow = !pending;
         group.add(petal);
       }
-      group.add(new THREE.Mesh(createCalyxGeometry(seed), bodyMaterial(0x57734d, 0.82, true)));
+      group.add(new THREE.Mesh(createCalyxGeometry(seed, bloom.form), bodyMaterial(0x57734d, 0.82, true)));
       const center = new THREE.Mesh(
-        new THREE.SphereGeometry(0.09, 12, 8),
-        bodyMaterial(0xb68840, 0.78),
+        new THREE.SphereGeometry(openFace ? 0.11 : 0.09, 12, 8),
+        bodyMaterial(openFace ? 0xc49a58 : 0xb68840, 0.78),
       );
-      center.scale.z = 0.52;
-      center.position.z = 0.07;
+      center.scale.z = openFace ? 0.36 : 0.52;
+      center.position.z = openFace ? 0.042 : 0.07;
       group.add(center);
       // One instanced mesh adds a quiet ring of anthers, owned by this bloom.
       const anthers = new THREE.InstancedMesh(
-        new THREE.SphereGeometry(0.019, 6, 4), bodyMaterial(0xe0bd72, 0.8), 12,
+        new THREE.SphereGeometry(openFace ? 0.022 : 0.019, 6, 4), bodyMaterial(0xe0bd72, 0.8), 12,
       );
       const antherMatrix = new THREE.Matrix4();
+      const antherRing = openFace ? 0.155 : 0.105;
+      const antherZ = openFace ? 0.05 : 0.085;
       for (let index = 0; index < 12; index += 1) {
         const angle = index * Math.PI / 6;
-        antherMatrix.makeTranslation(Math.cos(angle) * 0.105, Math.sin(angle) * 0.105, 0.085);
+        antherMatrix.makeTranslation(Math.cos(angle) * antherRing, Math.sin(angle) * antherRing, antherZ);
         anthers.setMatrixAt(index, antherMatrix);
       }
       anthers.instanceMatrix.needsUpdate = true;
       group.add(anthers);
-      hitRadius = 0.46;
+      hitRadius = bloom.hitRadius;
     } else {
       const bud = new THREE.Mesh(
         new THREE.SphereGeometry(0.16, 13, 9),
@@ -1383,7 +1391,9 @@ export class ThreeStudio {
     return { calls: render.calls, triangles: render.triangles, lines: render.lines,
       geometries: memory.geometries, textures: memory.textures, programs: this.renderer.info.programs?.length ?? 0,
       drawingBuffer: { width: this.canvas.width, height: this.canvas.height },
-      note: "Counts from one render, not frame-rate or phone-performance measurements." };
+      pixelRatio: this.renderer.getPixelRatio(),
+      pixelRatioCap: this.options.maxPixelRatio,
+      note: "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements." };
   }
 
   renderNow() {

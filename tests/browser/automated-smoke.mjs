@@ -117,7 +117,8 @@ try {
     const required = [
       "app-root",
       "scene-canvas",
-      "material-flowering-branch",
+      "material-source",
+      "materials-toggle",
       "posture-arrange",
       "posture-step-back",
       "tool-shape",
@@ -296,13 +297,13 @@ try {
     // Keyboard-equivalent activation commits an insert synchronously.
     await page.evaluate(() => {
       document
-        .querySelector('[data-testid="material-flowering-branch"]')
+        .querySelector('[data-testid="material-source"]')
         .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
     });
 
     // A pointerdown on the tray opens an insert transaction; cancel it explicitly.
     await page.evaluate(() => {
-      const button = document.querySelector('[data-testid="material-flowering-branch"]');
+      const button = document.querySelector('[data-testid="material-source"]');
       const rect = button.getBoundingClientRect();
       button.dispatchEvent(
         new PointerEvent("pointerdown", {
@@ -448,7 +449,7 @@ try {
     // Collect a new record after the one-shot clear.
     await page.evaluate(() => {
       document
-        .querySelector('[data-testid="material-flowering-branch"]')
+        .querySelector('[data-testid="material-source"]')
         .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
     });
     const collected = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
@@ -513,7 +514,7 @@ try {
     // own attempt at zero misses, not inherit the miss from before the view change.
     await page.evaluate(() => {
       document
-        .querySelector('[data-testid="material-flowering-branch"]')
+        .querySelector('[data-testid="material-source"]')
         .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
     });
     const after = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
@@ -537,7 +538,7 @@ try {
     });
     await page.evaluate(() => {
       document
-        .querySelector('[data-testid="material-flowering-branch"]')
+        .querySelector('[data-testid="material-source"]')
         .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
     });
     const before = await page.evaluate(() => window.__IKEBANA_TEST__.getPersistedTelemetry());
@@ -576,7 +577,7 @@ try {
 
     // Begin a hold-drag from the tray (an active, uncommitted insert transaction).
     await page.evaluate(() => {
-      const button = document.querySelector('[data-testid="material-flowering-branch"]');
+      const button = document.querySelector('[data-testid="material-source"]');
       const rect = button.getBoundingClientRect();
       button.dispatchEvent(
         new PointerEvent("pointerdown", {
@@ -657,7 +658,7 @@ try {
       // write throws.
       await quotaPage.evaluate(() => {
         document
-          .querySelector('[data-testid="material-flowering-branch"]')
+          .querySelector('[data-testid="material-source"]')
           .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
       });
 
@@ -769,7 +770,7 @@ try {
       // save attempt must fail, triggering eviction, then a retry that fits.
       await sharedQuotaPage.evaluate(() => {
         document
-          .querySelector('[data-testid="material-flowering-branch"]')
+          .querySelector('[data-testid="material-source"]')
           .dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
       });
 

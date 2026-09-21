@@ -74,14 +74,55 @@ test("another pointer cannot cancel the owner; a held mouse drag still updates a
   assert.equal(saves.length, 1);
 });
 
+test("opening material choices cancels the acquired branch before showing the panel without seating", () => {
+  const { app, coordinator, saves, cancellations, initial } = harness();
+  app.handlePointerMove(move());
+  let opened = false;
+  app.ui.setState = (patch: { materialMenuOpen: boolean; viewMenuOpen: boolean; experimentPanelOpen: boolean }) => {
+    assert.equal(coordinator.getDebugState().active, null);
+    assert.deepEqual(patch, { materialMenuOpen: true, viewMenuOpen: false, experimentPanelOpen: false });
+    opened = true;
+  };
+  app.handleUICommand({ kind: "set-material-menu", open: true }, {});
+  assert.equal(opened, true);
+  assert.deepEqual(cancellations, ["view-command"]);
+  assert.deepEqual([...coordinator.getDocumentSnapshot().plants.values()].map(toCanonicalPlantGraph), initial);
+  app.handlePointerUp(move(7, 0));
+  assert.equal(saves.length, 0);
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+});
+
+test("selecting a palette material cancels first, does not insert, and closing cannot restore the preview", () => {
+  const { app, coordinator, saves, cancellations, initial } = harness("insert");
+  app.handlePointerMove(move());
+  const patches: object[] = [];
+  app.ui.setState = (patch: object) => { patches.push(patch); };
+  app.handleUICommand({ kind: "select-material", materialId: "bare-branch" }, {});
+  assert.equal(coordinator.getDebugState().active, null);
+  assert.deepEqual(cancellations, ["view-command"]);
+  assert.deepEqual([...coordinator.getDocumentSnapshot().plants.values()].map(toCanonicalPlantGraph), initial);
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
+  assert.equal(saves.length, 0);
+  assert.deepEqual(patches[0], {
+    selectedMaterialId: "bare-branch",
+    materialMenuOpen: false,
+    viewMenuOpen: false,
+    experimentPanelOpen: false,
+  });
+  app.handleUICommand({ kind: "set-material-menu", open: false }, {});
+  app.handlePointerUp(move(7, 0));
+  assert.equal(saves.length, 0);
+  assert.equal(coordinator.getDocumentSnapshot().plants.size, 0);
+});
+
 test("opening view choices cancels the acquired branch before showing the menu without moving the camera", () => {
   const { app, coordinator, saves, cancellations, initial } = harness();
   const camera = coordinator.getDocumentSnapshot().camera;
   app.handlePointerMove(move());
   let opened = false;
-  app.ui.setState = (patch: { viewMenuOpen: boolean; experimentPanelOpen: boolean }) => {
+  app.ui.setState = (patch: { viewMenuOpen: boolean; experimentPanelOpen: boolean; materialMenuOpen: boolean }) => {
     assert.equal(coordinator.getDebugState().active, null);
-    assert.deepEqual(patch, { viewMenuOpen: true, experimentPanelOpen: false });
+    assert.deepEqual(patch, { viewMenuOpen: true, experimentPanelOpen: false, materialMenuOpen: false });
     opened = true;
   };
   app.handleUICommand({ kind: "set-view-menu", open: true }, {});
@@ -107,6 +148,7 @@ test("Stop and look cancels plant work, preserves the current view and leaves no
     assert.equal(coordinator.getDebugState().posture, "step-back");
     assert.equal(state.experimentPanelOpen, false);
     assert.equal(state.viewMenuOpen, false);
+    assert.equal(state.materialMenuOpen, false);
     assert.equal(reset, 1);
     assert.deepEqual(cancellations, ["posture-command"]);
     assert.deepEqual(coordinator.getDocumentSnapshot().camera, camera);

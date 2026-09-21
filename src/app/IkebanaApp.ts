@@ -4,6 +4,7 @@ import {
   assertValidPlantGraph,
   bendStationAtFraction,
   fromCanonicalPlantGraph,
+  getMaterialDefinitions,
   legalBendStation,
   normalize,
   previewPrune,
@@ -61,7 +62,8 @@ import {
 } from "./metrics.ts";
 import { GardenStore, validateArrangement, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
 import { GardenUI } from "./gardenUI.ts";
-import { describeFixture } from "./workbench.ts";
+import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
+import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
 import { cutCue, shapeCue } from "./craftCues.ts";
@@ -272,7 +274,10 @@ export class IkebanaApp {
     this.telemetryStore.prime();
     this.ui = createUIBindings({
       root,
-      initialState: { bendVariant: uiVariant(this.bendVariant) },
+      initialState: {
+        bendVariant: uiVariant(this.bendVariant),
+        selectedMaterialId: getMaterialDefinitions()[0]?.materialId ?? "flowering-branch",
+      },
     });
     this.canvas = document.createElement("canvas");
     this.canvas.className = "scene-canvas";
@@ -462,7 +467,7 @@ export class IkebanaApp {
     this.coordinator.commandPosture("step-back");
     this.cameraIsFree = true;
     this.coordinator.commandView("front", snapshot.camera);
-    this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false });
+    this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false, materialMenuOpen: false });
     this.ui.setStatus("A kept moment. Orbit or pan to look; make a copy to change it.");
     this.syncPresentation();
   }
@@ -491,12 +496,14 @@ export class IkebanaApp {
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants)) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    const loaded = getLastWorkbenchFixtureLoad();
+    if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
     this.selectedBranchId = null;
     this.cameraIsFree = value !== null;
     this.metrics.resetAttempt();
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
     this.coordinator.commandView("front", snapshot.camera);
-    this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false });
+    this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false, materialMenuOpen: false });
     this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : "A fresh bowl. Place a cutting.");
     this.syncPresentation();
   }
@@ -504,17 +511,36 @@ export class IkebanaApp {
   private workbenchReport() {
     this.pauseForGarden();
     const snapshot = this.arrangementSnapshot();
-    return { reportVersion: 1, mode: this.config.workbench ? "workbench" : "player", capturedAt: new Date().toISOString(),
-      fixture: describeFixture(snapshot), arrangement: snapshot, renderer: this.studio.getRendererStats(),
+    const rect = this.canvas.getBoundingClientRect();
+    const renderer = this.studio.getRendererStats();
+    const visual = typeof window !== "undefined" ? window.visualViewport : null;
+    return createWorkbenchReport({
+      mode: this.config.workbench ? "workbench" : "player",
+      capturedAt: new Date().toISOString(),
+      snapshot,
+      loadedFixture: getLastWorkbenchFixtureLoad(),
+      renderer,
       presentation: this.studio.getPresentationInventory(),
-      checks: { bend: "not recorded", cut: "not recorded", cancel: "not recorded", reload: "not recorded", physicalPhone: "not recorded" },
-    };
+      capture: describeWorkbenchCaptureEnvironment({
+        cssViewport: { width: rect.width, height: rect.height },
+        drawingBuffer: renderer.drawingBuffer,
+        devicePixelRatio: window.devicePixelRatio || 1,
+        rendererPixelRatio: renderer.pixelRatio,
+        rendererPixelRatioCap: renderer.pixelRatioCap,
+        browserWindow: { width: window.innerWidth, height: window.innerHeight },
+        visualViewport: visual
+          ? { width: visual.width, height: visual.height, scale: visual.scale }
+          : null,
+        userAgent: navigator.userAgent,
+        camera: snapshot.camera,
+      }),
+    });
   }
 
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
     if (this.workingSession && (command.kind === "set-posture" && command.posture === "arrange"
-      || ["set-tool", "begin-material-drag", "activate-material", "set-bend-variant"].includes(command.kind))) {
+      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant"].includes(command.kind))) {
       this.ui.setStatus("This is a kept arrangement. Make a working copy to change it.");
       return;
     }
@@ -523,7 +549,7 @@ export class IkebanaApp {
         this.interruptActive("posture-command");
         this.metrics.resetAttempt();
         this.coordinator.commandPosture("step-back");
-        this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false });
+        this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false, materialMenuOpen: false });
         this.ui.setStatus("Let it rest. What would another change add? Return to Arrange whenever you wish.");
         break;
       }
@@ -533,7 +559,7 @@ export class IkebanaApp {
         // recorded after this boundary.
         this.metrics.resetAttempt();
         this.coordinator.commandPosture(command.posture);
-        this.ui.setState({ posture: command.posture });
+        this.ui.setState({ posture: command.posture, materialMenuOpen: false });
         this.ui.setStatus(command.posture === "step-back" ? this.cameraModeHint() : "Touch the material.");
         break;
       }
@@ -570,7 +596,29 @@ export class IkebanaApp {
         // A second pointer can open this while the first holds a branch.
         // Cancel before exposing camera choices; opening never moves the view.
         this.interruptActive("view-command");
-        this.ui.setState({ viewMenuOpen: command.open, experimentPanelOpen: false });
+        this.ui.setState({ viewMenuOpen: command.open, experimentPanelOpen: false, materialMenuOpen: false });
+        break;
+      }
+      case "set-material-menu": {
+        // Opening, changing, or closing the picker cancels first. Closing
+        // never restores a cancelled preview.
+        this.interruptActive("view-command");
+        this.ui.setState({
+          materialMenuOpen: command.open,
+          viewMenuOpen: false,
+          experimentPanelOpen: false,
+        });
+        break;
+      }
+      case "select-material": {
+        this.interruptActive("view-command");
+        this.ui.setState({
+          selectedMaterialId: command.materialId,
+          materialMenuOpen: false,
+          viewMenuOpen: false,
+          experimentPanelOpen: false,
+        });
+        this.ui.setStatus("Drag the selected cutting to the pins.");
         break;
       }
       case "set-bend-variant": {

@@ -34,8 +34,9 @@ leaves the original intact. Fresh/copy actions offer to keep the existing bowl
 first. Download/import Garden backups to move collections between browsers.
 See [Garden behavior and phone checks](docs/GARDEN.md).
 
-Developers can add `?workbench=1` to the app URL for a separate saved bowl, fixed
-seeds, mixed fixtures and rendering reports. See [Workbench](docs/development/WORKBENCH.md).
+Developers can add `?workbench=1` to the app URL for a separate saved bowl, named
+fixture profiles, fixed seeds and rendering reports. See [Workbench](docs/development/WORKBENCH.md)
+and the [fixture-profile contract](docs/development/WORKBENCH_FIXTURE_PROFILES.md).
 The [Grok Bot handoff](docs/development/GROK_BOT_HANDOFF.md) commissions two bounded
 candidates using [material briefs](docs/development/MATERIAL_BRIEFS.md), an
 [independent review template](docs/development/REVIEW_TEMPLATE.md), and a

@@ -1,0 +1,749 @@
+{
+  "reportVersion": 2,
+  "schema": "living-line-workbench-report",
+  "mode": "workbench",
+  "capturedAt": "2026-09-21T14:00:00.000Z",
+  "loadedFixture": {
+    "fixtureId": "bare-branch",
+    "profileId": "bare-branch",
+    "kind": "single-material",
+    "dynamic": false,
+    "seed": 8278,
+    "count": 12,
+    "materialSequence": [
+      "bare-branch"
+    ],
+    "composition": {
+      "materialSequence": [
+        "bare-branch"
+      ],
+      "assignedMaterialIds": [
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch"
+      ],
+      "countsByMaterialId": {
+        "bare-branch": 12
+      },
+      "balancedEqualCopies": true,
+      "warnings": []
+    },
+    "construction": [
+      {
+        "index": 0,
+        "plantId": "plant-1",
+        "seed": 8278,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0,
+          "y": 0.55,
+          "z": 0
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 1,
+        "plantId": "plant-2",
+        "seed": 9255,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0.18913732982375425,
+          "y": 0.55,
+          "z": -0.20646324241167097
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 2,
+        "plantId": "plant-3",
+        "seed": 10232,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.3944636229074499,
+          "y": 0.55,
+          "z": 0.03461863952741615
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 3,
+        "plantId": "plant-4",
+        "seed": 11209,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0.38487570684224337,
+          "y": 0.55,
+          "z": 0.29507743099512634
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 4,
+        "plantId": "plant-5",
+        "seed": 12186,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.0975413854865116,
+          "y": 0.55,
+          "z": -0.5514396414090773
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 5,
+        "plantId": "plant-6",
+        "seed": 13163,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.3360455219075733,
+          "y": 0.55,
+          "z": 0.5282739887651737
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 6,
+        "plantId": "plant-7",
+        "seed": 14140,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0.6623428127781846,
+          "y": 0.55,
+          "z": -0.178050550016232
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 7,
+        "plantId": "plant-8",
+        "seed": 15117,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.6574304475715255,
+          "y": 0.55,
+          "z": -0.34144575939071753
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 8,
+        "plantId": "plant-9",
+        "seed": 16094,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0.2716713679821165,
+          "y": 0.55,
+          "z": 0.7439050126318048
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 9,
+        "plantId": "plant-10",
+        "seed": 17071,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0.3205089884741266,
+          "y": 0.55,
+          "z": -0.7764496044865322
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 10,
+        "plantId": "plant-11",
+        "seed": 18048,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.7789323117740707,
+          "y": 0.55,
+          "z": 0.36450576631145615
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 11,
+        "plantId": "plant-12",
+        "seed": 19025,
+        "materialId": "bare-branch",
+        "base": {
+          "x": 0.8205804930485834,
+          "y": 0.55,
+          "z": 0.257386197042778
+        },
+        "generatorVersion": "bare-branch-v1"
+      }
+    ],
+    "cameraView": "front",
+    "notes": "Repeats this one registered material.",
+    "bowlMatchesLoadedFixture": true
+  },
+  "fixture": {
+    "successfulPlantOrdinal": 12,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 8278,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-10",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 17071,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-11",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 18048,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-12",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 19025,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 9255,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 11209,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 12186,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-7",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 14140,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-8",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 15117,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-9",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 16094,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "plantsInIdentityOrder": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 8278,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 9255,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 11209,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 12186,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-7",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 14140,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-8",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 15117,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-9",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 16094,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-10",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 17071,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-11",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 18048,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-12",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 19025,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "byGeneratorVersion": {
+      "bare-branch-v1": 12
+    }
+  },
+  "capture": {
+    "status": "not-captured-in-this-environment",
+    "cssViewport": {
+      "width": null,
+      "height": null,
+      "source": "canvas-client-rect"
+    },
+    "drawingBuffer": {
+      "width": null,
+      "height": null,
+      "source": "canvas-drawing-buffer"
+    },
+    "pixelRatio": {
+      "device": null,
+      "renderer": null,
+      "rendererCap": null,
+      "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+    },
+    "browserWindow": {
+      "width": null,
+      "height": null,
+      "source": "window-inner"
+    },
+    "visualViewport": null,
+    "userAgent": null,
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    "notes": [
+      "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+      "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+      "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+      "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+      "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+    ]
+  },
+  "renderer": {
+    "calls": 0,
+    "triangles": 0,
+    "lines": 0,
+    "geometries": 0,
+    "textures": 0,
+    "programs": 0,
+    "drawingBuffer": {
+      "width": 0,
+      "height": 0
+    },
+    "pixelRatio": 0,
+    "note": "Renderer resource counts were not captured in this Node identity sample. Draw calls/triangles are never FPS."
+  },
+  "presentation": {
+    "successfulPlantOrdinal": 12,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 8278,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-10",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 17071,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-11",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 18048,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-12",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 19025,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 9255,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 11209,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 12186,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-7",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 14140,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-8",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 15117,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-9",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 16094,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "plantsInIdentityOrder": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 8278,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 9255,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 11209,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 12186,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-7",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 14140,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-8",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 15117,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-9",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 16094,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-10",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 17071,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-11",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 18048,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-12",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 19025,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "byGeneratorVersion": {
+      "bare-branch-v1": 12
+    }
+  },
+  "arrangement": {
+    "successfulPlantOrdinal": 12,
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    "plantIds": [
+      "plant-1",
+      "plant-10",
+      "plant-11",
+      "plant-12",
+      "plant-2",
+      "plant-3",
+      "plant-4",
+      "plant-5",
+      "plant-6",
+      "plant-7",
+      "plant-8",
+      "plant-9"
+    ],
+    "omitted": "Full graphs omitted from this identity sample. Repeat the scene with profileId + seed + count."
+  },
+  "checks": {
+    "bend": "not recorded",
+    "cut": "not recorded",
+    "cancel": "not recorded",
+    "reload": "not recorded",
+    "physicalPhone": "not recorded",
+    "captureEnvironment": "not recorded — Node identity sample; CSS viewport / drawing-buffer / pixel ratio require a browser download"
+  }
+}

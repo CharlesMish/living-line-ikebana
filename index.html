@@ -69,12 +69,12 @@
             <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
           </div>
 
-          <div class="material-tray" aria-label="Living materials">
+          <div class="material-dock">
             <button
-              id="flowering-cutting"
+              id="selected-cutting"
               class="material-card"
               type="button"
-              data-testid="material-flowering-branch"
+              data-testid="material-source"
               data-material-id="flowering-branch"
               aria-label="Drag flowering branch to the kenzan"
             >
@@ -103,11 +103,113 @@
                 <i></i><i></i><i></i>
               </span>
             </button>
-            <button
-              id="leafy-cutting" class="material-card" type="button"
-              data-testid="material-leafy-shoot" data-material-id="leafy-shoot"
-              aria-label="Drag leafy shoot to the kenzan"
-            >
+            <div class="material-menu">
+              <button
+                id="materials-toggle"
+                class="materials-toggle"
+                type="button"
+                data-testid="materials-toggle"
+                aria-expanded="false"
+                aria-controls="material-options"
+                aria-haspopup="true"
+              >
+                <span>Materials</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+              </button>
+              <nav
+                id="material-options"
+                class="material-options"
+                data-testid="material-options"
+                aria-label="Choose a cutting"
+                hidden
+              >
+                <button type="button" data-material-choice="flowering-branch" data-testid="material-choice-flowering-branch" aria-pressed="true">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M18 58 C78 60 117 42 167 31 C207 22 245 14 283 9" />
+                    <path class="cutting-twig" d="M114 43 C111 27 104 17 94 9" />
+                    <path class="cutting-twig" d="M173 30 C183 18 194 12 207 8" />
+                    <path class="cutting-twig" d="M217 20 C225 30 236 36 249 38" />
+                    <ellipse class="cutting-leaf" cx="91" cy="12" rx="12" ry="5" transform="rotate(35 91 12)" />
+                    <ellipse class="cutting-leaf" cx="117" cy="35" rx="14" ry="5" transform="rotate(-31 117 35)" />
+                    <ellipse class="cutting-leaf" cx="202" cy="10" rx="13" ry="5" transform="rotate(-22 202 10)" />
+                    <ellipse class="cutting-leaf" cx="245" cy="36" rx="14" ry="5" transform="rotate(21 245 36)" />
+                    <g class="cutting-bloom" transform="translate(282 9)">
+                      <circle cx="-5" cy="0" r="5" />
+                      <circle cx="0" cy="-5" r="5" />
+                      <circle cx="5" cy="0" r="5" />
+                      <circle cx="0" cy="5" r="5" />
+                      <circle class="cutting-bloom-center" cx="0" cy="0" r="3" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Flowering branch</span>
+                </button>
+                <button type="button" data-material-choice="leafy-shoot" data-testid="material-choice-leafy-shoot" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-twig" d="M18 60 Q150 52 280 14" />
+                    <g class="cutting-leaf">
+                      <ellipse cx="86" cy="40" rx="25" ry="8" transform="rotate(40 86 40)" />
+                      <ellipse cx="130" cy="57" rx="24" ry="8" transform="rotate(-20 130 57)" />
+                      <ellipse cx="170" cy="23" rx="24" ry="7" transform="rotate(42 170 23)" />
+                      <ellipse cx="209" cy="36" rx="22" ry="7" transform="rotate(-15 209 36)" />
+                      <ellipse cx="248" cy="12" rx="18" ry="6" transform="rotate(30 248 12)" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Leafy shoot</span>
+                </button>
+                <button type="button" data-material-choice="bare-branch" data-testid="material-choice-bare-branch" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M16 62 C78 58 128 42 176 26 C214 16 250 10 286 7" />
+                    <path class="cutting-twig" d="M96 50 C90 34 74 20 52 12" />
+                    <path class="cutting-twig" d="M168 30 C190 34 212 44 228 56" />
+                    <path class="cutting-twig" d="M218 16 C226 8 240 4 256 5" />
+                  </svg>
+                  <span class="material-choice-name">Bare branch</span>
+                </button>
+                <button type="button" data-material-choice="single-flower" data-testid="material-choice-single-flower" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M22 62 C92 58 148 42 198 24 C228 14 248 10 262 8" />
+                    <ellipse class="cutting-leaf" cx="96" cy="46" rx="16" ry="6" transform="rotate(38 96 46)" />
+                    <ellipse class="cutting-leaf" cx="156" cy="28" rx="14" ry="5" transform="rotate(-28 156 28)" />
+                    <g class="cutting-bloom" transform="translate(268 10)">
+                      <ellipse cx="-9" cy="0" rx="9" ry="6" />
+                      <ellipse cx="0" cy="-8" rx="9" ry="6" />
+                      <ellipse cx="9" cy="0" rx="9" ry="6" />
+                      <ellipse cx="4" cy="8" rx="8" ry="5" />
+                      <ellipse cx="-5" cy="7" rx="8" ry="5" />
+                      <circle class="cutting-bloom-center" cx="0" cy="0" r="4" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Single flower</span>
+                </button>
+              </nav>
+            </div>
+          </div>
+          <div id="material-templates" hidden>
+            <template id="material-template-flowering-branch" data-material-label="flowering branch">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M18 58 C78 60 117 42 167 31 C207 22 245 14 283 9" />
+                <path class="cutting-twig" d="M114 43 C111 27 104 17 94 9" />
+                <path class="cutting-twig" d="M173 30 C183 18 194 12 207 8" />
+                <path class="cutting-twig" d="M217 20 C225 30 236 36 249 38" />
+                <ellipse class="cutting-leaf" cx="91" cy="12" rx="12" ry="5" transform="rotate(35 91 12)" />
+                <ellipse class="cutting-leaf" cx="117" cy="35" rx="14" ry="5" transform="rotate(-31 117 35)" />
+                <ellipse class="cutting-leaf" cx="202" cy="10" rx="13" ry="5" transform="rotate(-22 202 10)" />
+                <ellipse class="cutting-leaf" cx="245" cy="36" rx="14" ry="5" transform="rotate(21 245 36)" />
+                <g class="cutting-bloom" transform="translate(282 9)">
+                  <circle cx="-5" cy="0" r="5" />
+                  <circle cx="0" cy="-5" r="5" />
+                  <circle cx="5" cy="0" r="5" />
+                  <circle cx="0" cy="5" r="5" />
+                  <circle class="cutting-bloom-center" cx="0" cy="0" r="3" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Flowering branch</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-leafy-shoot" data-material-label="leafy shoot">
               <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
                 <path class="cutting-twig" d="M18 60 Q150 52 280 14" />
                 <g class="cutting-leaf">
@@ -123,7 +225,40 @@
                 <span class="material-verb">drag to the pins</span>
               </span>
               <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
-            </button>
+            </template>
+            <template id="material-template-bare-branch" data-material-label="bare branch">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M16 62 C78 58 128 42 176 26 C214 16 250 10 286 7" />
+                <path class="cutting-twig" d="M96 50 C90 34 74 20 52 12" />
+                <path class="cutting-twig" d="M168 30 C190 34 212 44 228 56" />
+                <path class="cutting-twig" d="M218 16 C226 8 240 4 256 5" />
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Bare branch</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-single-flower" data-material-label="single flower">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M22 62 C92 58 148 42 198 24 C228 14 248 10 262 8" />
+                <ellipse class="cutting-leaf" cx="96" cy="46" rx="16" ry="6" transform="rotate(38 96 46)" />
+                <ellipse class="cutting-leaf" cx="156" cy="28" rx="14" ry="5" transform="rotate(-28 156 28)" />
+                <g class="cutting-bloom" transform="translate(268 10)">
+                  <ellipse cx="-9" cy="0" rx="9" ry="6" />
+                  <ellipse cx="0" cy="-8" rx="9" ry="6" />
+                  <ellipse cx="9" cy="0" rx="9" ry="6" />
+                  <ellipse cx="4" cy="8" rx="8" ry="5" />
+                  <ellipse cx="-5" cy="7" rx="8" ry="5" />
+                  <circle class="cutting-bloom-center" cx="0" cy="0" r="4" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Single flower</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
           </div>
         </div>
       </header>
@@ -143,7 +278,7 @@
           <button id="experiment-close" class="icon-button" type="button" aria-label="Close guide">×</button>
         </div>
         <ol class="craft-guide">
-          <li><strong>Place.</strong> Drag a cutting down from the top tray onto the pins.</li>
+          <li><strong>Place.</strong> Drag the selected cutting onto the pins. Open Materials to choose another; choosing does not place it.</li>
           <li><strong>Aim.</strong> Drag a branch to turn its continuation.</li>
           <li><strong>Bend.</strong> <span data-guide-bend>Drag the pale point into a broad curve. The stem keeps its length.</span></li>
           <li><strong>Slide the base.</strong> Drag the base ring to slide the cutting across the pins.</li>
@@ -160,7 +295,7 @@
         <details class="looking-study">
           <summary>Optional study · Two voices</summary>
           <p class="looking-prompt">Let one cutting lead, and let another answer.</p>
-          <p class="panel-note">Try the flowering branch with the leafy shoot. Notice where leaves gather and where a stem remains visible. Aim them together or apart, then look at the space between them.</p>
+          <p class="panel-note">Try the flowering branch with the leafy shoot, or a bare line with a single flower. Notice where leaves gather and where a stem remains visible. Aim them together or apart, then look at the space between them.</p>
           <p class="panel-note">Which line draws your eye first? A different answer from another view is something to explore.</p>
         </details>
         <details class="looking-study">

@@ -6,7 +6,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 1. Canonical identity and determinism
 
-- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1` and `leafy-shoot-v1`; material choice never changes the global successful-seat ordinal.
+- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1`, `leafy-shoot-v1`, `bare-branch-v1`, and `single-flower-v1`; material choice never changes the global successful-seat ordinal.
 - Successful seat ordinal `N`, starting at 1, reserves `plant-N` with seed `(7301 + N * 977) >>> 0`. Thus `plant-1` is seed `8278` and `plant-2` is seed `9255`.
 - A cancelled or invalid insertion does not advance `N`.
 - The pending ghost is the complete reserved graph, including branch continuations, petioles, pedicels, leaves, buds, and blooms. A valid release commits that graph at the exact valid previewed translation. It does not regenerate it.
@@ -222,8 +222,8 @@ This section is provisional: it documents diagnostic instrumentation, not a craf
   Opening/closing it changes no graph, camera, saved data, inventory or ordinal.
   Opening the containing guide cancels an active gesture through the existing
   interruption path. Escape closes the guide and returns focus to its opener.
-- The prompt imposes no count, school roles, target angles, completion detector or
-  correctness score. Any number of copies of either existing material is allowed.
+-   The prompt imposes no count, school roles, target angles, completion detector or
+  correctness score. Any number of copies of any registered material is allowed.
   Finishing is the player's decision. Open play is the default.
 
 ### Optional studies and stopping

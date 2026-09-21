@@ -62,7 +62,8 @@ import {
 } from "./metrics.ts";
 import { GardenStore, validateArrangement, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
 import { GardenUI } from "./gardenUI.ts";
-import { describeFixture } from "./workbench.ts";
+import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
+import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
 import { cutCue, shapeCue } from "./craftCues.ts";
@@ -495,6 +496,8 @@ export class IkebanaApp {
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants)) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    const loaded = getLastWorkbenchFixtureLoad();
+    if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
     this.selectedBranchId = null;
     this.cameraIsFree = value !== null;
     this.metrics.resetAttempt();
@@ -508,11 +511,30 @@ export class IkebanaApp {
   private workbenchReport() {
     this.pauseForGarden();
     const snapshot = this.arrangementSnapshot();
-    return { reportVersion: 1, mode: this.config.workbench ? "workbench" : "player", capturedAt: new Date().toISOString(),
-      fixture: describeFixture(snapshot), arrangement: snapshot, renderer: this.studio.getRendererStats(),
+    const rect = this.canvas.getBoundingClientRect();
+    const renderer = this.studio.getRendererStats();
+    const visual = typeof window !== "undefined" ? window.visualViewport : null;
+    return createWorkbenchReport({
+      mode: this.config.workbench ? "workbench" : "player",
+      capturedAt: new Date().toISOString(),
+      snapshot,
+      loadedFixture: getLastWorkbenchFixtureLoad(),
+      renderer,
       presentation: this.studio.getPresentationInventory(),
-      checks: { bend: "not recorded", cut: "not recorded", cancel: "not recorded", reload: "not recorded", physicalPhone: "not recorded" },
-    };
+      capture: describeWorkbenchCaptureEnvironment({
+        cssViewport: { width: rect.width, height: rect.height },
+        drawingBuffer: renderer.drawingBuffer,
+        devicePixelRatio: window.devicePixelRatio || 1,
+        rendererPixelRatio: renderer.pixelRatio,
+        rendererPixelRatioCap: renderer.pixelRatioCap,
+        browserWindow: { width: window.innerWidth, height: window.innerHeight },
+        visualViewport: visual
+          ? { width: visual.width, height: visual.height, scale: visual.scale }
+          : null,
+        userAgent: navigator.userAgent,
+        camera: snapshot.camera,
+      }),
+    });
   }
 
   private handleUICommand(command: UICommand, sourceEvent: Event) {

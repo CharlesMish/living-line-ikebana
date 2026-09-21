@@ -1,0 +1,36 @@
+{
+  "reportVersion": 2,
+  "schema": "living-line-workbench-report",
+  "status": "unavailable-on-this-checkout",
+  "capturedAt": "2026-09-21T14:00:00.000Z",
+  "loadedFixture": {
+    "fixtureId": "single-flower",
+    "profileId": "single-flower",
+    "seed": 8278,
+    "count": 12,
+    "materialSequence": [
+      "single-flower"
+    ],
+    "missingMaterialIds": [
+      "single-flower"
+    ]
+  },
+  "candidateB": {
+    "sha": "a4570f966cb5d89eba8d7732d46c9b9a5893a9e9",
+    "theirCount12File": "docs/development/reports/single-flower-v1/workbench-single-flower-count12-renderer.json",
+    "theirNote": "browser JSON download for count 12 was mixed-6; screenshot is authentic"
+  },
+  "doNotUse": {
+    "mixed6Calls": 371,
+    "mixed6Triangles": 54714,
+    "mixed6Count": 6,
+    "reason": "Those figures are a references+single-flower six-cutting catalog-cycle scene, not single-flower ×12."
+  },
+  "reconstruction": {
+    "fixtureId": "single-flower",
+    "seed": 8278,
+    "count": 12,
+    "cameraView": "front",
+    "onceRegistered": "createWorkbenchFixture('single-flower', 8278, 12) then download a reportVersion 2 capture in the browser."
+  }
+}

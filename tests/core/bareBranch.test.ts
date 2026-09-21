@@ -177,9 +177,14 @@ test("workbench fixtures and Garden copies isolate a later cut of the candidate"
     assert.deepEqual(snapshot, createWorkbenchFixture("bare-branch", seed, 1));
   }
   const mixed = createWorkbenchFixture("mixed", 8278, 6);
-  // Mixed now cycles the four registered materials. Two-reference mixed graphs
-  // are preserved by the `reference-pair` workbench profile, not by this loop.
+  const pair = createWorkbenchFixture("reference-pair", 8278, 6);
+  assert.deepEqual(mixed, pair);
   assert.deepEqual(mixed.plants.map((plant) => plant.generatorVersion), [
+    "one-branch-v1", "leafy-shoot-v1", "one-branch-v1",
+    "leafy-shoot-v1", "one-branch-v1", "leafy-shoot-v1",
+  ]);
+  const catalogCycle = createWorkbenchFixture("all-registered-materials", 8278, 6);
+  assert.deepEqual(catalogCycle.plants.map((plant) => plant.generatorVersion), [
     "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1",
     "one-branch-v1", "leafy-shoot-v1",
   ]);

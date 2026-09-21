@@ -28,16 +28,16 @@
 | Reload after a committed edit | | |
 | Garden original survives edited copy | | |
 | Front / ¾ / Above | | |
-| Mixed reference scene | | |
+| Stable `reference-pair` scene | | |
 | Narrow portrait / short landscape / large text | | |
 | Physical phone | | |
 
 ## Rendering comparison
 
-- Browser/device/OS/viewport/pixel ratio:
+- Browser/device/OS; CSS viewport (canvas); browser-window inner size; drawing-buffer size; device vs renderer pixel ratio. Do not collapse these into one “viewport” number or a device-mode label.
 - Same seed, count, camera and render conditions for baseline/candidate:
-- Report files for count 1 / mixed 6 / stress 12:
-- Resource-count differences:
+- Report files for count 1 / stable `reference-pair` 6 / stress 12. Named profiles, not catalog-cycling mixed.
+- Resource-count differences (draw calls/triangles are not FPS):
 - Observed response/stalls, if actually measured:
 - Missing measurements:
 

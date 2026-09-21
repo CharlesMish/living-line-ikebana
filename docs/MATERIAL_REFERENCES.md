@@ -73,9 +73,12 @@ face (`single-flower-v1`, appearance-driven open-face bloom beside the retained
 cupped flowering path). They remain review candidates, not a shipping palette
 commitment. Original PRs #15 and #16 stay intact.
 
-Workbench `mixed` now cycles all registered materials. Named comparison profiles
-that preserve the two-reference mixed graphs live in
-[`src/app/workbenchProfiles.ts`](../src/app/workbenchProfiles.ts).
+Workbench `mixed` is a compatibility alias of `reference-pair` (flowering + leafy
+only). It does not cycle the live catalog. Named comparison profiles and the
+picker contract live in
+[`src/app/workbenchProfiles.ts`](../src/app/workbenchProfiles.ts) and
+[Workbench fixture profiles](development/WORKBENCH_FIXTURE_PROFILES.md).
+`all-registered-materials` is the labeled dynamic catalog cycle.
 
 ## Earlier palette pause
 

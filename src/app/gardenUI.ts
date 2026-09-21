@@ -1,11 +1,5 @@
-import { getMaterialDefinitions } from "../core/index.ts";
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
-import { createWorkbenchFixture, WORKBENCH_SEEDS } from "./workbench.ts";
-import {
-  createWorkbenchProfileFixture,
-  WORKBENCH_FIXTURE_PROFILE_IDS,
-  WORKBENCH_FIXTURE_PROFILE_LABELS,
-} from "./workbenchProfiles.ts";
+import { createWorkbenchFixture, listWorkbenchFixtureOptions, WORKBENCH_SEEDS } from "./workbench.ts";
 
 export interface GardenActions {
   pause(): void;
@@ -67,21 +61,13 @@ export class GardenUI {
         <div class="panel-heading"><div><p class="eyebrow">Development only · separate saved bowl</p><h1 id="workbench-title">Material workbench</h1></div><button id="workbench-close" class="icon-button" type="button" aria-label="Close workbench">×</button></div>
         <p>Use the normal Shape, Prune and camera controls. Loading a fixture replaces only this workbench bowl. Your player bowl and Garden are separate.</p>
         <form id="workbench-form" class="workbench-fields">
-          <label>Material<select id="workbench-material"></select></label>
+          <label>Fixture<select id="workbench-material"></select></label>
           <label>Starting seed<input id="workbench-seed" type="number" min="0" max="4294967295" step="1" required value="8278" list="workbench-seeds"/></label>
           <datalist id="workbench-seeds"></datalist>
           <label>Cuttings<select id="workbench-count"><option>1</option><option>2</option><option>6</option><option>12</option></select></label>
           <button type="submit">Load fixture</button>
         </form>
-        <p class="panel-note">Mixed cycles through the registered materials. Later cuttings use seed + 977 × index. Reset by loading the same fixture. Twelve is a stress case, not a lesson target.</p>
-        <div class="workbench-profiles">
-          <p class="eyebrow">Named comparison profiles</p>
-          <p class="panel-note">Stable IDs for review bowls. <code>reference-pair</code> keeps flowering + leafy graphs at the same seed, count and pin placement as the two-material mixed fixture. Generated from registered materials until named fixture DATA lands in <code>src/app/workbenchProfiles.ts</code>.</p>
-          <div class="garden-actions">
-            <label>Profile<select id="workbench-profile"></select></label>
-            <button type="button" id="workbench-load-profile">Load named profile</button>
-          </div>
-        </div>
+        <p class="panel-note">Registered materials and named comparison profiles. Unavailable options stay listed and disabled. <code>reference-pair</code> is flowering + leafy only. <code>mixed</code> is a programmatic alias of that pair, not a picker row. Later cuttings use seed + 977 × index. Reset by loading the same fixture. Twelve is a stress case, not a lesson target.</p>
         <div class="garden-actions"><button id="workbench-report" type="button">Download current report</button><a id="workbench-leave">Return to player studio</a></div>
         <p id="workbench-error" role="status" aria-live="polite"></p>
       </dialog>`;
@@ -197,17 +183,17 @@ export class GardenUI {
     const dialog = this.find<HTMLDialogElement>("#workbench-dialog");
     this.find("#workbench-open").hidden = false; this.root.dataset.workbench = "true";
     const select = this.find<HTMLSelectElement>("#workbench-material");
-    for (const id of [...getMaterialDefinitions().map((item) => item.materialId), "mixed"]) {
-      const option = document.createElement("option"); option.value = id; option.textContent = id.replaceAll("-", " "); select.append(option);
+    for (const option of listWorkbenchFixtureOptions()) {
+      const element = document.createElement("option");
+      element.value = option.id;
+      element.textContent = option.label;
+      element.disabled = !option.available;
+      if (!option.available && option.missingMaterialIds.length) {
+        element.title = `Requires ${option.missingMaterialIds.join(", ")}`;
+      }
+      select.append(element);
     }
     for (const seed of WORKBENCH_SEEDS) { const option = document.createElement("option"); option.value = String(seed); this.find("#workbench-seeds").append(option); }
-    const profileSelect = this.find<HTMLSelectElement>("#workbench-profile");
-    for (const id of WORKBENCH_FIXTURE_PROFILE_IDS) {
-      const option = document.createElement("option");
-      option.value = id;
-      option.textContent = WORKBENCH_FIXTURE_PROFILE_LABELS[id];
-      profileSelect.append(option);
-    }
     const leave = new URL(location.href); leave.searchParams.delete("workbench"); leave.searchParams.delete("fresh"); leave.searchParams.delete("clearStudyData");
     this.find<HTMLAnchorElement>("#workbench-leave").href = leave.href;
     on("#workbench-open", () => { this.actions.pause(); dialog.showModal(); });
@@ -217,17 +203,6 @@ export class GardenUI {
       event.preventDefault();
       try {
         const snapshot = createWorkbenchFixture(select.value, Number(this.find<HTMLInputElement>("#workbench-seed").value), Number(this.find<HTMLSelectElement>("#workbench-count").value));
-        this.returnToWork(); this.actions.replace(snapshot); dialog.close();
-        this.find("#workbench-error").textContent = "";
-      } catch (error) { this.find("#workbench-error").textContent = error instanceof Error ? error.message : String(error); }
-    }, { signal: this.controller.signal });
-    this.find("#workbench-load-profile").addEventListener("click", () => {
-      try {
-        const snapshot = createWorkbenchProfileFixture(
-          profileSelect.value,
-          Number(this.find<HTMLInputElement>("#workbench-seed").value),
-          Number(this.find<HTMLSelectElement>("#workbench-count").value),
-        );
         this.returnToWork(); this.actions.replace(snapshot); dialog.close();
         this.find("#workbench-error").textContent = "";
       } catch (error) { this.find("#workbench-error").textContent = error instanceof Error ? error.message : String(error); }

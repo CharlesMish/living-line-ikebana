@@ -1391,7 +1391,9 @@ export class ThreeStudio {
     return { calls: render.calls, triangles: render.triangles, lines: render.lines,
       geometries: memory.geometries, textures: memory.textures, programs: this.renderer.info.programs?.length ?? 0,
       drawingBuffer: { width: this.canvas.width, height: this.canvas.height },
-      note: "Counts from one render, not frame-rate or phone-performance measurements." };
+      pixelRatio: this.renderer.getPixelRatio(),
+      pixelRatioCap: this.options.maxPixelRatio,
+      note: "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements." };
   }
 
   renderNow() {

@@ -10,6 +10,7 @@ import {
   createFloweringBranch,
   deserializePlantGraph,
   getMaterialDefinition,
+  getMaterialDefinitions,
   isSupportedGeneratorVersion,
   prepareMaterialInsertion,
   serializePlantGraph,
@@ -106,4 +107,13 @@ test("material preparation requires an exact catalog ID without fallback", () =>
     prepareMaterialInsertion("flowering-branch ", 1, BASE),
     { ok: false, reason: "unknown-material", materialId: "flowering-branch " },
   );
+});
+
+test("provisional catalog order is flowering, leafy, bare-branch, then single-flower", () => {
+  assert.deepEqual(
+    getMaterialDefinitions().map((definition) => definition.materialId),
+    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower"],
+  );
+  assert.equal(isSupportedGeneratorVersion("bare-branch-v1"), true);
+  assert.equal(isSupportedGeneratorVersion("single-flower-v1"), true);
 });

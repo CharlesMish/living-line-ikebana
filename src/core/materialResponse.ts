@@ -7,3 +7,7 @@ export const FLOWERING_RESPONSE = Object.freeze({
   crown: 0.38, twig: 0.34, stalk: 0.18,
 });
 export const LEAFY_RESPONSE = Object.freeze({ stem: 0.39, stalk: 0.18 });
+export const BARE_RESPONSE = Object.freeze({
+  trunk: 0.86, answering: 0.66, counter: 0.60, distal: 0.50, spur: 0.42,
+});
+export const SINGLE_FLOWER_RESPONSE = Object.freeze({ stem: 0.46, stalk: 0.18 });

@@ -8,7 +8,9 @@ import * as THREE from "three";
  * - Preserve the organ Group's material frame, spin, scale and hit proxy.
  * - Leaf: use the geometry directly, without the old sphere scale/y offset.
  * - Petal: use directly, without the old sphere scale/radial offset; retain each
- *   petal's existing rotation.z = index * 2 PI / 7. Salt the seed by petal index.
+ *   petal's rotation.z = index * 2 PI / petalCount. Salt the seed by petal index.
+ *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
+ *   five-petal dish whose local +Z follows the supporting material frame.
  * - All surfaces face local +Z and require a DoubleSide material. Color values
  *   are restrained linear RGB multipliers; enable material.vertexColors.
  * - Calyx and leaf veins are optional subordinate detail, using their own green
@@ -20,7 +22,7 @@ import * as THREE from "three";
  *
  * QA: compare a fixed organ's position/normal/color arrays across rebuild,
  * bend, pruning a different branch, and WebGL recovery. Check both faces, a
- * grazing-angle leaf and the seven-petal bloom at phone size. Bounds stay close
+ * grazing-angle leaf and both bloom forms at phone size. Bounds stay close
  * to the old silhouettes; aesthetic detail must not change acquisition laws.
  */
 
@@ -104,6 +106,11 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate";
+export type BloomForm = "cupped" | "open-face";
+
+export function bloomPetalCount(form: BloomForm): number {
+  return form === "open-face" ? 5 : 7;
+}
 
 function leafSample(seed: number, t: number, across: number, form: LeafForm): SurfaceSample {
   const envelope = Math.sin(Math.PI * t);
@@ -177,14 +184,47 @@ export function createPetalGeometry(seed = 0): THREE.BufferGeometry {
   });
 }
 
+/**
+ * Shallower, broader petal for a readable single flower face. Local +Z remains
+ * the supporting-frame normal; this is not a camera billboard or a rigid card.
+ */
+export function createOpenFacePetalGeometry(seed = 0): THREE.BufferGeometry {
+  return bladeSurface("living-line/open-face-petal", (t, across) => {
+    const envelope = Math.sin(Math.PI * t);
+    const width = 0.24 * Math.pow(Math.max(0, envelope), 0.58)
+      * (0.72 + 0.4 * t) * (1 + across * (variation(seed, 4) - 0.5) * 0.08);
+    const x = 0.02 + t * (0.62 + (variation(seed, 5) - 0.5) * 0.016);
+    const y = -across * width + (variation(seed, 6) - 0.5) * 0.02 * envelope;
+    const z = 0.006 + 0.036 * t * t + 0.02 * across * across * envelope
+      + 0.004 * Math.sin(t * Math.PI * 3.2 + variation(seed, 7) * TAU)
+        * Math.pow(Math.abs(across), 2) * envelope
+      - 0.01 * Math.pow(t, 5);
+    const throat = 1 - Math.sqrt(t);
+    const value = 0.78 + 0.2 * Math.sqrt(t) + 0.03 * across * across;
+    return {
+      position: [x, y, z],
+      color: [
+        Math.min(1, value * (1.04 - throat * 0.08)),
+        value * (0.9 + 0.08 * t),
+        value * (0.82 + 0.1 * t),
+      ],
+    };
+  });
+}
+
+export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
+  return form === "open-face" ? createOpenFacePetalGeometry(seed) : createPetalGeometry(seed);
+}
+
 /** Small pointed green sepals behind the bloom; one geometry for one draw call. */
-export function createCalyxGeometry(seed = 0): THREE.BufferGeometry {
+export function createCalyxGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
+  const sepalCount = bloomPetalCount(form);
   const positions: number[] = [];
   const normals: number[] = [];
   const colors: number[] = [];
   const indices: number[] = [];
-  for (let sepal = 0; sepal < 7; sepal += 1) {
-    const angle = (sepal + 0.5) * TAU / 7;
+  for (let sepal = 0; sepal < sepalCount; sepal += 1) {
+    const angle = (sepal + 0.5) * TAU / sepalCount;
     const geometry = bladeSurface("sepal", (t, across) => {
       const width = 0.044 * Math.sin(Math.PI * t) * (1 - t * 0.4);
       const x = 0.014 + t * (0.23 + variation(seed, sepal + 10) * 0.014);

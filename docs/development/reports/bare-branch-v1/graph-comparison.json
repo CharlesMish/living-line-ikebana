@@ -1,0 +1,3291 @@
+{
+  "reportVersion": 1,
+  "note": "Graph/workbench inventory only. Renderer draw-call counts require a browser workbench capture and were not recorded in this file.",
+  "baselineSha": "251a94a1b176fb5f32cdbabfaed009deb92c7f57",
+  "candidate": "bare-branch-v1",
+  "seedSummaries": {
+    "8278": {
+      "bare-branch-v1": {
+        "generatorVersion": "bare-branch-v1",
+        "seed": 8278,
+        "branchCount": 5,
+        "organCount": 0,
+        "pointCount": 47,
+        "trunk": {
+          "id": "plant-1:trunk",
+          "length": 5.547559870416299,
+          "segments": 16,
+          "radius": 0.078,
+          "stiffness": 0.86
+        },
+        "children": [
+          {
+            "id": "plant-1:answering",
+            "kind": "lateral",
+            "parentDistance": 1.711023830885382,
+            "length": 2.01913359711878,
+            "segments": 8,
+            "radius": 0.044,
+            "stiffness": 0.66
+          },
+          {
+            "id": "plant-1:counter",
+            "kind": "lateral",
+            "parentDistance": 3.0960461915734876,
+            "length": 1.382102036476135,
+            "segments": 7,
+            "radius": 0.036,
+            "stiffness": 0.6
+          },
+          {
+            "id": "plant-1:distal",
+            "kind": "twig",
+            "parentDistance": 4.276998158090769,
+            "length": 1.0225663183163851,
+            "segments": 6,
+            "radius": 0.028,
+            "stiffness": 0.5
+          },
+          {
+            "id": "plant-1:spur",
+            "kind": "twig",
+            "parentDistance": 1.0116185126854842,
+            "length": 0.6571476861322294,
+            "segments": 5,
+            "radius": 0.02,
+            "stiffness": 0.42
+          }
+        ]
+      },
+      "one-branch-v1": {
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branchCount": 15,
+        "organCount": 10,
+        "pointCount": 94,
+        "trunk": {
+          "id": "plant-1:trunk",
+          "length": 6.149999999999999,
+          "segments": 18,
+          "radius": 0.105,
+          "stiffness": 0.72
+        },
+        "children": [
+          {
+            "id": "plant-1:lateral-a",
+            "kind": "lateral",
+            "parentDistance": 2.15,
+            "length": 2.35,
+            "segments": 9,
+            "radius": 0.064,
+            "stiffness": 0.52
+          },
+          {
+            "id": "plant-1:lateral-b",
+            "kind": "lateral",
+            "parentDistance": 3.62,
+            "length": 2.1999999999999993,
+            "segments": 9,
+            "radius": 0.06,
+            "stiffness": 0.5
+          },
+          {
+            "id": "plant-1:lateral-c",
+            "kind": "twig",
+            "parentDistance": 4.78,
+            "length": 1.4200000000000006,
+            "segments": 7,
+            "radius": 0.044,
+            "stiffness": 0.38
+          },
+          {
+            "id": "plant-1:twig-a",
+            "kind": "twig",
+            "parentDistance": 1.15,
+            "length": 1.2,
+            "segments": 6,
+            "radius": 0.038,
+            "stiffness": 0.34
+          },
+          {
+            "id": "plant-1:leaf-1",
+            "kind": "petiole",
+            "parentDistance": 1.42,
+            "length": 0.34000000000000014,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-2",
+            "kind": "petiole",
+            "parentDistance": 2.86,
+            "length": 0.3400000000000001,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-3",
+            "kind": "petiole",
+            "parentDistance": 0.7,
+            "length": 0.33999999999999997,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-4",
+            "kind": "petiole",
+            "parentDistance": 1.82,
+            "length": 0.3399999999999999,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-5",
+            "kind": "petiole",
+            "parentDistance": 0.62,
+            "length": 0.3400000000000003,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-6",
+            "kind": "petiole",
+            "parentDistance": 1.48,
+            "length": 0.34000000000000075,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-7",
+            "kind": "petiole",
+            "parentDistance": 0.65,
+            "length": 0.3400000000000003,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bloom-1",
+            "kind": "pedicel",
+            "parentDistance": 0.86,
+            "length": 0.45999999999999985,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bloom-2",
+            "kind": "pedicel",
+            "parentDistance": 1.86,
+            "length": 0.4599999999999999,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bud-1",
+            "kind": "pedicel",
+            "parentDistance": 1.2,
+            "length": 0.4599999999999999,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          }
+        ]
+      },
+      "leafy-shoot-v1": {
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 8278,
+        "branchCount": 8,
+        "organCount": 7,
+        "pointCount": 45,
+        "trunk": {
+          "id": "plant-1:stem",
+          "length": 4.6855729095637795,
+          "segments": 16,
+          "radius": 0.057,
+          "stiffness": 0.39
+        },
+        "children": [
+          {
+            "id": "plant-1:petiole-1",
+            "kind": "petiole",
+            "parentDistance": 1.1485489286274964,
+            "length": 0.23924555691424765,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-2",
+            "kind": "petiole",
+            "parentDistance": 1.6324013023903932,
+            "length": 0.23685637319926178,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-3",
+            "kind": "petiole",
+            "parentDistance": 2.196286494342181,
+            "length": 0.25618306566961113,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-4",
+            "kind": "petiole",
+            "parentDistance": 2.699838270304227,
+            "length": 0.2819385308120398,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-5",
+            "kind": "petiole",
+            "parentDistance": 3.239935391121447,
+            "length": 0.2405080679478122,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-6",
+            "kind": "petiole",
+            "parentDistance": 3.714446675323153,
+            "length": 0.23525011869613066,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-7",
+            "kind": "petiole",
+            "parentDistance": 4.262259667927492,
+            "length": 0.26906533645465974,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          }
+        ]
+      }
+    },
+    "9255": {
+      "bare-branch-v1": {
+        "generatorVersion": "bare-branch-v1",
+        "seed": 9255,
+        "branchCount": 5,
+        "organCount": 0,
+        "pointCount": 47,
+        "trunk": {
+          "id": "plant-1:trunk",
+          "length": 5.591591360829771,
+          "segments": 16,
+          "radius": 0.078,
+          "stiffness": 0.86
+        },
+        "children": [
+          {
+            "id": "plant-1:answering",
+            "kind": "lateral",
+            "parentDistance": 1.8450148748268467,
+            "length": 1.9790166439209134,
+            "segments": 8,
+            "radius": 0.044,
+            "stiffness": 0.66
+          },
+          {
+            "id": "plant-1:counter",
+            "kind": "lateral",
+            "parentDistance": 3.0490521662012693,
+            "length": 1.393499439544976,
+            "segments": 7,
+            "radius": 0.036,
+            "stiffness": 0.6
+          },
+          {
+            "id": "plant-1:distal",
+            "kind": "twig",
+            "parentDistance": 4.25033666469522,
+            "length": 1.0362566076964137,
+            "segments": 6,
+            "radius": 0.028,
+            "stiffness": 0.5
+          },
+          {
+            "id": "plant-1:spur",
+            "kind": "twig",
+            "parentDistance": 1.1172537993279028,
+            "length": 0.6750101302703845,
+            "segments": 5,
+            "radius": 0.02,
+            "stiffness": 0.42
+          }
+        ]
+      },
+      "one-branch-v1": {
+        "generatorVersion": "one-branch-v1",
+        "seed": 9255,
+        "branchCount": 15,
+        "organCount": 10,
+        "pointCount": 94,
+        "trunk": {
+          "id": "plant-1:trunk",
+          "length": 6.149999999999999,
+          "segments": 18,
+          "radius": 0.105,
+          "stiffness": 0.72
+        },
+        "children": [
+          {
+            "id": "plant-1:lateral-a",
+            "kind": "lateral",
+            "parentDistance": 2.15,
+            "length": 2.3500000000000005,
+            "segments": 9,
+            "radius": 0.064,
+            "stiffness": 0.52
+          },
+          {
+            "id": "plant-1:lateral-b",
+            "kind": "lateral",
+            "parentDistance": 3.62,
+            "length": 2.1999999999999997,
+            "segments": 9,
+            "radius": 0.06,
+            "stiffness": 0.5
+          },
+          {
+            "id": "plant-1:lateral-c",
+            "kind": "twig",
+            "parentDistance": 4.78,
+            "length": 1.4199999999999988,
+            "segments": 7,
+            "radius": 0.044,
+            "stiffness": 0.38
+          },
+          {
+            "id": "plant-1:twig-a",
+            "kind": "twig",
+            "parentDistance": 1.15,
+            "length": 1.2000000000000002,
+            "segments": 6,
+            "radius": 0.038,
+            "stiffness": 0.34
+          },
+          {
+            "id": "plant-1:leaf-1",
+            "kind": "petiole",
+            "parentDistance": 1.42,
+            "length": 0.3400000000000001,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-2",
+            "kind": "petiole",
+            "parentDistance": 2.86,
+            "length": 0.3399999999999999,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-3",
+            "kind": "petiole",
+            "parentDistance": 0.7,
+            "length": 0.3400000000000003,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-4",
+            "kind": "petiole",
+            "parentDistance": 1.82,
+            "length": 0.3400000000000001,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-5",
+            "kind": "petiole",
+            "parentDistance": 0.62,
+            "length": 0.33999999999999986,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-6",
+            "kind": "petiole",
+            "parentDistance": 1.48,
+            "length": 0.34,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-7",
+            "kind": "petiole",
+            "parentDistance": 0.65,
+            "length": 0.3399999999999998,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bloom-1",
+            "kind": "pedicel",
+            "parentDistance": 0.86,
+            "length": 0.4600000000000003,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bloom-2",
+            "kind": "pedicel",
+            "parentDistance": 1.86,
+            "length": 0.46,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bud-1",
+            "kind": "pedicel",
+            "parentDistance": 1.2,
+            "length": 0.4599999999999997,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          }
+        ]
+      },
+      "leafy-shoot-v1": {
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branchCount": 8,
+        "organCount": 7,
+        "pointCount": 45,
+        "trunk": {
+          "id": "plant-1:stem",
+          "length": 4.6341825113631785,
+          "segments": 16,
+          "radius": 0.057,
+          "stiffness": 0.39
+        },
+        "children": [
+          {
+            "id": "plant-1:petiole-1",
+            "kind": "petiole",
+            "parentDistance": 1.122117705855889,
+            "length": 0.23096625224687162,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-2",
+            "kind": "petiole",
+            "parentDistance": 1.6417648452822782,
+            "length": 0.27992478912230584,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-3",
+            "kind": "petiole",
+            "parentDistance": 2.1334174572385356,
+            "length": 0.2305847618123517,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-4",
+            "kind": "petiole",
+            "parentDistance": 2.6550026641743605,
+            "length": 0.26026011574082075,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-5",
+            "kind": "petiole",
+            "parentDistance": 3.154675708736497,
+            "length": 0.2722749881260096,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-6",
+            "kind": "petiole",
+            "parentDistance": 3.7459835670819124,
+            "length": 0.2780169535335153,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-7",
+            "kind": "petiole",
+            "parentDistance": 4.228395919634653,
+            "length": 0.28764095777645715,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          }
+        ]
+      }
+    },
+    "10232": {
+      "bare-branch-v1": {
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branchCount": 5,
+        "organCount": 0,
+        "pointCount": 47,
+        "trunk": {
+          "id": "plant-1:trunk",
+          "length": 5.4724918913468725,
+          "segments": 16,
+          "radius": 0.078,
+          "stiffness": 0.86
+        },
+        "children": [
+          {
+            "id": "plant-1:answering",
+            "kind": "lateral",
+            "parentDistance": 1.7952270977367693,
+            "length": 1.9471552449464797,
+            "segments": 8,
+            "radius": 0.044,
+            "stiffness": 0.66
+          },
+          {
+            "id": "plant-1:counter",
+            "kind": "lateral",
+            "parentDistance": 3.036002049268334,
+            "length": 1.416019875258207,
+            "segments": 7,
+            "radius": 0.036,
+            "stiffness": 0.6
+          },
+          {
+            "id": "plant-1:distal",
+            "kind": "twig",
+            "parentDistance": 4.093982481891927,
+            "length": 1.1150231000687927,
+            "segments": 6,
+            "radius": 0.028,
+            "stiffness": 0.5
+          },
+          {
+            "id": "plant-1:spur",
+            "kind": "twig",
+            "parentDistance": 1.0021950765249532,
+            "length": 0.6540835212403905,
+            "segments": 5,
+            "radius": 0.02,
+            "stiffness": 0.42
+          }
+        ]
+      },
+      "one-branch-v1": {
+        "generatorVersion": "one-branch-v1",
+        "seed": 10232,
+        "branchCount": 15,
+        "organCount": 10,
+        "pointCount": 94,
+        "trunk": {
+          "id": "plant-1:trunk",
+          "length": 6.149999999999999,
+          "segments": 18,
+          "radius": 0.105,
+          "stiffness": 0.72
+        },
+        "children": [
+          {
+            "id": "plant-1:lateral-a",
+            "kind": "lateral",
+            "parentDistance": 2.15,
+            "length": 2.35,
+            "segments": 9,
+            "radius": 0.064,
+            "stiffness": 0.52
+          },
+          {
+            "id": "plant-1:lateral-b",
+            "kind": "lateral",
+            "parentDistance": 3.62,
+            "length": 2.2,
+            "segments": 9,
+            "radius": 0.06,
+            "stiffness": 0.5
+          },
+          {
+            "id": "plant-1:lateral-c",
+            "kind": "twig",
+            "parentDistance": 4.78,
+            "length": 1.4200000000000006,
+            "segments": 7,
+            "radius": 0.044,
+            "stiffness": 0.38
+          },
+          {
+            "id": "plant-1:twig-a",
+            "kind": "twig",
+            "parentDistance": 1.15,
+            "length": 1.2,
+            "segments": 6,
+            "radius": 0.038,
+            "stiffness": 0.34
+          },
+          {
+            "id": "plant-1:leaf-1",
+            "kind": "petiole",
+            "parentDistance": 1.42,
+            "length": 0.33999999999999997,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-2",
+            "kind": "petiole",
+            "parentDistance": 2.86,
+            "length": 0.34,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-3",
+            "kind": "petiole",
+            "parentDistance": 0.7,
+            "length": 0.3400000000000001,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-4",
+            "kind": "petiole",
+            "parentDistance": 1.82,
+            "length": 0.3399999999999997,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-5",
+            "kind": "petiole",
+            "parentDistance": 0.62,
+            "length": 0.33999999999999975,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-6",
+            "kind": "petiole",
+            "parentDistance": 1.48,
+            "length": 0.34,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:leaf-7",
+            "kind": "petiole",
+            "parentDistance": 0.65,
+            "length": 0.3400000000000001,
+            "segments": 3,
+            "radius": 0.018,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bloom-1",
+            "kind": "pedicel",
+            "parentDistance": 0.86,
+            "length": 0.46000000000000035,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bloom-2",
+            "kind": "pedicel",
+            "parentDistance": 1.86,
+            "length": 0.45999999999999985,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:bud-1",
+            "kind": "pedicel",
+            "parentDistance": 1.2,
+            "length": 0.4600000000000002,
+            "segments": 3,
+            "radius": 0.022,
+            "stiffness": 0.18
+          }
+        ]
+      },
+      "leafy-shoot-v1": {
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 10232,
+        "branchCount": 8,
+        "organCount": 7,
+        "pointCount": 45,
+        "trunk": {
+          "id": "plant-1:stem",
+          "length": 4.620661191456021,
+          "segments": 16,
+          "radius": 0.057,
+          "stiffness": 0.39
+        },
+        "children": [
+          {
+            "id": "plant-1:petiole-1",
+            "kind": "petiole",
+            "parentDistance": 1.1389288654650858,
+            "length": 0.2471937600756064,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-2",
+            "kind": "petiole",
+            "parentDistance": 1.6012923575354958,
+            "length": 0.27609127738513045,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-3",
+            "kind": "petiole",
+            "parentDistance": 2.1603651569434854,
+            "length": 0.24955013165716083,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-4",
+            "kind": "petiole",
+            "parentDistance": 2.620176357839633,
+            "length": 0.23620412900578225,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-5",
+            "kind": "petiole",
+            "parentDistance": 3.148535647999422,
+            "length": 0.24734852912370098,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-6",
+            "kind": "petiole",
+            "parentDistance": 3.736005765913078,
+            "length": 0.23429138916544623,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          },
+          {
+            "id": "plant-1:petiole-7",
+            "kind": "petiole",
+            "parentDistance": 4.230368290894889,
+            "length": 0.240424276283011,
+            "segments": 3,
+            "radius": 0.016,
+            "stiffness": 0.18
+          }
+        ]
+      }
+    }
+  },
+  "workbenchFixtures": {
+    "flowering-branch": {
+      "8278-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 8278,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      },
+      "8278-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 8278,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 90,
+          "organs": 60,
+          "activeBranches": 90,
+          "activeOrgans": 60
+        }
+      },
+      "8278-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 8278,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "one-branch-v1",
+            "seed": 17071,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "one-branch-v1",
+            "seed": 18048,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "one-branch-v1",
+            "seed": 19025,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "one-branch-v1",
+            "seed": 14140,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "one-branch-v1",
+            "seed": 15117,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "one-branch-v1",
+            "seed": 16094,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 180,
+          "organs": 120,
+          "activeBranches": 180,
+          "activeOrgans": 120
+        }
+      },
+      "9255-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      },
+      "9255-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "one-branch-v1",
+            "seed": 14140,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 90,
+          "organs": 60,
+          "activeBranches": 90,
+          "activeOrgans": 60
+        }
+      },
+      "9255-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "one-branch-v1",
+            "seed": 18048,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "one-branch-v1",
+            "seed": 19025,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "one-branch-v1",
+            "seed": 20002,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "one-branch-v1",
+            "seed": 14140,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "one-branch-v1",
+            "seed": 15117,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "one-branch-v1",
+            "seed": 16094,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "one-branch-v1",
+            "seed": 17071,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 180,
+          "organs": 120,
+          "activeBranches": 180,
+          "activeOrgans": 120
+        }
+      },
+      "10232-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      },
+      "10232-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "one-branch-v1",
+            "seed": 14140,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "one-branch-v1",
+            "seed": 15117,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 90,
+          "organs": 60,
+          "activeBranches": 90,
+          "activeOrgans": 60
+        }
+      },
+      "10232-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "one-branch-v1",
+            "seed": 19025,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "one-branch-v1",
+            "seed": 20002,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "one-branch-v1",
+            "seed": 20979,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "one-branch-v1",
+            "seed": 14140,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "one-branch-v1",
+            "seed": 15117,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "one-branch-v1",
+            "seed": 16094,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "one-branch-v1",
+            "seed": 17071,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "one-branch-v1",
+            "seed": 18048,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 180,
+          "organs": 120,
+          "activeBranches": 180,
+          "activeOrgans": 120
+        }
+      }
+    },
+    "leafy-shoot": {
+      "8278-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 8278,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      },
+      "8278-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 8278,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 48,
+          "organs": 42,
+          "activeBranches": 48,
+          "activeOrgans": 42
+        }
+      },
+      "8278-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 8278,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 17071,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 18048,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 19025,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 15117,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 16094,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 96,
+          "organs": 84,
+          "activeBranches": 96,
+          "activeOrgans": 84
+        }
+      },
+      "9255-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      },
+      "9255-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 48,
+          "organs": 42,
+          "activeBranches": 48,
+          "activeOrgans": 42
+        }
+      },
+      "9255-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 18048,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 19025,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 20002,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 15117,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 16094,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 17071,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 96,
+          "organs": 84,
+          "activeBranches": 96,
+          "activeOrgans": 84
+        }
+      },
+      "10232-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 8,
+          "organs": 7,
+          "activeBranches": 8,
+          "activeOrgans": 7
+        }
+      },
+      "10232-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 15117,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 48,
+          "organs": 42,
+          "activeBranches": 48,
+          "activeOrgans": 42
+        }
+      },
+      "10232-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 19025,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 20002,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 20979,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 15117,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 16094,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 17071,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 18048,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          }
+        ],
+        "totals": {
+          "branches": 96,
+          "organs": 84,
+          "activeBranches": 96,
+          "activeOrgans": 84
+        }
+      }
+    },
+    "bare-branch": {
+      "8278-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 8278,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 5,
+          "organs": 0,
+          "activeBranches": 5,
+          "activeOrgans": 0
+        }
+      },
+      "8278-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 8278,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 9255,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 30,
+          "organs": 0,
+          "activeBranches": 30,
+          "activeOrgans": 0
+        }
+      },
+      "8278-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 8278,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 17071,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 18048,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 19025,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 9255,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 15117,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 16094,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 60,
+          "organs": 0,
+          "activeBranches": 60,
+          "activeOrgans": 0
+        }
+      },
+      "9255-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 9255,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 5,
+          "organs": 0,
+          "activeBranches": 5,
+          "activeOrgans": 0
+        }
+      },
+      "9255-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 9255,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 30,
+          "organs": 0,
+          "activeBranches": 30,
+          "activeOrgans": 0
+        }
+      },
+      "9255-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 9255,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 18048,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 19025,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 20002,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 15117,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 16094,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 17071,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 60,
+          "organs": 0,
+          "activeBranches": 60,
+          "activeOrgans": 0
+        }
+      },
+      "10232-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 5,
+          "organs": 0,
+          "activeBranches": 5,
+          "activeOrgans": 0
+        }
+      },
+      "10232-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 15117,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 30,
+          "organs": 0,
+          "activeBranches": 30,
+          "activeOrgans": 0
+        }
+      },
+      "10232-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 19025,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 20002,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 20979,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 15117,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 16094,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 17071,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 18048,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 60,
+          "organs": 0,
+          "activeBranches": 60,
+          "activeOrgans": 0
+        }
+      }
+    },
+    "mixed": {
+      "8278-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 8278,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      },
+      "8278-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 8278,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 56,
+          "organs": 34,
+          "activeBranches": 56,
+          "activeOrgans": 34
+        }
+      },
+      "8278-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 8278,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "one-branch-v1",
+            "seed": 17071,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 18048,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 19025,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 9255,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 10232,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 11209,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 12186,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 13163,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "one-branch-v1",
+            "seed": 14140,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 15117,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 16094,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 112,
+          "organs": 68,
+          "activeBranches": 112,
+          "activeOrgans": 68
+        }
+      },
+      "9255-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      },
+      "9255-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 56,
+          "organs": 34,
+          "activeBranches": 56,
+          "activeOrgans": 34
+        }
+      },
+      "9255-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 9255,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "one-branch-v1",
+            "seed": 18048,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 19025,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 20002,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 10232,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 11209,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 12186,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 13163,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 14140,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "one-branch-v1",
+            "seed": 15117,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 16094,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 17071,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 112,
+          "organs": 68,
+          "activeBranches": 112,
+          "activeOrgans": 68
+        }
+      },
+      "10232-x1": {
+        "successfulPlantOrdinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          }
+        ],
+        "totals": {
+          "branches": 15,
+          "organs": 10,
+          "activeBranches": 15,
+          "activeOrgans": 10
+        }
+      },
+      "10232-x6": {
+        "successfulPlantOrdinal": 6,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 15117,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 56,
+          "organs": 34,
+          "activeBranches": 56,
+          "activeOrgans": 34
+        }
+      },
+      "10232-x12": {
+        "successfulPlantOrdinal": 12,
+        "plants": [
+          {
+            "id": "plant-1",
+            "generatorVersion": "one-branch-v1",
+            "seed": 10232,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-10",
+            "generatorVersion": "one-branch-v1",
+            "seed": 19025,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-11",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 20002,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-12",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 20979,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-2",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 11209,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-3",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 12186,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-4",
+            "generatorVersion": "one-branch-v1",
+            "seed": 13163,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-5",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 14140,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-6",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 15117,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          },
+          {
+            "id": "plant-7",
+            "generatorVersion": "one-branch-v1",
+            "seed": 16094,
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10
+          },
+          {
+            "id": "plant-8",
+            "generatorVersion": "leafy-shoot-v1",
+            "seed": 17071,
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7
+          },
+          {
+            "id": "plant-9",
+            "generatorVersion": "bare-branch-v1",
+            "seed": 18048,
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0
+          }
+        ],
+        "totals": {
+          "branches": 112,
+          "organs": 68,
+          "activeBranches": 112,
+          "activeOrgans": 68
+        }
+      }
+    }
+  }
+}

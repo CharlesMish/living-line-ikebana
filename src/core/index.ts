@@ -12,3 +12,4 @@ export * from "./serialization.ts";
 export * from "./types.ts";
 export * from "./validation.ts";
 export * from "./leafyShoot.ts";
+export * from "./bareBranch.ts";

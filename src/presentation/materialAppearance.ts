@@ -30,9 +30,17 @@ const leafy: MaterialAppearance = Object.freeze({
     roughness: 0.62, hitRadius: 0.56, hitCenterY: 0.5 }),
   bloom: flowering.bloom,
 });
+const bare: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x3c322c, lateral: 0x4a3c33,
+    twig: 0x574538, pedicel: 0x5c4a3c, petiole: 0x5c4a3c }),
+  stemRoughness: 0.94,
+  leaf: flowering.leaf,
+  bloom: flowering.bloom,
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
+  "bare-branch-v1": bare,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

@@ -1,0 +1,117 @@
+{
+  "source": "report-mixed-6.json",
+  "reportVersion": 1,
+  "mode": "workbench",
+  "capturedAt": "2026-09-21T14:08:22.564Z",
+  "fixture": {
+    "successfulPlantOrdinal": 6,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "single-flower-v1",
+        "seed": 10232,
+        "branches": 4,
+        "organs": 3,
+        "activeBranches": 4,
+        "activeOrgans": 3
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "one-branch-v1",
+        "seed": 11209,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 12186,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "single-flower-v1",
+        "seed": 13163,
+        "branches": 4,
+        "organs": 3,
+        "activeBranches": 4,
+        "activeOrgans": 3
+      }
+    ]
+  },
+  "renderer": {
+    "calls": 371,
+    "triangles": 54714,
+    "lines": 0,
+    "geometries": 282,
+    "textures": 2,
+    "programs": 14,
+    "drawingBuffer": {
+      "width": 1785,
+      "height": 996
+    },
+    "note": "Counts from one render, not frame-rate or phone-performance measurements."
+  },
+  "presentation": {
+    "plantIds": [
+      "plant-1",
+      "plant-2",
+      "plant-3",
+      "plant-4",
+      "plant-5",
+      "plant-6"
+    ],
+    "pendingPlantId": null,
+    "pendingBranchVisualCount": 0,
+    "pendingOrganVisualCount": 0,
+    "branchVisualCount": 54,
+    "organVisualCount": 40
+  },
+  "checks": {
+    "bend": "not recorded",
+    "cut": "not recorded",
+    "cancel": "not recorded",
+    "reload": "not recorded",
+    "physicalPhone": "not recorded"
+  },
+  "camera": {
+    "position": {
+      "x": 0,
+      "y": 3.7,
+      "z": 15
+    },
+    "target": {
+      "x": 0,
+      "y": 2.55,
+      "z": 0
+    },
+    "up": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    }
+  }
+}

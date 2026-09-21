@@ -1,0 +1,8 @@
+Candidate SHA: 98e71cb (branch cursor/experiment-material-single-flower-v1-bd04)
+Command: npm run verify
+Result: pass
+Tests: 119 passed, 0 failed (baseline was 112; +7 focused single-flower checks)
+Typecheck: pass
+Build: pass
+Distribution: valid (5 files; standalone is self-contained)
+Notes: Existing golden fixtures still match. No baseline failures carried forward.

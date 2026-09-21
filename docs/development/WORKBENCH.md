@@ -8,7 +8,18 @@ players; fixtures are the only special construction path.
 ## Reproducible comparison
 
 - Material: every entry returned by `getMaterialDefinitions()`, plus **mixed**.
-  A newly registered candidate appears automatically.
+  A newly registered candidate appears automatically. Mixed now cycles every
+  registered material, so a four-material catalog is not comparable to the old
+  two-material mixed bowls.
+- Named comparison profiles live in [`src/app/workbenchProfiles.ts`](../../src/app/workbenchProfiles.ts).
+  IDs are stable and must not change when the catalog grows:
+  `reference-pair` (flowering + leafy only; same seed/count/base placement as the
+  historic two-material mixed fixture), `references-plus-bare`,
+  `references-plus-single-flower`, `all-four`, and optional
+  `all-registered-materials`. This integration branch leaves a thin adapter:
+  profiles are generated from those material lists. The Workbench agent owns
+  named fixture graph DATA, report metadata and focused tests on a separate
+  branch; import or replace that DATA through this file.
 - Starting seeds: **8278, 9255, 10232**, or an explicit uint32 integer.
 - Counts: **1**, **2**, **6**, **12**. Twelve is a stress scene, not a tutorial target.
 - Later cuttings receive `seed + 977 × index` modulo uint32. Mixed cycles through

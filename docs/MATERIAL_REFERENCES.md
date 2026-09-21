@@ -74,8 +74,8 @@ cupped flowering path). They remain review candidates, not a shipping palette
 commitment. Original PRs #15 and #16 stay intact.
 
 Workbench `mixed` now cycles all registered materials. Named comparison profiles
-that must preserve the two-reference mixed graphs live in
-`src/app/workbenchProfiles.ts` once that adapter is wired.
+that preserve the two-reference mixed graphs live in
+[`src/app/workbenchProfiles.ts`](../src/app/workbenchProfiles.ts).
 
 ## Earlier palette pause
 

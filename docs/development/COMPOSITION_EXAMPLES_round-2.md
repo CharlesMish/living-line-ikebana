@@ -1,17 +1,20 @@
 # Optional composition examples — round 2
 
 These are two original, optional arrangements made from the four-material player
-build at `6c6abd61919754976d64f1a11d590c059056717e`.
+build after PR #19, on merged main `5b6536704f89e105181158891e4ad27537bf1a22`.
 
 - **Bare-branch lines:** bare branches lead a sparse, asymmetrical composition,
   using their crossing lines and the surrounding open space as the main study.
-- **Single-flower rhythm:** a single flower leads the arrangement with its face
-  turned toward the viewer, while two leafy cuttings establish a measured leaf
-  rhythm around it.
+- **Single-flower rhythm:** a single flower leads the arrangement with a
+  player-Aim-adjusted face toward canonical Front, while two leafy cuttings
+  establish a measured leaf rhythm around it. The face remains unresolved from
+  the canonical Three-quarter view: existing Aim changes the pedicel direction
+  but could not show the open center clearly in both views.
 
 ## Opening and importing
 
-To use these backups from this exact SHA, build the standalone player locally:
+To use these backups from this merged main / PR #19 integration head, build the
+standalone player locally:
 
 ```bash
 npm ci
@@ -29,6 +32,10 @@ they are not auto-imported into the app. Screenshots are view evidence only:
 `artifacts/<arrangement>-front.png` and
 `artifacts/<arrangement>-three-quarter.png`.
 
-Verification was performed in the browser from the exact SHA: each backup was
-imported into a fresh Garden and its card was opened and rendered. No physical
+The single-flower backup was imported into a fresh Garden and rendered. One
+ordinary Shape/Aim drag on the upper flowering material changed the persisted
+pedicel geometry and turned the open face toward Front. Two further Aim attempts
+from Three-quarter made the flower visible but edge-on, so the two-view facing
+goal is explicitly unresolved rather than claimed as complete. The
+`single-flower-led-aim-attempt-*.png` files show that limitation. No physical
 phone testing was run.

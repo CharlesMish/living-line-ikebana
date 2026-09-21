@@ -3,8 +3,8 @@
 ## Date
 September 21, 2026
 
-## Commit
-6c6abd61919754976d64f1a11d590c059056717e
+## Source
+PR #19 merged into main at `5b6536704f89e105181158891e4ad27537bf1a22`
 
 ## Overview
 Created two original floral arrangements using the Living Line web application running at http://localhost:5173/. All arrangements were created using the normal UI controls without any test hooks, console injection, or hand-authored graph data.
@@ -28,12 +28,18 @@ Created two original floral arrangements using the Living Line web application r
 - 1× Single flower (cream-colored bloom as focal point)
 - 2× Leafy shoot (supporting rhythm)
 
-**Design approach:** Single flower as clear visual lead facing forward, with leafy shoots creating rhythm and supporting the flower.
+**Design approach:** Single flower as clear visual lead, with its open face
+turned toward canonical Front by one ordinary player Aim operation; leafy shoots
+create rhythm and support the flower. Existing Aim could not keep the open
+center clear in both Front and Three-quarter, so this two-view facing goal
+remains unresolved.
 
 **Files created:**
 - `single-flower-led-front.png` - Front view screenshot (PNG, 1280×800)
 - `single-flower-led-three-quarter.png` - Three-quarter view screenshot (PNG, 1280×800)
 - `single-flower-led-garden.json` - Garden backup (26K)
+- `single-flower-led-aim-attempt-front.png` - Aim limitation evidence
+- `single-flower-led-aim-attempt-three-quarter.png` - Aim limitation evidence
 
 ## Verification
 Both Garden backups were verified functional:
@@ -41,6 +47,8 @@ Both Garden backups were verified functional:
 - Opened Garden dialog showing both saved arrangements
 - Clicked on arrangement card to load it
 - Confirmed arrangement rendered correctly with all cuttings in proper positions
+- Imported the Aim-adjusted single-flower backup separately; Front shows the
+  open center, while Three-quarter remains edge-on after the permitted Aim attempts
 
 ## Technical Notes
 - No source code modifications made

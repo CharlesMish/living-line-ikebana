@@ -11,7 +11,7 @@ Review-only. No candidate code was implemented here. No merge to `main`.
 | Proposed-fix branch | none (no storage-loss or transaction-ownership blocker found) |
 | Candidate A branch / head | `cursor/experiment-bare-branch-v1-2e72` / `703175a1ce3a1d48cc5b14166278168282fe2fa1` (implementation still `30d577d`; later commits are evidence docs only) |
 | Candidate A PR | https://github.com/CharlesMish/living-line-ikebana/pull/15 (draft) |
-| Candidate B branch / head | `cursor/experiment-material-single-flower-v1-bd04` / `98e71cb075d2dc5f40e1494a2e0c46e0d73d4605` |
+| Candidate B branch / head | `cursor/experiment-material-single-flower-v1-bd04` / `a4570f966cb5d89eba8d7732d46c9b9a5893a9e9` (implementation still `98e71cb`; later commit is evidence docs only) |
 | Candidate B PR | https://github.com/CharlesMish/living-line-ikebana/pull/16 (draft) |
 
 Both candidate heads merge-base exactly at the baseline SHA.
@@ -86,7 +86,7 @@ Mixed workbench fixtures **do** change identity when a third catalog entry is re
 | Candidate | Recommendation | Why |
 | --- | --- | --- |
 | A bare woody line | **Revise**, then consider integrate | Generator unchanged since `30d577d` (`verify` 119/119). New evidence stills show desktop aim/bend, an answering-fork cut, Garden keep+view, and bare×12 WebGL 187 calls / 32882 triangles at 360×924. Tray wrap and crown-covering chrome remain (Agent A’s 360px still agrees). Phone unrun. |
-| B single flower face | **Revise**, then consider integrate | Distinct cream open-face bloom; reads clearly in mixed scenes and from Above. `verify` 119/119. Shared `ThreeStudio` bloom path is form-driven (cupped source matches the 7-sepal baseline). Shared tray `auto-fit` CSS is an integrator concern: at 320px it stacks all cards and would also restack a two-card tray. Phone unrun. |
+| B single flower face | **Revise**, then consider integrate | Runtime unchanged since `98e71cb` (`verify` 119/119). New stills: stem cut removes the face; Garden view of kept mixed original; 390px stacks three cards; ~700×430 keeps three labeled cards. Count 1: 37 calls / 11906 triangles; mixed 6: 371 / 54714 at 1785×996. Count-12 renderer download was mixed-6 by operator error. Shared `auto-fit` CSS still in this PR. Phone unrun. |
 
 Neither is idea-only. Neither is a clean integrate until a tray pass and a physical-phone clip exist. Do not land both without reconciling tray layout and mixed-fixture identity on a separate integration branch.
 
@@ -107,8 +107,22 @@ Independent look at Agent A’s new stills:
 - `garden_view_kept_bare_line_study.webp`: mixed bowl kept as “Bare line study”; Step Back / Orbit / Pan; Arrange chrome hidden.
 - `tray_360px_portrait.webp`: third card wraps, silhouettes missing, chrome covers the plant crown. Agent A marked this pass; Agent C still scores it a tray defect, not a graph defect.
 
-Candidate B head remains `98e71cb`. Recommendation for A is unchanged: **revise tray on an integrator branch**; the generator itself is still integrate-ready.
+Candidate B head remains `a4570f9` after an evidence-only sync (see below). Recommendation for A is unchanged: **revise tray on an integrator branch**; the generator itself is still integrate-ready.
+
+## Resync — Candidate B `a4570f9` (2026-09-21)
+
+PR #16 added `a4570f9` (“Record single-flower-v1 workbench evidence and review”). Diff vs implementation `98e71cb` is **docs and images only**. `npm run verify` was not re-run on `a4570f9`; the runtime tree is identical to the 119/119 pass at `98e71cb`. Merge-base remains `251a94a1`.
+
+Independent look at Agent B’s new stills and reports:
+
+- `count1-prune.webp`: committed stem cut; bloom and leaves gone; status “Cut.”
+- `garden-view-original.webp`: kept mixed bowl “single flower mixed” in Step Back; cream faces still present. Copy→change of a working copy is claimed, not shown in this frame.
+- `narrow-390x844.webp`: three full-width stacked cards, silhouettes gone; bowl still visible. Agrees with Agent C’s 320px stack.
+- `short-700x430.webp`: three labeled cards in one row with silhouettes; names wrap. Short landscape is usable for three cards.
+- Renderer: count 1 = 37 calls / 11906 triangles; mixed 6 = 371 / 54714 at drawingBuffer 1785×996. Count-12 JSON is documented as a mixed-6 mix-up.
+
+Shared tray CSS is unchanged. Agent B now recommends integrate; Agent C still wants that CSS on an integrator branch and a phone clip.
 
 ## Waiting / follow-up
 
-Candidate B is still `98e71cb`. Further A/B code changes will be re-diffed against `251a94a1`. Do not review code that is not on a remote head.
+Further A/B **code** changes will be re-diffed against `251a94a1`. Do not review code that is not on a remote head.

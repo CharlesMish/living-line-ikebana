@@ -25,8 +25,9 @@ test("named workbench profile IDs are stable and reference-pair preserves two-ma
   ]);
   const currentMixed = createWorkbenchFixture("mixed", 8278, 6);
   assert.notDeepEqual(currentMixed.plants.map((plant) => plant.generatorVersion), pair.plants.map((plant) => plant.generatorVersion));
-  assert.deepEqual(createWorkbenchProfileFixture("all-four", 8278, 4).plants.map((plant) => plant.generatorVersion), [
+  assert.deepEqual(createWorkbenchProfileFixture("all-four", 8278, 6).plants.map((plant) => plant.generatorVersion), [
     "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1",
+    "one-branch-v1", "leafy-shoot-v1",
   ]);
   assert.throws(() => materialsForWorkbenchProfile("not-a-profile"));
 });

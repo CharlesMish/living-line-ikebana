@@ -1,10 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
-const html = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../index.html"), "utf8");
+const html = readFileSync(join(process.cwd(), "index.html"), "utf8");
 
 test("insertion bindings stay on one source card; palette choices cannot insert", () => {
   const sourceMatches = [...html.matchAll(/data-material-id="([^"]+)"/g)].map((match) => match[1]);

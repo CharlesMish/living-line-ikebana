@@ -193,3 +193,54 @@ test("mixed materials share successful ordinals and cancelled leafy ghosts never
   assert.deepEqual([...loaded.plants.values()].map(toCanonicalPlantGraph), payload.plants);
 
 });
+
+test("cancelled bare-branch insertion preserves ordinal; a committed prune reloads with cut history", () => {
+  const saves = [];
+  const coordinator = new TransactionCoordinator(createDomainAdapters(), {
+    plants: new Map(), camera: canonicalCameraPose("front"),
+    selectedPlantId: null, successfulPlantOrdinal: 0,
+  }, { onAutosave: event => saves.push(event) });
+  const cancelled = prepareMaterialInsertionForApp("bare-branch", 0);
+  assert.ok(cancelled.ok);
+  assert.equal(cancelled.graph.generatorVersion, "bare-branch-v1");
+  coordinator.beginInsert("bare-cancel", reservationFrom(cancelled), {}, { base: BASE, valid: true });
+  coordinator.pointerCancel("bare-cancel");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
+  assert.equal(coordinator.getDocumentSnapshot().plants.size, 0);
+  assert.equal(saves.length, 0);
+
+  coordinator.beginInsert("bare", reservationFrom(cancelled), {}, { base: BASE, valid: true });
+  coordinator.release("bare");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+  assert.equal(saves.length, 1);
+  const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
+  const answering = seated.branches.get("plant-1:answering");
+  const cutDistance = 0.08;
+  coordinator.commandTool("prune");
+  coordinator.beginPrune("cut-cancel", { plantId: "plant-1", branchId: answering.id, acquiredMaterialDistance: cutDistance, context: {} }, { distance: cutDistance });
+  coordinator.pointerCancel("cut-cancel");
+  assert.equal(saves.length, 1);
+  assert.equal(coordinator.getDocumentSnapshot().plants.get("plant-1").branches.get("plant-1:spur").active, true);
+
+  coordinator.beginPrune("cut", { plantId: "plant-1", branchId: answering.id, acquiredMaterialDistance: cutDistance, context: {} }, { distance: cutDistance });
+  coordinator.release("cut");
+  const edited = coordinator.getDocumentSnapshot().plants.get("plant-1");
+  assert.equal(edited.branches.get("plant-1:spur").active, false);
+  assert.equal(edited.branches.size, 5);
+  assert.equal(saves.length, 2);
+
+  const payload = JSON.parse(JSON.stringify({
+    storageVersion: 1, nextSuccessfulOrdinal: 2,
+    plants: [...coordinator.getDocumentSnapshot().plants.values()].map(toCanonicalPlantGraph),
+  }));
+  const app = Object.assign(Object.create(IkebanaApp.prototype), {
+    config: { fresh: false }, store: { load: () => payload },
+  });
+  const loaded = app.loadInitialDocument();
+  assert.equal(loaded.successfulPlantOrdinal, 1);
+  const restored = loaded.plants.get("plant-1");
+  assert.equal(restored.generatorVersion, "bare-branch-v1");
+  assert.equal(restored.branches.get("plant-1:spur").active, false);
+  assert.deepEqual(validatePlantGraph(restored), []);
+});
+

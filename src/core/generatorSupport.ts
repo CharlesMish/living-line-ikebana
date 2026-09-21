@@ -56,3 +56,14 @@ export const basisFor = (tangentInput: Vec3, spin: number): Vec3 => {
   return normalize(add(scale(side, Math.cos(spin)), scale(forward, Math.sin(spin))));
 };
 
+/** Parent-local direction: `out` along a spun side, `along` along the parent tangent. */
+export const directionFromParent = (
+  parentTangent: Vec3,
+  spin: number,
+  out: number,
+  along: number,
+): Vec3 => {
+  const side = basisFor(parentTangent, spin);
+  return normalize(add(scale(side, out), scale(parentTangent, along)));
+};
+

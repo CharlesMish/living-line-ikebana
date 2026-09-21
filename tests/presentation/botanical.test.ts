@@ -88,11 +88,11 @@ test("disposing botanical groups releases instanced flower detail", () => {
   assert.ok(instanceDisposed && geometryDisposed);
 });
 
-test("both material appearances rebuild consistently and leafy hit proxies cover their blades", async () => {
+test("flowering, leafy and bare appearances rebuild consistently and leafy hit proxies cover their blades", async () => {
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -124,4 +124,6 @@ test("both material appearances rebuild consistently and leafy hit proxies cover
     for (const key of ["mesh", "hit", "selection", "doomed"]) disposeObject(branch[key]);
   }
   assert.notEqual(stemColors[0], stemColors[1], "green main stems must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[0], stemColors[2], "bare wood must not inherit flowering trunk appearance");
+  assert.notEqual(stemColors[1], stemColors[2], "bare wood must not inherit leafy stem appearance");
 });

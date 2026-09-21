@@ -57,12 +57,3 @@ export function describeFixture(snapshot: ArrangementSnapshot) {
       activeOrgans: plant.organs.filter((organ) => organ.active).length })),
   };
 }
-export function describeFixture(snapshot: ArrangementSnapshot) {
-  return {
-    successfulPlantOrdinal: snapshot.successfulPlantOrdinal,
-    plants: snapshot.plants.map((plant) => ({ id: plant.id, generatorVersion: plant.generatorVersion, seed: plant.seed,
-      branches: plant.branches.length, organs: plant.organs.length,
-      activeBranches: plant.branches.filter((branch) => branch.active).length,
-      activeOrgans: plant.organs.filter((organ) => organ.active).length })),
-  };
-}

@@ -1,0 +1,103 @@
+{
+  "reportVersion": 2,
+  "schema": "living-line-workbench-report",
+  "status": "unavailable-on-this-checkout",
+  "capturedAt": "2026-09-21T14:00:00.000Z",
+  "loadedFixture": {
+    "fixtureId": "references-plus-single-flower",
+    "profileId": "references-plus-single-flower",
+    "kind": "stable-profile",
+    "dynamic": false,
+    "seed": 8278,
+    "count": 12,
+    "materialSequence": [
+      "flowering-branch",
+      "leafy-shoot",
+      "single-flower"
+    ],
+    "missingMaterialIds": [
+      "single-flower"
+    ],
+    "composition": {
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot",
+        "single-flower"
+      ],
+      "assignedMaterialIds": [
+        "flowering-branch",
+        "leafy-shoot",
+        "single-flower",
+        "flowering-branch",
+        "leafy-shoot",
+        "single-flower",
+        "flowering-branch",
+        "leafy-shoot",
+        "single-flower",
+        "flowering-branch",
+        "leafy-shoot",
+        "single-flower"
+      ],
+      "countsByMaterialId": {
+        "flowering-branch": 4,
+        "leafy-shoot": 4,
+        "single-flower": 4
+      },
+      "balancedEqualCopies": true,
+      "warnings": []
+    },
+    "cameraView": "front",
+    "notes": "Flowering → leafy → single-flower. Requires the single-flower material to be registered."
+  },
+  "capture": {
+    "status": "not-captured-in-this-environment",
+    "cssViewport": {
+      "width": null,
+      "height": null,
+      "source": "canvas-client-rect"
+    },
+    "drawingBuffer": {
+      "width": null,
+      "height": null,
+      "source": "canvas-drawing-buffer"
+    },
+    "pixelRatio": {
+      "device": null,
+      "renderer": null,
+      "rendererCap": null,
+      "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+    },
+    "browserWindow": {
+      "width": null,
+      "height": null,
+      "source": "window-inner"
+    },
+    "visualViewport": null,
+    "userAgent": null,
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    "notes": [
+      "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+      "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+      "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+      "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+      "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+    ]
+  },
+  "warning": "Do not substitute another profile's renderer counts for this scene."
+}

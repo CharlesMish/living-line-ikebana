@@ -1,0 +1,160 @@
+{
+  "source": "workbench download after loading bare-branch seed 8278 count 12",
+  "capturedAt": "2026-09-21T13:53:02.001Z",
+  "mode": "workbench",
+  "fixture": {
+    "successfulPlantOrdinal": 12,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 8278,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-10",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 17071,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-11",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 18048,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-12",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 19025,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 9255,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 11209,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 12186,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-7",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 14140,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-8",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 15117,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-9",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 16094,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ]
+  },
+  "renderer": {
+    "calls": 187,
+    "triangles": 32882,
+    "lines": 0,
+    "geometries": 136,
+    "textures": 2,
+    "programs": 13,
+    "drawingBuffer": {
+      "width": 649,
+      "height": 1663
+    },
+    "note": "Counts from one render, not frame-rate or phone-performance measurements."
+  },
+  "presentation": {
+    "plantIds": [
+      "plant-1",
+      "plant-10",
+      "plant-11",
+      "plant-12",
+      "plant-2",
+      "plant-3",
+      "plant-4",
+      "plant-5",
+      "plant-6",
+      "plant-7",
+      "plant-8",
+      "plant-9"
+    ],
+    "pendingPlantId": null,
+    "pendingBranchVisualCount": 0,
+    "pendingOrganVisualCount": 0,
+    "branchVisualCount": 60,
+    "organVisualCount": 0
+  },
+  "checks": {
+    "bend": "not recorded",
+    "cut": "not recorded",
+    "cancel": "not recorded",
+    "reload": "not recorded",
+    "physicalPhone": "not recorded"
+  },
+  "note": "Captured in Chrome device-mode 360x924, DPR 1. drawingBuffer 649x1663. Not a desktop-viewport comparison and not a frame-rate measurement."
+}

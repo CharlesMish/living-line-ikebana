@@ -1,7 +1,7 @@
 {
   "reportVersion": 2,
   "schema": "living-line-workbench-report",
-  "status": "unavailable-on-this-checkout",
+  "mode": "workbench",
   "capturedAt": "2026-09-21T14:00:00.000Z",
   "loadedFixture": {
     "fixtureId": "references-plus-bare",
@@ -13,9 +13,6 @@
     "materialSequence": [
       "flowering-branch",
       "leafy-shoot",
-      "bare-branch"
-    ],
-    "missingMaterialIds": [
       "bare-branch"
     ],
     "composition": {
@@ -40,8 +37,203 @@
       "balancedEqualCopies": true,
       "warnings": []
     },
+    "construction": [
+      {
+        "index": 0,
+        "plantId": "plant-1",
+        "seed": 8278,
+        "materialId": "flowering-branch",
+        "base": {
+          "x": 0,
+          "y": 0.55,
+          "z": 0
+        },
+        "generatorVersion": "one-branch-v1"
+      },
+      {
+        "index": 1,
+        "plantId": "plant-2",
+        "seed": 9255,
+        "materialId": "leafy-shoot",
+        "base": {
+          "x": 0.18913732982375425,
+          "y": 0.55,
+          "z": -0.20646324241167097
+        },
+        "generatorVersion": "leafy-shoot-v1"
+      },
+      {
+        "index": 2,
+        "plantId": "plant-3",
+        "seed": 10232,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.3944636229074499,
+          "y": 0.55,
+          "z": 0.03461863952741615
+        },
+        "generatorVersion": "bare-branch-v1"
+      },
+      {
+        "index": 3,
+        "plantId": "plant-4",
+        "seed": 11209,
+        "materialId": "flowering-branch",
+        "base": {
+          "x": 0.38487570684224337,
+          "y": 0.55,
+          "z": 0.29507743099512634
+        },
+        "generatorVersion": "one-branch-v1"
+      },
+      {
+        "index": 4,
+        "plantId": "plant-5",
+        "seed": 12186,
+        "materialId": "leafy-shoot",
+        "base": {
+          "x": -0.0975413854865116,
+          "y": 0.55,
+          "z": -0.5514396414090773
+        },
+        "generatorVersion": "leafy-shoot-v1"
+      },
+      {
+        "index": 5,
+        "plantId": "plant-6",
+        "seed": 13163,
+        "materialId": "bare-branch",
+        "base": {
+          "x": -0.3360455219075733,
+          "y": 0.55,
+          "z": 0.5282739887651737
+        },
+        "generatorVersion": "bare-branch-v1"
+      }
+    ],
     "cameraView": "front",
-    "notes": "Flowering → leafy → bare-branch. Requires the bare-branch material to be registered."
+    "notes": "Flowering → leafy → bare-branch. Requires the bare-branch material to be registered.",
+    "bowlMatchesLoadedFixture": true
+  },
+  "fixture": {
+    "successfulPlantOrdinal": 6,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "one-branch-v1",
+        "seed": 11209,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 12186,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "plantsInIdentityOrder": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "one-branch-v1",
+        "seed": 11209,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 12186,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "byGeneratorVersion": {
+      "one-branch-v1": 2,
+      "leafy-shoot-v1": 2,
+      "bare-branch-v1": 2
+    }
   },
   "capture": {
     "status": "not-captured-in-this-environment",
@@ -93,5 +285,175 @@
       "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
     ]
   },
-  "warning": "Do not substitute another profile's renderer counts for this scene."
+  "renderer": {
+    "calls": 0,
+    "triangles": 0,
+    "lines": 0,
+    "geometries": 0,
+    "textures": 0,
+    "programs": 0,
+    "drawingBuffer": {
+      "width": 0,
+      "height": 0
+    },
+    "pixelRatio": 0,
+    "note": "Renderer resource counts were not captured in this Node identity sample. Draw calls/triangles are never FPS."
+  },
+  "presentation": {
+    "successfulPlantOrdinal": 6,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "one-branch-v1",
+        "seed": 11209,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 12186,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "plantsInIdentityOrder": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 10232,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "one-branch-v1",
+        "seed": 11209,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 12186,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "bare-branch-v1",
+        "seed": 13163,
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
+      }
+    ],
+    "byGeneratorVersion": {
+      "one-branch-v1": 2,
+      "leafy-shoot-v1": 2,
+      "bare-branch-v1": 2
+    }
+  },
+  "arrangement": {
+    "successfulPlantOrdinal": 6,
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    "plantIds": [
+      "plant-1",
+      "plant-2",
+      "plant-3",
+      "plant-4",
+      "plant-5",
+      "plant-6"
+    ],
+    "omitted": "Full graphs omitted from this identity sample. Repeat the scene with profileId + seed + count."
+  },
+  "checks": {
+    "bend": "not recorded",
+    "cut": "not recorded",
+    "cancel": "not recorded",
+    "reload": "not recorded",
+    "physicalPhone": "not recorded",
+    "captureEnvironment": "not recorded — Node identity sample; CSS viewport / drawing-buffer / pixel ratio require a browser download"
+  }
 }

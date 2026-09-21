@@ -4,44 +4,35 @@
   "mode": "workbench",
   "capturedAt": "2026-09-21T14:00:00.000Z",
   "loadedFixture": {
-    "fixtureId": "all-four",
-    "profileId": "all-four",
-    "kind": "stable-profile",
+    "fixtureId": "bare-branch",
+    "profileId": "bare-branch",
+    "kind": "single-material",
     "dynamic": false,
     "seed": 8278,
     "count": 12,
     "materialSequence": [
-      "flowering-branch",
-      "leafy-shoot",
-      "bare-branch",
-      "single-flower"
+      "bare-branch"
     ],
     "composition": {
       "materialSequence": [
-        "flowering-branch",
-        "leafy-shoot",
-        "bare-branch",
-        "single-flower"
+        "bare-branch"
       ],
       "assignedMaterialIds": [
-        "flowering-branch",
-        "leafy-shoot",
         "bare-branch",
-        "single-flower",
-        "flowering-branch",
-        "leafy-shoot",
         "bare-branch",
-        "single-flower",
-        "flowering-branch",
-        "leafy-shoot",
         "bare-branch",
-        "single-flower"
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch",
+        "bare-branch"
       ],
       "countsByMaterialId": {
-        "flowering-branch": 3,
-        "leafy-shoot": 3,
-        "bare-branch": 3,
-        "single-flower": 3
+        "bare-branch": 12
       },
       "balancedEqualCopies": true,
       "warnings": []
@@ -51,25 +42,25 @@
         "index": 0,
         "plantId": "plant-1",
         "seed": 8278,
-        "materialId": "flowering-branch",
+        "materialId": "bare-branch",
         "base": {
           "x": 0,
           "y": 0.55,
           "z": 0
         },
-        "generatorVersion": "one-branch-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 1,
         "plantId": "plant-2",
         "seed": 9255,
-        "materialId": "leafy-shoot",
+        "materialId": "bare-branch",
         "base": {
           "x": 0.18913732982375425,
           "y": 0.55,
           "z": -0.20646324241167097
         },
-        "generatorVersion": "leafy-shoot-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 2,
@@ -87,37 +78,37 @@
         "index": 3,
         "plantId": "plant-4",
         "seed": 11209,
-        "materialId": "single-flower",
+        "materialId": "bare-branch",
         "base": {
           "x": 0.38487570684224337,
           "y": 0.55,
           "z": 0.29507743099512634
         },
-        "generatorVersion": "single-flower-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 4,
         "plantId": "plant-5",
         "seed": 12186,
-        "materialId": "flowering-branch",
+        "materialId": "bare-branch",
         "base": {
           "x": -0.0975413854865116,
           "y": 0.55,
           "z": -0.5514396414090773
         },
-        "generatorVersion": "one-branch-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 5,
         "plantId": "plant-6",
         "seed": 13163,
-        "materialId": "leafy-shoot",
+        "materialId": "bare-branch",
         "base": {
           "x": -0.3360455219075733,
           "y": 0.55,
           "z": 0.5282739887651737
         },
-        "generatorVersion": "leafy-shoot-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 6,
@@ -135,37 +126,37 @@
         "index": 7,
         "plantId": "plant-8",
         "seed": 15117,
-        "materialId": "single-flower",
+        "materialId": "bare-branch",
         "base": {
           "x": -0.6574304475715255,
           "y": 0.55,
           "z": -0.34144575939071753
         },
-        "generatorVersion": "single-flower-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 8,
         "plantId": "plant-9",
         "seed": 16094,
-        "materialId": "flowering-branch",
+        "materialId": "bare-branch",
         "base": {
           "x": 0.2716713679821165,
           "y": 0.55,
           "z": 0.7439050126318048
         },
-        "generatorVersion": "one-branch-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 9,
         "plantId": "plant-10",
         "seed": 17071,
-        "materialId": "leafy-shoot",
+        "materialId": "bare-branch",
         "base": {
           "x": 0.3205089884741266,
           "y": 0.55,
           "z": -0.7764496044865322
         },
-        "generatorVersion": "leafy-shoot-v1"
+        "generatorVersion": "bare-branch-v1"
       },
       {
         "index": 10,
@@ -183,17 +174,17 @@
         "index": 11,
         "plantId": "plant-12",
         "seed": 19025,
-        "materialId": "single-flower",
+        "materialId": "bare-branch",
         "base": {
           "x": 0.8205804930485834,
           "y": 0.55,
           "z": 0.257386197042778
         },
-        "generatorVersion": "single-flower-v1"
+        "generatorVersion": "bare-branch-v1"
       }
     ],
     "cameraView": "front",
-    "notes": "Six cuttings are 2+2+1+1 in cycle order, not two of each. Twelve cuttings are three of each.",
+    "notes": "Repeats this one registered material.",
     "bowlMatchesLoadedFixture": true
   },
   "fixture": {
@@ -201,21 +192,21 @@
     "plants": [
       {
         "id": "plant-1",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 8278,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-10",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 17071,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-11",
@@ -228,21 +219,21 @@
       },
       {
         "id": "plant-12",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 19025,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-2",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 9255,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-3",
@@ -255,30 +246,30 @@
       },
       {
         "id": "plant-4",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 11209,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-5",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 12186,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-6",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 13163,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-7",
@@ -291,41 +282,41 @@
       },
       {
         "id": "plant-8",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 15117,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-9",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 16094,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       }
     ],
     "plantsInIdentityOrder": [
       {
         "id": "plant-1",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 8278,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-2",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 9255,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-3",
@@ -338,30 +329,30 @@
       },
       {
         "id": "plant-4",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 11209,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-5",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 12186,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-6",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 13163,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-7",
@@ -374,30 +365,30 @@
       },
       {
         "id": "plant-8",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 15117,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-9",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 16094,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-10",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 17071,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-11",
@@ -410,19 +401,16 @@
       },
       {
         "id": "plant-12",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 19025,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       }
     ],
     "byGeneratorVersion": {
-      "one-branch-v1": 3,
-      "leafy-shoot-v1": 3,
-      "bare-branch-v1": 3,
-      "single-flower-v1": 3
+      "bare-branch-v1": 12
     }
   },
   "capture": {
@@ -494,21 +482,21 @@
     "plants": [
       {
         "id": "plant-1",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 8278,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-10",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 17071,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-11",
@@ -521,21 +509,21 @@
       },
       {
         "id": "plant-12",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 19025,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-2",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 9255,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-3",
@@ -548,30 +536,30 @@
       },
       {
         "id": "plant-4",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 11209,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-5",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 12186,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-6",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 13163,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-7",
@@ -584,41 +572,41 @@
       },
       {
         "id": "plant-8",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 15117,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-9",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 16094,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       }
     ],
     "plantsInIdentityOrder": [
       {
         "id": "plant-1",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 8278,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-2",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 9255,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-3",
@@ -631,30 +619,30 @@
       },
       {
         "id": "plant-4",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 11209,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-5",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 12186,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-6",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 13163,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-7",
@@ -667,30 +655,30 @@
       },
       {
         "id": "plant-8",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 15117,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-9",
-        "generatorVersion": "one-branch-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 16094,
-        "branches": 15,
-        "organs": 10,
-        "activeBranches": 15,
-        "activeOrgans": 10
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-10",
-        "generatorVersion": "leafy-shoot-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 17071,
-        "branches": 8,
-        "organs": 7,
-        "activeBranches": 8,
-        "activeOrgans": 7
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       },
       {
         "id": "plant-11",
@@ -703,19 +691,16 @@
       },
       {
         "id": "plant-12",
-        "generatorVersion": "single-flower-v1",
+        "generatorVersion": "bare-branch-v1",
         "seed": 19025,
-        "branches": 4,
-        "organs": 3,
-        "activeBranches": 4,
-        "activeOrgans": 3
+        "branches": 5,
+        "organs": 0,
+        "activeBranches": 5,
+        "activeOrgans": 0
       }
     ],
     "byGeneratorVersion": {
-      "one-branch-v1": 3,
-      "leafy-shoot-v1": 3,
-      "bare-branch-v1": 3,
-      "single-flower-v1": 3
+      "bare-branch-v1": 12
     }
   },
   "arrangement": {

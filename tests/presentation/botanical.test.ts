@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as THREE from "three";
-import { createFloweringBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
+import { createFloweringBranch, aimBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
 import { botanicalSeed, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
 import { disposeObject, splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
@@ -191,4 +191,82 @@ test("open-face bloom is flatter than the cupped reference and follows the mater
   assert.deepEqual(originalPetal.geometry.getAttribute("position").array, rebuiltPetal.geometry.getAttribute("position").array);
   disposeObject(visual.group);
   disposeObject(rebuilt.group);
+});
+
+test("production organ groups ignore camera changes and follow stem aim and bend", async () => {
+  const { prepareMaterialInsertion, sampleBranch } = await import("../../src/core/index.ts");
+  const prepared = prepareMaterialInsertion("single-flower", 1, { x: 0, y: 0.55, z: 0 });
+  assert.ok(prepared.ok);
+  const graph = prepared.graph;
+  const bloom = graph.organs.get("plant-1:bloom")!;
+  const root = graph.branches.get(graph.rootBranchId)!;
+
+  // This is the real production group created by createPlantVisual/syncPlantVisual.
+  // The small harness supplies only the disposable scene roots and presentation
+  // affordances that a headless test cannot obtain from a WebGL canvas.
+  const studio = Object.create(ThreeStudio.prototype) as any;
+  Object.assign(studio, {
+    options: { debugHitTargets: false },
+    botanicalRoot: new THREE.Group(),
+    pendingRoot: new THREE.Group(),
+    plants: new Map(),
+    selection: null,
+    cutPreview: null,
+    pendingValidity: null,
+    shapeAffordances: { visible: false, bendVariant: "bead", transactionActive: false, touchCueDistance: null, showSelection: true },
+    baseHandle: { group: new THREE.Group() },
+    bendHandle: { group: new THREE.Group() },
+    touchCue: new THREE.Group(),
+    cutCollar: { visible: false },
+    camera: new THREE.PerspectiveCamera(),
+    cameraTarget: new THREE.Vector3(),
+    requestRender() {},
+    updateAffordances() {},
+    updateCutCollar() {},
+  });
+
+  const visual = studio.createPlantVisual(graph, false);
+  studio.plants.set(graph.id, visual);
+  const organGroup = visual.organs.get(bloom.id).group as THREE.Group;
+  visual.group.updateMatrixWorld(true);
+  const frontMatrix = organGroup.matrixWorld.clone();
+
+  studio.setCanonicalView("above", false);
+  visual.group.updateMatrixWorld(true);
+  assert.deepEqual(organGroup.matrixWorld.elements, frontMatrix.elements, "camera-only changes must not move the organ group");
+
+  const grabbed = sampleBranch(root, root.activeLength * 0.82).position;
+  const aimed = aimBranch(
+    graph,
+    root.id,
+    grabbed,
+    { x: 1.2, y: 3.7, z: -0.7 },
+  );
+  visual.graph = aimed;
+  studio.syncPlantVisual(visual);
+  visual.group.updateMatrixWorld(true);
+  const aimedMatrix = organGroup.matrixWorld.clone();
+  assert.ok(
+    new THREE.Vector3().setFromMatrixPosition(aimedMatrix)
+      .distanceTo(new THREE.Vector3().setFromMatrixPosition(frontMatrix)) > 0.02,
+    "aiming the stem must move the production organ group coherently",
+  );
+
+  const aimedRoot = aimed.branches.get(aimed.rootBranchId)!;
+  const bent = bendBranch(aimed, {
+    branchId: aimedRoot.id,
+    stationDistance: aimedRoot.activeLength * 0.54,
+    target: { x: 1.7, y: 3.1, z: -0.4 },
+  });
+  visual.graph = bent;
+  studio.syncPlantVisual(visual);
+  visual.group.updateMatrixWorld(true);
+  const bentMatrix = organGroup.matrixWorld.clone();
+  assert.ok(
+    new THREE.Vector3().setFromMatrixPosition(bentMatrix)
+      .distanceTo(new THREE.Vector3().setFromMatrixPosition(aimedMatrix)) > 0.01,
+    "bending the stem must move the production organ group coherently",
+  );
+
+  disposeObject(visual.group);
 });

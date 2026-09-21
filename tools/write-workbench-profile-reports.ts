@@ -7,6 +7,7 @@ import {
   describeFixture,
   describeMaterialSequenceComposition,
   getLastWorkbenchFixtureLoad,
+  listWorkbenchFixtureOptions,
   resolveWorkbenchFixture,
 } from "../src/app/workbench.ts";
 import {
@@ -50,7 +51,7 @@ function identityReport(fixtureId: string, seed: number, count: 1 | 2 | 6 | 12) 
   });
 }
 
-function unavailable(profileId: string, seed: number, count: number) {
+function unavailable(profileId: string, seed: number, count: 1 | 2 | 6 | 12) {
   const resolved = resolveWorkbenchFixture(profileId);
   return {
     reportVersion: 2,
@@ -82,65 +83,39 @@ const scenes: Array<[string, 1 | 6 | 12]> = [
   ["flowering-branch", 12],
   ["leafy-shoot", 1],
   ["leafy-shoot", 12],
+  ["bare-branch", 1],
+  ["bare-branch", 12],
+  ["single-flower", 1],
+  ["single-flower", 12],
   ["reference-pair", 6],
   ["reference-pair", 12],
+  ["references-plus-bare", 6],
+  ["references-plus-single-flower", 6],
+  ["references-plus-single-flower", 12],
+  ["all-four", 6],
+  ["all-four", 12],
 ];
 
 for (const [fixtureId, count] of scenes) {
-  const report = identityReport(fixtureId, 8278, count);
+  const available = listWorkbenchFixtureOptions().find((option) => option.id === fixtureId)?.available ?? false;
+  const report = available
+    ? identityReport(fixtureId, 8278, count)
+    : unavailable(fixtureId, 8278, count);
   await writeFile(
     path.join(directory, `${fixtureId}-seed8278-count${count}.json`),
     `${JSON.stringify(report, null, 2)}\n`,
   );
 }
 
-for (const [profileId, count] of [
-  ["references-plus-bare", 6],
-  ["references-plus-single-flower", 6],
-  ["references-plus-single-flower", 12],
-  ["all-four", 6],
-  ["all-four", 12],
-] as const) {
-  await writeFile(
-    path.join(directory, `${profileId}-seed8278-count${count}.json`),
-    `${JSON.stringify(unavailable(profileId, 8278, count), null, 2)}\n`,
-  );
-}
-
 await writeFile(
   path.join(directory, "single-flower-count12-correction.json"),
-  `${JSON.stringify({
-    reportVersion: 2,
-    schema: "living-line-workbench-report",
-    status: "unavailable-on-this-checkout",
-    capturedAt,
-    loadedFixture: {
-      fixtureId: "single-flower",
-      profileId: "single-flower",
-      seed: 8278,
-      count: 12,
-      materialSequence: ["single-flower"],
-      missingMaterialIds: ["single-flower"],
-    },
-    candidateB: {
-      sha: "a4570f966cb5d89eba8d7732d46c9b9a5893a9e9",
-      theirCount12File: "docs/development/reports/single-flower-v1/workbench-single-flower-count12-renderer.json",
-      theirNote: "browser JSON download for count 12 was mixed-6; screenshot is authentic",
-    },
-    doNotUse: {
-      mixed6Calls: 371,
-      mixed6Triangles: 54714,
-      mixed6Count: 6,
-      reason: "Those figures are a references+single-flower six-cutting catalog-cycle scene, not single-flower ×12.",
-    },
-    reconstruction: {
-      fixtureId: "single-flower",
-      seed: 8278,
-      count: 12,
-      cameraView: "front",
-      onceRegistered: "createWorkbenchFixture('single-flower', 8278, 12) then download a reportVersion 2 capture in the browser.",
-    },
-  }, null, 2)}\n`,
+  `${JSON.stringify(
+    listWorkbenchFixtureOptions().find((option) => option.id === "single-flower")?.available
+      ? identityReport("single-flower", 8278, 12)
+      : unavailable("single-flower", 8278, 12),
+    null,
+    2,
+  )}\n`,
 );
 
 console.log(`Wrote workbench profile identity reports to ${directory}`);

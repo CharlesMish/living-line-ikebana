@@ -24,7 +24,19 @@ Record:
 - fresh session or restored local specimen:
 - tester and whether they helped design the controls:
 
-For a clean run, clear this origin's site data or use the test-only reset hook. Do not clear storage between the persistence steps.
+### Data-safety preflight
+
+Prefer a disposable preview origin for this card: a local/preview host or a
+temporary deployment origin that is not the player's usual origin. The
+workbench uses a separate storage namespace, but the player bowl, Garden and
+telemetry still belong to the browser origin.
+
+If an isolated origin is not available, **back up before clearing anything**:
+download the Garden backup, and export any study data that must be retained.
+Clearing site data can wipe the player's saved bowl, Garden collection and
+telemetry for that origin. `?fresh=1` and the test-only reset hook are safer
+test resets when available; do not clear storage between the persistence steps.
+Confirm the backup exists before using browser settings to clear site data.
 
 ## Required web-shell preflight
 

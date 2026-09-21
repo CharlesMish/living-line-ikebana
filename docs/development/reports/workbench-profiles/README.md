@@ -11,13 +11,13 @@ Matched conditions used throughout:
 - camera: Front (`position.z === 15`)
 - CSS viewport / drawing-buffer / pixel ratio: **not captured here** (Node)
 
-`reference-pair` and single-material samples include plant identity summaries.
-Candidate-profile JSON files from the workbench branch are marked
-`unavailable-on-this-checkout` because that checkout did not register
-`bare-branch` or `single-flower`. Round 2 integration registers both, so the
-picker enables those profiles. Reconstruct with
-`createWorkbenchFixture(profileId, 8278, count)` rather than treating the
-unavailable JSON as the live bowl.
+`reference-pair`, single-material samples, and candidate-profile JSON files are
+written from the live catalog. Round 2 integration registers both
+`bare-branch` and `single-flower`, so those samples are actual Node identity
+reports and the picker enables those profiles. A genuinely missing candidate
+remains an explicit `unavailable-on-this-checkout` report. Reconstruct with
+`createWorkbenchFixture(profileId, 8278, count)` rather than treating any
+identity report as a browser renderer capture.
 
 ## Single-flower ×12
 

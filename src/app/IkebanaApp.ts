@@ -4,6 +4,7 @@ import {
   assertValidPlantGraph,
   bendStationAtFraction,
   fromCanonicalPlantGraph,
+  getMaterialDefinitions,
   legalBendStation,
   normalize,
   previewPrune,
@@ -272,7 +273,10 @@ export class IkebanaApp {
     this.telemetryStore.prime();
     this.ui = createUIBindings({
       root,
-      initialState: { bendVariant: uiVariant(this.bendVariant) },
+      initialState: {
+        bendVariant: uiVariant(this.bendVariant),
+        selectedMaterialId: getMaterialDefinitions()[0]?.materialId ?? "flowering-branch",
+      },
     });
     this.canvas = document.createElement("canvas");
     this.canvas.className = "scene-canvas";
@@ -462,7 +466,7 @@ export class IkebanaApp {
     this.coordinator.commandPosture("step-back");
     this.cameraIsFree = true;
     this.coordinator.commandView("front", snapshot.camera);
-    this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false });
+    this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false, materialMenuOpen: false });
     this.ui.setStatus("A kept moment. Orbit or pan to look; make a copy to change it.");
     this.syncPresentation();
   }
@@ -496,7 +500,7 @@ export class IkebanaApp {
     this.metrics.resetAttempt();
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
     this.coordinator.commandView("front", snapshot.camera);
-    this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false });
+    this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false, materialMenuOpen: false });
     this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : "A fresh bowl. Place a cutting.");
     this.syncPresentation();
   }
@@ -514,7 +518,7 @@ export class IkebanaApp {
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
     if (this.workingSession && (command.kind === "set-posture" && command.posture === "arrange"
-      || ["set-tool", "begin-material-drag", "activate-material", "set-bend-variant"].includes(command.kind))) {
+      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant"].includes(command.kind))) {
       this.ui.setStatus("This is a kept arrangement. Make a working copy to change it.");
       return;
     }
@@ -523,7 +527,7 @@ export class IkebanaApp {
         this.interruptActive("posture-command");
         this.metrics.resetAttempt();
         this.coordinator.commandPosture("step-back");
-        this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false });
+        this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false, materialMenuOpen: false });
         this.ui.setStatus("Let it rest. What would another change add? Return to Arrange whenever you wish.");
         break;
       }
@@ -533,7 +537,7 @@ export class IkebanaApp {
         // recorded after this boundary.
         this.metrics.resetAttempt();
         this.coordinator.commandPosture(command.posture);
-        this.ui.setState({ posture: command.posture });
+        this.ui.setState({ posture: command.posture, materialMenuOpen: false });
         this.ui.setStatus(command.posture === "step-back" ? this.cameraModeHint() : "Touch the material.");
         break;
       }
@@ -570,7 +574,29 @@ export class IkebanaApp {
         // A second pointer can open this while the first holds a branch.
         // Cancel before exposing camera choices; opening never moves the view.
         this.interruptActive("view-command");
-        this.ui.setState({ viewMenuOpen: command.open, experimentPanelOpen: false });
+        this.ui.setState({ viewMenuOpen: command.open, experimentPanelOpen: false, materialMenuOpen: false });
+        break;
+      }
+      case "set-material-menu": {
+        // Opening, changing, or closing the picker cancels first. Closing
+        // never restores a cancelled preview.
+        this.interruptActive("view-command");
+        this.ui.setState({
+          materialMenuOpen: command.open,
+          viewMenuOpen: false,
+          experimentPanelOpen: false,
+        });
+        break;
+      }
+      case "select-material": {
+        this.interruptActive("view-command");
+        this.ui.setState({
+          selectedMaterialId: command.materialId,
+          materialMenuOpen: false,
+          viewMenuOpen: false,
+          experimentPanelOpen: false,
+        });
+        this.ui.setStatus("Drag the selected cutting to the pins.");
         break;
       }
       case "set-bend-variant": {

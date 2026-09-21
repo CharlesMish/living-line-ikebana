@@ -45,7 +45,7 @@ test("viewing a kept arrangement preserves the exact working coordinator and ref
   app.viewGardenEntry(kept);
   assert.notEqual(app.coordinator, original);
   assert.equal(app.coordinator.getDebugState().posture, "step-back");
-  for (const command of [{ kind: "set-posture", posture: "arrange" }, { kind: "activate-material", materialId: "flowering-branch" }, { kind: "set-tool", tool: "prune" }]) app.handleUICommand(command, {});
+  for (const command of [{ kind: "set-posture", posture: "arrange" }, { kind: "activate-material", materialId: "flowering-branch" }, { kind: "select-material", materialId: "bare-branch" }, { kind: "set-tool", tool: "prune" }]) app.handleUICommand(command, {});
   assert.equal(app.coordinator.getDebugState().posture, "step-back");
   assert.equal(app.coordinator.getDocumentSnapshot().plants.size, 2);
   assert.throws(() => app.replaceWorkingBowl(kept.arrangement), /Return/);

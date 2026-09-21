@@ -56,10 +56,14 @@ Run `npm ci` and `npm run verify` before delivery.
 On a physical phone, place one of each on opposite sides of the same pin field.
 Inspect Front, ¾ and Above. Bend both, cut one leaf stalk, cancel a cut and reload.
 Check whether the shoot feels more yielding, its individual leaves remain legible,
-and neither tray card crowds the top rail. In a short landscape window, Step Back
-→ Pan should move the bowl, pins and stems together as framing. Return to Arrange
-and confirm both bases are still seated. Check that water and pin access are useful
-from Above. Numeric tests cannot sign off these observations.
+and the compact source card plus Materials picker does not crowd the top rail.
+Persistent chrome height must stay one selected card, not one extra row per
+material. In a short landscape window, Step Back → Pan should move the bowl,
+pins and stems together as framing. Return to Arrange and confirm both bases
+are still seated. Check that water and pin access are useful from Above. The
+picker reduces crown occlusion versus a four-card stack; remaining occlusion
+from the top rail is a framing limit, not a reason to rewrite cameras. Numeric
+tests cannot sign off these observations.
 
 ## Current external prototype round
 

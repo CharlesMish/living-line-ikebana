@@ -479,11 +479,91 @@ button:focus-visible {
 .app-shell[data-posture="step-back"][data-camera-mode="move"] .studio { cursor: move; }
 .app-shell[data-posture="step-back"] .status-pill { opacity: 0.6; }
 
-.material-tray {
+.material-dock {
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 0.4rem;
+}
+.material-menu { position: relative; }
+.materials-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 3rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--paper-solid);
+  color: var(--ink);
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.materials-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: transform 160ms ease;
+}
+.materials-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.materials-toggle:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+.material-options {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  left: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  width: max(100%, 14.5rem);
+  max-width: min(22rem, calc(100vw - 1.5rem));
+  max-height: min(18rem, 50dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper-solid);
+  box-shadow: var(--shadow);
+  touch-action: pan-y;
+}
+.material-options[hidden] { display: none; }
+.material-options button {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.material-options button[aria-pressed="true"] {
+  color: var(--moss-dark);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1px 7px rgba(50, 45, 32, 0.1);
+}
+.material-choice-name {
+  font-family: ui-serif, Georgia, serif;
+  font-size: 0.9375rem;
+}
+.material-options .cutting-silhouette {
+  width: 2.6rem;
+  height: 1.7rem;
 }
 .material-card {
   position: relative;
@@ -608,14 +688,16 @@ noscript {
   .segmented button { padding-inline: 0.6rem; letter-spacing: 0; }
   .material-card { grid-template-columns: minmax(0, 1fr) auto; }
   .cutting-silhouette { display: none; }
+  .material-options button { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 360px) {
-  .top-row, .top-actions, .craft-chrome { gap: 0.25rem; }
+  .top-row, .top-actions, .craft-chrome, .material-dock { gap: 0.25rem; }
   .top-chrome { padding: 0.3rem; }
   .segmented button { padding-inline: 0.4rem; }
   .material-card { padding-inline: 0.4rem; }
   .material-grip { display: none; }
+  .materials-toggle { padding-inline: 0.5rem; min-height: 2.75rem; }
 }
 
 /* With enlarged text, wrap controls instead of compressing their labels. */
@@ -625,9 +707,13 @@ noscript {
   .craft-chrome { grid-template-columns: auto minmax(0, 1fr); }
   .material-card { grid-template-columns: minmax(0, 1fr); }
   .material-grip { display: none; }
-  .material-name { font-size: 0.8125rem; }
+  .material-name, .material-choice-name { font-size: 0.8125rem; }
   .material-verb { font-size: 0.7rem; letter-spacing: 0; }
   .tool-control button, .posture-control button { white-space: normal; }
+}
+
+@media (max-height: 430px) and (orientation: landscape) {
+  .material-options { max-height: min(12rem, calc(100dvh - 5.5rem)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -645,8 +731,10 @@ noscript {
   .top-chrome,
   .view-toggle,
   .segmented,
-  .material-tray,
+  .material-dock,
   .material-card,
+  .materials-toggle,
+  .material-options,
   .status-pill,
   .craft-cue,
   .experiment-panel,
@@ -655,7 +743,8 @@ noscript {
     background: Canvas;
   }
 
-  .segmented button[aria-pressed="true"] {
+  .segmented button[aria-pressed="true"],
+  .material-options button[aria-pressed="true"] {
     outline: 2px solid Highlight;
   }
 }

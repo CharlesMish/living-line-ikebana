@@ -14,6 +14,8 @@ export interface UIState {
   cameraMode: CameraMode;
   view: CanonicalView | "orbit";
   viewMenuOpen: boolean;
+  materialMenuOpen: boolean;
+  selectedMaterialId: string;
   bendVariant: BendVariant;
   experimentPanelOpen: boolean;
   trayEnabled: boolean;
@@ -30,6 +32,8 @@ export type UICommand =
   | { kind: "set-camera-mode"; cameraMode: CameraMode }
   | { kind: "set-view"; view: CanonicalView }
   | { kind: "set-view-menu"; open: boolean }
+  | { kind: "set-material-menu"; open: boolean }
+  | { kind: "select-material"; materialId: string }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
   | { kind: "set-experiment-panel"; open: boolean }
   | {
@@ -72,6 +76,8 @@ const DEFAULT_STATE: UIState = {
   cameraMode: "orbit",
   view: "front",
   viewMenuOpen: false,
+  materialMenuOpen: false,
+  selectedMaterialId: "flowering-branch",
   bendVariant: "fixed-bead",
   experimentPanelOpen: false,
   trayEnabled: true,
@@ -114,10 +120,18 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
   const viewToggle = requireElement<HTMLButtonElement>(root, "#view-toggle");
   const viewOptions = requireElement<HTMLElement>(root, "#view-options");
-  const trayButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-material-id]")];
-  if (trayButtons.length === 0) {
+  const materialMenu = requireElement<HTMLElement>(root, ".material-menu");
+  const materialsToggle = requireElement<HTMLButtonElement>(root, "#materials-toggle");
+  const materialOptions = requireElement<HTMLElement>(root, "#material-options");
+  const sourceCard = requireElement<HTMLButtonElement>(root, "#selected-cutting");
+  if (!sourceCard.dataset.materialId) {
     throw new Error("UI shell is missing required element: [data-material-id]");
   }
+  const paletteChoices = [...root.querySelectorAll<HTMLButtonElement>("[data-material-choice]")];
+  if (paletteChoices.length === 0) {
+    throw new Error("UI shell is missing required element: [data-material-choice]");
+  }
+  let sourceInnerMaterialId = sourceCard.dataset.materialId;
   const studyTools = requireElement<HTMLElement>(root, "#study-tools");
   const experimentPanel = requireElement<HTMLElement>(root, "#experiment-panel");
   const experimentToggle = requireElement<HTMLButtonElement>(root, "#experiment-toggle");
@@ -145,9 +159,27 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       setState({ viewMenuOpen: false });
       if (command.kind === "set-view") viewToggle.focus({ preventScroll: true });
     }
+    if (
+      command.kind !== "set-material-menu"
+      && command.kind !== "select-material"
+      && currentState.materialMenuOpen
+    ) {
+      setState({ materialMenuOpen: false });
+    }
     for (const listener of listeners) {
       listener(command, sourceEvent);
     }
+  }
+
+  function fillSourceCard(materialId: string): void {
+    const template = root.querySelector<HTMLTemplateElement>(`#material-template-${materialId}`);
+    const label = template?.dataset.materialLabel ?? materialId.replaceAll("-", " ");
+    sourceCard.dataset.materialId = materialId;
+    sourceCard.setAttribute("aria-label", `Drag ${label} to the kenzan`);
+    if (!template) return;
+    const fragment = template.content.cloneNode(true) as DocumentFragment;
+    sourceCard.replaceChildren(...Array.from(fragment.childNodes));
+    sourceInnerMaterialId = materialId;
   }
 
   function setPressed(selector: string, value: string): void {
@@ -168,6 +200,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     root.dataset.cameraMode = currentState.cameraMode;
     root.dataset.view = currentState.view;
     root.dataset.bendVariant = currentState.bendVariant === "fixed-bead" ? "fixed" : "touch";
+    root.dataset.selectedMaterial = currentState.selectedMaterialId;
+    root.dataset.materialMenu = currentState.materialMenuOpen ? "open" : "closed";
 
     setPressed("[data-posture]", currentState.posture);
     setPressed("[data-tool]", currentState.tool);
@@ -177,17 +211,29 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
     experimentPanel.hidden = !currentState.experimentPanelOpen;
     experimentToggle.setAttribute("aria-expanded", String(currentState.experimentPanelOpen));
+    materialsToggle.setAttribute("aria-expanded", String(currentState.materialMenuOpen));
+    materialOptions.hidden = !currentState.materialMenuOpen;
+    materialsToggle.disabled = !currentState.trayEnabled;
+    for (const choice of paletteChoices) {
+      choice.disabled = !currentState.trayEnabled;
+      choice.setAttribute("aria-pressed", String(choice.dataset.materialChoice === currentState.selectedMaterialId));
+    }
 
     craftChrome.inert = currentState.posture === "step-back";
     cameraChrome.hidden = currentState.posture !== "step-back";
     cameraChrome.inert = currentState.posture !== "step-back";
     craftChrome.setAttribute("aria-hidden", String(currentState.posture === "step-back"));
-    for (const trayButton of trayButtons) {
-      const buttonDragging = currentState.trayDragging
-        && currentState.activeMaterialId === trayButton.dataset.materialId;
-      trayButton.disabled = !currentState.trayEnabled;
-      trayButton.dataset.dragging = String(buttonDragging);
-      trayButton.setAttribute("aria-busy", String(buttonDragging));
+    const buttonDragging = currentState.trayDragging
+      && currentState.activeMaterialId === currentState.selectedMaterialId;
+    sourceCard.disabled = !currentState.trayEnabled;
+    sourceCard.dataset.dragging = String(buttonDragging);
+    sourceCard.setAttribute("aria-busy", String(buttonDragging));
+    // Keep the captured source node identity through a drag. Inner content
+    // updates only after cancellation/selection, never on pointerdown.
+    if (!currentState.trayDragging && sourceInnerMaterialId !== currentState.selectedMaterialId) {
+      fillSourceCard(currentState.selectedMaterialId);
+    } else if (sourceCard.dataset.materialId !== currentState.selectedMaterialId && !currentState.trayDragging) {
+      sourceCard.dataset.materialId = currentState.selectedMaterialId;
     }
 
     status.textContent = currentState.status;
@@ -243,10 +289,17 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     emit({ kind: "set-view-menu", open: !currentState.viewMenuOpen }, event);
   }, listenerOptions);
 
+  materialsToggle.addEventListener("click", (event) => {
+    emit({ kind: "set-material-menu", open: !currentState.materialMenuOpen }, event);
+  }, listenerOptions);
+
   // Dismissal never consumes a scene press or turns it into a UI command.
   root.ownerDocument.addEventListener("pointerdown", (event) => {
     if (currentState.viewMenuOpen && !event.composedPath().includes(viewMenu)) {
       setState({ viewMenuOpen: false });
+    }
+    if (currentState.materialMenuOpen && !event.composedPath().includes(materialMenu)) {
+      emit({ kind: "set-material-menu", open: false }, event);
     }
   }, { ...listenerOptions, capture: true });
 
@@ -254,8 +307,18 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     if (!viewMenu.contains(event.relatedTarget as Node | null)) setState({ viewMenuOpen: false });
   }, listenerOptions);
 
+  materialMenu.addEventListener("focusout", (event) => {
+    if (!materialMenu.contains(event.relatedTarget as Node | null)) {
+      emit({ kind: "set-material-menu", open: false }, event);
+    }
+  }, listenerOptions);
+
   root.ownerDocument.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && currentState.viewMenuOpen) {
+    if (event.key === "Escape" && currentState.materialMenuOpen) {
+      event.preventDefault();
+      emit({ kind: "set-material-menu", open: false }, event);
+      materialsToggle.focus({ preventScroll: true });
+    } else if (event.key === "Escape" && currentState.viewMenuOpen) {
       event.preventDefault();
       setState({ viewMenuOpen: false });
       viewToggle.focus({ preventScroll: true });
@@ -306,48 +369,59 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     listenerOptions,
   );
 
-  for (const trayButton of trayButtons) {
-    trayButton.addEventListener(
-      "pointerdown",
-      (event) => {
-        const materialId = trayButton.dataset.materialId;
-        if (
-          !currentState.trayEnabled
-          || event.button !== 0
-          || !materialId
-          || materialId.trim().length === 0
-        ) return;
-        event.preventDefault();
-        emit(
-          {
-            kind: "begin-material-drag",
-            materialId,
-            pointerId: event.pointerId,
-            clientX: event.clientX,
-            clientY: event.clientY,
-          },
-          event,
-        );
-      },
-      listenerOptions,
-    );
-
-    trayButton.addEventListener(
+  for (const choice of paletteChoices) {
+    choice.addEventListener(
       "click",
       (event) => {
-        const materialId = trayButton.dataset.materialId;
-        // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
-        if (
-          !currentState.trayEnabled
-          || event.detail !== 0
-          || !materialId
-          || materialId.trim().length === 0
-        ) return;
-        emit({ kind: "activate-material", materialId }, event);
+        const materialId = choice.dataset.materialChoice;
+        if (!currentState.trayEnabled || !materialId || materialId.trim().length === 0) return;
+        emit({ kind: "select-material", materialId }, event);
+        sourceCard.focus({ preventScroll: true });
       },
       listenerOptions,
     );
   }
+
+  sourceCard.addEventListener(
+    "pointerdown",
+    (event) => {
+      const materialId = sourceCard.dataset.materialId;
+      if (
+        !currentState.trayEnabled
+        || event.button !== 0
+        || !materialId
+        || materialId.trim().length === 0
+      ) return;
+      event.preventDefault();
+      emit(
+        {
+          kind: "begin-material-drag",
+          materialId,
+          pointerId: event.pointerId,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        },
+        event,
+      );
+    },
+    listenerOptions,
+  );
+
+  sourceCard.addEventListener(
+    "click",
+    (event) => {
+      const materialId = sourceCard.dataset.materialId;
+      // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
+      if (
+        !currentState.trayEnabled
+        || event.detail !== 0
+        || !materialId
+        || materialId.trim().length === 0
+      ) return;
+      emit({ kind: "activate-material", materialId }, event);
+    },
+    listenerOptions,
+  );
 
   render();
 

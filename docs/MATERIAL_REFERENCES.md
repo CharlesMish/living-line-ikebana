@@ -119,6 +119,13 @@ comparison sets. `all-registered-materials` still cycles the live catalog.
 | Arching trailer / `arching-trailer-v1` | One authored arching cane and three small leaves on the descending limb | Cool blue-green cane `0x3d6d62`, roughness `0.58` | Cane stiffness `0.50`; petioles `0.18`. Shared single station. No bowl collision |
 
 Each flower-volume group is one pedicel and one bloom. Pruning that pedicel
-deactivates that bloom and leaves the other groups unchanged. The head is not
-one mesh. The trailer’s rest pose can cross the water; a downward bend or an
-edge seat can still leave the bowl. That limit is unchanged.
+deactivates that bloom and leaves the other groups unchanged. That cut is a
+graph fact. The current renderer draws one instanced mesh per bloom; a group
+cut does not require a separate draw call.
+
+The trailer’s centered rest pose crosses the open water and stays clear of the
+ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance
+after radii. An edge seat is a different event. The cane passes over the lip
+and the free end overhangs past the rim. A downward bend can penetrate the
+water, and a saturated bend can go through the basin floor. Overhang and
+penetration stay separate. No collision response was added.

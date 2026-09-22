@@ -1,0 +1,1373 @@
+{
+  "gardenVersion": 1,
+  "entries": [
+    {
+      "id": "695a2d08-6601-43de-bad3-9aba130ee23f",
+      "title": "Repeated reeds",
+      "keptAt": "2026-09-22T05:15:58.790Z",
+      "thumbnail": "data:image/jpeg;base64,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",
+      "arrangement": {
+        "plants": [
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "reed-v1",
+            "id": "plant-1",
+            "seed": 8278,
+            "rootBranchId": "plant-1:culm",
+            "branches": [
+              {
+                "id": "plant-1:culm",
+                "label": "reed",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": 0,
+                    "y": 0.55,
+                    "z": 0
+                  },
+                  {
+                    "x": -0.01724803969691387,
+                    "y": 0.8395486218527037,
+                    "z": 0.03312537125390093
+                  },
+                  {
+                    "x": -0.032784628554845506,
+                    "y": 1.1281283062477105,
+                    "z": 0.0745206568795963
+                  },
+                  {
+                    "x": -0.046666664918580056,
+                    "y": 1.4155482802293446,
+                    "z": 0.12381809224582832
+                  },
+                  {
+                    "x": -0.05901628968574511,
+                    "y": 1.7017026095661312,
+                    "z": 0.18035459444413554
+                  },
+                  {
+                    "x": -0.07001334313159975,
+                    "y": 1.9865893443526756,
+                    "z": 0.24321795952321176
+                  },
+                  {
+                    "x": -0.07988513288407105,
+                    "y": 2.270315394432031,
+                    "z": 0.3113007457789541
+                  },
+                  {
+                    "x": -0.0888946446063414,
+                    "y": 2.5530874317242267,
+                    "z": 0.3833562322809724
+                  },
+                  {
+                    "x": -0.09732816576183902,
+                    "y": 2.8351911886114856,
+                    "z": 0.45805252122432744
+                  },
+                  {
+                    "x": -0.10548295653484321,
+                    "y": 3.116962673505613,
+                    "z": 0.5340230365503544
+                  },
+                  {
+                    "x": -0.11365524876136339,
+                    "y": 3.3987551918307513,
+                    "z": 0.6099136141383277
+                  },
+                  {
+                    "x": -0.12212860816766553,
+                    "y": 3.6809059670178974,
+                    "z": 0.6844275843221741
+                  },
+                  {
+                    "x": -0.13116262133682924,
+                    "y": 3.963705881949645,
+                    "z": 0.756370507751452
+                  },
+                  {
+                    "x": -0.1409819689087781,
+                    "y": 4.247375506184767,
+                    "z": 0.8246955705795324
+                  },
+                  {
+                    "x": -0.15176616985465075,
+                    "y": 4.532050044403421,
+                    "z": 0.8885492925607136
+                  },
+                  {
+                    "x": -0.16364053662450148,
+                    "y": 4.8177749428941805,
+                    "z": 0.9473155354826134
+                  },
+                  {
+                    "x": -0.1766690552755072,
+                    "y": 5.104512488365626,
+                    "z": 1.0006543321475772
+                  }
+                ],
+                "restLengths": [
+                  0.29194723754626467,
+                  0.29194723754626456,
+                  0.29194723754626467,
+                  0.2919472375462646,
+                  0.2919472375462647,
+                  0.29194723754626456,
+                  0.29194723754626467,
+                  0.2919472375462646,
+                  0.2919472375462647,
+                  0.2919472375462648,
+                  0.2919472375462645,
+                  0.29194723754626484,
+                  0.29194723754626484,
+                  0.29194723754626467,
+                  0.2919472375462651,
+                  0.2919472375462648
+                ],
+                "activeLength": 4.671155800740235,
+                "radius": 0.024,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0,
+                  "y": 0.11366208878102434,
+                  "z": -0.9935194661273299
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "reed-v1",
+            "id": "plant-2",
+            "seed": 9255,
+            "rootBranchId": "plant-2:culm",
+            "branches": [
+              {
+                "id": "plant-2:culm",
+                "label": "reed",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": 0.18913732982375425,
+                    "y": 0.55,
+                    "z": -0.20646324241167097
+                  },
+                  {
+                    "x": 0.20392442034341435,
+                    "y": 0.8660370341042734,
+                    "z": -0.15557132946321878
+                  },
+                  {
+                    "x": 0.22334557486320214,
+                    "y": 1.1812287684533966,
+                    "z": -0.10111913822975882
+                  },
+                  {
+                    "x": 0.24721499061115726,
+                    "y": 1.495507088367617,
+                    "z": -0.043262069527988424
+                  },
+                  {
+                    "x": 0.27518245382832324,
+                    "y": 1.8088550792236378,
+                    "z": 0.017720792021028803
+                  },
+                  {
+                    "x": 0.306753812809495,
+                    "y": 2.121314172320464,
+                    "z": 0.08144375654878774
+                  },
+                  {
+                    "x": 0.34131654360348085,
+                    "y": 2.432984905425645,
+                    "z": 0.14743484337691012
+                  },
+                  {
+                    "x": 0.37816859133005715,
+                    "y": 2.7440211872296034,
+                    "z": 0.21515788048350942
+                  },
+                  {
+                    "x": 0.4165489173128375,
+                    "y": 3.054618854593915,
+                    "z": 0.28403524527281643
+                  },
+                  {
+                    "x": 0.4556686134402982,
+                    "y": 3.3649999797004173,
+                    "z": 0.35347052684877023
+                  },
+                  {
+                    "x": 0.49474188734335345,
+                    "y": 3.675394784121122,
+                    "z": 0.42287078931329036
+                  },
+                  {
+                    "x": 0.5330165284966512,
+                    "y": 3.9860231722395207,
+                    "z": 0.49166837731292085
+                  },
+                  {
+                    "x": 0.5698035521299202,
+                    "y": 4.297077847870141,
+                    "z": 0.559342267666218
+                  },
+                  {
+                    "x": 0.6045055768437201,
+                    "y": 4.608710749788846,
+                    "z": 0.6254388310980983
+                  },
+                  {
+                    "x": 0.6366431870772419,
+                    "y": 4.921024135692999,
+                    "z": 0.6895915767024535
+                  },
+                  {
+                    "x": 0.6658781813714613,
+                    "y": 5.23406705765148,
+                    "z": 0.7515391020390522
+                  },
+                  {
+                    "x": 0.6920323532051793,
+                    "y": 5.547837232607496,
+                    "z": 0.8111401790324932
+                  }
+                ],
+                "restLengths": [
+                  0.3204497648228425,
+                  0.3204497648228425,
+                  0.32044976482284254,
+                  0.3204497648228425,
+                  0.3204497648228427,
+                  0.32044976482284276,
+                  0.32044976482284265,
+                  0.32044976482284265,
+                  0.32044976482284276,
+                  0.32044976482284243,
+                  0.32044976482284254,
+                  0.32044976482284265,
+                  0.32044976482284276,
+                  0.32044976482284254,
+                  0.3204497648228422,
+                  0.3204497648228425
+                ],
+                "activeLength": 5.127196237165482,
+                "radius": 0.024,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0,
+                  "y": 0.15898336770871102,
+                  "z": -0.9872812612381523
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "reed-v1",
+            "id": "plant-3",
+            "seed": 10232,
+            "rootBranchId": "plant-3:culm",
+            "branches": [
+              {
+                "id": "plant-3:culm",
+                "label": "reed",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.3944636229074499,
+                    "y": 0.55,
+                    "z": 0.03461863952741615
+                  },
+                  {
+                    "x": -0.3805918926471898,
+                    "y": 0.791980314418407,
+                    "z": 0.05639783191492977
+                  },
+                  {
+                    "x": -0.35972848926082496,
+                    "y": 1.0332859839312547,
+                    "z": 0.08000975575842444
+                  },
+                  {
+                    "x": -0.3321668248780457,
+                    "y": 1.273741455825,
+                    "z": 0.1053622976488178
+                  },
+                  {
+                    "x": -0.2984544960638463,
+                    "y": 1.5132389982840204,
+                    "z": 0.13229994285974556
+                  },
+                  {
+                    "x": -0.259355637545662,
+                    "y": 1.7517568224432885,
+                    "z": 0.16061526571505472
+                  },
+                  {
+                    "x": -0.2158056896807524,
+                    "y": 1.9893647974287316,
+                    "z": 0.1900615380050668
+                  },
+                  {
+                    "x": -0.1688634924512061,
+                    "y": 2.2262178166526585,
+                    "z": 0.22036513665719454
+                  },
+                  {
+                    "x": -0.11966430627513103,
+                    "y": 2.4625387916913017,
+                    "z": 0.2512369283754219
+                  },
+                  {
+                    "x": -0.06937551796316052,
+                    "y": 2.6985943547239137,
+                    "z": 0.2823823874179093
+                  },
+                  {
+                    "x": -0.01915509595806132,
+                    "y": 2.934666735203832,
+                    "z": 0.3135106876553345
+                  },
+                  {
+                    "x": 0.029888218112133255,
+                    "y": 3.1710252220194235,
+                    "z": 0.3443432960878507
+                  },
+                  {
+                    "x": 0.07673424796022632,
+                    "y": 3.407900381516669,
+                    "z": 0.37462264529028233
+                  },
+                  {
+                    "x": 0.12049096675572157,
+                    "y": 3.645463868326971,
+                    "z": 0.40412128902656635
+                  },
+                  {
+                    "x": 0.16043388769971176,
+                    "y": 3.8838161607472412,
+                    "z": 0.4326515966302542
+                  },
+                  {
+                    "x": 0.19604341837755498,
+                    "y": 4.122983708726187,
+                    "z": 0.46007560082620225
+                  },
+                  {
+                    "x": 0.2270371488922999,
+                    "y": 4.362925692113063,
+                    "z": 0.4863141976760407
+                  }
+                ],
+                "restLengths": [
+                  0.2433541260950733,
+                  0.24335412609507334,
+                  0.24335412609507331,
+                  0.2433541260950733,
+                  0.24335412609507343,
+                  0.24335412609507337,
+                  0.2433541260950731,
+                  0.24335412609507312,
+                  0.24335412609507343,
+                  0.24335412609507334,
+                  0.2433541260950731,
+                  0.24335412609507312,
+                  0.24335412609507323,
+                  0.24335412609507334,
+                  0.24335412609507326,
+                  0.24335412609507326
+                ],
+                "activeLength": 3.8936660175211717,
+                "radius": 0.024,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0,
+                  "y": 0.08964163573818285,
+                  "z": -0.9959740845735813
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "reed-v1",
+            "id": "plant-4",
+            "seed": 11209,
+            "rootBranchId": "plant-4:culm",
+            "branches": [
+              {
+                "id": "plant-4:culm",
+                "label": "reed",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": 0.38487570684224337,
+                    "y": 0.55,
+                    "z": 0.29507743099512634
+                  },
+                  {
+                    "x": 0.40940232828838874,
+                    "y": 0.9105875644065233,
+                    "z": 0.3734768224463776
+                  },
+                  {
+                    "x": 0.44243869755234994,
+                    "y": 1.2693001776005155,
+                    "z": 0.4571743181407533
+                  },
+                  {
+                    "x": 0.483587830159915,
+                    "y": 1.6259650626435485,
+                    "z": 0.5458778694056416
+                  },
+                  {
+                    "x": 0.533968110910215,
+                    "y": 1.980372337497001,
+                    "z": 0.6387687849280327
+                  },
+                  {
+                    "x": 0.6063025136733474,
+                    "y": 2.330766809727967,
+                    "z": 0.7323789304839581
+                  },
+                  {
+                    "x": 0.7181011248580105,
+                    "y": 2.6719387312241616,
+                    "z": 0.8211156301289895
+                  },
+                  {
+                    "x": 0.8797718662767602,
+                    "y": 2.9952438348359016,
+                    "z": 0.8992679985629097
+                  },
+                  {
+                    "x": 1.0890268919261499,
+                    "y": 3.2933228875159855,
+                    "z": 0.9635534863337496
+                  },
+                  {
+                    "x": 1.3328821825354817,
+                    "y": 3.566561470536215,
+                    "z": 1.0149994320928948
+                  },
+                  {
+                    "x": 1.5942985591294634,
+                    "y": 3.8245358245651446,
+                    "z": 1.058382862754238
+                  },
+                  {
+                    "x": 1.8590451714460383,
+                    "y": 4.079549747636896,
+                    "z": 1.0989850997685926
+                  },
+                  {
+                    "x": 2.121871059009133,
+                    "y": 4.336741192756358,
+                    "z": 1.13831097837482
+                  },
+                  {
+                    "x": 2.3819224161494814,
+                    "y": 4.597000234622617,
+                    "z": 1.1758600678502953
+                  },
+                  {
+                    "x": 2.638498783663874,
+                    "y": 4.8609895388774,
+                    "z": 1.2112101204147891
+                  },
+                  {
+                    "x": 2.891059494362273,
+                    "y": 5.129142104083298,
+                    "z": 1.2440536970947655
+                  },
+                  {
+                    "x": 3.1392634831728308,
+                    "y": 5.401642231550793,
+                    "z": 1.2742177785965432
+                  }
+                ],
+                "restLengths": [
+                  0.3698261907222332,
+                  0.36982619072223305,
+                  0.3698261907222331,
+                  0.3698261907222332,
+                  0.3698261907222332,
+                  0.3698261907222332,
+                  0.369826190722233,
+                  0.3698261907222332,
+                  0.36982619072223294,
+                  0.3698261907222332,
+                  0.36982619072223344,
+                  0.36982619072223344,
+                  0.3698261907222329,
+                  0.36982619072223305,
+                  0.3698261907222334,
+                  0.3698261907222335
+                ],
+                "activeLength": 5.917219051555731,
+                "radius": 0.024,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0,
+                  "y": 0.21245756625686024,
+                  "z": -0.9771702935211508
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "reed-v1",
+            "id": "plant-5",
+            "seed": 12186,
+            "rootBranchId": "plant-5:culm",
+            "branches": [
+              {
+                "id": "plant-5:culm",
+                "label": "reed",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.0975413854865116,
+                    "y": 0.55,
+                    "z": -0.5514396414090773
+                  },
+                  {
+                    "x": -0.08179403695628835,
+                    "y": 0.9117467151817457,
+                    "z": -0.5113520751411254
+                  },
+                  {
+                    "x": -0.06903460514111429,
+                    "y": 1.2729857997133605,
+                    "z": -0.46597368153450286
+                  },
+                  {
+                    "x": -0.05915802847582809,
+                    "y": 1.6336399249617009,
+                    "z": -0.41550851459202853
+                  },
+                  {
+                    "x": -0.051950623826257314,
+                    "y": 1.99366936425232,
+                    "z": -0.36034934434716
+                  },
+                  {
+                    "x": -0.04710144134911605,
+                    "y": 2.353080564373947,
+                    "z": -0.3010555625801168
+                  },
+                  {
+                    "x": -0.04421766230593717,
+                    "y": 2.7119290318922094,
+                    "z": -0.23832487568743824
+                  },
+                  {
+                    "x": -0.042843036958719286,
+                    "y": 3.070316125603692,
+                    "z": -0.172960670146527
+                  },
+                  {
+                    "x": -0.042478343578459726,
+                    "y": 3.4283802674900623,
+                    "z": -0.10583679068684128
+                  },
+                  {
+                    "x": -0.04260296583666156,
+                    "y": 3.786283844277516,
+                    "z": -0.03786111789250436
+                  },
+                  {
+                    "x": -0.04269685198340508,
+                    "y": 4.1441975855331625,
+                    "z": 0.030061064828463505
+                  },
+                  {
+                    "x": -0.042262254693841074,
+                    "y": 4.502284447698062,
+                    "z": 0.09706321531555334
+                  },
+                  {
+                    "x": -0.04084470355314157,
+                    "y": 4.860685015827845,
+                    "z": 0.16235258055075055
+                  },
+                  {
+                    "x": -0.038052623886309894,
+                    "y": 5.219506174808884,
+                    "z": 0.22524342295599326
+                  },
+                  {
+                    "x": -0.033574919610162346,
+                    "y": 5.578814320328717,
+                    "z": 0.28518743539523844
+                  },
+                  {
+                    "x": -0.02719574720920715,
+                    "y": 5.938633711398573,
+                    "z": 0.3418000653412117
+                  },
+                  {
+                    "x": -0.018805693066918268,
+                    "y": 6.29894977846971,
+                    "z": 0.39488129273545935
+                  }
+                ],
+                "restLengths": [
+                  0.36430163038312463,
+                  0.3643016303831247,
+                  0.36430163038312446,
+                  0.36430163038312446,
+                  0.36430163038312435,
+                  0.36430163038312435,
+                  0.3643016303831245,
+                  0.36430163038312474,
+                  0.36430163038312463,
+                  0.36430163038312496,
+                  0.36430163038312435,
+                  0.36430163038312435,
+                  0.3643016303831249,
+                  0.36430163038312435,
+                  0.3643016303831251,
+                  0.36430163038312435
+                ],
+                "activeLength": 5.828826086129994,
+                "radius": 0.024,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0,
+                  "y": 0.1101424403763581,
+                  "z": -0.9939158127467037
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "reed-v1",
+            "id": "plant-6",
+            "seed": 13163,
+            "rootBranchId": "plant-6:culm",
+            "branches": [
+              {
+                "id": "plant-6:culm",
+                "label": "reed",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.3360455219075733,
+                    "y": 0.55,
+                    "z": 0.5282739887651737
+                  },
+                  {
+                    "x": -0.2710029426283018,
+                    "y": 0.8374479989757686,
+                    "z": 0.5477311451993858
+                  },
+                  {
+                    "x": -0.20168656390865292,
+                    "y": 1.12401008726469,
+                    "z": 0.5654195416124491
+                  },
+                  {
+                    "x": -0.12828156389185452,
+                    "y": 1.4096526093220993,
+                    "z": 0.581404713997988
+                  },
+                  {
+                    "x": -0.05112099624410134,
+                    "y": 1.6943876437090606,
+                    "z": 0.5958157224259782
+                  },
+                  {
+                    "x": 0.029334040588222712,
+                    "y": 1.9782764855751962,
+                    "z": 0.6088381140340041
+                  },
+                  {
+                    "x": 0.11251812341556107,
+                    "y": 2.2614284994780864,
+                    "z": 0.6207046871657504
+                  },
+                  {
+                    "x": 0.1977875860867949,
+                    "y": 2.5439953579192034,
+                    "z": 0.6316846424232191
+                  },
+                  {
+                    "x": 0.2844477199932226,
+                    "y": 2.8261612677015844,
+                    "z": 0.6420716881524118
+                  },
+                  {
+                    "x": 0.3717802429312271,
+                    "y": 3.1081302246491873,
+                    "z": 0.6521715854856959
+                  },
+                  {
+                    "x": 0.45907055683469783,
+                    "y": 3.390111604740847,
+                    "z": 0.6622895176467496
+                  },
+                  {
+                    "x": 0.545634558619803,
+                    "y": 3.6723055079967986,
+                    "z": 0.6727175918264814
+                  },
+                  {
+                    "x": 0.6308448263882115,
+                    "y": 3.9548892421630835,
+                    "z": 0.6837227552715988
+                  },
+                  {
+                    "x": 0.7141558716355101,
+                    "y": 4.238006180078807,
+                    "z": 0.6955354338842508
+                  },
+                  {
+                    "x": 0.7951278749400975,
+                    "y": 4.5217579497585,
+                    "z": 0.7083392636028834
+                  },
+                  {
+                    "x": 0.8734479964248549,
+                    "y": 4.806200521198891,
+                    "z": 0.7222623485329654
+                  },
+                  {
+                    "x": 0.9489480820668756,
+                    "y": 5.091344258283174,
+                    "z": 0.7373705066151366
+                  }
+                ],
+                "restLengths": [
+                  0.2953565136762336,
+                  0.2953565136762335,
+                  0.29535651367623345,
+                  0.2953565136762335,
+                  0.29535651367623356,
+                  0.29535651367623356,
+                  0.2953565136762336,
+                  0.2953565136762335,
+                  0.2953565136762335,
+                  0.2953565136762335,
+                  0.29535651367623356,
+                  0.2953565136762336,
+                  0.2953565136762335,
+                  0.29535651367623394,
+                  0.2953565136762334,
+                  0.29535651367623345
+                ],
+                "activeLength": 4.725704218819736,
+                "radius": 0.024,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0,
+                  "y": 0.06753476901298446,
+                  "z": -0.9977169212629213
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          }
+        ],
+        "successfulPlantOrdinal": 6,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 3.7,
+            "z": 15
+          },
+          "target": {
+            "x": 0,
+            "y": 2.55,
+            "z": 0
+          },
+          "up": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "bf63f974-614a-4ceb-b5de-c3acee0c88f2",
+      "title": "flower volume group-2 pruned",
+      "keptAt": "2026-09-22T05:15:50.707Z",
+      "thumbnail": "data:image/jpeg;base64,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",
+      "arrangement": {
+        "plants": [
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "flower-volume-v1",
+            "id": "plant-1",
+            "seed": 8278,
+            "rootBranchId": "plant-1:stem",
+            "branches": [
+              {
+                "id": "plant-1:group-1",
+                "label": "flower group",
+                "kind": "pedicel",
+                "parentId": "plant-1:stem",
+                "parentDistance": 4.418475227563379,
+                "points": [
+                  {
+                    "x": 1.7943236890485237,
+                    "y": 4.5793776664652945,
+                    "z": 0.23489649915372715
+                  },
+                  {
+                    "x": 1.8199885978733665,
+                    "y": 4.617409081891643,
+                    "z": 0.240100815749871
+                  },
+                  {
+                    "x": 1.8466614765177227,
+                    "y": 4.654688274059673,
+                    "z": 0.24566681895455877
+                  },
+                  {
+                    "x": 1.8735491611929949,
+                    "y": 4.6918011329564315,
+                    "z": 0.2513103225528936
+                  },
+                  {
+                    "x": 1.8998566816327975,
+                    "y": 4.729358306263614,
+                    "z": 0.256744852618645
+                  }
+                ],
+                "restLengths": [
+                  0.04617532907897873,
+                  0.04617532907897817,
+                  0.046175329078978186,
+                  0.04617532907897839
+                ],
+                "activeLength": 0.1847013163159135,
+                "radius": 0.016,
+                "stiffness": 0.2,
+                "referenceNormal": {
+                  "x": 0.030620063917984008,
+                  "y": 0.11520339106294386,
+                  "z": -0.9928698758514417
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:group-2",
+                "label": "flower group",
+                "kind": "pedicel",
+                "parentId": "plant-1:stem",
+                "parentDistance": 4.1704763782880985,
+                "points": [
+                  {
+                    "x": 1.697630736983676,
+                    "y": 4.3514504066269435,
+                    "z": 0.22064635931480636
+                  },
+                  {
+                    "x": 1.7136613677786636,
+                    "y": 4.381604933024325,
+                    "z": 0.29400117943728327
+                  },
+                  {
+                    "x": 1.7289958690654845,
+                    "y": 4.409902040189254,
+                    "z": 0.36823953217707217
+                  },
+                  {
+                    "x": 1.744183311081377,
+                    "y": 4.4378079121395215,
+                    "z": 0.44265599632880204
+                  },
+                  {
+                    "x": 1.7549535167242711,
+                    "y": 4.457824515833059,
+                    "z": 0.4937422376005897
+                  }
+                ],
+                "restLengths": [
+                  0.08091480841685568,
+                  0.08091480841685555,
+                  0.08091480841685544,
+                  0.05591480841685553
+                ],
+                "activeLength": 0.2986592336674222,
+                "radius": 0.016,
+                "stiffness": 0.2,
+                "referenceNormal": {
+                  "x": -0.9316769597432766,
+                  "y": 0.3589374142583648,
+                  "z": 0.05605332576256417
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:group-3",
+                "label": "flower group",
+                "kind": "pedicel",
+                "parentId": "plant-1:stem",
+                "parentDistance": 4.223389247239693,
+                "points": [
+                  {
+                    "x": 1.7182610806973715,
+                    "y": 4.400080814653295,
+                    "z": 0.2236867596394133
+                  },
+                  {
+                    "x": 1.6743448921644715,
+                    "y": 4.456594026472805,
+                    "z": 0.25292090026742076
+                  },
+                  {
+                    "x": 1.6289348335368232,
+                    "y": 4.511744425170803,
+                    "z": 0.28247373097037887
+                  },
+                  {
+                    "x": 1.5832159352926465,
+                    "y": 4.5666045034856,
+                    "z": 0.3120906831144606
+                  },
+                  {
+                    "x": 1.538338718978752,
+                    "y": 4.622248790964872,
+                    "z": 0.3415314444923917
+                  }
+                ],
+                "restLengths": [
+                  0.07731112276815098,
+                  0.0773111227681513,
+                  0.07731112276815111,
+                  0.07731112276815129
+                ],
+                "activeLength": 0.30924449107260465,
+                "radius": 0.016,
+                "stiffness": 0.2,
+                "referenceNormal": {
+                  "x": -0.37968583211860796,
+                  "y": 0.1748792869772399,
+                  "z": -0.9084359657536312
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:group-4",
+                "label": "flower group",
+                "kind": "pedicel",
+                "parentId": "plant-1:stem",
+                "parentDistance": 4.264620837286383,
+                "points": [
+                  {
+                    "x": 1.7343369785154166,
+                    "y": 4.437975358783574,
+                    "z": 0.2260559477451783
+                  },
+                  {
+                    "x": 1.7040877811500394,
+                    "y": 4.495078975409322,
+                    "z": 0.17829377612182357
+                  },
+                  {
+                    "x": 1.6724912704543313,
+                    "y": 4.550764491206815,
+                    "z": 0.12973612118058891
+                  },
+                  {
+                    "x": 1.6406152113946117,
+                    "y": 4.6061479880929594,
+                    "z": 0.08101603145722516
+                  },
+                  {
+                    "x": 1.6095001841215917,
+                    "y": 4.662347353958119,
+                    "z": 0.0327402780677446
+                  }
+                ],
+                "restLengths": [
+                  0.08035584615427065,
+                  0.08035584615427073,
+                  0.0803558461542706,
+                  0.0803558461542707
+                ],
+                "activeLength": 0.3214233846170827,
+                "radius": 0.016,
+                "stiffness": 0.2,
+                "referenceNormal": {
+                  "x": 0.667601908982937,
+                  "y": -0.23675463594474286,
+                  "z": -0.7058717542734024
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:group-5",
+                "label": "flower group",
+                "kind": "pedicel",
+                "parentId": "plant-1:stem",
+                "parentDistance": 4.312269038909074,
+                "points": [
+                  {
+                    "x": 1.7529146666334972,
+                    "y": 4.481767191140143,
+                    "z": 0.22879383761112176
+                  },
+                  {
+                    "x": 1.8041685227303697,
+                    "y": 4.50369536649935,
+                    "z": 0.17376343972479671
+                  },
+                  {
+                    "x": 1.8552563364359003,
+                    "y": 4.523738606006708,
+                    "z": 0.11786664937195045
+                  },
+                  {
+                    "x": 1.9063048167335432,
+                    "y": 4.543385366727582,
+                    "z": 0.06179344023079089
+                  },
+                  {
+                    "x": 1.957456405614568,
+                    "y": 4.564107108371172,
+                    "z": 0.006203227880834952
+                  }
+                ],
+                "restLengths": [
+                  0.07833356452319998,
+                  0.07833356452320013,
+                  0.07833356452319999,
+                  0.07833356452319998
+                ],
+                "activeLength": 0.31333425809280013,
+                "radius": 0.016,
+                "stiffness": 0.2,
+                "referenceNormal": {
+                  "x": 0.7541928488826504,
+                  "y": -0.3097363658660299,
+                  "z": 0.5790134112042457
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:petiole-1",
+                "label": "leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-1:stem",
+                "parentDistance": 1.104504018463349,
+                "points": [
+                  {
+                    "x": 0.4139314322799691,
+                    "y": 1.571579368869934,
+                    "z": 0.06776712714728081
+                  },
+                  {
+                    "x": 0.46335100582712185,
+                    "y": 1.573474699225636,
+                    "z": 0.09805564308065942
+                  },
+                  {
+                    "x": 0.5126646112230213,
+                    "y": 1.5739673650433752,
+                    "z": 0.1285713165524307
+                  },
+                  {
+                    "x": 0.5619509603067286,
+                    "y": 1.574151972633236,
+                    "z": 0.15913440602687584
+                  },
+                  {
+                    "x": 0.6113070413597613,
+                    "y": 1.5751610749673612,
+                    "z": 0.18956859239273677
+                  }
+                ],
+                "restLengths": [
+                  0.0579937990149483,
+                  0.057993799014948326,
+                  0.05799379901494833,
+                  0.0579937990149483
+                ],
+                "activeLength": 0.23197519605979325,
+                "radius": 0.013,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.5193343464774273,
+                  "y": 0.17535074858168087,
+                  "z": 0.8363874410467363
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:petiole-2",
+                "label": "leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-1:stem",
+                "parentDistance": 1.8703485228081047,
+                "points": [
+                  {
+                    "x": 0.7302432876535658,
+                    "y": 2.2679069405500076,
+                    "z": 0.10711187816011668
+                  },
+                  {
+                    "x": 0.6912257283112888,
+                    "y": 2.3125297913483753,
+                    "z": 0.10387193107829988
+                  },
+                  {
+                    "x": 0.6511921758718703,
+                    "y": 2.3562378048258994,
+                    "z": 0.10055677732267018
+                  },
+                  {
+                    "x": 0.610937358826974,
+                    "y": 2.3997408710628063,
+                    "z": 0.09722527013167376
+                  },
+                  {
+                    "x": 0.5712762557158161,
+                    "y": 2.443789191753149,
+                    "z": 0.09393766433696517
+                  }
+                ],
+                "restLengths": [
+                  0.05936384427826853,
+                  0.05936384427826861,
+                  0.05936384427826858,
+                  0.05936384427826856
+                ],
+                "activeLength": 0.2374553771130743,
+                "radius": 0.013,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.08162932190198051,
+                  "y": -0.0009895399241665222,
+                  "z": -0.9966622670777505
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:stem",
+                "label": "flower stem",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": 0,
+                    "y": 0.55,
+                    "z": 0
+                  },
+                  {
+                    "x": 0.1135173428906559,
+                    "y": 0.848507235760606,
+                    "z": 0.02129130165351262
+                  },
+                  {
+                    "x": 0.2323099924557351,
+                    "y": 1.1450483158111653,
+                    "z": 0.04123549169095768
+                  },
+                  {
+                    "x": 0.35610341783044863,
+                    "y": 1.4396215212519894,
+                    "z": 0.05988732631403758
+                  },
+                  {
+                    "x": 0.4843824143014947,
+                    "y": 1.7323415883344506,
+                    "z": 0.07736696750356035
+                  },
+                  {
+                    "x": 0.6164267208569925,
+                    "y": 2.0234405224093566,
+                    "z": 0.09385296614559227
+                  },
+                  {
+                    "x": 0.7513564765703095,
+                    "y": 2.3132559245799715,
+                    "z": 0.10957143147535128
+                  },
+                  {
+                    "x": 0.8881839442802999,
+                    "y": 2.602207397134107,
+                    "z": 0.12478218600504201
+                  },
+                  {
+                    "x": 1.025868390052178,
+                    "y": 2.8907635408228263,
+                    "z": 0.13976290015620618
+                  },
+                  {
+                    "x": 1.163371807314676,
+                    "y": 3.179403464270699,
+                    "z": 0.154792248034106
+                  },
+                  {
+                    "x": 1.2997138492249114,
+                    "y": 3.4685774300803773,
+                    "z": 0.170133094495259
+                  },
+                  {
+                    "x": 1.4340245577222182,
+                    "y": 3.758671245734578,
+                    "z": 0.18601667616415113
+                  },
+                  {
+                    "x": 1.5655931981569002,
+                    "y": 4.049978317746587,
+                    "z": 0.20262869333406114
+                  },
+                  {
+                    "x": 1.693910943665663,
+                    "y": 4.342682008516903,
+                    "z": 0.22009815415795053
+                  },
+                  {
+                    "x": 1.8187046889861345,
+                    "y": 4.636849223483967,
+                    "z": 0.2384896530610633
+                  }
+                ],
+                "restLengths": [
+                  0.3200719863788357,
+                  0.32007198637883566,
+                  0.3200719863788359,
+                  0.3200719863788358,
+                  0.32007198637883566,
+                  0.3200719863788358,
+                  0.3200719863788358,
+                  0.3200719863788358,
+                  0.3200719863788359,
+                  0.32007198637883555,
+                  0.3200719863788361,
+                  0.32007198637883616,
+                  0.32007198637883544,
+                  0.3200719863788357
+                ],
+                "activeLength": 4.481007809303701,
+                "radius": 0.041,
+                "stiffness": 0.55,
+                "referenceNormal": {
+                  "x": 0.011789020862217094,
+                  "y": 0.06667904075180407,
+                  "z": -0.9977048283493117
+                },
+                "active": true
+              }
+            ],
+            "organs": [
+              {
+                "id": "plant-1:bloom-1",
+                "kind": "bloom",
+                "branchId": "plant-1:group-1",
+                "distance": 0.1847013163159135,
+                "spin": 0.10538076788652688,
+                "scale": 1.0146402472816407,
+                "active": true
+              },
+              {
+                "id": "plant-1:bloom-2",
+                "kind": "bloom",
+                "branchId": "plant-1:group-2",
+                "distance": 0.3236592336674222,
+                "spin": -0.12098005581647157,
+                "scale": 1.0443750989134424,
+                "active": false
+              },
+              {
+                "id": "plant-1:bloom-3",
+                "kind": "bloom",
+                "branchId": "plant-1:group-3",
+                "distance": 0.30924449107260465,
+                "spin": 0.0453266822732985,
+                "scale": 1.0505406540445983,
+                "active": true
+              },
+              {
+                "id": "plant-1:bloom-4",
+                "kind": "bloom",
+                "branchId": "plant-1:group-4",
+                "distance": 0.3214233846170827,
+                "spin": 0.12546761403791606,
+                "scale": 1.0704975458420813,
+                "active": true
+              },
+              {
+                "id": "plant-1:bloom-5",
+                "kind": "bloom",
+                "branchId": "plant-1:group-5",
+                "distance": 0.31333425809280013,
+                "spin": 0.07541509559378028,
+                "scale": 1.0563897889084184,
+                "active": true
+              },
+              {
+                "id": "plant-1:leaf-1",
+                "kind": "leaf",
+                "branchId": "plant-1:petiole-1",
+                "distance": 0.23197519605979325,
+                "spin": -0.13886176080442963,
+                "scale": 0.6356534388475119,
+                "active": true
+              },
+              {
+                "id": "plant-1:leaf-2",
+                "kind": "leaf",
+                "branchId": "plant-1:petiole-2",
+                "distance": 0.2374553771130743,
+                "spin": 0.004729582071304321,
+                "scale": 0.5863119999319315,
+                "active": true
+              }
+            ]
+          }
+        ],
+        "successfulPlantOrdinal": 1,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 3.7,
+            "z": 15
+          },
+          "target": {
+            "x": 0,
+            "y": 2.55,
+            "z": 0
+          },
+          "up": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          }
+        }
+      }
+    }
+  ]
+}

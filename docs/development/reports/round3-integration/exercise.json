@@ -1,0 +1,170 @@
+[
+  {
+    "step": "flower-volume-group-prune",
+    "beforeHash": "5c6ba5af",
+    "previewBranch": "plant-1:group-2",
+    "previewHashUnchanged": true,
+    "cancelRestored": true,
+    "commitBranch": "plant-1:group-2",
+    "committedHash": "03620378",
+    "bloomActive": {
+      "plant-1:bloom-1": true,
+      "plant-1:bloom-2": false,
+      "plant-1:bloom-3": true,
+      "plant-1:bloom-4": true,
+      "plant-1:bloom-5": true,
+      "plant-1:leaf-1": true,
+      "plant-1:leaf-2": true
+    },
+    "branchCount": 8,
+    "organCount": 7
+  },
+  {
+    "step": "flower-volume-aim-or-bend",
+    "operation": "aim",
+    "branch": "plant-1:stem",
+    "hashChanged": true,
+    "activeLength": 4.481007809303701,
+    "restSum": 4.481007809303701
+  },
+  {
+    "step": "flower-volume-garden",
+    "viewingPosture": "step-back",
+    "copyMatchesView": true,
+    "keptBloom2": false,
+    "keptBloom3": true,
+    "copyBloom3": false,
+    "copyBloom2": false
+  },
+  {
+    "step": "flower-volume-reload",
+    "reloadBloom2": false,
+    "reloadBloom3": false,
+    "matchesEditedCopy": true
+  },
+  {
+    "step": "reed-bend",
+    "operation": "bend",
+    "changed": true,
+    "activeLength": 5.917219051555731,
+    "restSum": 5.917219051555731
+  },
+  {
+    "step": "player-reed-insert",
+    "method": "pointer-drag",
+    "chosen": "reed",
+    "ordinal": 1,
+    "drag": "insert"
+  },
+  {
+    "step": "player-reed-edit-reload",
+    "bendOperation": "bend",
+    "bendChanged": true,
+    "previewOperation": "prune",
+    "cancelRestored": true,
+    "committedChanged": true,
+    "reloadMatches": true,
+    "ordinal": 1
+  },
+  {
+    "step": "player-flower-volume",
+    "chosen": "flower-volume",
+    "operation": "aim",
+    "branch": "plant-2:group-2",
+    "changed": true,
+    "ordinal": 2
+  },
+  {
+    "step": "player-trailer-step-back",
+    "chosen": "arching-trailer",
+    "operation": "bend",
+    "bendChanged": true,
+    "stepBackPosture": "step-back",
+    "graphUnchanged": true,
+    "ordinal": 3
+  },
+  {
+    "step": "player-garden-copy",
+    "viewPosture": "step-back",
+    "copyMatchesView": true,
+    "keptCulmActiveLength": 2.5689306016204463,
+    "copyCulmActiveLength": 1.4127166734359744,
+    "keptPlantCount": 3
+  },
+  {
+    "step": "narrow-320",
+    "innerWidth": 320,
+    "innerHeight": 568,
+    "devicePixelRatio": 1,
+    "canvas": {
+      "width": 320,
+      "height": 568,
+      "drawingWidth": 320,
+      "drawingHeight": 568
+    },
+    "rail": {
+      "width": 304,
+      "height": 191,
+      "bottom": 199
+    },
+    "source": {
+      "width": 64,
+      "height": 73,
+      "text": "Flowering branch drag to the pins"
+    },
+    "panel": {
+      "width": 232,
+      "height": 284,
+      "scrollHeight": 319,
+      "clientHeight": 282,
+      "overflows": true
+    },
+    "choices": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower",
+      "reed",
+      "flower-volume",
+      "arching-trailer"
+    ]
+  },
+  {
+    "step": "narrow-390",
+    "innerWidth": 390,
+    "innerHeight": 844,
+    "devicePixelRatio": 1,
+    "canvas": {
+      "width": 390,
+      "height": 844,
+      "drawingWidth": 390,
+      "drawingHeight": 844
+    },
+    "rail": {
+      "width": 374,
+      "height": 180,
+      "bottom": 188
+    },
+    "source": {
+      "width": 105,
+      "height": 59,
+      "text": "Flowering branch drag to the pins"
+    },
+    "panel": {
+      "width": 232,
+      "height": 288,
+      "scrollHeight": 319,
+      "clientHeight": 286,
+      "overflows": true
+    },
+    "choices": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower",
+      "reed",
+      "flower-volume",
+      "arching-trailer"
+    ]
+  }
+]

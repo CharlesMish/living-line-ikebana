@@ -36,6 +36,13 @@ test("named fixture profiles keep explicit ordered material lists", () => {
   assert.deepEqual(byId["all-four"]?.materialIds, [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower",
   ]);
+  assert.deepEqual(byId["references-plus-reed"]?.materialIds, ["flowering-branch", "leafy-shoot", "reed"]);
+  assert.deepEqual(byId["references-plus-flower-volume"]?.materialIds, ["flowering-branch", "leafy-shoot", "flower-volume"]);
+  assert.deepEqual(byId["references-plus-arching-trailer"]?.materialIds, ["flowering-branch", "leafy-shoot", "arching-trailer"]);
+  assert.deepEqual(byId["round3-three"]?.materialIds, ["reed", "flower-volume", "arching-trailer"]);
+  assert.deepEqual(byId["round3-palette"]?.materialIds, [
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+  ]);
   assert.equal(byId["all-registered-materials"]?.materialIds, "catalog");
   assert.equal(byId["all-registered-materials"]?.kind, "dynamic");
   assert.equal(resolveWorkbenchFixture(MIXED_FIXTURE_ALIAS).profileId, "reference-pair");
@@ -116,7 +123,11 @@ test("all-four six-cutting composition is 2+2+1+1, not two of each; twelve is th
 
 test("candidate profiles stay listed and disabled until their materials are in the catalog overlay", () => {
   const catalog = twoMaterialCatalog();
-  for (const id of ["references-plus-bare", "references-plus-single-flower", "all-four"] as const) {
+  for (const id of [
+    "references-plus-bare", "references-plus-single-flower", "all-four",
+    "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
+    "round3-three", "round3-palette",
+  ] as const) {
     const resolved = resolveWorkbenchFixture(id, catalog);
     assert.ok(resolved.missingMaterialIds.length > 0, `${id} should be gated without candidates`);
     assert.throws(
@@ -143,7 +154,9 @@ test("this integration catalog makes named candidate profiles available to the p
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
-    "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four", "all-registered-materials",
+    "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four",
+    "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
+    "round3-three", "round3-palette", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);
   assert.ok(options.every((option) => option.available));
@@ -192,6 +205,61 @@ test("candidate profiles construct with registered materials; stubs do not rewri
   assert.deepEqual(describeFixture(liveAllFour).plantsInIdentityOrder.map((plant) => plant.generatorVersion), [
     "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1", "one-branch-v1", "leafy-shoot-v1",
   ]);
+});
+
+test("round 3 profiles are explicit and do not rewrite reference-pair or all-four", () => {
+  const pairBefore = createWorkbenchFixture("reference-pair", 8278, 6, { remember: false });
+  const allFourBefore = createWorkbenchFixture("all-four", 8278, 6, { remember: false });
+  const round3 = createWorkbenchFixture("round3-three", 8278, 6, { remember: false });
+  const round3Load = getLastWorkbenchFixtureLoad();
+  assert.deepEqual(round3Load?.materialSequence, ["reed", "flower-volume", "arching-trailer"]);
+  assert.deepEqual(round3Load?.composition.countsByMaterialId, {
+    reed: 2, "flower-volume": 2, "arching-trailer": 2,
+  });
+  assert.equal(round3Load?.composition.balancedEqualCopies, true);
+  assert.deepEqual(describeFixture(round3).plantsInIdentityOrder.map((plant) => plant.generatorVersion), [
+    "reed-v1", "flower-volume-v1", "arching-trailer-v1", "reed-v1", "flower-volume-v1", "arching-trailer-v1",
+  ]);
+  const round3Twelve = describeMaterialSequenceComposition(
+    ["reed", "flower-volume", "arching-trailer"],
+    12,
+  );
+  assert.deepEqual(round3Twelve.countsByMaterialId, { reed: 4, "flower-volume": 4, "arching-trailer": 4 });
+  assert.equal(round3Twelve.balancedEqualCopies, true);
+
+  const palette = describeMaterialSequenceComposition([
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+  ], 6);
+  assert.deepEqual(palette.assignedMaterialIds, [
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume",
+  ]);
+  assert.match(palette.warnings.join(" "), /omits arching-trailer/);
+  const paletteTwelve = describeMaterialSequenceComposition([
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+  ], 12);
+  assert.deepEqual(paletteTwelve.countsByMaterialId, {
+    "flowering-branch": 2, "leafy-shoot": 2, "bare-branch": 2, "single-flower": 2,
+    reed: 2, "flower-volume": 1, "arching-trailer": 1,
+  });
+  assert.equal(paletteTwelve.balancedEqualCopies, false);
+
+  const pairAfter = createWorkbenchFixture("reference-pair", 8278, 6, { remember: false });
+  const allFourAfter = createWorkbenchFixture("all-four", 8278, 12, { remember: false });
+  assert.deepEqual(pairAfter, pairBefore);
+  assert.deepEqual(describeFixture(allFourBefore).plantsInIdentityOrder.map((plant) => plant.generatorVersion), [
+    "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1", "one-branch-v1", "leafy-shoot-v1",
+  ]);
+  assert.deepEqual(describeFixture(allFourAfter).byGeneratorVersion, {
+    "one-branch-v1": 3, "leafy-shoot-v1": 3, "bare-branch-v1": 3, "single-flower-v1": 3,
+  });
+  assert.equal(describeFixture(pairAfter).plantsInIdentityOrder.every((plant) =>
+    plant.generatorVersion === "one-branch-v1" || plant.generatorVersion === "leafy-shoot-v1"), true);
+  for (const id of ["references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer"] as const) {
+    const cutting = createWorkbenchFixture(id, 8278, 6, { remember: false });
+    assert.deepEqual(cutting.plants.find((plant) => plant.id === "plant-1"), pairBefore.plants.find((plant) => plant.id === "plant-1"));
+    assert.deepEqual(cutting.plants.find((plant) => plant.id === "plant-2"), pairBefore.plants.find((plant) => plant.id === "plant-2"));
+    assert.notDeepEqual(cutting.plants.find((plant) => plant.id === "plant-3"), pairBefore.plants.find((plant) => plant.id === "plant-3"));
+  }
 });
 
 test("single-material fixtures stay registered-only and remember explicit construction", () => {

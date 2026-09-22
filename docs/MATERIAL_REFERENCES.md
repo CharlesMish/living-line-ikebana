@@ -2,9 +2,10 @@
 
 This is a working extension contract, pending phone and composition review.
 Keep the flowering and leafy references together when proposing another material.
-The existing behavioral contract is preserved; `leafy-shoot-v1`, `bare-branch-v1`,
-and `single-flower-v1` are additive. Provisional catalog order is flowering →
-leafy → bare-branch → single-flower.
+The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1`,
+`single-flower-v1`, `reed-v1`, `flower-volume-v1`, and `arching-trailer-v1` are
+additive. Catalog order is flowering → leafy → bare-branch → single-flower →
+reed → flower-volume → arching-trailer.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -80,16 +81,6 @@ picker contract live in
 [Workbench fixture profiles](development/WORKBENCH_FIXTURE_PROFILES.md).
 `all-registered-materials` is the labeled dynamic catalog cycle.
 
-## Round 3 provisional trailer
-
-`arching-trailer-v1` (`arching-trailer`) is an additive candidate. Its rest pose is
-one slender cane that rises from a normal seated base, then arches across the
-open water toward the rim, with three small leaves on the descending limb.
-Stiffness `0.50` is copied at generation. Aim, bend, and prune stay on the
-shared single-station laws. Named profiles `reference-pair` and `all-four` do
-not include it. The integrator owns the final Materials order and any named
-workbench profile.
-
 ## Earlier palette pause
 
 The consolidated review supersedes the earlier bare-twig-first recommendation.
@@ -110,17 +101,24 @@ Do not modify transactions, cancellation, cameras, insertion ordinals,
 `one-branch-v1`, schema or persistence fields. Return any necessary interface
 extension as a proposal. Add no new craft verbs inside a material prototype.
 
-## Round 3 provisional candidate — flower volume
+## Round 3 registered cuttings
 
-`flower-volume` / `flower-volume-v1` is registered on the Lane B branch only.
-It is not part of `reference-pair` or `all-four`. Tray HTML and named profile
-lists stay with the integrator. `all-registered-materials` follows the live
-catalog, so it includes this candidate while that registration is present.
+Reed, flower volume, and the arching trailer are registered together on the
+Round 3 integration branch. Catalog order keeps the four established materials,
+then appends `reed`, `flower-volume`, and `arching-trailer`. Each has a Materials
+choice and a source template. They are review cuttings, not a shipping-palette
+commitment. `reference-pair` and `all-four` do not list them. Named profiles
+`references-plus-reed`, `references-plus-flower-volume`,
+`references-plus-arching-trailer`, `round3-three`, and `round3-palette` are the
+comparison sets. `all-registered-materials` still cycles the live catalog.
 
-| Candidate | Structure | Appearance | Bend response |
+| Cutting | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
-| Flower volume / `flower-volume-v1` | One stem, two modest leaves, five flower-bearing pedicel groups packed into one head | Tufted eight-petal cups in a dusty rose; darker green stem than the single flower | Stem stiffness 0.55; groups 0.2; leaf stalks 0.18; shared solver |
+| Reed / `reed-v1` | One 16-segment culm, zero organs. Length is one later seeded sample in `3.35..6.25` | Olive culm `0x4e6240`, roughness `0.8` | Culm stiffness `0.56`, copied once. Shared solver |
+| Flower volume / `flower-volume-v1` | One stem, two modest leaves, five flower-bearing pedicel groups packed into one head | Tufted eight-petal cups in a dusty rose; darker green stem than the single flower | Stem stiffness `0.55`; groups `0.2`; leaf stalks `0.18`; shared solver |
+| Arching trailer / `arching-trailer-v1` | One authored arching cane and three small leaves on the descending limb | Cool blue-green cane `0x3d6d62`, roughness `0.58` | Cane stiffness `0.50`; petioles `0.18`. Shared single station. No bowl collision |
 
-Each group is one pedicel and one bloom. Pruning that pedicel deactivates that
-bloom and leaves the other groups unchanged. The head is not one mesh, and it
-is not a field of separate florets.
+Each flower-volume group is one pedicel and one bloom. Pruning that pedicel
+deactivates that bloom and leaves the other groups unchanged. The head is not
+one mesh. The trailer’s rest pose can cross the water; a downward bend or an
+edge seat can still leave the bowl. That limit is unchanged.

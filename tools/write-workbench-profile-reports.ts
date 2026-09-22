@@ -94,6 +94,16 @@ const scenes: Array<[string, 1 | 6 | 12]> = [
   ["references-plus-single-flower", 12],
   ["all-four", 6],
   ["all-four", 12],
+  ["references-plus-reed", 6],
+  ["references-plus-flower-volume", 6],
+  ["references-plus-arching-trailer", 6],
+  ["round3-three", 6],
+  ["round3-three", 12],
+  ["round3-palette", 6],
+  ["round3-palette", 12],
+  ["reed", 6],
+  ["flower-volume", 1],
+  ["arching-trailer", 1],
 ];
 
 for (const [fixtureId, count] of scenes) {

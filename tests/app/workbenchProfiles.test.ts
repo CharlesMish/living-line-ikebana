@@ -210,7 +210,7 @@ test("candidate profiles construct with registered materials; stubs do not rewri
 test("round 3 profiles are explicit and do not rewrite reference-pair or all-four", () => {
   const pairBefore = createWorkbenchFixture("reference-pair", 8278, 6, { remember: false });
   const allFourBefore = createWorkbenchFixture("all-four", 8278, 6, { remember: false });
-  const round3 = createWorkbenchFixture("round3-three", 8278, 6, { remember: false });
+  const round3 = createWorkbenchFixture("round3-three", 8278, 6);
   const round3Load = getLastWorkbenchFixtureLoad();
   assert.deepEqual(round3Load?.materialSequence, ["reed", "flower-volume", "arching-trailer"]);
   assert.deepEqual(round3Load?.composition.countsByMaterialId, {

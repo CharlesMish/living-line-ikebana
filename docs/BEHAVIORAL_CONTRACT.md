@@ -115,6 +115,14 @@ working save. Make a working copy and Start a fresh bowl are explicit document
 replacement commands: offer to preserve a nonempty working bowl, validate data,
 write the new working save first, then replace in-memory state. A failed write
 keeps the current working bowl intact. Originals are not mutated by copies.
+Comparing two kept arrangements is optional and transient. It reads existing
+entries and shows both under one shared camera pose, the studio vertical field
+of view, and world scale 1. It does not frame each entry with its own stored
+camera, and it does not fit either arrangement to its pane. Comparison writes
+no Garden entry, no working save, and no change to either stored camera or the
+current working arrangement. Leaving it discards the temporary view. An optional
+study brief may be shown beside it; that brief is for a person to interpret.
+The app does not judge whether an arrangement satisfies it.
 
 Player replacements preserve a safe insertion ordinal. Workbench fixture loading
 explicitly resets developer fixture identities in an isolated storage namespace;

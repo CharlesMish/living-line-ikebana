@@ -16,3 +16,4 @@ export * from "./bareBranch.ts";
 export * from "./singleFlower.ts";
 export * from "./reed.ts";
 export * from "./flowerVolume.ts";
+export * from "./archingTrailer.ts";

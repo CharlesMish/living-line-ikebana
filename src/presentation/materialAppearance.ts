@@ -16,13 +16,19 @@ export interface MaterialAppearance {
   }>;
 }
 
+// Elliptic blades run from local Y -0.115 to 0.609. Center acquisition on
+// the blade, rather than its attachment, so the visible tip stays pickable.
+const ellipticLeafHit = Object.freeze({ hitRadius: 0.37, hitCenterY: 0.247 });
+
 const flowering: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x4e3529, lateral: 0x5e3f30,
     twig: 0x6d4934, pedicel: 0x687551, petiole: 0x53704d }),
   stemRoughness: 0.88,
   leaf: Object.freeze({ form: "elliptic", color: 0x56755a, veinColor: 0x819260,
-    roughness: 0.78, hitRadius: 0.34, hitCenterY: 0 }),
-  bloom: Object.freeze({ form: "cupped", color: 0xe2a0a4, roughness: 0.74, hitRadius: 0.46 }),
+    roughness: 0.78, ...ellipticLeafHit }),
+  // Include the petal tips inside the faceted acquisition mesh, not only its
+  // ideal sphere radius (the ten-sided mesh has a slightly smaller envelope).
+  bloom: Object.freeze({ form: "cupped", color: 0xe2a0a4, roughness: 0.74, hitRadius: 0.6 }),
 });
 const leafy: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x69804b, lateral: 0x69804b,
@@ -44,7 +50,7 @@ const singleFlower: MaterialAppearance = Object.freeze({
     twig: 0x6a7d52, pedicel: 0x6d8454, petiole: 0x6a7d52 }),
   stemRoughness: 0.64,
   leaf: Object.freeze({ form: "elliptic", color: 0x4d6848, veinColor: 0x8a9a62,
-    roughness: 0.7, hitRadius: 0.34, hitCenterY: 0 }),
+    roughness: 0.7, ...ellipticLeafHit }),
   bloom: Object.freeze({ form: "open-face", color: 0xf0d2ae, roughness: 0.62, hitRadius: 0.7 }),
 });
 const reed: MaterialAppearance = Object.freeze({
@@ -60,7 +66,7 @@ const flowerVolume: MaterialAppearance = Object.freeze({
     twig: 0x567252, pedicel: 0x5d7a52, petiole: 0x567252 }),
   stemRoughness: 0.72,
   leaf: Object.freeze({ form: "elliptic", color: 0x3d5a42, veinColor: 0x7d8f58,
-    roughness: 0.7, hitRadius: 0.34, hitCenterY: 0 }),
+    roughness: 0.7, ...ellipticLeafHit }),
   bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
 });
 const archingTrailer: MaterialAppearance = Object.freeze({
@@ -68,7 +74,7 @@ const archingTrailer: MaterialAppearance = Object.freeze({
     twig: 0x4d7c6a, pedicel: 0x5a8460, petiole: 0x4f7a58 }),
   stemRoughness: 0.58,
   leaf: Object.freeze({ form: "elliptic", color: 0x2f5c48, veinColor: 0x7f9460,
-    roughness: 0.66, hitRadius: 0.34, hitCenterY: 0 }),
+    roughness: 0.66, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({

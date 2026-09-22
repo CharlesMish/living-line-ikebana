@@ -61,10 +61,13 @@ export const aimBranch = (
   if (selected.kind === "trunk") target.y = Math.max(anchor.y + rootFloor, target.y);
   const startDirection = subtract(grabbedPoint, anchor);
   const targetDirection = subtract(target, anchor);
-  const minimumSquared = options.minimumDirectionSquared ?? 0.02;
+  // This guards only undefined directions, not a material-size-dependent
+  // interaction dead zone. Short flower and leaf stalks are valid aim targets.
+  const minimumSquared = options.minimumDirectionSquared ?? GEOMETRY_EPSILON * GEOMETRY_EPSILON;
   if (lengthSquared(startDirection) < minimumSquared || lengthSquared(targetDirection) < minimumSquared) return graph;
 
   const rotation = quaternionBetween(startDirection, targetDirection, selected.referenceNormal);
+  if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return graph;
   const affected = descendantIds(snapshot, branchId);
   affected.add(branchId);
   for (const id of affected) {

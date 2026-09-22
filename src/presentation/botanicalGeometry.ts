@@ -257,9 +257,15 @@ export function createTuftedPetalGeometry(seed = 0): THREE.BufferGeometry {
       * (0.7 + 0.48 * t) * (1 + across * (variation(seed, 4) - 0.5) * 0.05);
     const x = 0.012 + t * (0.4 + (variation(seed, 5) - 0.5) * 0.012);
     const y = -across * width + (variation(seed, 6) - 0.5) * 0.012 * envelope;
-    const cup = Math.sin(Math.PI * Math.min(1, t * 1.05));
-    const z = 0.016 + 0.24 * cup * (1 - 0.22 * t) + 0.05 * across * across * envelope
-      + 0.003 * Math.sin(t * Math.PI * 3 + variation(seed, 7) * TAU) * Math.pow(Math.abs(across), 2);
+    // Retain the tuft's domed mass, with a small raised-rim contribution to
+    // soften its deepest folds. A fully open cup would turn the head into
+    // overlapping discs rather than the existing rounded flower groups.
+    const crown = Math.sin(Math.PI * Math.min(1, t * 1.05));
+    const rimRise = Math.sin(Math.PI * 0.72 * t);
+    const z = 0.016 + 0.168 * crown * (1 - 0.22 * t)
+      + 0.0345 * rimRise + 0.0087 * t * t + 0.041 * across * across * envelope
+      + 0.003 * Math.sin(t * Math.PI * 3 + variation(seed, 7) * TAU)
+        * Math.pow(Math.abs(across), 2) * (0.7 + 0.3 * envelope);
     const value = 0.72 + 0.24 * Math.sqrt(t) + 0.02 * across * across;
     return {
       position: [x, y, z],

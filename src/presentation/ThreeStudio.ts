@@ -1335,12 +1335,30 @@ export class ThreeStudio {
       if (data.targetKind === "organ" && data.organId) {
         const organ = plant.graph.organs.get(data.organId);
         if (!organ?.active) continue;
-        const position = toVec3(plant.organs.get(organ.id)!.group.position);
+        if (candidates.has(organ.id)) continue;
+        const visual = plant.organs.get(organ.id)!;
+        const position = toVec3(visual.group.position);
         const projected = this.projectPoint(position);
         const stableId = organ.id;
         const pointerDepth = toThree(position)
           .sub(acquisitionRay.origin)
           .dot(acquisitionRay.direction);
+        // The enlarged proxy admits near misses. A press on the actual blade or
+        // petals has zero distance to projected material, even when its graph
+        // attachment lies behind a stem. Keep that attachment as the acquired
+        // aim/prune station; surface geometry affects arbitration only.
+        // Projection helpers also use this raycaster, so restore the pointer ray.
+        this.raycaster.ray.copy(acquisitionRay);
+        const surfaces = visual.group.visible
+          ? this.raycaster.intersectObjects(
+            visual.group.children.filter((child) => child !== visual.hit && child.visible),
+            false,
+          )
+          : [];
+        const surface = surfaces.reduce<THREE.Intersection | undefined>(
+          (nearest, hit) => !nearest || hit.distance < nearest.distance ? hit : nearest,
+          undefined,
+        );
         const candidate: HitCandidate = {
           kind: "organ",
           priorityTier,
@@ -1349,15 +1367,29 @@ export class ThreeStudio {
           organId: organ.id,
           materialDistance: organ.distance,
           worldPoint: position,
-          screenDistancePx: Math.hypot(projected.clientX - clientX, projected.clientY - clientY),
-          rayDepth: pointerDepth,
+          screenDistancePx: surface ? 0 : Math.hypot(projected.clientX - clientX, projected.clientY - clientY),
+          rayDepth: surface ? surface.distance : pointerDepth,
           stableId,
         };
         const prior = candidates.get(stableId);
         if (!prior || candidate.rayDepth < prior.rayDepth) candidates.set(stableId, candidate);
       } else {
-        const projected = this.closestProjectedOnBranch(branch, clientX, clientY);
         const stableId = branch.id;
+        if (candidates.has(stableId)) continue;
+        const projected = this.closestProjectedOnBranch(branch, clientX, clientY);
+        const visual = plant.branches.get(branch.id)!;
+        // Branches receive the same visible-material distance as organs. An
+        // actual foreground stem must beat a leaf behind it, even if the press
+        // is slightly beside that stem's projected centerline.
+        this.raycaster.ray.copy(acquisitionRay);
+        const surfaces = this.raycaster.intersectObjects(
+          [visual.mesh, visual.doomed].filter((mesh) => mesh.visible),
+          false,
+        );
+        const surface = surfaces.reduce<THREE.Intersection | undefined>(
+          (nearest, hit) => !nearest || hit.distance < nearest.distance ? hit : nearest,
+          undefined,
+        );
         const candidate: HitCandidate = {
           kind: "branch",
           priorityTier,
@@ -1365,8 +1397,8 @@ export class ThreeStudio {
           branchId: branch.id,
           materialDistance: projected.materialDistance,
           worldPoint: projected.worldPoint,
-          screenDistancePx: projected.screenDistancePx,
-          rayDepth: projected.rayDepth,
+          screenDistancePx: surface ? 0 : projected.screenDistancePx,
+          rayDepth: surface ? surface.distance : projected.rayDepth,
           stableId,
         };
         const prior = candidates.get(stableId);

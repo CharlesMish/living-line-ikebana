@@ -46,6 +46,11 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Aim rotates the acquired active continuation and its active descendants rigidly around the selected branch root.
 - It preserves all rest lengths, attachments, stock length, identity, and inactive history.
 - The trunk target has a default vertical floor of `root.y + 0.08`. Degenerate start or target directions produce no change.
+- Direction degeneracy uses the shared numerical geometry tolerance (`1e-6`
+  units), not a minimum stalk or drag length. The September 22 correction
+  removes the former `sqrt(0.02)`-unit dead zone, which froze short stalk grabs
+  and reset valid previews when the target crossed near their root. Aim is
+  still a rigid rotation from the acquisition snapshot, without axial roll.
 
 ### Bend
 
@@ -92,6 +97,12 @@ Candidates are ranked independently of Three.js intersection-array order:
 4. no target.
 
 Within a tier, choose smallest CSS-pixel distance to projected material, then smallest ray depth emitted by the forward-facing raycaster, then lexicographically smallest stable ID. Organ hits route to their supporting branch for the current Shape and Prune grammar.
+
+For a direct hit on a visible stem, leaf or flower surface, projected-material
+distance is zero and depth comes from that surface. Enlarged hit proxies still
+admit nearby misses, ranked by their projected branch or organ attachment.
+Surface ranking never changes the acquired graph station: branches keep their
+projected arc distance, and organs keep their supporting-branch attachment.
 
 Base and bend handles may acquire only for the already selected plant. Shape acquisition of a branch or organ may select its plant. Temporary handles are subordinate and appear only where they resolve ambiguity.
 

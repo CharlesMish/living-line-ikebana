@@ -1,0 +1,331 @@
+{
+  "browser": "Google Chrome headless, Linux, SwiftShader",
+  "phone": "not run",
+  "desktop": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800,
+      "left": 0,
+      "top": 0
+    },
+    "windowInner": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "rail": {
+      "width": 832,
+      "height": 119.234375
+    },
+    "choiceIds": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ]
+  },
+  "intactCameraHash": "f3827392",
+  "intactCanonicalHash": "5c6ba5af",
+  "count1Inventory": [
+    {
+      "scope": "committed",
+      "plantId": "plant-1",
+      "branchIds": [
+        "plant-1:group-1",
+        "plant-1:group-2",
+        "plant-1:group-3",
+        "plant-1:group-4",
+        "plant-1:group-5",
+        "plant-1:petiole-1",
+        "plant-1:petiole-2",
+        "plant-1:stem"
+      ],
+      "organIds": [
+        "plant-1:bloom-1",
+        "plant-1:bloom-2",
+        "plant-1:bloom-3",
+        "plant-1:bloom-4",
+        "plant-1:bloom-5",
+        "plant-1:leaf-1",
+        "plant-1:leaf-2"
+      ]
+    }
+  ],
+  "targetedGroup": {
+    "id": "plant-1:bloom-2",
+    "branchId": "plant-1:group-2",
+    "pos": {
+      "x": 0.22196234673951,
+      "y": 4.850958729314447,
+      "z": 0.39654932437099094
+    }
+  },
+  "click": {
+    "x": 655.1837488226554,
+    "y": 245.13280537317775
+  },
+  "previewTransaction": {
+    "operation": "prune",
+    "pointerId": 1,
+    "plantId": "plant-1",
+    "branchId": "plant-1:group-2",
+    "materialDistance": 0.32365911304715456,
+    "acquisitionHash": "5c6ba5af"
+  },
+  "previewCanonicalHash": "5c6ba5af",
+  "cancel": {
+    "transaction": null,
+    "canonicalHash": "5c6ba5af",
+    "matchesIntact": true,
+    "cameraHash": "f3827392",
+    "activeBlooms": [
+      "plant-1:bloom-1",
+      "plant-1:bloom-2",
+      "plant-1:bloom-3",
+      "plant-1:bloom-4",
+      "plant-1:bloom-5"
+    ]
+  },
+  "commit": {
+    "cameraHash": "f3827392",
+    "sameCamera": true,
+    "canonicalHash": "03620378",
+    "diff": {
+      "changed": [
+        {
+          "kind": "branch",
+          "id": "plant-1:group-2",
+          "active": [
+            true,
+            true
+          ],
+          "length": [
+            0.3236592336674222,
+            0.2986592336674222
+          ]
+        },
+        {
+          "kind": "organ",
+          "id": "plant-1:bloom-2",
+          "active": [
+            true,
+            false
+          ]
+        }
+      ],
+      "branchCount": [
+        8,
+        8
+      ],
+      "organCount": [
+        7,
+        7
+      ]
+    },
+    "inventory": [
+      {
+        "scope": "committed",
+        "plantId": "plant-1",
+        "branchIds": [
+          "plant-1:group-1",
+          "plant-1:group-2",
+          "plant-1:group-3",
+          "plant-1:group-4",
+          "plant-1:group-5",
+          "plant-1:petiole-1",
+          "plant-1:petiole-2",
+          "plant-1:stem"
+        ],
+        "organIds": [
+          "plant-1:bloom-1",
+          "plant-1:bloom-3",
+          "plant-1:bloom-4",
+          "plant-1:bloom-5",
+          "plant-1:leaf-1",
+          "plant-1:leaf-2"
+        ]
+      }
+    ]
+  },
+  "reload": {
+    "canonicalHash": "03620378",
+    "matchesCommit": true,
+    "blooms": [
+      {
+        "id": "plant-1:bloom-1",
+        "active": true
+      },
+      {
+        "id": "plant-1:bloom-2",
+        "active": false
+      },
+      {
+        "id": "plant-1:bloom-3",
+        "active": true
+      },
+      {
+        "id": "plant-1:bloom-4",
+        "active": true
+      },
+      {
+        "id": "plant-1:bloom-5",
+        "active": true
+      }
+    ]
+  },
+  "count12": {
+    "plants": 12,
+    "branches": 96,
+    "organs": 84,
+    "versions": [
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1",
+      "flower-volume-v1"
+    ]
+  },
+  "referencePair6": {
+    "versions": [
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "one-branch-v1",
+      "leafy-shoot-v1"
+    ],
+    "branches": 69,
+    "organs": 51
+  },
+  "narrow390": {
+    "cssViewport": {
+      "width": 390,
+      "height": 844,
+      "left": 0,
+      "top": 0
+    },
+    "windowInner": {
+      "width": 390,
+      "height": 844
+    },
+    "drawingBuffer": {
+      "width": 390,
+      "height": 844
+    },
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "rail": {
+      "width": 374,
+      "height": 179.78125
+    },
+    "choiceIds": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ]
+  },
+  "narrow390MaterialsOpen": {
+    "cssViewport": {
+      "width": 390,
+      "height": 844,
+      "left": 0,
+      "top": 0
+    },
+    "windowInner": {
+      "width": 390,
+      "height": 844
+    },
+    "drawingBuffer": {
+      "width": 390,
+      "height": 844
+    },
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "rail": {
+      "width": 374,
+      "height": 179.78125
+    },
+    "choiceIds": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ]
+  },
+  "narrow320": {
+    "cssViewport": {
+      "width": 320,
+      "height": 640,
+      "left": 0,
+      "top": 0
+    },
+    "windowInner": {
+      "width": 320,
+      "height": 640
+    },
+    "drawingBuffer": {
+      "width": 320,
+      "height": 640
+    },
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "rail": {
+      "width": 304,
+      "height": 190.59375
+    },
+    "choiceIds": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ]
+  },
+  "narrow320MaterialsOpen": {
+    "cssViewport": {
+      "width": 320,
+      "height": 640,
+      "left": 0,
+      "top": 0
+    },
+    "windowInner": {
+      "width": 320,
+      "height": 640
+    },
+    "drawingBuffer": {
+      "width": 320,
+      "height": 640
+    },
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "rail": {
+      "width": 304,
+      "height": 190.59375
+    },
+    "choiceIds": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ]
+  },
+  "garden": {
+    "file": "garden-backup.json",
+    "entries": 1,
+    "title": "flower volume group-2 pruned",
+    "generatorVersion": "flower-volume-v1",
+    "inactiveBloom": "plant-1:bloom-2"
+  }
+}

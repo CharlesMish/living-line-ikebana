@@ -13,6 +13,11 @@ export type ExperimentConfig = {
    * silently delete the comparison data those blocks exist to produce.
    */
   clearStudyData: boolean;
+  /**
+   * Experimental bloom-heading roll. Hidden unless this flag is set.
+   * Default Shape / Prune behavior is unchanged.
+   */
+  organRoll: boolean;
 };
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
@@ -23,6 +28,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
+    organRoll: url.searchParams.get("experiment") === "organ-roll",
   };
 }
 

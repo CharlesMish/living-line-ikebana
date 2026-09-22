@@ -34,6 +34,7 @@ interface Inputs extends OperationInputMap {
   bend: number;
   base: number;
   prune: number;
+  roll: number;
   camera: number;
 }
 
@@ -43,6 +44,7 @@ interface Contexts extends OperationContextMap {
   bend: { plane: string };
   base: { plane: string };
   prune: { projection: string };
+  roll: { gesture: string };
   camera: { gesture: string };
 }
 
@@ -91,6 +93,10 @@ function makeAdapters(log: string[] = []): TransactionAdapters<
       branchId: spec.branchId,
       distance: input,
       sourceValue: snapshot.value,
+    }),
+    roll: (snapshot, _spec, input) => ({
+      ...cloneGraph(snapshot),
+      value: snapshot.value + input,
     }),
     applyPrune: (snapshot, plan) => {
       log.push(`apply:${plan.branchId}:${plan.distance}`);

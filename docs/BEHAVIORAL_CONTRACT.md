@@ -236,3 +236,19 @@ released camera pose and chosen Orbit/Pan mode. It does not finish a live edit,
 write a save, advance an ordinal, certify a composition, or archive an arrangement.
 The DOM returns focus to Arrange, which remains immediately available. No tools
 or materials are gated, and no cut, view visit, angle or water threshold is required.
+
+## 10. Bloom-face roll experiment
+
+This section is an experiment. Sessions without `?experiment=organ-roll` keep
+sections 1–9 unchanged, including Shape, Prune, and organ spin as generated.
+
+The flag reveals a Roll face control. While that control is pressed, dragging
+an active bloom changes only that organ's persistent `spin`, recomputed from
+the acquisition snapshot. The axis is the supporting tangent already used by
+the organ group. The stalk centerline, stem, leaves, reference normals, and
+stock length stay on the snapshot. Release commits the existing spin field.
+Cancellation restores it. No schema or generator version changes.
+
+This is a bloom heading. It does not twist a stalk's surface and it does not
+roll the whole cutting. It is not a deformable leaf. The control stays out of
+the default studio until a later review decides otherwise.

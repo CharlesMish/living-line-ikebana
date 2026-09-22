@@ -68,6 +68,14 @@
             <button type="button" data-testid="tool-shape" data-tool="shape" aria-pressed="true">Shape</button>
             <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
           </div>
+          <button
+            id="organ-roll-toggle"
+            class="quiet-button"
+            type="button"
+            hidden
+            data-testid="organ-roll-toggle"
+            aria-pressed="false"
+          >Roll face</button>
 
           <div class="material-dock">
             <button
@@ -359,6 +367,7 @@
           <svg class="cue-icon cue-aim" viewBox="0 0 24 24"><path d="M4 20 19 5M12 5h7v7"/><circle cx="4" cy="20" r="2"/></svg>
           <svg class="cue-icon cue-bend" viewBox="0 0 24 24"><path d="M5 21C5 4 18 20 18 3"/><circle cx="12" cy="12" r="3"/></svg>
           <svg class="cue-icon cue-base" viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="8" ry="4"/><path d="M12 16V3m-3 3 3-3 3 3"/></svg>
+          <svg class="cue-icon cue-roll" viewBox="0 0 24 24"><path d="M19 8a7 7 0 0 0-12 2M5 16a7 7 0 0 0 12-2"/><path d="m16 8 3-1 1 3M8 16l-3 1-1-3"/></svg>
         </span>
         <span><strong data-cue-title></strong><span data-cue-detail></span></span>
       </aside>

@@ -4,6 +4,7 @@ import {
   bendBranch,
   clonePlantGraph,
   previewPrune,
+  rollBloomSpin,
   sampleBranch,
   successfulSeatIdentity,
   translatePendingGraph,
@@ -26,12 +27,14 @@ export interface StudioInputMap extends OperationInputMap {
   bend: { target: Vec3 };
   base: { base: Vec3 };
   prune: { distance: number };
+  roll: { deltaRadians: number };
   camera: { pose: CameraPose };
 }
 
 export interface StudioContextMap extends OperationContextMap {
   insert: Record<string, never>;
   aim: Record<string, never>;
+  roll: Record<string, never>;
   bend: Record<string, never>;
   base: Record<string, never>;
   prune: Record<string, never>;
@@ -73,6 +76,9 @@ export function createDomainAdapters(): TransactionAdapters<
     },
     previewPrune(graph, spec, input) {
       return previewPrune(graph, spec.branchId, input.distance);
+    },
+    roll(graph, spec, input) {
+      return rollBloomSpin(graph, spec.organId, input.deltaRadians);
     },
     applyPrune,
     updateCamera(_camera, _spec, input) {

@@ -28,6 +28,7 @@ export type TransactionKind =
   | "bend"
   | "base"
   | "prune"
+  | "roll"
   | "camera";
 
 export type GraphCommitKind = Exclude<TransactionKind, "camera">;
@@ -38,6 +39,7 @@ export interface OperationInputMap {
   bend: unknown;
   base: unknown;
   prune: unknown;
+  roll: unknown;
   camera: unknown;
 }
 
@@ -47,6 +49,7 @@ export interface OperationContextMap {
   bend: unknown;
   base: unknown;
   prune: unknown;
+  roll: unknown;
   camera: unknown;
 }
 
@@ -109,6 +112,13 @@ export interface CameraSpec<Context> {
   readonly context: Context;
 }
 
+/** Experimental bloom-heading roll. Delta is radians from the acquired spin. */
+export interface RollSpec<Context> {
+  readonly plantId: PlantId;
+  readonly organId: string;
+  readonly context: Context;
+}
+
 export interface InsertPreview<Graph> {
   readonly graph: Graph;
   readonly isValid: boolean;
@@ -159,6 +169,12 @@ export interface TransactionAdapters<
 
   /** Applies the frozen current plan once, against the acquisition graph. */
   readonly applyPrune: (acquisitionGraph: Graph, plan: PrunePlan) => Graph;
+
+  readonly roll: (
+    acquisitionGraph: Graph,
+    spec: RollSpec<Contexts["roll"]>,
+    input: Inputs["roll"],
+  ) => Graph;
 
   readonly updateCamera: (
     acquisitionCamera: Camera,
@@ -292,6 +308,12 @@ export type ActiveDebugState =
       readonly acquiredMaterialDistance: number;
     }
   | {
+      readonly kind: "roll";
+      readonly owner: OwnerToken;
+      readonly plantId: PlantId;
+      readonly organId: string;
+    }
+  | {
       readonly kind: "camera";
       readonly owner: OwnerToken;
     };
@@ -304,7 +326,7 @@ export type ActivePresentation<Graph, Camera, PrunePlan> =
       readonly isValid: boolean;
     }
   | {
-      readonly kind: "aim" | "bend" | "base";
+      readonly kind: "aim" | "bend" | "base" | "roll";
       readonly plantId: PlantId;
       readonly graph: Graph;
     }

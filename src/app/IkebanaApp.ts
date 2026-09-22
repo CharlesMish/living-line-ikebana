@@ -66,7 +66,7 @@ import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkb
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
 import { CommittedStore } from "./persistence.ts";
 import { CraftSound } from "./sound.ts";
-import { cutCue, shapeCue } from "./craftCues.ts";
+import { cutCue, rollCue, shapeCue } from "./craftCues.ts";
 import { TelemetryStore, TELEMETRY_INSTRUMENT_VERSION, type PersistedTelemetry } from "./telemetry.ts";
 import { summarizeBendAcquisitions } from "./telemetrySummary.ts";
 import {
@@ -140,7 +140,15 @@ type CameraGesture = PointerBase & {
   pinchStartPose: CameraPose | null;
 };
 
-type Gesture = InsertGesture | AimGesture | BendGesture | BaseGesture | PruneGesture | CameraGesture;
+type RollGesture = PointerBase & {
+  kind: "roll";
+  startClientX: number;
+};
+
+type Gesture = InsertGesture | AimGesture | BendGesture | BaseGesture | PruneGesture | RollGesture | CameraGesture;
+
+/** Horizontal drag scale for the experimental bloom roll. About 260px for a half turn. */
+const BLOOM_ROLL_RADIANS_PER_PIXEL = 0.012;
 
 type AutosaveAuditRecord = {
   commitSequence: number;
@@ -252,6 +260,8 @@ export class IkebanaApp {
   private lastSaveSucceeded = true;
   private removeUIListener: (() => void) | null = null;
   private hovering = false;
+  /** Armed only after the experimental Roll face control is pressed. */
+  private organRollArmed = false;
   private gardenUI!: GardenUI;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean } | null = null;
 
@@ -337,6 +347,7 @@ export class IkebanaApp {
           : "Place a cutting.",
       this.loadWarning ? "warning" : "quiet",
     );
+    this.installOrganRollControl();
     this.syncPresentation();
     this.root.dataset.ready = "true";
     if (new URL(location.href).searchParams.get("test") === "1") this.installTestBridge();
@@ -777,6 +788,10 @@ export class IkebanaApp {
       return;
     }
 
+    if (this.bloomForRoll(candidate)) {
+      this.beginRoll(event, candidate);
+      return;
+    }
     const operation = this.operationForCandidate(candidate);
     if (operation === "cut") {
       this.beginPrune(event, candidate);
@@ -792,6 +807,54 @@ export class IkebanaApp {
     }
     this.beginAim(event, candidate);
   };
+
+  private installOrganRollControl() {
+    if (!this.config.organRoll) return;
+    const button = this.root.querySelector<HTMLButtonElement>("#organ-roll-toggle");
+    if (!button) return;
+    button.hidden = false;
+    button.addEventListener("click", () => {
+      this.interruptActive("experiment-command");
+      this.organRollArmed = !this.organRollArmed;
+      button.setAttribute("aria-pressed", String(this.organRollArmed));
+      this.ui.setStatus(this.organRollArmed
+        ? "Roll the flower face around its stalk. The stalk stays put."
+        : "Shape the line.");
+    }, { signal: this.abortController.signal });
+  }
+
+  /** Armed experimental roll applies only to an active bloom, around its stalk. */
+  private bloomForRoll(candidate: HitCandidate) {
+    if (!this.config?.organRoll || !this.organRollArmed) return null;
+    if (this.coordinator.getDebugState().tool !== "shape") return null;
+    if (candidate.kind !== "organ" || !candidate.organId) return null;
+    const graph = this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId);
+    const organ = graph?.organs.get(candidate.organId);
+    if (!graph || !organ?.active || organ.kind !== "bloom") return null;
+    return { graph, organ };
+  }
+
+  private beginRoll(event: PointerEvent, candidate: HitCandidate) {
+    const target = this.bloomForRoll(candidate);
+    if (!target) return;
+    const gesture: RollGesture = {
+      kind: "roll",
+      owner: event.pointerId,
+      capture: this.canvas,
+      acquisitionHash: this.canonicalHash(),
+      startClientX: event.clientX,
+    };
+    this.selectedBranchId = target.organ.branchId;
+    this.gesture = gesture;
+    this.capturePointer(this.canvas, event.pointerId);
+    const result = this.coordinator.beginRoll(
+      event.pointerId,
+      { plantId: target.graph.id, organId: target.organ.id, context: {} },
+      { deltaRadians: 0 },
+    );
+    if (!result.ok) return this.abortFailedBegin(gesture);
+    this.ui.setStatus("Roll the flower face.");
+  }
 
   private operationForCandidate(candidate: HitCandidate): "aim" | "bend" | "base" | "cut" {
     if (this.coordinator.getDebugState().tool === "prune") return "cut";
@@ -822,6 +885,11 @@ export class IkebanaApp {
       return;
     }
     this.hovering = true;
+    if (this.bloomForRoll(candidate)) {
+      this.studio.setCutPreview(null);
+      this.ui.setCraftCue(rollCue(false));
+      return;
+    }
     const operation = this.operationForCandidate(candidate);
     if (operation === "cut") {
       const plan = previewPrune(graph, branch.id, candidate.materialDistance);
@@ -1030,6 +1098,12 @@ export class IkebanaApp {
       gesture.pendingVisible = intersection !== null;
       this.coordinator.updateInsert(event.pointerId, placementInputFromIntersection(intersection));
       this.ui.setStatus(intersection?.valid ? "Over the pins." : "Find the pins.");
+      return;
+    }
+    if (gesture.kind === "roll") {
+      this.coordinator.updateRoll(event.pointerId, {
+        deltaRadians: (event.clientX - gesture.startClientX) * BLOOM_ROLL_RADIANS_PER_PIXEL,
+      });
       return;
     }
     if (gesture.kind === "aim" || gesture.kind === "bend") {
@@ -1473,7 +1547,7 @@ export class IkebanaApp {
     const displayGraphs = new Map(presentation.document.plants);
     if (
       presentation.active
-      && ["aim", "bend", "base"].includes(presentation.active.kind)
+      && ["aim", "bend", "base", "roll"].includes(presentation.active.kind)
       && "graph" in presentation.active
     ) {
       displayGraphs.set(presentation.active.plantId, presentation.active.graph);
@@ -1520,6 +1594,8 @@ export class IkebanaApp {
     if (active?.kind === "prune") {
       const graph = presentation.document.plants.get(active.plantId);
       this.ui.setCraftCue(graph ? cutCue(graph, active.plan, true) : null, true);
+    } else if (active?.kind === "roll") {
+      this.ui.setCraftCue(rollCue(true), true);
     } else if (active && ["aim", "bend", "base"].includes(active.kind) && selectedBranch) {
       this.ui.setCraftCue(shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true), true);
     } else {

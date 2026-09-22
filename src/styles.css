@@ -423,7 +423,8 @@ button:focus-visible {
 .craft-cue[data-kind="cut"] .cue-cut,
 .craft-cue[data-kind="aim"] .cue-aim,
 .craft-cue[data-kind="bend"] .cue-bend,
-.craft-cue[data-kind="base"] .cue-base { display: block; }
+.craft-cue[data-kind="base"] .cue-base,
+.craft-cue[data-kind="roll"] .cue-roll { display: block; }
 .app-shell[data-cue]:not([data-cue="none"]) .status-pill:not([data-tone="warning"]) { opacity: 0; }
 .app-shell:has(.status-pill[data-tone="warning"]) .craft-cue { visibility: hidden; }
 .craft-guide { padding-left: 1.25rem; margin: 0.8rem 0; font-size: 0.9375rem; line-height: 1.55; }

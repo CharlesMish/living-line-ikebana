@@ -55,12 +55,21 @@ const reed: MaterialAppearance = Object.freeze({
   leaf: flowering.leaf,
   bloom: flowering.bloom,
 });
+const flowerVolume: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x3f5a40, lateral: 0x4a6648,
+    twig: 0x567252, pedicel: 0x5d7a52, petiole: 0x567252 }),
+  stemRoughness: 0.72,
+  leaf: Object.freeze({ form: "elliptic", color: 0x3d5a42, veinColor: 0x7d8f58,
+    roughness: 0.7, hitRadius: 0.34, hitCenterY: 0 }),
+  bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,
+  "flower-volume-v1": flowerVolume,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

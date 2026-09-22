@@ -72,7 +72,7 @@ test("adding an unrelated registered material cannot change reference-pair graph
     "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1", "one-branch-v1", "leafy-shoot-v1",
   ]);
   assert.deepEqual(describeFixture(liveCatalogDynamic).plantsInIdentityOrder.map((plant) => plant.generatorVersion), [
-    "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1", "reed-v1", "one-branch-v1",
+    "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1", "reed-v1", "flower-volume-v1",
   ]);
   assert.deepEqual(describeFixture(dynamic).plantsInIdentityOrder.map((plant) => plant.id), [
     "plant-1", "plant-2", "plant-3", "plant-4", "plant-5", "plant-6",
@@ -84,12 +84,13 @@ test("adding an unrelated registered material cannot change reference-pair graph
   const dynamicSequence = planWorkbenchCuttings(
     catalog.map((material) => material.materialId),
     8278,
-    6,
+    catalog.length,
   );
   assert.equal(pairSequence[2]?.materialId, "flowering-branch");
   assert.equal(dynamicSequence[2]?.materialId, "bare-branch");
   assert.equal(dynamicSequence[4]?.materialId, "reed");
-  assert.equal(dynamicSequence[5]?.materialId, "unrelated-candidate");
+  assert.equal(dynamicSequence[5]?.materialId, "flower-volume");
+  assert.equal(dynamicSequence.at(-1)?.materialId, "unrelated-candidate");
   assert.notEqual(pairSequence[4]?.materialId, dynamicSequence[4]?.materialId);
 });
 
@@ -139,7 +140,7 @@ test("candidate profiles stay listed and disabled until their materials are in t
 test("this integration catalog makes named candidate profiles available to the picker", () => {
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
-    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed",
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);

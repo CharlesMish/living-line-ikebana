@@ -11,6 +11,8 @@ import * as THREE from "three";
  *   petal's rotation.z = index * 2 PI / petalCount. Salt the seed by petal index.
  *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
  *   five-petal dish whose local +Z follows the supporting material frame.
+ *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
+ *   One bloom remains one organ; tufted petals may share a mesh inside that organ.
  * - All surfaces face local +Z and require a DoubleSide material. Color values
  *   are restrained linear RGB multipliers; enable material.vertexColors.
  * - Calyx and leaf veins are optional subordinate detail, using their own green
@@ -106,10 +108,42 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate";
-export type BloomForm = "cupped" | "open-face";
+export type BloomForm = "cupped" | "open-face" | "tufted";
+
+/** Rebuildable bloom parts. Cupped and open-face numbers match the prior path. */
+export interface BloomSurfaceProfile {
+  readonly petalCount: number;
+  readonly centerRadius: number;
+  readonly centerScaleZ: number;
+  readonly centerZ: number;
+  readonly centerColor: number;
+  readonly antherRadius: number;
+  readonly antherRing: number;
+  readonly antherZ: number;
+  readonly antherCount: number;
+}
+
+export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
+  if (form === "open-face") {
+    return {
+      petalCount: 5, centerRadius: 0.11, centerScaleZ: 0.36, centerZ: 0.042, centerColor: 0xc49a58,
+      antherRadius: 0.022, antherRing: 0.155, antherZ: 0.05, antherCount: 12,
+    };
+  }
+  if (form === "tufted") {
+    return {
+      petalCount: 8, centerRadius: 0.06, centerScaleZ: 0.72, centerZ: 0.07, centerColor: 0x7a3e56,
+      antherRadius: 0.012, antherRing: 0.055, antherZ: 0.1, antherCount: 8,
+    };
+  }
+  return {
+    petalCount: 7, centerRadius: 0.09, centerScaleZ: 0.52, centerZ: 0.07, centerColor: 0xb68840,
+    antherRadius: 0.019, antherRing: 0.105, antherZ: 0.085, antherCount: 12,
+  };
+}
 
 export function bloomPetalCount(form: BloomForm): number {
-  return form === "open-face" ? 5 : 7;
+  return bloomSurfaceProfile(form).petalCount;
 }
 
 function leafSample(seed: number, t: number, across: number, form: LeafForm): SurfaceSample {
@@ -212,8 +246,32 @@ export function createOpenFacePetalGeometry(seed = 0): THREE.BufferGeometry {
   });
 }
 
+/**
+ * Short rounded petal. Eight of these cup into one tuft. The tuft is still one
+ * organ on one supporting branch; it is not a merged multi-branch mesh.
+ */
+export function createTuftedPetalGeometry(seed = 0): THREE.BufferGeometry {
+  return bladeSurface("living-line/tufted-petal", (t, across) => {
+    const envelope = Math.sin(Math.PI * t);
+    const width = 0.2 * Math.pow(Math.max(0, envelope), 0.62)
+      * (0.7 + 0.48 * t) * (1 + across * (variation(seed, 4) - 0.5) * 0.05);
+    const x = 0.012 + t * (0.4 + (variation(seed, 5) - 0.5) * 0.012);
+    const y = -across * width + (variation(seed, 6) - 0.5) * 0.012 * envelope;
+    const cup = Math.sin(Math.PI * Math.min(1, t * 1.05));
+    const z = 0.016 + 0.24 * cup * (1 - 0.22 * t) + 0.05 * across * across * envelope
+      + 0.003 * Math.sin(t * Math.PI * 3 + variation(seed, 7) * TAU) * Math.pow(Math.abs(across), 2);
+    const value = 0.72 + 0.24 * Math.sqrt(t) + 0.02 * across * across;
+    return {
+      position: [x, y, z],
+      color: [Math.min(1, value * 1.05), value * (0.8 + 0.1 * t), value * (0.9 + 0.05 * t)],
+    };
+  }, 10, 6);
+}
+
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
-  return form === "open-face" ? createOpenFacePetalGeometry(seed) : createPetalGeometry(seed);
+  if (form === "open-face") return createOpenFacePetalGeometry(seed);
+  if (form === "tufted") return createTuftedPetalGeometry(seed);
+  return createPetalGeometry(seed);
 }
 
 /** Small pointed green sepals behind the bloom; one geometry for one draw call. */
@@ -227,7 +285,9 @@ export function createCalyxGeometry(seed = 0, form: BloomForm = "cupped"): THREE
     const angle = (sepal + 0.5) * TAU / sepalCount;
     const geometry = bladeSurface("sepal", (t, across) => {
       const width = 0.044 * Math.sin(Math.PI * t) * (1 - t * 0.4);
-      const x = 0.014 + t * (0.23 + variation(seed, sepal + 10) * 0.014);
+      const reach = form === "tufted" ? 0.11 : 0.23;
+      const jitter = form === "tufted" ? 0.006 : 0.014;
+      const x = 0.014 + t * (reach + variation(seed, sepal + 10) * jitter);
       const y = -across * width;
       return {
         position: [x * Math.cos(angle) - y * Math.sin(angle), x * Math.sin(angle) + y * Math.cos(angle), -0.032 + 0.009 * t - 0.012 * across * across],

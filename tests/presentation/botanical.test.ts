@@ -3,7 +3,7 @@ import test from "node:test";
 import * as THREE from "three";
 import { createFloweringBranch, aimBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
-import { botanicalSeed, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
+import { botanicalSeed, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry, createTuftedPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
 import { disposeObject, splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
 
 test("rendered stems have outward faces, closed ends, and stable proximal stock after a cut", () => {
@@ -92,7 +92,7 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -111,7 +111,7 @@ test("registered material appearances rebuild consistently and leafy hit proxies
           assert.deepEqual(a.geometry.getAttribute(key)?.array, b.geometry.getAttribute(key)?.array);
         }
       }
-      if (material === "leafy-shoot" || (material === "single-flower" && organ.kind === "bloom")) {
+      if (material === "leafy-shoot" || ((material === "single-flower" || material === "flower-volume") && organ.kind === "bloom")) {
         original.group.updateMatrixWorld(true);
         const radius = original.hit.geometry.parameters.radius;
         original.group.traverse((node: THREE.Object3D) => {
@@ -140,6 +140,10 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   assert.notEqual(stemColors[4], stemColors[1], "reed must not inherit leafy stem appearance");
   assert.notEqual(stemColors[4], stemColors[2], "reed must not inherit bare wood");
   assert.notEqual(stemColors[4], stemColors[3], "reed must not inherit the single-flower stem");
+  assert.notEqual(stemColors[5], stemColors[0], "flower-volume stem must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[5], stemColors[1], "flower-volume stem must remain distinct from leafy shoot");
+  assert.notEqual(stemColors[5], stemColors[3], "flower-volume stem must remain distinct from the single flower");
+  assert.notEqual(stemColors[5], stemColors[4], "flower-volume stem must remain distinct from the reed");
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {
@@ -195,6 +199,67 @@ test("open-face bloom is flatter than the cupped reference and follows the mater
   assert.deepEqual(originalPetal.geometry.getAttribute("position").array, rebuiltPetal.geometry.getAttribute("position").array);
   disposeObject(visual.group);
   disposeObject(rebuilt.group);
+});
+
+test("tufted petals are shorter and more cupped than the open face, and one pruned group keeps the other organ identities", async () => {
+  const tufted = createTuftedPetalGeometry(3);
+  const cupped = createPetalGeometry(3);
+  const open = createOpenFacePetalGeometry(3);
+  const extent = (geometry: THREE.BufferGeometry, axis: "x" | "z") => {
+    const positions = geometry.getAttribute("position");
+    let peak = 0;
+    for (let index = 0; index < positions.count; index += 1) {
+      peak = Math.max(peak, Math.abs(axis === "x" ? positions.getX(index) : positions.getZ(index)));
+    }
+    return peak;
+  };
+  assert.ok(extent(tufted, "x") < extent(cupped, "x") * 0.75, "a tufted petal must be shorter than the flowering cup");
+  assert.ok(extent(tufted, "x") < extent(open, "x") * 0.7, "a tufted petal must be shorter than the open face");
+  assert.ok(extent(tufted, "z") / extent(tufted, "x") > extent(open, "z") / extent(open, "x"), "tufted petals must cup more than the open face");
+  tufted.dispose();
+  cupped.dispose();
+  open.dispose();
+
+  const { prepareMaterialInsertion, previewPrune, applyPrune } = await import("../../src/core/index.ts");
+  const prepared = prepareMaterialInsertion("flower-volume", 1, { x: 0, y: 0.55, z: 0 });
+  assert.ok(prepared.ok);
+  if (!prepared.ok) return;
+  const graph = prepared.graph;
+  const studio = Object.create(ThreeStudio.prototype) as any;
+  Object.assign(studio, {
+    options: { debugHitTargets: false },
+    botanicalRoot: new THREE.Group(),
+    pendingRoot: new THREE.Group(),
+    plants: new Map(),
+    selection: null,
+    cutPreview: null,
+    pendingValidity: null,
+    shapeAffordances: { visible: false, bendVariant: "bead", transactionActive: false, touchCueDistance: null, showSelection: true },
+    baseHandle: { group: new THREE.Group() },
+    bendHandle: { group: new THREE.Group() },
+    touchCue: new THREE.Group(),
+    cutCollar: { visible: false },
+    requestRender() {},
+    updateAffordances() {},
+    updateCutCollar() {},
+  });
+  const visual = studio.createPlantVisual(graph, false);
+  const bloom = graph.organs.get("plant-1:bloom-3")!;
+  const beforeIds = [...visual.organs.keys()].sort();
+  const tuft = [...visual.organs.get("plant-1:bloom-1").group.children].find(
+    (child: THREE.Object3D) => child instanceof THREE.InstancedMesh && child.geometry.name === "living-line/tufted-petal",
+  ) as THREE.InstancedMesh;
+  assert.equal(tuft.count, 8);
+  assert.equal(visual.organs.get(bloom.id).hit.userData.branchId, bloom.branchId);
+  const pruned = applyPrune(graph, previewPrune(graph, bloom.branchId, bloom.distance));
+  visual.graph = pruned;
+  studio.syncPlantVisual(visual);
+  assert.deepEqual([...visual.organs.keys()].sort(), beforeIds);
+  assert.equal(visual.organs.get(bloom.id).group.visible, false);
+  assert.equal(visual.organs.get("plant-1:bloom-1").group.visible, true);
+  assert.equal(visual.organs.get(bloom.id).hit.userData.organId, bloom.id);
+  assert.equal(visual.branches.has(bloom.branchId), true);
+  disposeObject(visual.group);
 });
 
 test("production organ groups ignore camera changes and follow stem aim and bend", async () => {

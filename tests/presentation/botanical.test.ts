@@ -5,6 +5,7 @@ import { createFloweringBranch, aimBranch, bendBranch, pruneBranch, toCanonicalP
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
 import { botanicalSeed, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry, createTuftedPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
 import { disposeObject, splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
+import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
 
 test("rendered stems have outward faces, closed ends, and stable proximal stock after a cut", () => {
   const graph = createFloweringBranch("plant-1", 8278, { x: 0, y: 0.55, z: 0 });
@@ -149,6 +150,61 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   assert.notEqual(stemColors[6], stemColors[0], "arching trailer must not inherit woody trunk appearance");
   assert.notEqual(stemColors[6], stemColors[4], "arching trailer must not inherit the reed");
   assert.notEqual(stemColors[6], stemColors[5], "arching trailer must not inherit the flower-volume stem");
+});
+
+test("every material's leaf and bloom acquisition proxies contain their visible surfaces", async () => {
+  const { getMaterialDefinitions } = await import("../../src/core/index.ts");
+  const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
+  const forms = new Set<string>();
+  for (const definition of getMaterialDefinitions()) {
+    for (const seed of [0, 8278, 9255, 10232, 0xffffffff]) {
+      const graph = definition.generator.generate("leaf-coverage", seed, { x: 0, y: 0.55, z: 0 });
+      for (const organ of graph.organs.values()) {
+        if (organ.kind !== "leaf" && organ.kind !== "bloom") continue;
+        const appearance = getMaterialAppearance(graph.generatorVersion);
+        forms.add(`${organ.kind}:${appearance[organ.kind].form}`);
+        const visual = studio.createOrganVisual(graph, organ, false);
+        visual.group.updateMatrixWorld(true);
+        // Raycasting uses the polygonal proxy, not an ideal sphere. A point
+        // below its nominal radius can still sit beyond a flat triangular face.
+        const hitPositions = visual.hit.geometry.getAttribute("position");
+        const hitIndices = visual.hit.geometry.index!;
+        const planes: THREE.Plane[] = [];
+        for (let index = 0; index < hitIndices.count; index += 3) {
+          const a = new THREE.Vector3().fromBufferAttribute(hitPositions, hitIndices.getX(index));
+          const b = new THREE.Vector3().fromBufferAttribute(hitPositions, hitIndices.getX(index + 1));
+          const c = new THREE.Vector3().fromBufferAttribute(hitPositions, hitIndices.getX(index + 2));
+          const normal = b.clone().sub(a).cross(c.clone().sub(a));
+          if (normal.lengthSq() < 1e-20) continue;
+          normal.normalize();
+          if (normal.dot(a) < 0) normal.negate();
+          planes.push(new THREE.Plane().setFromNormalAndCoplanarPoint(normal, a));
+        }
+        assert.ok(planes.length > 0);
+        const vertex = new THREE.Vector3();
+        visual.group.traverse((node: THREE.Object3D) => {
+          if (!(node instanceof THREE.Mesh) || node === visual.hit) return;
+          const positions = node.geometry.getAttribute("position");
+          const count = node instanceof THREE.InstancedMesh ? node.count : 1;
+          for (let instance = 0; instance < count; instance += 1) {
+            const matrix = new THREE.Matrix4();
+            if (node instanceof THREE.InstancedMesh) node.getMatrixAt(instance, matrix);
+            matrix.premultiply(node.matrixWorld);
+            for (let index = 0; index < positions.count; index += 1) {
+              vertex.fromBufferAttribute(positions, index).applyMatrix4(matrix);
+              visual.hit.worldToLocal(vertex);
+              assert.ok(
+                planes.every((plane) => plane.distanceToPoint(vertex) <= 1e-6),
+                `${definition.materialId}, seed ${seed}, ${organ.id}: visible surface outside acquisition proxy`,
+              );
+            }
+          }
+        });
+        disposeObject(visual.group);
+      }
+    }
+  }
+  assert.deepEqual([...forms].sort(), ["bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate"]);
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {

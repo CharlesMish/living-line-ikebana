@@ -1,7 +1,7 @@
 # Candidate review
 
 - Candidate / role: Naturally arching trailer — Lane C, Round 3. A line that can cross visible water or run toward the bowl edge.
-- Baseline SHA / head SHA / branch: `cf1cf73c267ca9cd7d3b93961f7061708e5a2b37` / (this branch head) / `cursor/arching-trailer-v1-5a9d`
+- Baseline SHA / head SHA / branch: `cf1cf73c267ca9cd7d3b93961f7061708e5a2b37` / PR head on `cursor/arching-trailer-v1-5a9d` / `cursor/arching-trailer-v1-5a9d`
 - Author / independent reviewer: Lane C implementation. Requested model: Grok 4.7 high thinking. Exposed session identity: Grok 4.7. Independent review is not this pass.
 - New compositional choice: One seated cane whose rest pose already rises, crests, and descends across the open water toward the rim. Three small leaves mark the descending limb. Shortening that limb is the useful cut. The upright references do not offer this low crossing.
 - Main weakness: The arch is one rest curve plus the existing single bend station. A downward bend or aim can drive the tip through the water and, at bend saturation, through the basin floor. Sliding the base toward the arch carries the same stock out of the bowl. There is no collision response, and this pass does not add one.
@@ -32,27 +32,35 @@ This pass preserves the behavioral contract. It adds one generator version to th
 
 | Check | Result (pass / fail / not run) | Reproduction or artifact |
 | --- | --- | --- |
-| npm ci + npm run verify | not run in this revision | Recorded after the verification pass |
-| Existing golden fixtures unchanged | pass (local generation) | Flowering and leafy graphs still match their fixtures in `tests/core/archingTrailer.test.ts` |
-| Seeds 8278 / 9255 / 10232 | pass (local generation) | Same test; fixture `fixtures/plant-1-arching-trailer-v1.json` is ordinal 1 / seed 8278 |
-| Aim / bend preserve stock and attachments | pass (unit, pre-verify) | Rest lengths and stiffness unchanged. Petioles are not bend stations |
-| Exact prune and retained history | pass (unit, pre-verify) | Cut at 0.7 of the cane removes `petiole-3` and `leaf-3` and keeps four branch records |
-| Cancel / invalid insert preserve ordinal and save | pass (unit, pre-verify) | `tests/app/materialInsertion.test.ts` |
-| Reload after a committed edit | pass (unit, pre-verify) | Bent graph round-trips through serialize |
-| Garden original survives edited copy | pass (unit, pre-verify) | Keep, then prune a copy; the stored original is unchanged |
-| Front / ¾ / Above | not run in this revision | Example `artifacts/arching-trailer-across-water.json` |
-| Stable `reference-pair` scene | pass (unit, pre-verify) | Six-cutting `reference-pair` stays flowering/leafy alternating. `all-four` stays the four named versions |
-| Narrow portrait / short landscape / large text | notes only | See composition notes. Phone not run |
+| npm ci + npm run verify | pass | `npm ci` then `npm run verify`: typecheck, 151 tests, production build, `Distribution valid`. One garden assertion was corrected to compare the JSON Garden actually stores (`-0` vs `0` on a reference normal) and the suite was re-run |
+| Existing golden fixtures unchanged | pass | Flowering and leafy graphs still match their fixtures in `tests/core/archingTrailer.test.ts` |
+| Seeds 8278 / 9255 / 10232 | pass | Same test; fixture `fixtures/plant-1-arching-trailer-v1.json` is ordinal 1 / seed 8278 |
+| Aim / bend preserve stock and attachments | pass | Rest lengths and stiffness unchanged. Petioles are not bend stations |
+| Exact prune and retained history | pass | Cut at 0.7 of the cane removes `petiole-3` and `leaf-3` and keeps four branch records |
+| Cancel / invalid insert preserve ordinal and save | pass | `tests/app/materialInsertion.test.ts` |
+| Reload after a committed edit | pass | Bent graph round-trips through serialize |
+| Garden original survives edited copy | pass | Keep, then prune a copy; the stored original matches after JSON round-trip |
+| Front / ¾ / Above | pass (desktop Chrome) | `artifacts/arching-trailer-front.png`, `arching-trailer-three-quarter.png`, `arching-trailer-above.png` |
+| Stable `reference-pair` scene | pass | Six-cutting `reference-pair` stays flowering/leafy alternating. `all-four` stays the four named versions |
+| Narrow portrait / short landscape / large text | partial | 360×780 Materials menu and 844×390 arrangement were captured. Large-text wrapping was not screenshotted. Phone not run |
 | Physical phone | not run | No device |
 
 ## Rendering comparison
 
-- Browser/device/OS; CSS viewport; window inner size; drawing-buffer size; pixel ratio: not captured in this revision.
-- Same seed, count, camera and render conditions for baseline/candidate: graph comparison only so far. Centered seed 8278 trailer is 4 branches / 3 organs / 19 cane points. Flowering reference remains 15 / 10. Leafy remains 8 / 7.
-- Report files for count 1 / stable `reference-pair` 6 / stress 12: not downloaded from a browser. Node identity of `reference-pair` and `all-four` is asserted in tests and was not rewritten.
-- Resource-count differences: not measured in WebGL.
+- Browser/device/OS: Google Chrome 148.0.7778.96, headless, on the cloud agent VM (Linux). Not a phone.
+- CSS viewport equals the browser-window inner size in these captures, because the canvas fills the window. Device pixel ratio 1. Drawing-buffer size matches the CSS size. Numbers are in `docs/development/reports/arching-trailer-v1/capture.json`.
+  - Composition Front, ¾, Above, and the edge-seat Above: inner 1280×800, canvas client 1280×800, drawing buffer 1280×800, DPR 1.
+  - Short landscape Front: inner 844×390, canvas client 844×390, drawing buffer 844×390, DPR 1.
+  - Materials menu: inner 360×780, canvas client 360×780, drawing buffer 360×780, DPR 1.
+- Same seed and canonical cameras for the three composition views: trailer seed 8278 at `(0, 0.55, 0)`, leafy seed 9255 at `(0.62, 0.55, 0.28)`, unbent. Graph inventory of one trailer is 4 branches / 3 organs. Flowering reference remains 15 / 10. Leafy remains 8 / 7.
+- Report files: no browser workbench download for count 1 / `reference-pair` 6 / stress 12. Node identity of `reference-pair` and `all-four` is asserted in tests and was not rewritten. Renderer draw-call and triangle counts were not read out of Three.js.
 - Observed response/stalls: not measured.
-- Missing measurements: browser viewport figures, draw calls, physical phone.
+- Missing measurements: draw calls, triangles, a matched baseline WebGL capture, large-text screenshots, physical phone.
+
+What the pictures show, at those canonical cameras:
+
+- Front, ¾, and Above of the unbent example: the blue-green cane rises over the pins and descends across the teal water toward the left lip. The leafy shoot is the upright stem on the other side. The tip meets the rim area without an obvious buried intersection in these stills. That matches the centered clearance (water 0.168, rim 0.089) and does not show the downward-bend puncture.
+- Above of the edge seat (`artifacts/arching-trailer-edge-above.png`): the same cane, base at the pin-field edge in the arch direction, leaves the bowl. The free end hangs outside the rim. This is the overshoot, not a second generator.
 
 ## Intersection limits
 

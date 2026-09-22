@@ -275,6 +275,9 @@ test("a Garden original survives an edited copy of the trailer", () => {
   const trail = graph.branches.get(graph.rootBranchId)!;
   copy.plants[0] = toCanonicalPlantGraph(applyPrune(graph, previewPrune(graph, trail.id, trail.activeLength * 0.7)));
   const loaded = garden.load();
-  assert.deepEqual(loaded.entries[0].arrangement.plants[0], original.plants[0]);
+  assert.equal(
+    JSON.stringify(loaded.entries[0].arrangement.plants[0]),
+    JSON.stringify(original.plants[0]),
+  );
   assert.notEqual(JSON.stringify(copy.plants[0]), JSON.stringify(loaded.entries[0].arrangement.plants[0]));
 });

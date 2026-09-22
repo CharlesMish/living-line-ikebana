@@ -13,7 +13,15 @@ Exposed session identity: Grok 4.7.
 
 The trailer is the line that crosses the open water. The leafy shoot does not. Closest cane-to-leafy-stem distance on this placement is about 0.68. Both graphs are unbent rest poses, so the arch is the authored structure, not a bend that was posed for the camera.
 
-Import the backup from Garden. Open the card. Use View → Front, ¾, and Above. Those presets are the canonical cameras (`src/app/camera.ts`). Do not orbit to a angle that hides the tip.
+Import the backup from Garden. Open the card. Use View → Front, ¾, and Above. Those presets are the canonical cameras (`src/app/camera.ts`). Do not orbit to an angle that hides the tip.
+
+Captured from that path in headless Chrome 148 on the agent VM, window 1280×800, DPR 1, drawing buffer 1280×800:
+
+- `artifacts/arching-trailer-front.png`
+- `artifacts/arching-trailer-three-quarter.png`
+- `artifacts/arching-trailer-above.png`
+
+The cane reads as the low line toward the left lip. The leafy shoot is the upright stem beside it. These stills are the unbent rest pose, so they show the centered clearance, not the bend that later enters the water.
 
 ## What the three views are for
 
@@ -35,10 +43,18 @@ Numbers are for seed 8278 at the center seat unless another pose is named. Cane 
 
 Leaf attachments on the centered rest pose are near y = 1.06–1.42, above the water. A saturated downward bend brings the outer leaf attachment to about y = 0.47, at the water surface.
 
+`artifacts/arching-trailer-edge-above.png` is the same seed with the base moved to the usable pin-field edge along the arch (radius 1.22). Above shows the cane leaving the bowl. The tip is outside the rim. That picture is the limit; the centered trio is not cropped to hide it.
+
 ## Narrow layout
 
-The selected source stays one card. Arching trailer is a fifth row inside the existing Materials menu, not a new rail. Each choice has a minimum height of 2.75rem. The menu’s max height is `min(18rem, 50dvh)`, and in a short landscape window `min(12rem, 100dvh - 5.5rem)`, with vertical scroll. Five rows fit the tall menu and scroll in the short one. Below 640px the row silhouettes hide and the name remains. Below 360px the source-card grip hides. Large text already wraps the top rail (`max-width: 28rem`). These are CSS observations. A rendered narrow viewport and a physical phone were not part of the pre-screenshot revision; phone feel is untested.
+The selected source stays one card. Arching trailer is a fifth row inside the existing Materials menu.
+
+Observed in the same headless Chrome, not on a phone:
+
+- 360×780 portrait (`artifacts/arching-trailer-narrow-materials.png`): the menu lists Flowering branch, Leafy shoot, Bare branch, Single flower, and Arching trailer. Row silhouettes are hidden, which is the existing rule below 640px. The names remain. The source card is still one card.
+- Short landscape 844×390 of the example (`artifacts/arching-trailer-short-landscape.png`): the top rail and the “Kept in your Garden” banner take a large share of the height. The arch and the leafy stem are still in frame. The leafy crown sits close to that chrome. This is a framing limit.
+- Short landscape Materials menu (`artifacts/arching-trailer-short-landscape-materials.png`): the open menu’s client height was 190px and its scroll height was 231px, so the five rows do not fully fit. Arching trailer is the row that requires a scroll. Large-text wrapping was not screenshotted. Phone feel is untested.
 
 ## What this does not claim
 
-The centered clearance is the unbent rest pose. It is not a bowl collision guarantee. The player still has one bend station. Shortening the trail is a prune, which keeps the inactive leaf as history.
+The centered clearance is the unbent rest pose. It is not a bowl collision guarantee. The player still has one bend station. Shortening the trail is a prune, which keeps the inactive leaf as history. `npm ci` and `npm run verify` passed on this branch (151 tests). That run is not a phone observation.

@@ -123,6 +123,15 @@ no Garden entry, no working save, and no change to either stored camera or the
 current working arrangement. Leaving it discards the temporary view. An optional
 study brief may be shown beside it; that brief is for a person to interpret.
 The app does not judge whether an arrangement satisfies it.
+A comparison drag has one pointer owner. A second pointer does not replace
+that owner or its start pose. The owner's release keeps the temporary shared
+view. Pointer cancel, lost capture, blur, a hidden page, a mouse move with
+the button up, and Escape during the drag restore that start pose and stay in
+comparison. Escape with no drag, and Leave comparison, discard the temporary
+view. A view command during a drag cancels the drag before it applies. Wheel
+input during a drag is ignored. Neither path writes a Garden entry, a stored
+camera, or the working bowl. Both panes use the same canvas width and height.
+A longer or wrapping title does not resize one pane alone.
 
 Player replacements preserve a safe insertion ordinal. Workbench fixture loading
 explicitly resets developer fixture identities in an isolated storage namespace;

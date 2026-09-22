@@ -1,13 +1,14 @@
-import { cloneCameraPose, type CameraPose } from "./camera.ts";
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
 import {
-  dollyComparison,
-  orbitComparison,
-  panComparison,
-  presetComparison,
+  comparisonCanvasSlots,
+  equalCanvasBox,
+  reduceComparisonGesture,
   TABLE_TALK_STUDY_NOTE,
   TABLE_TALK_STUDY_PROMPT,
   toggleComparisonChoice,
+  type ComparisonDrag,
+  type ComparisonDragMode,
+  type ComparisonGestureAction,
   type GardenComparison,
 } from "./gardenCompare.ts";
 import type { CanonicalView } from "../input/index.ts";
@@ -47,8 +48,9 @@ export class GardenUI {
   private compareIds: string[] = [];
   private comparing = false;
   private comparison: GardenComparison | null = null;
-  private compareMode: "orbit" | "move" = "orbit";
-  private compareDrag: { pointerId: number; startX: number; startY: number; startCamera: CameraPose; height: number } | null = null;
+  private compareMode: ComparisonDragMode = "orbit";
+  private compareDrag: ComparisonDrag | null = null;
+  private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
   constructor(private readonly root: HTMLElement, private readonly store: GardenStore, private readonly actions: GardenActions, workbench = false) {
     const host = document.createElement("div");
     host.className = "garden-host";
@@ -66,7 +68,7 @@ export class GardenUI {
           <summary>Optional study · Across the table</summary>
           <p class="looking-prompt">${TABLE_TALK_STUDY_PROMPT}</p>
           <p class="panel-note">${TABLE_TALK_STUDY_NOTE}</p>
-          <p class="panel-note">Keep a bowl, make a working copy, revise it, and keep the revision. Then compare the two. They share one view and one scale. Neither kept moment changes.</p>
+          <p class="panel-note">Keep one, copy it, revise it, and keep the revision. Then compare them here.</p>
         </details>
         <p class="panel-note">Saved in this browser on this device. Download a backup to keep your collection elsewhere.</p>
         <p id="garden-error" class="garden-message" role="status" aria-live="polite"></p>
@@ -83,7 +85,7 @@ export class GardenUI {
         <div class="garden-actions garden-tools"><button type="button" id="garden-new">Start a fresh bowl</button><button type="button" id="garden-export">Download backup</button><button type="button" id="garden-import">Import backup</button><input id="garden-file" type="file" accept="application/json,.json" hidden/></div>
         <p id="garden-count" class="eyebrow"></p>
         <section id="garden-compare-bar" class="garden-compare-bar" hidden>
-          <p id="garden-compare-status">Choose Compare on two moments. They will share one view and one scale.</p>
+          <p id="garden-compare-status">Choose two, then look at them together.</p>
           <button type="button" id="garden-compare-go" disabled>Look at both</button>
         </section>
         <div id="garden-grid" class="garden-grid"></div>
@@ -91,11 +93,11 @@ export class GardenUI {
       <dialog id="garden-compare-dialog" class="garden-dialog garden-compare" aria-labelledby="garden-compare-title">
         <div class="panel-heading"><div><p class="eyebrow">Same view and scale</p><h1 id="garden-compare-title">Compare two moments</h1></div>
           <button id="garden-compare-leave" class="icon-button" type="button" aria-label="Leave comparison">×</button></div>
-        <p class="garden-compare-note">Both use one camera and the same scale, starting from Front rather than either saved framing. Nothing is saved. The optional study is yours to judge.</p>
-        <p class="panel-note garden-compare-brief">If you are using the optional study — “${TABLE_TALK_STUDY_PROMPT}” — decide for yourself. ${TABLE_TALK_STUDY_NOTE}</p>
+        <p class="garden-compare-note">Same view for both. Nothing is saved.</p>
+        <p class="panel-note garden-compare-brief">${TABLE_TALK_STUDY_PROMPT} ${TABLE_TALK_STUDY_NOTE}</p>
         <div class="garden-compare-stage">
-          <figure><figcaption id="garden-compare-left-title"></figcaption><canvas id="garden-compare-left"></canvas></figure>
-          <figure><figcaption id="garden-compare-right-title"></figcaption><canvas id="garden-compare-right"></canvas></figure>
+          <figure class="garden-compare-pane"><figcaption id="garden-compare-left-title"></figcaption><canvas id="garden-compare-left"></canvas></figure>
+          <figure class="garden-compare-pane"><figcaption id="garden-compare-right-title"></figcaption><canvas id="garden-compare-right"></canvas></figure>
         </div>
         <div class="garden-actions garden-compare-controls" aria-label="Shared view">
           <button type="button" data-compare-view="front" aria-pressed="true">Front</button>
@@ -106,7 +108,7 @@ export class GardenUI {
           <button type="button" id="garden-compare-zoom-in">Zoom in</button>
           <button type="button" id="garden-compare-zoom-out">Zoom out</button>
         </div>
-        <p class="panel-note garden-compare-help">Drag either arrangement. Both stay matched. Leave comparison to return to your Garden. Neither kept moment or your working bowl changes.</p>
+        <p class="panel-note garden-compare-help">Drag either one. Both move together.</p>
       </dialog>
       <dialog id="workbench-dialog" class="garden-dialog workbench-dialog" aria-labelledby="workbench-title">
         <div class="panel-heading"><div><p class="eyebrow">Development only · separate saved bowl</p><h1 id="workbench-title">Material workbench</h1></div><button id="workbench-close" class="icon-button" type="button" aria-label="Close workbench">×</button></div>
@@ -162,6 +164,10 @@ export class GardenUI {
       if (this.comparing) this.leaveComparison();
     }, { signal: this.controller.signal });
     this.bindComparisonGestures();
+    this.compareLayout.observe(this.find(".garden-compare-stage"));
+    this.compareLayout.observe(this.find("#garden-compare-left-title"));
+    this.compareLayout.observe(this.find("#garden-compare-right-title"));
+    window.matchMedia("(max-width: 520px)").addEventListener("change", this.layoutComparisonCanvases, { signal: this.controller.signal });
     if (workbench) this.setupWorkbench(on);
   }
   private find<T extends HTMLElement = HTMLElement>(selector: string): T { return this.root.querySelector<T>(selector)!; }
@@ -186,8 +192,8 @@ export class GardenUI {
     compareBar.hidden = !this.loaded || this.entries.length < 2;
     this.find<HTMLButtonElement>("#garden-compare-go").disabled = this.compareIds.length !== 2;
     this.find("#garden-compare-status").textContent = this.compareIds.length === 2
-      ? "Two selected. The first is on the left. Both use one shared view and scale."
-      : "Choose Compare on two moments. They will share one view and one scale.";
+      ? "Two selected. The first is on the left."
+      : "Choose two, then look at them together.";
     if (this.loaded && !this.entries.length) {
       const empty = document.createElement("p"); empty.className = "garden-empty";
       empty.textContent = "Your Garden starts with something you choose to keep. Arrange a cutting, step back, and decide whether this is a moment to save."; grid.append(empty);
@@ -298,69 +304,137 @@ export class GardenUI {
   private bindComparisonGestures() {
     const signal = this.controller.signal;
     const stage = this.find(".garden-compare-stage");
-    const apply = (session: GardenComparison, preset: CanonicalView | "free") => {
-      this.comparison = this.actions.syncComparison(session);
-      this.markComparePreset(preset);
-    };
     for (const button of this.root.querySelectorAll<HTMLButtonElement>("[data-compare-view]")) {
       button.addEventListener("click", () => {
         if (!this.comparison) return;
         const view = button.dataset.compareView as CanonicalView;
-        this.run(() => apply(presetComparison(this.comparison!, view), view));
+        this.run(() => {
+          this.reduceCompare({ type: "preset", view });
+          this.markComparePreset(view);
+        });
       }, { signal });
     }
     for (const button of this.root.querySelectorAll<HTMLButtonElement>("[data-compare-mode]")) {
       button.addEventListener("click", () => {
-        this.compareMode = button.dataset.compareMode === "move" ? "move" : "orbit";
-        this.markCompareMode();
+        const mode: ComparisonDragMode = button.dataset.compareMode === "move" ? "move" : "orbit";
+        this.run(() => {
+          if (this.comparison) this.reduceCompare({ type: "mode", mode });
+          else this.compareMode = mode;
+          this.markCompareMode();
+        });
       }, { signal });
     }
     this.find("#garden-compare-zoom-in").addEventListener("click", () => {
       if (!this.comparison) return;
-      this.run(() => apply(dollyComparison(this.comparison!, 0.9), "free"));
+      this.run(() => {
+        this.reduceCompare({ type: "dolly", zoomScale: 0.9 });
+        this.markComparePreset("free");
+      });
     }, { signal });
     this.find("#garden-compare-zoom-out").addEventListener("click", () => {
       if (!this.comparison) return;
-      this.run(() => apply(dollyComparison(this.comparison!, 1.1), "free"));
+      this.run(() => {
+        this.reduceCompare({ type: "dolly", zoomScale: 1.1 });
+        this.markComparePreset("free");
+      });
+    }, { signal });
+    this.compareDialog.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || !this.comparison) return;
+      const effect = this.reduceCompare({ type: "escape" });
+      if (!effect || effect.leave) return;
+      event.preventDefault();
+    }, { signal });
+    window.addEventListener("blur", () => {
+      if (this.compareDrag) this.reduceCompare({ type: "interrupt" });
+    }, { signal });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && this.compareDrag) this.reduceCompare({ type: "interrupt" });
     }, { signal });
     stage.addEventListener("pointerdown", (event) => {
-      if (!this.comparison || event.button !== 0) return;
+      if (!this.comparison) return;
       const canvas = event.target instanceof HTMLCanvasElement ? event.target : null;
       if (!canvas) return;
-      event.preventDefault();
-      canvas.setPointerCapture?.(event.pointerId);
-      this.compareDrag = {
+      const effect = this.reduceCompare({
+        type: "pointerdown",
         pointerId: event.pointerId,
-        startX: event.clientX,
-        startY: event.clientY,
-        startCamera: cloneCameraPose(this.comparison.camera),
+        button: event.button,
+        x: event.clientX,
+        y: event.clientY,
         height: canvas.clientHeight,
-      };
+      });
+      if (!effect || effect.ignored) return;
+      event.preventDefault();
+      try { canvas.setPointerCapture(event.pointerId); } catch { /* Ownership still stands without capture. */ }
     }, { signal });
     stage.addEventListener("pointermove", (event) => {
-      const drag = this.compareDrag;
-      if (!drag || !this.comparison || event.pointerId !== drag.pointerId) return;
-      event.preventDefault();
-      const dx = event.clientX - drag.startX;
-      const dy = event.clientY - drag.startY;
-      const basis = { ...this.comparison, camera: drag.startCamera };
-      const next = this.compareMode === "move"
-        ? panComparison(basis, dx, dy, drag.height)
-        : orbitComparison(basis, dx, dy);
-      this.run(() => apply(next, "free"));
+      if (!this.compareDrag) return;
+      const effect = this.reduceCompare({
+        type: "pointermove",
+        pointerId: event.pointerId,
+        pointerType: event.pointerType,
+        buttons: event.buttons,
+        x: event.clientX,
+        y: event.clientY,
+      });
+      if (effect && !effect.ignored) event.preventDefault();
     }, { signal });
-    const endDrag = (event: PointerEvent) => {
-      if (!this.compareDrag || event.pointerId !== this.compareDrag.pointerId) return;
-      this.compareDrag = null;
-    };
-    stage.addEventListener("pointerup", endDrag, { signal });
-    stage.addEventListener("pointercancel", endDrag, { signal });
+    stage.addEventListener("pointerup", (event) => {
+      this.reduceCompare({ type: "pointerup", pointerId: event.pointerId });
+    }, { signal });
+    stage.addEventListener("pointercancel", (event) => {
+      this.reduceCompare({ type: "pointercancel", pointerId: event.pointerId });
+    }, { signal });
+    stage.addEventListener("lostpointercapture", (event) => {
+      this.reduceCompare({ type: "lostcapture", pointerId: event.pointerId });
+    }, { signal, capture: true });
     stage.addEventListener("wheel", (event) => {
       if (!this.comparison) return;
       event.preventDefault();
-      this.run(() => apply(dollyComparison(this.comparison!, Math.exp(event.deltaY * 0.0011)), "free"));
+      this.reduceCompare({ type: "wheel", deltaY: event.deltaY });
     }, { signal, passive: false });
   }
+  private reduceCompare(action: ComparisonGestureAction) {
+    if (!this.comparison) return null;
+    const effect = reduceComparisonGesture(
+      { session: this.comparison, drag: this.compareDrag, mode: this.compareMode },
+      action,
+    );
+    this.compareDrag = effect.gesture.drag;
+    this.compareMode = effect.gesture.mode;
+    if (effect.preview || effect.rolledBack) {
+      this.comparison = this.actions.syncComparison(effect.gesture.session);
+    }
+    return effect;
+  }
+  private layoutComparisonCanvases = () => {
+    if (!this.comparing || !this.compareDialog.open) return;
+    const stage = this.find(".garden-compare-stage");
+    if (stage.clientWidth < 2 || stage.clientHeight < 2) return;
+    const style = getComputedStyle(stage);
+    const columnGap = Number.parseFloat(style.columnGap);
+    const rowGap = Number.parseFloat(style.rowGap);
+    const slots = comparisonCanvasSlots(
+      { width: stage.clientWidth, height: stage.clientHeight },
+      {
+        leftHeight: this.find("#garden-compare-left-title").offsetHeight,
+        rightHeight: this.find("#garden-compare-right-title").offsetHeight,
+      },
+      {
+        stacked: window.matchMedia("(max-width: 520px)").matches,
+        columnGap: Number.isFinite(columnGap) ? columnGap : 0,
+        rowGap: Number.isFinite(rowGap) ? rowGap : 0,
+      },
+    );
+    const box = equalCanvasBox(slots.left, slots.right);
+    const width = `${box.width}px`;
+    const height = `${box.height}px`;
+    const left = this.find<HTMLCanvasElement>("#garden-compare-left");
+    const right = this.find<HTMLCanvasElement>("#garden-compare-right");
+    if (left.style.width !== width) left.style.width = width;
+    if (right.style.width !== width) right.style.width = width;
+    if (left.style.height !== height) left.style.height = height;
+    if (right.style.height !== height) right.style.height = height;
+  };
   private markComparePreset(preset: CanonicalView | "free") {
     for (const button of this.root.querySelectorAll<HTMLButtonElement>("[data-compare-view]")) {
       button.setAttribute("aria-pressed", String(button.dataset.compareView === preset));
@@ -396,6 +470,7 @@ export class GardenUI {
           left: this.find<HTMLCanvasElement>("#garden-compare-left"),
           right: this.find<HTMLCanvasElement>("#garden-compare-right"),
         });
+        this.layoutComparisonCanvases();
       } catch (error) {
         this.comparison = null;
         this.comparing = false;
@@ -411,6 +486,7 @@ export class GardenUI {
       if (this.compareDialog.open) this.compareDialog.close();
       return;
     }
+    try { this.reduceCompare({ type: "interrupt" }); } catch { this.compareDrag = null; }
     this.compareDrag = null;
     this.comparison = null;
     this.comparing = false;
@@ -430,9 +506,11 @@ export class GardenUI {
   }
   destroy() {
     this.controller.abort();
+    try { this.reduceCompare({ type: "interrupt" }); } catch { /* Teardown still releases the viewports. */ }
     this.comparing = false;
     this.comparison = null;
     this.compareDrag = null;
+    this.compareLayout.disconnect();
     try { this.actions.endComparison(); } catch { /* The host may already have released the view. */ }
     this.root.querySelector(".garden-host")?.remove();
   }

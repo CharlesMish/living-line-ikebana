@@ -28,6 +28,10 @@ mission system, or school curriculum.
    would hide size and placement changes, so comparison does not do that.
    **Leave comparison** discards the temporary view. Neither kept arrangement,
    its stored camera, nor the working bowl is changed. Comparison is not saved.
+   One pointer owns a drag. A second pointer does not take that drag. Cancel,
+   blur, a hidden page, or Escape during the drag restores its start pose and
+   stays in comparison. Escape with no drag leaves. Both canvases stay the same
+   size when one title is longer or wraps.
 
 **Optional study · Across the table.** The guide and Garden include this brief:
 “Make a lower arrangement for a table where people will talk across it.” It is
@@ -105,5 +109,7 @@ browser visual pass or physical-phone signoff is claimed for that version.
 
 Comparison preserves the Garden contract: it adds a transient matched view and
 does not revise gesture laws, persistence, generators, or fixture profiles.
-Automated tests cover non-mutation and the shared camera, field of view, and
-world scale. Physical-phone observations for comparison are still open.
+Automated tests cover non-mutation, the shared camera, field of view, and
+world scale, second-pointer ownership, interruption rollback, and equal canvas
+slots when titles differ. Physical-phone observations for comparison are still
+open. A resized-browser screenshot is not that phone pass.

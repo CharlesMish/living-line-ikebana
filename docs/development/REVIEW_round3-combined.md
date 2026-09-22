@@ -10,8 +10,9 @@ Draft only. This branch does not merge to main.
 | Materials parent, PR #28 tip | `c1cd491c011dd1944dfabf8e7b2f12f9b6c0b991` |
 | Garden compare parent, PR #24 tip | `4d7179cc1a2d2d9b47ab92020cb5e75982727c64` |
 | Combined integration merge | `a2d34c6626aa1cff7b4273053a6704437a68fa86` |
+| Review-note commit, first green verify | `f27ab272e703e46fb27c4213163c76ad6dee3428` |
 
-The integration merge is a merge commit. Its first parent is the materials tip and its second parent is the Garden compare tip, so both parent tips stay reachable. This note is the child of that merge. The draft PR records the branch tip (`git rev-parse HEAD`), which is the commit that adds this file.
+The integration merge is a merge commit. Its first parent is the materials tip and its second parent is the Garden compare tip, so both parent tips stay reachable. The review-note commit is that merge's child. The draft PR records the branch tip after this verify paragraph (`git rev-parse HEAD`).
 
 ## Model
 
@@ -54,3 +55,14 @@ Materials: `?workbench=1`. The Materials menu lists the seven choices above. Pro
 Garden compare: keep two arrangements, open Garden, choose Compare on two cards, then Look at both. Both panes share one view. Leave comparison discards that view and does not change either kept arrangement or the working bowl.
 
 Phone: not run for this combine. Parent phone gaps still apply.
+
+## Verify
+
+`npm ci && npm run verify` passed on `f27ab272e703e46fb27c4213163c76ad6dee3428`.
+
+- Typecheck passed.
+- Tests: 173 passed, 0 failed, 0 skipped.
+- Build wrote `dist/ikebana-web-alpha-standalone.html`. Vite emitted `dist/index.html` (28185 bytes), `dist/assets/index-DL8pkvE1.css` (19914 bytes), `dist/assets/index-Dow0-ksh.js` (678720 bytes), and `dist/assets/index-Dow0-ksh.js.map` (3357374 bytes).
+- `validate-dist`: 5 files, standalone self-contained. Standalone size 863371 bytes.
+
+This paragraph does not change the app. The draft PR names the tip that contains it and the re-run on that tip.

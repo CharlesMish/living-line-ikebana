@@ -2,8 +2,9 @@
 
 ## Built now
 
-Two reference materials, shared persistent editing, optional looking prompts,
-Stop and look, and Garden's keep/revisit/copy/fresh-bowl loop. No score, missions,
+Seven materials built around the original flowering/leafy references, shared
+persistent editing, optional looking prompts, Stop and look, and Garden's
+keep/revisit/copy/fresh-bowl loop with transient comparison. No score, missions,
 formal curriculum, finite supply, economy or unlock sequence is implemented.
 
 ## Preferred next learning structure — proposal
@@ -44,6 +45,14 @@ Six to eight material roles can be a useful first collection, not a permanent ca
 Evaluate new roles by differences in line, branching, leaf rhythm, flower face,
 mass and useful cutting decisions. More color variations alone do not establish
 more play. Test several copies together before treating variety as a species count.
+
+After owner play of seven materials and the PR #33 interaction fixes, the next
+proposed collection target is 12–14, approached in small reviewed rounds. A
+larger shelf can support very restrained arrangements with only a few cuttings.
+The [Round 4 brief](GROK_BOT_ROUND4.md) proposes foliage fan, airy blossom spray
+and nodding flower candidates toward ten, plus a separate experiment for choosing
+the position of a single bend bead. Neither prototype acceptance nor promotion
+of the shaping experiment is predetermined.
 
 A future seasonal prompt or request could invite a return to the Garden. Prototype
 one original invitation first, without currency or unlocks: make, keep, and optionally

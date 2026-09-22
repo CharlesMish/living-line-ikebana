@@ -99,3 +99,18 @@ short phone clip covering insert → bend → cut → cancel → reload beside b
 Do not modify transactions, cancellation, cameras, insertion ordinals,
 `one-branch-v1`, schema or persistence fields. Return any necessary interface
 extension as a proposal. Add no new craft verbs inside a material prototype.
+
+## Round 3 provisional candidate — flower volume
+
+`flower-volume` / `flower-volume-v1` is registered on the Lane B branch only.
+It is not part of `reference-pair` or `all-four`. Tray HTML and named profile
+lists stay with the integrator. `all-registered-materials` follows the live
+catalog, so it includes this candidate while that registration is present.
+
+| Candidate | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Flower volume / `flower-volume-v1` | One stem, two modest leaves, five flower-bearing pedicel groups packed into one head | Tufted eight-petal cups in a dusty rose; darker green stem than the single flower | Stem stiffness 0.55; groups 0.2; leaf stalks 0.18; shared solver |
+
+Each group is one pedicel and one bloom. Pruning that pedicel deactivates that
+bloom and leaves the other groups unchanged. The head is not one mesh, and it
+is not a field of separate florets.

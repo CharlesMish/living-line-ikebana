@@ -75,7 +75,7 @@ test("invalid graphs, ordinals, cameras and thumbnails cannot enter the Garden",
   assert.throws(() => parseGarden(JSON.stringify({ gardenVersion: 1, entries: Array.from({length: GARDEN_LIMIT + 1}, (_, i) => entry(`moment-${i}`)) })));
 });
 test("workbench fixtures are reproducible, valid and registered for every reference/seed/count", () => {
-  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "mixed", "reference-pair"]) for (const seed of WORKBENCH_SEEDS) for (const count of [1, 2, 6, 12]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "mixed", "reference-pair"]) for (const seed of WORKBENCH_SEEDS) for (const count of [1, 2, 6, 12]) {
     const first = createWorkbenchFixture(material, seed, count);
     assert.deepEqual(first, createWorkbenchFixture(material, seed, count));
     assert.deepEqual(validateArrangement(first), first);

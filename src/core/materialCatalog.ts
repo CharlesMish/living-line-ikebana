@@ -1,6 +1,7 @@
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
+import { createReed, REED_VERSION } from "./reed.ts";
 import { createSingleFlower, SINGLE_FLOWER_VERSION } from "./singleFlower.ts";
 import type { Vec3 } from "./math.ts";
 import { GENERATOR_VERSION, type PlantGraph } from "./types.ts";
@@ -59,6 +60,11 @@ const singleFlowerV1: GeneratorDefinition = Object.freeze({
   generate: createSingleFlower,
 });
 
+const reedV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: REED_VERSION,
+  generate: createReed,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -67,14 +73,21 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   leafyShootV1,
   bareBranchV1,
   singleFlowerV1,
+  reedV1,
 ]);
 
-/** Provisional Round 2 catalog order: flowering → leafy → bare-branch → single-flower. */
+/**
+ * Provisional catalog. Round 2 order is unchanged: flowering → leafy →
+ * bare-branch → single-flower. `reed` is appended for this candidate's
+ * playtest. Stable workbench profiles do not list it. Dropping only the
+ * catalog entry below leaves `reed-v1` loadable.
+ */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
   Object.freeze({ materialId: "leafy-shoot", generator: leafyShootV1 }),
   Object.freeze({ materialId: "bare-branch", generator: bareBranchV1 }),
   Object.freeze({ materialId: "single-flower", generator: singleFlowerV1 }),
+  Object.freeze({ materialId: "reed", generator: reedV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

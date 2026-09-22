@@ -11,3 +11,5 @@ export const BARE_RESPONSE = Object.freeze({
   trunk: 0.86, answering: 0.66, counter: 0.60, distal: 0.50, spur: 0.42,
 });
 export const SINGLE_FLOWER_RESPONSE = Object.freeze({ stem: 0.46, stalk: 0.18 });
+/** One culm. More yielding than flowering wood (0.72), less than a leafy stem (0.39). */
+export const REED_RESPONSE = Object.freeze({ culm: 0.56 });

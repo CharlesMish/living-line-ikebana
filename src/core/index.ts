@@ -14,3 +14,4 @@ export * from "./validation.ts";
 export * from "./leafyShoot.ts";
 export * from "./bareBranch.ts";
 export * from "./singleFlower.ts";
+export * from "./reed.ts";

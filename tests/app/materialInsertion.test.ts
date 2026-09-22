@@ -264,3 +264,26 @@ test("cancelled single-flower insertion consumes no ordinal and writes no save",
   assert.equal(saves.length, 1);
   assert.equal(coordinator.getDocumentSnapshot().plants.get("plant-1").generatorVersion, "single-flower-v1");
 });
+
+test("cancelled reed insertion consumes no ordinal and writes no save", () => {
+  const saves = [];
+  const coordinator = new TransactionCoordinator(createDomainAdapters(), {
+    plants: new Map(), camera: canonicalCameraPose("front"),
+    selectedPlantId: null, successfulPlantOrdinal: 0,
+  }, { onAutosave: event => saves.push(event) });
+  const prepared = prepareMaterialInsertionForApp("reed", 0);
+  assert.ok(prepared.ok);
+  assert.equal(prepared.graph.generatorVersion, "reed-v1");
+  assert.equal(prepared.graph.branches.size, 1);
+  assert.equal(prepared.graph.organs.size, 0);
+  coordinator.beginInsert("cancel-reed", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.pointerCancel("cancel-reed");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
+  assert.equal(coordinator.getDocumentSnapshot().plants.size, 0);
+  assert.equal(saves.length, 0);
+  coordinator.beginInsert("seat-reed", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.release("seat-reed");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+  assert.equal(saves.length, 1);
+  assert.equal(coordinator.getDocumentSnapshot().plants.get("plant-1").generatorVersion, "reed-v1");
+});

@@ -11,3 +11,5 @@ export const BARE_RESPONSE = Object.freeze({
   trunk: 0.86, answering: 0.66, counter: 0.60, distal: 0.50, spur: 0.42,
 });
 export const SINGLE_FLOWER_RESPONSE = Object.freeze({ stem: 0.46, stalk: 0.18 });
+/** Supple cane: more yielding than flowering wood (0.72), less ribbon-like than the leafy stem (0.39). */
+export const ARCHING_TRAILER_RESPONSE = Object.freeze({ cane: 0.5, stalk: 0.18 });

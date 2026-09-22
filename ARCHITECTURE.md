@@ -24,7 +24,9 @@ The behavioral authority for identity, editing, cancellation, targeting, and per
 `generatorSupport.ts` owns deterministic chain, attachment-frame and branch
 construction helpers. `generator.ts` preserves the flowering fixture;
 `leafyShoot.ts` adds a separately versioned structure. `bareBranch.ts` and
-`singleFlower.ts` are additive Round 2 candidates. Generators consume authored
+`singleFlower.ts` are additive Round 2 candidates. `archingTrailer.ts` is an
+additive Round 3 candidate: its rest pose is an authored arch, and edits still
+use the shared single-station solver. Generators consume authored
 response values from `materialResponse.ts` once, persisting `stiffness` in each
 branch. The shared solver still owns all bending.
 

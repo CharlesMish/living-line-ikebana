@@ -186,7 +186,7 @@ test("workbench fixtures and Garden copies isolate a later cut of the candidate"
   const catalogCycle = createWorkbenchFixture("all-registered-materials", 8278, 6);
   assert.deepEqual(catalogCycle.plants.map((plant) => plant.generatorVersion), [
     "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1",
-    "one-branch-v1", "leafy-shoot-v1",
+    "arching-trailer-v1", "one-branch-v1",
   ]);
 
   const values = new Map<string, string>();

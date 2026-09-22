@@ -1,3 +1,4 @@
+import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
@@ -59,6 +60,11 @@ const singleFlowerV1: GeneratorDefinition = Object.freeze({
   generate: createSingleFlower,
 });
 
+const archingTrailerV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: ARCHING_TRAILER_VERSION,
+  generate: createArchingTrailer,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -67,14 +73,20 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   leafyShootV1,
   bareBranchV1,
   singleFlowerV1,
+  archingTrailerV1,
 ]);
 
-/** Provisional Round 2 catalog order: flowering → leafy → bare-branch → single-flower. */
+/**
+ * Provisional catalog order: flowering → leafy → bare-branch → single-flower →
+ * arching-trailer. The trailer is a local Round 3 candidate. Named workbench
+ * profiles stay explicit and do not absorb this entry.
+ */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
   Object.freeze({ materialId: "leafy-shoot", generator: leafyShootV1 }),
   Object.freeze({ materialId: "bare-branch", generator: bareBranchV1 }),
   Object.freeze({ materialId: "single-flower", generator: singleFlowerV1 }),
+  Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

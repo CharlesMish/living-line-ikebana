@@ -264,3 +264,27 @@ test("cancelled single-flower insertion consumes no ordinal and writes no save",
   assert.equal(saves.length, 1);
   assert.equal(coordinator.getDocumentSnapshot().plants.get("plant-1").generatorVersion, "single-flower-v1");
 });
+
+test("cancelled arching-trailer insertion consumes no ordinal and writes no save", () => {
+  const saves = [];
+  const coordinator = new TransactionCoordinator(createDomainAdapters(), {
+    plants: new Map(), camera: canonicalCameraPose("front"),
+    selectedPlantId: null, successfulPlantOrdinal: 0,
+  }, { onAutosave: event => saves.push(event) });
+  const prepared = prepareMaterialInsertionForApp("arching-trailer", 0);
+  assert.ok(prepared.ok);
+  assert.equal(prepared.graph.generatorVersion, "arching-trailer-v1");
+  coordinator.beginInsert("cancel-trailer", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.pointerCancel("cancel-trailer");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
+  assert.equal(coordinator.getDocumentSnapshot().plants.size, 0);
+  assert.equal(saves.length, 0);
+  coordinator.beginInsert("seat-trailer", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.release("seat-trailer");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+  assert.equal(saves.length, 1);
+  const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
+  assert.equal(seated.generatorVersion, "arching-trailer-v1");
+  assert.equal(seated.branches.get("plant-1:trail").stiffness, 0.5);
+  assert.deepEqual(validatePlantGraph(seated), []);
+});

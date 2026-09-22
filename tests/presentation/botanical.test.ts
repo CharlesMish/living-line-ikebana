@@ -92,7 +92,7 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "arching-trailer"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -136,6 +136,9 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   assert.notEqual(stemColors[1], stemColors[2], "bare wood must not inherit leafy stem appearance");
   assert.notEqual(stemColors[0], stemColors[3], "single-flower stem must not inherit woody trunk appearance");
   assert.notEqual(stemColors[1], stemColors[3], "single-flower stem must remain distinct from leafy shoot");
+  assert.notEqual(stemColors[4], stemColors[1], "arching trailer must not inherit the leafy stem color");
+  assert.notEqual(stemColors[4], stemColors[3], "arching trailer must not inherit the single-flower stem color");
+  assert.notEqual(stemColors[4], stemColors[0], "arching trailer must not inherit woody trunk appearance");
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {

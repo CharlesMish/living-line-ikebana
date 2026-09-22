@@ -109,11 +109,12 @@ test("material preparation requires an exact catalog ID without fallback", () =>
   );
 });
 
-test("provisional catalog order is flowering, leafy, bare-branch, then single-flower", () => {
+test("provisional catalog order is flowering, leafy, bare-branch, single-flower, then arching-trailer", () => {
   assert.deepEqual(
     getMaterialDefinitions().map((definition) => definition.materialId),
-    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower"],
+    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "arching-trailer"],
   );
   assert.equal(isSupportedGeneratorVersion("bare-branch-v1"), true);
   assert.equal(isSupportedGeneratorVersion("single-flower-v1"), true);
+  assert.equal(isSupportedGeneratorVersion("arching-trailer-v1"), true);
 });

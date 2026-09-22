@@ -80,6 +80,16 @@ picker contract live in
 [Workbench fixture profiles](development/WORKBENCH_FIXTURE_PROFILES.md).
 `all-registered-materials` is the labeled dynamic catalog cycle.
 
+## Round 3 provisional trailer
+
+`arching-trailer-v1` (`arching-trailer`) is an additive candidate. Its rest pose is
+one slender cane that rises from a normal seated base, then arches across the
+open water toward the rim, with three small leaves on the descending limb.
+Stiffness `0.50` is copied at generation. Aim, bend, and prune stay on the
+shared single-station laws. Named profiles `reference-pair` and `all-four` do
+not include it. The integrator owns the final Materials order and any named
+workbench profile.
+
 ## Earlier palette pause
 
 The consolidated review supersedes the earlier bare-twig-first recommendation.

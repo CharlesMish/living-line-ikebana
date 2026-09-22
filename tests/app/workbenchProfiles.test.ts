@@ -67,13 +67,18 @@ test("adding an unrelated registered material cannot change reference-pair graph
   const allFour = createWorkbenchFixture("all-four", 8278, 6, { remember: false });
   assert.notDeepEqual(dynamic, pair);
   assert.notDeepEqual(liveCatalogDynamic, pair);
-  assert.deepEqual(liveCatalogDynamic, allFour);
+  assert.notDeepEqual(liveCatalogDynamic, allFour);
+  assert.deepEqual(describeFixture(allFour).plantsInIdentityOrder.map((plant) => plant.generatorVersion), [
+    "one-branch-v1", "leafy-shoot-v1", "bare-branch-v1", "single-flower-v1", "one-branch-v1", "leafy-shoot-v1",
+  ]);
+  assert.equal(describeFixture(liveCatalogDynamic).plantsInIdentityOrder[4]?.generatorVersion, "arching-trailer-v1");
   assert.deepEqual(describeFixture(dynamic).plantsInIdentityOrder.map((plant) => plant.id), [
     "plant-1", "plant-2", "plant-3", "plant-4", "plant-5", "plant-6",
   ]);
   assert.equal(describeFixture(pair).plantsInIdentityOrder[2]?.generatorVersion, "one-branch-v1");
   assert.equal(describeFixture(dynamic).plantsInIdentityOrder[2]?.generatorVersion, "bare-branch-v1");
-  assert.equal(describeFixture(dynamic).plantsInIdentityOrder[4]?.generatorVersion, "leafy-shoot-v1");
+  assert.equal(describeFixture(dynamic).plantsInIdentityOrder[4]?.generatorVersion, "arching-trailer-v1");
+  assert.equal(describeFixture(dynamic).plantsInIdentityOrder[5]?.generatorVersion, "leafy-shoot-v1");
   const pairSequence = planWorkbenchCuttings(["flowering-branch", "leafy-shoot"], 8278, 6);
   const dynamicSequence = planWorkbenchCuttings(
     catalog.map((material) => material.materialId),
@@ -82,7 +87,8 @@ test("adding an unrelated registered material cannot change reference-pair graph
   );
   assert.equal(pairSequence[2]?.materialId, "flowering-branch");
   assert.equal(dynamicSequence[2]?.materialId, "bare-branch");
-  assert.equal(dynamicSequence[4]?.materialId, "unrelated-candidate");
+  assert.equal(dynamicSequence[4]?.materialId, "arching-trailer");
+  assert.equal(dynamicSequence[5]?.materialId, "unrelated-candidate");
   assert.notEqual(pairSequence[4]?.materialId, dynamicSequence[4]?.materialId);
 });
 
@@ -132,7 +138,7 @@ test("candidate profiles stay listed and disabled until their materials are in t
 test("this integration catalog makes named candidate profiles available to the picker", () => {
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
-    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower",
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "arching-trailer",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);

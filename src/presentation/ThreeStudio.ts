@@ -860,6 +860,29 @@ export class ThreeStudio {
     }
   }
 
+  setVerticalFieldOfView(degrees: number) {
+    if (!Number.isFinite(degrees) || degrees <= 1 || degrees >= 179) return;
+    if (this.camera.fov === degrees) return;
+    this.camera.fov = degrees;
+    this.camera.updateProjectionMatrix();
+    this.requestRender();
+  }
+
+  getVerticalFieldOfView() {
+    return this.camera.fov;
+  }
+
+  /** Comparison passes 1 so neither arrangement is fit or rescaled to its pane. */
+  setBotanicalWorldScale(scale: number) {
+    if (!Number.isFinite(scale) || scale <= 0) return;
+    this.botanicalRoot.scale.setScalar(scale);
+    this.requestRender();
+  }
+
+  getBotanicalWorldScale() {
+    return this.botanicalRoot.scale.x;
+  }
+
   removeGraph(plantId: string) {
     const visual = this.plants.get(plantId);
     if (!visual) return;

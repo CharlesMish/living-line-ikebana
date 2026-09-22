@@ -44,4 +44,20 @@ cancel, or leaving should drop the temporary view without changing the Garden
 backup or the working bowl.
 
 Physical-phone observations for comparison are still open. Screenshots from a
-resized browser are not that pass.
+resized browser are not that phone pass.
+
+## Browser evidence from this pass
+
+Chrome headless, SwiftShader, seeded Garden. Left title: “A BROAD YELLOW FLOWERING BRANCH, KEPT HIGH, BEFORE THE LOWER REVISION”. Right title: “Low”.
+
+- Side by side at 900×900: title text 35px vs 17px. Both canvases 396×491 CSS pixels, both drawing buffers 398×493.
+- Stacked at 320×640: title text 53px vs 17px. Both canvases 254×135, both buffers 256×137.
+
+Pointer exercise on the left canvas, synthetic mouse events:
+
+- Owner pointer down and move were handled. The pane image changed.
+- A second pointer down and move were ignored. The pane image stayed on the owner’s frame.
+- Pointer cancel restored the image from before the drag.
+- Escape during a second drag was cancelled, the comparison stayed open, and the image returned to the start.
+- Window blur during a third drag restored that same start image.
+- Leave comparison wrote nothing to `ikebana-web-alpha:garden-v1` and reopened Garden.

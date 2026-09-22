@@ -1,9 +1,20 @@
 import type { Branch, CutPlan, PlantGraph } from "../core/types.ts";
 
 export interface CraftCue {
-  kind: "aim" | "bend" | "base" | "cut";
+  kind: "aim" | "bend" | "base" | "cut" | "roll";
   title: string;
   detail: string;
+}
+
+/** Experimental cue. The bloom turns around its stalk; the stalk does not move. */
+export function rollCue(acquired = false): CraftCue {
+  return {
+    kind: "roll",
+    title: "Roll flower face",
+    detail: acquired
+      ? "Around the stalk · release to keep it."
+      : "Drag sideways. The stalk stays put.",
+  };
 }
 
 export function materialName(branch: Branch): string {

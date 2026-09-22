@@ -4,6 +4,7 @@ import {
   bendBranch,
   clonePlantGraph,
   previewPrune,
+  rollBloomSpin,
   sampleBranch,
   translatePlantBase,
   translatePendingGraph,
@@ -41,12 +42,17 @@ export interface PruneInput {
   readonly materialDistance: number;
 }
 
+export interface RollInput {
+  readonly deltaRadians: number;
+}
+
 export interface BotanicalInputMap<CameraInput> extends OperationInputMap {
   insert: PendingPlacementInput;
   aim: AimInput;
   bend: BendInput;
   base: BaseInput;
   prune: PruneInput;
+  roll: RollInput;
   camera: CameraInput;
 }
 
@@ -107,6 +113,7 @@ export function createBotanicalTransactionAdapters<Camera, CameraInput>(
     previewPrune: (snapshot, spec, input) =>
       previewPrune(snapshot, spec.branchId, input.materialDistance),
     applyPrune,
+    roll: (snapshot, spec, input) => rollBloomSpin(snapshot, spec.organId, input.deltaRadians),
     updateCamera: (snapshot, _spec, input) => camera.update(snapshot, input),
   };
 }

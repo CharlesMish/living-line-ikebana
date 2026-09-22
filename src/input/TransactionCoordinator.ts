@@ -25,6 +25,7 @@ import type {
   Posture,
   PresentationState,
   PruneSpec,
+  RollSpec,
   Tool,
   TransactionAdapters,
   TransactionKind,
@@ -76,6 +77,13 @@ interface PruneActive<Graph, PrunePlan, Context> extends BaseActive {
   plan: PrunePlan;
 }
 
+interface RollActive<Graph, Context> extends BaseActive {
+  readonly kind: "roll";
+  readonly spec: RollSpec<Context>;
+  readonly snapshot: Graph;
+  preview: Graph;
+}
+
 interface CameraActive<Camera, Context> extends BaseActive {
   readonly kind: "camera";
   readonly spec: CameraSpec<Context>;
@@ -94,6 +102,7 @@ type ActiveTransaction<
   | BendActive<Graph, Contexts["bend"]>
   | BaseMoveActive<Graph, Contexts["base"]>
   | PruneActive<Graph, PrunePlan, Contexts["prune"]>
+  | RollActive<Graph, Contexts["roll"]>
   | CameraActive<Camera, Contexts["camera"]>;
 
 /**
@@ -447,6 +456,45 @@ export class TransactionCoordinator<
     return OK;
   }
 
+  public beginRoll(
+    owner: OwnerToken,
+    spec: RollSpec<Contexts["roll"]>,
+    input: Inputs["roll"],
+  ): CommandResult {
+    const graph = this.acquireGraph(spec.plantId, "shape", false);
+    if (!graph.ok) return graph.result;
+    const frozenSpec = Object.freeze({ ...spec });
+    const preview = this.adapters.roll(
+      this.adapters.cloneGraph(graph.snapshot),
+      frozenSpec,
+      input,
+    );
+    this.selectedPlantId = spec.plantId;
+    this.active = {
+      kind: "roll",
+      owner,
+      spec: frozenSpec,
+      snapshot: graph.snapshot,
+      preview: this.adapters.cloneGraph(preview),
+    };
+    this.changed();
+    return OK;
+  }
+
+  public updateRoll(owner: OwnerToken, input: Inputs["roll"]): CommandResult {
+    const active = this.requireOwned("roll", owner);
+    if (!active.ok) return active.result;
+    active.value.preview = this.adapters.cloneGraph(
+      this.adapters.roll(
+        this.adapters.cloneGraph(active.value.snapshot),
+        active.value.spec,
+        input,
+      ),
+    );
+    this.changed();
+    return OK;
+  }
+
   public updateCamera(owner: OwnerToken, input: Inputs["camera"]): CommandResult {
     const active = this.requireOwned("camera", owner);
     if (!active.ok) return active.result;
@@ -489,7 +537,8 @@ export class TransactionCoordinator<
       }
       case "aim":
       case "bend":
-      case "base": {
+      case "base":
+      case "roll": {
         this.plants.set(
           active.spec.plantId,
           this.adapters.cloneGraph(active.preview),
@@ -740,6 +789,13 @@ export class TransactionCoordinator<
           branchId: active.spec.branchId,
           acquiredMaterialDistance: active.spec.acquiredMaterialDistance,
         });
+      case "roll":
+        return Object.freeze({
+          kind: "roll",
+          owner: active.owner,
+          plantId: active.spec.plantId,
+          organId: active.spec.organId,
+        });
       case "camera":
         return Object.freeze({ kind: "camera", owner: active.owner });
     }
@@ -759,6 +815,7 @@ export class TransactionCoordinator<
       case "aim":
       case "bend":
       case "base":
+      case "roll":
         return Object.freeze({
           kind: active.kind,
           plantId: active.spec.plantId,

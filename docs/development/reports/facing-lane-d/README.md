@@ -3,7 +3,7 @@
 Baseline `cf1cf73c267ca9cd7d3b93961f7061708e5a2b37`.
 Requested model: Grok 4.7 high thinking. Run identity reports `originalModelName: grok-4.7`.
 
-This note preserves the behavioral contract. It does not change generators, gestures, or persistence. The optional roll prototype is a separate branch.
+This note preserves the behavioral contract. Generators, gestures, and persistence are unchanged. Bloom-face roll stays on draft PR #29 and is outside this diagnosis.
 
 ## What was measured
 
@@ -49,7 +49,7 @@ The bloom and the upper main stem occupy the same screen neighborhood. A 30px sh
 
 Three committed aims. The best Front angle in the sequence was 32.35° (`03-task1-best-front.png`). The third drag, made while looking at Front, left Front at 41.72° and turned the face to 12.58° from Three-quarter (`04-task1-front-final.png`, `05-task1-three-quarter-final.png`). The correction did not converge. The main stem never moved.
 
-A sampled search of front-view drags on the same pedicel can reach about 2.5° from Front. That pose was not found by eye in this short sequence.
+A sampled search of front-view drags on the same pedicel can reach about 2.5° from Front. That pose was not found by eye in this short sequence. Reachability, below, keeps that search apart from the play.
 
 ## Task 2 — face the bloom toward Three-quarter
 
@@ -66,7 +66,7 @@ A coarse hover grid on that view found 9 "Aim flower stem" cells, 26 "Aim main s
 
 Four committed aims, plus two view changes. The best Three-quarter angle was 50.53° (`07-task2-best-three-quarter.png`). The first drag made the face worse (`06-task2-first-drag.png`). The sequence did not face Three-quarter.
 
-A sampled pedicel aim with a free 3D target can reach about 10.7° from Three-quarter, and an optimized two-step view-plane sequence can reach about 7.5°. Those are upper bounds on the gesture, not poses this play found.
+A sampled pedicel aim with a free 3D target can reach about 10.7° from Three-quarter, and an optimized two-step view-plane sequence can reach about 7.5°. Those are poses the search can reach. This short play did not find them.
 
 ## Task 3 — an intermediate facing, stem line kept
 
@@ -81,23 +81,17 @@ Before the first drag, a press at `(650,220)`, on the bloom's screen area, acqui
 
 Two committed aims. Leaves did not move. The final pose (`11-task3-three-quarter-intermediate.png`, `12-task3-front-intermediate.png`) is between the saved 57°/98° pair and a single-camera face, and it still favors Three-quarter (37°) over Front (56°). The first aim favored Front (35°/65°, `09-task3-front-one-aim.png`, `10-task3-three-quarter-one-aim.png`). The player can slide along that tradeoff by moving the flower head. The main stem stays put. The bisector, about 22° from each camera, was not reached.
 
-## What the existing verbs can and cannot turn
+## Conclusion
 
-Pedicel aim is a rigid rotation of the flower stalk about its root. Any sequence of those aims is still one rigid motion of the original stalk. The bloom's heading around the stalk tangent stays the heading it was generated with. `spin` is not written. The face normal stays perpendicular to the stalk tangent. Facing the camera means pointing the stalk somewhere else so that fixed heading happens to look outward.
+Two separate questions. **Reachability** is what Aim and the other current player controls can geometrically do to this bloom. **Practical control** is what a player could select and drive in the short sessions above.
 
-That is why the stem can stay still while the flower head moves about a unit, and why a drag that looks helpful in one view can face the other camera instead.
+### Reachability
 
-Organ spin, with this specimen's stalk held fixed and measured through the same production group:
+The viewing rays through this bloom are 43.90° apart. One face normal cannot lie within about 21.95° of both cameras at once. The angle between the camera-forward axes, ignoring the bloom, is 41.94°. The specimen figure uses the rays through the bloom. The bound belongs to these two cameras and this flower's position, and it remains for any later edit that still has a single face.
 
-| Roll of bloom spin only | Front | Three-quarter |
-| --- | --- | --- |
-| Best Front | 18.21° | 42.99° |
-| Best Three-quarter | 47.54° | 4.65° |
-| Best simultaneous | 26.58° | 23.18° |
+Pedicel aim is a rigid rotation of the flower stalk about its root. A sequence of those aims is still one rigid motion of the original stalk. Bloom `spin` stays at the generated 0.1756 rad. The face stays perpendicular to the stalk tangent. The main stem can stay fixed while the flower head moves, so a drag that looks helpful in one view can present the face to the other camera.
 
-Spin turns the face in the plane perpendicular to the stalk. This stalk does not lie across the Front ray, so spin cannot square the face to Front. The simultaneous result is a few degrees past the 21.95° floor because the stalk's perpendicular plane does not contain the bisector.
-
-Sampled pedicel aim (stem fixed, head free to move), 1500 directions:
+Sampled pedicel aim, stem fixed, head free, 1500 directions, measured with the production organ group:
 
 | Search | Front | Three-quarter | Stem moved |
 | --- | --- | --- | --- |
@@ -105,18 +99,44 @@ Sampled pedicel aim (stem fixed, head free to move), 1500 directions:
 | Best Three-quarter | 43.97° | 10.71° | 0 |
 | Best simultaneous | 18.24° | 25.52° | 0 |
 
-No sample put both views under 25°. Stem aim moved the stem by about 7 units and was worse (best simultaneous about 37°). A coarse stem-bend sample did not beat pedicel aim.
+No sample put both views under 25°. A search of front-view drags on the same pedicel reaches about 2.5° from Front. A free 3D pedicel target reaches about 10.7° from Three-quarter, and an optimized two-step view-plane sequence reaches about 7.5°. Each of those near-faces leaves the other camera near 40°.
 
-## Recommendation
+Stem aim moved the stem by about 7 units. Its best simultaneous facing was about 37°. A coarse stem-bend sample did not beat pedicel aim. Changing the canonical view changes the plane of the drag. It leaves the bloom's heading around the stalk where generation put it.
 
-**Defer.** Do not ship a roll control as the facing fix.
+On this specimen, Aim can place the bloom near Front or nearer Three-quarter, with the stem held and the head moved. The same aim leaves the other view far off. The best compromise in the sample, 18.24° and 25.52°, sits against the 43.90° dual-view floor.
 
-The short play failed to face Front (best 32°) and failed to face Three-quarter (best 50°). Selection is part of the failure: the cue is the only way to tell the flower stem from the main stem, and from Three-quarter the bloom is easy to miss. That supports looking at the missing twist. It does not show that a new verb would make either camera easy to face, and it does not remove the 43.9° gap between these two viewing rays.
+### Practical control
 
-Three different rotations:
+The short sessions stayed well short of those poses.
 
-- **Bloom heading.** Change that organ's persistent `spin`. The production group already applies it as a rotation around the supporting tangent (local Y). The stalk centerline, the stem, and every other organ stay where they are. The face can only sweep the plane perpendicular to the stalk.
-- **Stalk twist.** Rotate the pedicel's `referenceNormal` around its tangent. The centerline stays, the tube's surface twist changes, and the bloom turns because facing is the transported frame plus spin.
-- **Whole-cutting roll.** Rotate the plant around the stem. Leaves and the flower head swing off the line.
+The bloom, the flower stem, and the upper main stem share one screen neighborhood. A 30px shift changes the cue from "Aim flower stem" to "Aim main stem." On Three-quarter, a hover grid found 9 "Aim flower stem" cells, 26 "Aim main stem" cells, and 36 "Aim leaf stem" cells. The edge-on bloom is a thin target among the stem and the two leafy shoots.
 
-The gap in this session is the first of those: the face cannot turn without the flower head moving. A prototype of that bloom-spin edit is on a separate branch, behind `?experiment=organ-roll`, and is not part of default play. Persistence is the existing organ `spin` field. No schema change. Cancellation must restore the acquired spin. The prototype is for review of the twist. The recommendation remains defer.
+Before Task 3's first drag, a press at `(650,220)` on the bloom's screen area acquired "Aim main stem" at material distance 4.69, near the top of the 5.31 stem (`08-task3-stem-miss.png`). Escape restored the snapshot. Status: "Kept as it was." Hash remained `f14e50d4`.
+
+Committed play, each from a fresh copy:
+
+- Front, three flower-stem aims. Best Front angle 32.35° (`03-task1-best-front.png`), with Three-quarter at 52.70°. The third drag, made while looking at Front, left Front at 41.72° and the face 12.58° from Three-quarter (`04-task1-front-final.png`, `05-task1-three-quarter-final.png`). The main stem never moved. That 32° frame is more open than the saved 57° pose, and it is still far from the about 2.5° pose a front-view drag search can reach.
+- Three-quarter, four flower-stem aims and two view changes. Best Three-quarter angle 50.53° (`07-task2-best-three-quarter.png`). The first drag moved the face to 101.38° (`06-task2-first-drag.png`).
+- Intermediate, stem kept, two flower-stem aims. Final 55.64° from Front and 37.40° from Three-quarter (`12-task3-front-intermediate.png`, `11-task3-three-quarter-intermediate.png`). The flower head moved about a unit. Leaves did not move. The bisector, about 22° from each camera, was not reached.
+
+A player can keep the main stem and slide the head along a Front / Three-quarter tradeoff. In these short sessions, selection among bloom, flower stem, and main stem stayed ambiguous, and the committed aims did not arrive at the near-faces the search shows are reachable.
+
+### Recommendation
+
+**Defer** shipping a roll control.
+
+Current Aim does not give practical dual-view facing control on this specimen. Short play can take the main stem when the press was aimed at the bloom, Escape puts that grab back, and the committed aims stayed far from the single-view poses Aim can reach. The 43.90° gap between the viewing rays remains a limit on one face being close to both cameras at once.
+
+Roll is a different degree of freedom: spin about the supporting tangent, the organ group's local Y. With this stalk held fixed and measured through the same production group:
+
+| Spin about the supporting tangent | Front | Three-quarter |
+| --- | --- | --- |
+| Best Front | 18.21° | 42.99° |
+| Best Three-quarter | 47.54° | 4.65° |
+| Best simultaneous | 26.58° | 23.18° |
+
+The face turns in the plane perpendicular to the stalk, and the head stays put. On this saved stalk that plane does not contain the Front ray, so spinning the saved pose does not square the face to Front. The simultaneous pair sits a few degrees outside the 21.95° dual-view floor because that plane does not contain the bisector. Those figures describe the missing motion. They are not a result of player Aim.
+
+Stalk twist (`referenceNormal` around the pedicel tangent) and a roll of the whole cutting are further, different motions. This diagnosis does not test them.
+
+The spin edit stays experimental on draft PR #29, behind `?experiment=organ-roll`. This note does not add that control or change persistence. A later review of #29 can still ship it, revise it, or drop it. The reason to defer here is the split above: the short Aim sessions are a practical-control result, and the missing spin is a separate question.

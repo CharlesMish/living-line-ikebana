@@ -6,7 +6,7 @@ import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/a
 import { sampleMaterialFrame } from "../core/frames.ts";
 import type { Vec3 } from "../core/math.ts";
 import type { Branch, CutPlan, Organ, PlantGraph } from "../core/types.ts";
-import { bloomPetalCount, botanicalSeed, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
+import { bloomSurfaceProfile, botanicalSeed, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
 import {
   disposeObject,
   splitBranchAtMaterialDistance,
@@ -582,37 +582,60 @@ export class ThreeStudio {
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
       const bloom = appearance.bloom;
-      const openFace = bloom.form === "open-face";
-      const petalCount = bloomPetalCount(bloom.form);
+      const profile = bloomSurfaceProfile(bloom.form);
       const petalMaterial = bodyMaterial(bloom.color, bloom.roughness, true);
-      for (let index = 0; index < petalCount; index += 1) {
-        const angle = (index / petalCount) * Math.PI * 2;
-        const petal = new THREE.Mesh(
-          createBloomPetalGeometry(botanicalSeed(`${organ.id}:petal-${index}`, seed), bloom.form),
+      if (bloom.form === "tufted") {
+        // One instanced tuft, still owned by this organ and its supporting branch.
+        const petals = new THREE.InstancedMesh(
+          createBloomPetalGeometry(seed, bloom.form),
           petalMaterial,
+          profile.petalCount,
         );
-        petal.rotation.z = angle;
-        petal.castShadow = !pending;
-        group.add(petal);
+        const petalMatrix = new THREE.Matrix4();
+        const petalQuaternion = new THREE.Quaternion();
+        for (let index = 0; index < profile.petalCount; index += 1) {
+          petalQuaternion.setFromAxisAngle(
+            new THREE.Vector3(0, 0, 1),
+            (index / profile.petalCount) * Math.PI * 2,
+          );
+          petalMatrix.compose(new THREE.Vector3(), petalQuaternion, new THREE.Vector3(1, 1, 1));
+          petals.setMatrixAt(index, petalMatrix);
+        }
+        petals.instanceMatrix.needsUpdate = true;
+        petals.castShadow = !pending;
+        group.add(petals);
+      } else {
+        for (let index = 0; index < profile.petalCount; index += 1) {
+          const angle = (index / profile.petalCount) * Math.PI * 2;
+          const petal = new THREE.Mesh(
+            createBloomPetalGeometry(botanicalSeed(`${organ.id}:petal-${index}`, seed), bloom.form),
+            petalMaterial,
+          );
+          petal.rotation.z = angle;
+          petal.castShadow = !pending;
+          group.add(petal);
+        }
       }
       group.add(new THREE.Mesh(createCalyxGeometry(seed, bloom.form), bodyMaterial(0x57734d, 0.82, true)));
       const center = new THREE.Mesh(
-        new THREE.SphereGeometry(openFace ? 0.11 : 0.09, 12, 8),
-        bodyMaterial(openFace ? 0xc49a58 : 0xb68840, 0.78),
+        new THREE.SphereGeometry(profile.centerRadius, 12, 8),
+        bodyMaterial(profile.centerColor, 0.78),
       );
-      center.scale.z = openFace ? 0.36 : 0.52;
-      center.position.z = openFace ? 0.042 : 0.07;
+      center.scale.z = profile.centerScaleZ;
+      center.position.z = profile.centerZ;
       group.add(center);
       // One instanced mesh adds a quiet ring of anthers, owned by this bloom.
       const anthers = new THREE.InstancedMesh(
-        new THREE.SphereGeometry(openFace ? 0.022 : 0.019, 6, 4), bodyMaterial(0xe0bd72, 0.8), 12,
+        new THREE.SphereGeometry(profile.antherRadius, 6, 4), bodyMaterial(0xe0bd72, 0.8), profile.antherCount,
       );
       const antherMatrix = new THREE.Matrix4();
-      const antherRing = openFace ? 0.155 : 0.105;
-      const antherZ = openFace ? 0.05 : 0.085;
-      for (let index = 0; index < 12; index += 1) {
-        const angle = index * Math.PI / 6;
-        antherMatrix.makeTranslation(Math.cos(angle) * antherRing, Math.sin(angle) * antherRing, antherZ);
+      for (let index = 0; index < profile.antherCount; index += 1) {
+        const angle = (index / profile.antherCount) * Math.PI * 2;
+        antherMatrix.makeTranslation(
+          Math.cos(angle) * profile.antherRing,
+          Math.sin(angle) * profile.antherRing,
+          profile.antherZ,
+        );
         anthers.setMatrixAt(index, antherMatrix);
       }
       anthers.instanceMatrix.needsUpdate = true;
@@ -835,6 +858,29 @@ export class ThreeStudio {
     for (const plantId of [...this.plants.keys()]) {
       if (!retained.has(plantId)) this.removeGraph(plantId);
     }
+  }
+
+  setVerticalFieldOfView(degrees: number) {
+    if (!Number.isFinite(degrees) || degrees <= 1 || degrees >= 179) return;
+    if (this.camera.fov === degrees) return;
+    this.camera.fov = degrees;
+    this.camera.updateProjectionMatrix();
+    this.requestRender();
+  }
+
+  getVerticalFieldOfView() {
+    return this.camera.fov;
+  }
+
+  /** Comparison passes 1 so neither arrangement is fit or rescaled to its pane. */
+  setBotanicalWorldScale(scale: number) {
+    if (!Number.isFinite(scale) || scale <= 0) return;
+    this.botanicalRoot.scale.setScalar(scale);
+    this.requestRender();
+  }
+
+  getBotanicalWorldScale() {
+    return this.botanicalRoot.scale.x;
   }
 
   removeGraph(plantId: string) {

@@ -1,0 +1,641 @@
+{
+  "browser": "Google Chrome headless, SwiftShader, Linux. Not a physical phone.",
+  "comparisons": [
+    {
+      "label": "all-four × 6",
+      "fixtureId": "all-four",
+      "profileId": "all-four",
+      "seed": 8278,
+      "count": 6,
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower"
+        ],
+        "assignedMaterialIds": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "flowering-branch",
+          "leafy-shoot"
+        ],
+        "countsByMaterialId": {
+          "flowering-branch": 2,
+          "leafy-shoot": 2,
+          "bare-branch": 1,
+          "single-flower": 1
+        },
+        "balancedEqualCopies": false,
+        "warnings": [
+          "A six-cutting four-material cycle is 2+2+1+1 in sequence order, not two of each."
+        ]
+      },
+      "calls": 356,
+      "triangles": 52414,
+      "geometries": 264,
+      "textures": 2,
+      "programs": 13,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 55,
+      "organVisualCount": 37,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "reference-pair × 6",
+      "fixtureId": "reference-pair",
+      "profileId": "reference-pair",
+      "seed": 8278,
+      "count": 6,
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flowering-branch",
+          "leafy-shoot"
+        ],
+        "assignedMaterialIds": [
+          "flowering-branch",
+          "leafy-shoot",
+          "flowering-branch",
+          "leafy-shoot",
+          "flowering-branch",
+          "leafy-shoot"
+        ],
+        "countsByMaterialId": {
+          "flowering-branch": 3,
+          "leafy-shoot": 3
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 463,
+      "triangles": 65078,
+      "geometries": 343,
+      "textures": 2,
+      "programs": 13,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 69,
+      "organVisualCount": 51,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "reed × 6",
+      "fixtureId": "reed",
+      "profileId": "reed",
+      "seed": 8278,
+      "count": 6,
+      "materialSequence": [
+        "reed"
+      ],
+      "composition": {
+        "materialSequence": [
+          "reed"
+        ],
+        "assignedMaterialIds": [
+          "reed",
+          "reed",
+          "reed",
+          "reed",
+          "reed",
+          "reed"
+        ],
+        "countsByMaterialId": {
+          "reed": 6
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 25,
+      "triangles": 12218,
+      "geometries": 19,
+      "textures": 2,
+      "programs": 8,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 6,
+      "organVisualCount": 0,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "flower-volume × 1",
+      "fixtureId": "flower-volume",
+      "profileId": "flower-volume",
+      "seed": 8278,
+      "count": 1,
+      "materialSequence": [
+        "flower-volume"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flower-volume"
+        ],
+        "assignedMaterialIds": [
+          "flower-volume"
+        ],
+        "countsByMaterialId": {
+          "flower-volume": 1
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 69,
+      "triangles": 20330,
+      "geometries": 54,
+      "textures": 2,
+      "programs": 14,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 8,
+      "organVisualCount": 7,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "flower-volume × 12",
+      "fixtureId": "flower-volume",
+      "profileId": "flower-volume",
+      "seed": 8278,
+      "count": 12,
+      "materialSequence": [
+        "flower-volume"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flower-volume"
+        ],
+        "assignedMaterialIds": [
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume",
+          "flower-volume"
+        ],
+        "countsByMaterialId": {
+          "flower-volume": 12
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 751,
+      "triangles": 161570,
+      "geometries": 571,
+      "textures": 2,
+      "programs": 14,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 96,
+      "organVisualCount": 84,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "arching-trailer × 1",
+      "fixtureId": "arching-trailer",
+      "profileId": "arching-trailer",
+      "seed": 8278,
+      "count": 1,
+      "materialSequence": [
+        "arching-trailer"
+      ],
+      "composition": {
+        "materialSequence": [
+          "arching-trailer"
+        ],
+        "assignedMaterialIds": [
+          "arching-trailer"
+        ],
+        "countsByMaterialId": {
+          "arching-trailer": 1
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 31,
+      "triangles": 10462,
+      "geometries": 24,
+      "textures": 2,
+      "programs": 9,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 4,
+      "organVisualCount": 3,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "references-plus-arching-trailer × 6",
+      "fixtureId": "references-plus-arching-trailer",
+      "profileId": "references-plus-arching-trailer",
+      "seed": 8278,
+      "count": 6,
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot",
+        "arching-trailer"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flowering-branch",
+          "leafy-shoot",
+          "arching-trailer"
+        ],
+        "assignedMaterialIds": [
+          "flowering-branch",
+          "leafy-shoot",
+          "arching-trailer",
+          "flowering-branch",
+          "leafy-shoot",
+          "arching-trailer"
+        ],
+        "countsByMaterialId": {
+          "flowering-branch": 2,
+          "leafy-shoot": 2,
+          "arching-trailer": 2
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 359,
+      "triangles": 51826,
+      "geometries": 265,
+      "textures": 2,
+      "programs": 13,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 54,
+      "organVisualCount": 40,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Corrected capture. Workbench counts are 1, 2, 6, and 12, so this scene is six cuttings (two of each), not three. Resource counts are not FPS."
+    },
+    {
+      "label": "round3-three × 6",
+      "fixtureId": "round3-three",
+      "profileId": "round3-three",
+      "seed": 8278,
+      "count": 6,
+      "materialSequence": [
+        "reed",
+        "flower-volume",
+        "arching-trailer"
+      ],
+      "composition": {
+        "materialSequence": [
+          "reed",
+          "flower-volume",
+          "arching-trailer"
+        ],
+        "assignedMaterialIds": [
+          "reed",
+          "flower-volume",
+          "arching-trailer",
+          "reed",
+          "flower-volume",
+          "arching-trailer"
+        ],
+        "countsByMaterialId": {
+          "reed": 2,
+          "flower-volume": 2,
+          "arching-trailer": 2
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 185,
+      "triangles": 40690,
+      "geometries": 139,
+      "textures": 2,
+      "programs": 14,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 26,
+      "organVisualCount": 20,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "round3-palette × 6",
+      "fixtureId": "round3-palette",
+      "profileId": "round3-palette",
+      "seed": 8278,
+      "count": 6,
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "reed",
+        "flower-volume",
+        "arching-trailer"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed",
+          "flower-volume",
+          "arching-trailer"
+        ],
+        "assignedMaterialIds": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed",
+          "flower-volume"
+        ],
+        "countsByMaterialId": {
+          "flowering-branch": 1,
+          "leafy-shoot": 1,
+          "bare-branch": 1,
+          "single-flower": 1,
+          "reed": 1,
+          "flower-volume": 1
+        },
+        "balancedEqualCopies": true,
+        "warnings": [
+          "This count omits arching-trailer because the cycle is longer than the cutting count."
+        ]
+      },
+      "calls": 269,
+      "triangles": 46846,
+      "geometries": 201,
+      "textures": 2,
+      "programs": 14,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 41,
+      "organVisualCount": 27,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "round3-palette × 12",
+      "fixtureId": "round3-palette",
+      "profileId": "round3-palette",
+      "seed": 8278,
+      "count": 12,
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "reed",
+        "flower-volume",
+        "arching-trailer"
+      ],
+      "composition": {
+        "materialSequence": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed",
+          "flower-volume",
+          "arching-trailer"
+        ],
+        "assignedMaterialIds": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed",
+          "flower-volume",
+          "arching-trailer",
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed"
+        ],
+        "countsByMaterialId": {
+          "flowering-branch": 2,
+          "leafy-shoot": 2,
+          "bare-branch": 2,
+          "single-flower": 2,
+          "reed": 2,
+          "flower-volume": 1,
+          "arching-trailer": 1
+        },
+        "balancedEqualCopies": false,
+        "warnings": [
+          "This count does not give equal copies of each listed material."
+        ]
+      },
+      "calls": 493,
+      "triangles": 76334,
+      "geometries": 365,
+      "textures": 2,
+      "programs": 14,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 78,
+      "organVisualCount": 50,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    },
+    {
+      "label": "reed × 1",
+      "fixtureId": "reed",
+      "profileId": "reed",
+      "seed": 8278,
+      "count": 1,
+      "materialSequence": [
+        "reed"
+      ],
+      "composition": {
+        "materialSequence": [
+          "reed"
+        ],
+        "assignedMaterialIds": [
+          "reed"
+        ],
+        "countsByMaterialId": {
+          "reed": 1
+        },
+        "balancedEqualCopies": true,
+        "warnings": []
+      },
+      "calls": 10,
+      "triangles": 8278,
+      "geometries": 9,
+      "textures": 2,
+      "programs": 8,
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800
+      },
+      "pixelRatio": 1,
+      "branchVisualCount": 1,
+      "organVisualCount": 0,
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "devicePixelRatio": 1,
+      "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+    }
+  ],
+  "note": "Draw calls and triangles are resource counts from one render. They are not FPS.",
+  "correction": "references-plus-arching-trailer was first downloaded at count 1 because count 3 is not a workbench option. Replaced with count 6 on the same viewport."
+}

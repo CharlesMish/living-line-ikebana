@@ -22,6 +22,9 @@ export const FLOWERING_BRANCH_MATERIAL_ID = "flowering-branch";
 export const LEAFY_SHOOT_MATERIAL_ID = "leafy-shoot";
 export const BARE_BRANCH_MATERIAL_ID = "bare-branch";
 export const SINGLE_FLOWER_MATERIAL_ID = "single-flower";
+export const REED_MATERIAL_ID = "reed";
+export const FLOWER_VOLUME_MATERIAL_ID = "flower-volume";
+export const ARCHING_TRAILER_MATERIAL_ID = "arching-trailer";
 
 export const REFERENCE_MATERIAL_IDS = [
   FLOWERING_BRANCH_MATERIAL_ID,
@@ -36,6 +39,11 @@ export type WorkbenchFixtureProfileId =
   | "references-plus-bare"
   | "references-plus-single-flower"
   | "all-four"
+  | "references-plus-reed"
+  | "references-plus-flower-volume"
+  | "references-plus-arching-trailer"
+  | "round3-three"
+  | "round3-palette"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -83,6 +91,49 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
       SINGLE_FLOWER_MATERIAL_ID,
     ],
     notes: "Six cuttings are 2+2+1+1 in cycle order, not two of each. Twelve cuttings are three of each.",
+  }),
+  Object.freeze({
+    id: "references-plus-reed",
+    label: "References plus reed",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, REED_MATERIAL_ID],
+    notes: "Flowering → leafy → reed. Does not change reference-pair or all-four.",
+  }),
+  Object.freeze({
+    id: "references-plus-flower-volume",
+    label: "References plus flower volume",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, FLOWER_VOLUME_MATERIAL_ID],
+    notes: "Flowering → leafy → flower-volume. Does not change reference-pair or all-four.",
+  }),
+  Object.freeze({
+    id: "references-plus-arching-trailer",
+    label: "References plus arching trailer",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, ARCHING_TRAILER_MATERIAL_ID],
+    notes: "Flowering → leafy → arching-trailer. Does not change reference-pair or all-four.",
+  }),
+  Object.freeze({
+    id: "round3-three",
+    label: "Round 3 three (reed → flower volume → arching trailer)",
+    kind: "stable",
+    materialIds: [REED_MATERIAL_ID, FLOWER_VOLUME_MATERIAL_ID, ARCHING_TRAILER_MATERIAL_ID],
+    notes: "The three Round 3 cuttings only. Six cuttings are two of each. Twelve are four of each.",
+  }),
+  Object.freeze({
+    id: "round3-palette",
+    label: "Round 3 palette (established four, then reed → flower volume → arching trailer)",
+    kind: "stable",
+    materialIds: [
+      FLOWERING_BRANCH_MATERIAL_ID,
+      LEAFY_SHOOT_MATERIAL_ID,
+      BARE_BRANCH_MATERIAL_ID,
+      SINGLE_FLOWER_MATERIAL_ID,
+      REED_MATERIAL_ID,
+      FLOWER_VOLUME_MATERIAL_ID,
+      ARCHING_TRAILER_MATERIAL_ID,
+    ],
+    notes: "Explicit seven-material list, not the live catalog and not all-four. Six cuttings omit the trailer. Twelve cuttings are not equal copies.",
   }),
   Object.freeze({
     id: "all-registered-materials",
@@ -182,6 +233,10 @@ export function describeMaterialSequenceComposition(
     warnings.push("A six-cutting four-material cycle is 2+2+1+1 in sequence order, not two of each.");
   } else if (!balancedEqualCopies && materialSequence.length > 1) {
     warnings.push("This count does not give equal copies of each listed material.");
+  }
+  const omitted = materialSequence.filter((materialId) => (countsByMaterialId[materialId] ?? 0) === 0);
+  if (omitted.length > 0) {
+    warnings.push(`This count omits ${omitted.join(", ")} because the cycle is longer than the cutting count.`);
   }
   return { materialSequence, assignedMaterialIds, countsByMaterialId, balancedEqualCopies, warnings };
 }

@@ -15,6 +15,11 @@ the live catalog was a comparison-tooling flaw, not a persistence failure.
 | `references-plus-bare` | stable | flowering → leafy → `bare-branch` | when A is registered |
 | `references-plus-single-flower` | stable | flowering → leafy → `single-flower` | when B is registered |
 | `all-four` | stable | flowering → leafy → bare → single-flower | when A and B are registered |
+| `references-plus-reed` | stable | flowering → leafy → `reed` | Round 3 integration |
+| `references-plus-flower-volume` | stable | flowering → leafy → `flower-volume` | Round 3 integration |
+| `references-plus-arching-trailer` | stable | flowering → leafy → `arching-trailer` | Round 3 integration |
+| `round3-three` | stable | `reed` → `flower-volume` → `arching-trailer` | Round 3 integration |
+| `round3-palette` | stable | the four above, then reed → flower-volume → arching-trailer | Round 3 integration; **not** `all-four` |
 | `all-registered-materials` | **dynamic** | live `getMaterialDefinitions()` order | yes; **not** a comparison baseline |
 | `mixed` | alias | same as `reference-pair` | yes; keep only for the old picker |
 
@@ -49,6 +54,13 @@ equal fill.
 
 - `all-four` × 6 = 2 flowering, 2 leafy, 1 bare, 1 single-flower
 - `all-four` × 12 = 3 of each
+- `round3-three` × 6 = 2 reed, 2 flower-volume, 2 arching-trailer
+- `round3-three` × 12 = 4 of each
+- `round3-palette` × 6 omits `arching-trailer` (one each of the first six)
+- `round3-palette` × 12 = 2 of the first five and 1 each of flower-volume and arching-trailer
+
+Single material IDs `reed`, `flower-volume`, and `arching-trailer` still load `count`
+copies of that one cutting. They are not substitutes for the named profiles above.
 
 Reports must print `countsByMaterialId` and `balancedEqualCopies`. Never describe
 a six-cutting four-material scene as two of each. Never quote a mixed-6 renderer
@@ -110,6 +122,11 @@ Keep profile IDs stable even if labels change:
 - References plus bare-branch
 - References plus single-flower
 - All four (flowering → leafy → bare → single-flower)
+- References plus reed
+- References plus flower volume
+- References plus arching trailer
+- Round 3 three (reed → flower volume → arching trailer)
+- Round 3 palette (established four, then reed → flower volume → arching trailer)
 - All registered materials (dynamic — not a baseline)
 
 ## Out of scope on this branch

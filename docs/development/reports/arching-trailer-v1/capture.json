@@ -1,0 +1,122 @@
+[
+  {
+    "label": "composition-front-1280x800",
+    "ready": "true",
+    "posture": "step-back",
+    "view": "front",
+    "innerWidth": 1280,
+    "innerHeight": 800,
+    "devicePixelRatio": 1,
+    "canvasClient": {
+      "width": 1280,
+      "height": 800,
+      "x": 0,
+      "y": 0
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "title": "Trailer across the water"
+  },
+  {
+    "label": "composition-three-quarter-1280x800",
+    "ready": "true",
+    "posture": "step-back",
+    "view": "three-quarter",
+    "innerWidth": 1280,
+    "innerHeight": 800,
+    "devicePixelRatio": 1,
+    "canvasClient": {
+      "width": 1280,
+      "height": 800,
+      "x": 0,
+      "y": 0
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "title": "Trailer across the water"
+  },
+  {
+    "label": "composition-above-1280x800",
+    "ready": "true",
+    "posture": "step-back",
+    "view": "above",
+    "innerWidth": 1280,
+    "innerHeight": 800,
+    "devicePixelRatio": 1,
+    "canvasClient": {
+      "width": 1280,
+      "height": 800,
+      "x": 0,
+      "y": 0
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "title": "Trailer across the water"
+  },
+  {
+    "label": "composition-front-short-landscape-844x390",
+    "ready": "true",
+    "posture": "step-back",
+    "view": "front",
+    "innerWidth": 844,
+    "innerHeight": 390,
+    "devicePixelRatio": 1,
+    "canvasClient": {
+      "width": 844,
+      "height": 390,
+      "x": 0,
+      "y": 0
+    },
+    "drawingBuffer": {
+      "width": 844,
+      "height": 390
+    },
+    "title": "Trailer across the water"
+  },
+  {
+    "label": "edge-seat-above-1280x800",
+    "ready": "true",
+    "posture": "step-back",
+    "view": "above",
+    "innerWidth": 1280,
+    "innerHeight": 800,
+    "devicePixelRatio": 1,
+    "canvasClient": {
+      "width": 1280,
+      "height": 800,
+      "x": 0,
+      "y": 0
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "title": "Trailer seated toward its arch"
+  },
+  {
+    "label": "materials-360x780",
+    "ready": "true",
+    "posture": "arrange",
+    "view": "front",
+    "innerWidth": 360,
+    "innerHeight": 780,
+    "devicePixelRatio": 1,
+    "canvasClient": {
+      "width": 360,
+      "height": 780,
+      "x": 0,
+      "y": 0
+    },
+    "drawingBuffer": {
+      "width": 360,
+      "height": 780
+    },
+    "title": ""
+  }
+]

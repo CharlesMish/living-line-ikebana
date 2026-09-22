@@ -1,6 +1,9 @@
+import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
+import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
+import { createReed, REED_VERSION } from "./reed.ts";
 import { createSingleFlower, SINGLE_FLOWER_VERSION } from "./singleFlower.ts";
 import type { Vec3 } from "./math.ts";
 import { GENERATOR_VERSION, type PlantGraph } from "./types.ts";
@@ -59,6 +62,21 @@ const singleFlowerV1: GeneratorDefinition = Object.freeze({
   generate: createSingleFlower,
 });
 
+const reedV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: REED_VERSION,
+  generate: createReed,
+});
+
+const flowerVolumeV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: FLOWER_VOLUME_VERSION,
+  generate: createFlowerVolume,
+});
+
+const archingTrailerV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: ARCHING_TRAILER_VERSION,
+  generate: createArchingTrailer,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -67,14 +85,24 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   leafyShootV1,
   bareBranchV1,
   singleFlowerV1,
+  reedV1,
+  flowerVolumeV1,
+  archingTrailerV1,
 ]);
 
-/** Provisional Round 2 catalog order: flowering → leafy → bare-branch → single-flower. */
+/**
+ * Final Round 3 catalog. The first four IDs stay in Round 2 order. Reed,
+ * flower volume, and the arching trailer are appended in lane order. Named
+ * profiles `reference-pair` and `all-four` do not read this list.
+ */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
   Object.freeze({ materialId: "leafy-shoot", generator: leafyShootV1 }),
   Object.freeze({ materialId: "bare-branch", generator: bareBranchV1 }),
   Object.freeze({ materialId: "single-flower", generator: singleFlowerV1 }),
+  Object.freeze({ materialId: "reed", generator: reedV1 }),
+  Object.freeze({ materialId: "flower-volume", generator: flowerVolumeV1 }),
+  Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

@@ -6,7 +6,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 1. Canonical identity and determinism
 
-- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1`, `leafy-shoot-v1`, `bare-branch-v1`, and `single-flower-v1`; material choice never changes the global successful-seat ordinal.
+- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1`, `leafy-shoot-v1`, `bare-branch-v1`, `single-flower-v1`, `reed-v1`, `flower-volume-v1`, and `arching-trailer-v1`; material choice never changes the global successful-seat ordinal.
 - Successful seat ordinal `N`, starting at 1, reserves `plant-N` with seed `(7301 + N * 977) >>> 0`. Thus `plant-1` is seed `8278` and `plant-2` is seed `9255`.
 - A cancelled or invalid insertion does not advance `N`.
 - The pending ghost is the complete reserved graph, including branch continuations, petioles, pedicels, leaves, buds, and blooms. A valid release commits that graph at the exact valid previewed translation. It does not regenerate it.
@@ -115,6 +115,23 @@ working save. Make a working copy and Start a fresh bowl are explicit document
 replacement commands: offer to preserve a nonempty working bowl, validate data,
 write the new working save first, then replace in-memory state. A failed write
 keeps the current working bowl intact. Originals are not mutated by copies.
+Comparing two kept arrangements is optional and transient. It reads existing
+entries and shows both under one shared camera pose, the studio vertical field
+of view, and world scale 1. It does not frame each entry with its own stored
+camera, and it does not fit either arrangement to its pane. Comparison writes
+no Garden entry, no working save, and no change to either stored camera or the
+current working arrangement. Leaving it discards the temporary view. An optional
+study brief may be shown beside it; that brief is for a person to interpret.
+The app does not judge whether an arrangement satisfies it.
+A comparison drag has one pointer owner. A second pointer does not replace
+that owner or its start pose. The owner's release keeps the temporary shared
+view. Pointer cancel, lost capture, blur, a hidden page, a mouse move with
+the button up, and Escape during the drag restore that start pose and stay in
+comparison. Escape with no drag, and Leave comparison, discard the temporary
+view. A view command during a drag cancels the drag before it applies. Wheel
+input during a drag is ignored. Neither path writes a Garden entry, a stored
+camera, or the working bowl. Both panes use the same canvas width and height.
+A longer or wrapping title does not resize one pane alone.
 
 Player replacements preserve a safe insertion ordinal. Workbench fixture loading
 explicitly resets developer fixture identities in an isolated storage namespace;

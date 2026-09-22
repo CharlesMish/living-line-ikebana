@@ -61,6 +61,15 @@ import {
   type TransactionOutcome,
 } from "./metrics.ts";
 import { GardenStore, validateArrangement, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
+import {
+  applyMatchedCamera,
+  beginGardenComparison,
+  presentComparison,
+  withSharedCamera,
+  type ComparisonViewport,
+  type GardenComparison,
+} from "./gardenCompare.ts";
+import { createStudioComparisonViewport } from "./gardenCompareView.ts";
 import { GardenUI } from "./gardenUI.ts";
 import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
@@ -254,6 +263,7 @@ export class IkebanaApp {
   private hovering = false;
   private gardenUI!: GardenUI;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean } | null = null;
+  private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -298,6 +308,9 @@ export class IkebanaApp {
       view: (entry) => this.viewGardenEntry(entry),
       returnToWork: () => this.returnToWorkingBowl(),
       replace: (snapshot) => this.replaceWorkingBowl(snapshot),
+      beginComparison: (left, right, canvases) => this.beginGardenComparisonView(left, right, canvases),
+      syncComparison: (session) => this.syncGardenComparisonView(session),
+      endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
     }, this.config.workbench);
   }
@@ -352,6 +365,7 @@ export class IkebanaApp {
     this.abortController.abort();
     this.removeUIListener?.();
     this.removeUIListener = null;
+    this.endGardenComparisonView();
     this.gardenUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
@@ -483,6 +497,52 @@ export class IkebanaApp {
     this.ui.setState({ posture: "step-back", tool: this.coordinator.getDebugState().tool, trayEnabled: true });
     this.ui.setStatus("Your working bowl is here.");
     this.syncPresentation();
+  }
+
+  /** Shows two kept entries under one transient camera. Does not write or replace the working bowl. */
+  private beginGardenComparisonView(
+    left: GardenEntry,
+    right: GardenEntry,
+    canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement },
+  ): GardenComparison {
+    this.endGardenComparisonView();
+    const session = beginGardenComparison([left, right], left.id, right.id);
+    const viewports = this.createComparisonViewports(canvases);
+    try {
+      presentComparison(session, viewports[0], viewports[1]);
+    } catch (error) {
+      for (const viewport of viewports) viewport.destroy();
+      throw error;
+    }
+    this.gardenComparison = { session, viewports };
+    return session;
+  }
+
+  private syncGardenComparisonView(session: GardenComparison): GardenComparison {
+    const current = this.gardenComparison;
+    if (!current) throw new Error("Open a comparison before changing its view.");
+    const next = withSharedCamera(current.session, session.camera);
+    applyMatchedCamera(next, current.viewports[0], current.viewports[1]);
+    current.session = next;
+    return next;
+  }
+
+  private endGardenComparisonView() {
+    const current = this.gardenComparison;
+    this.gardenComparison = null;
+    current?.viewports.forEach((viewport) => viewport.destroy());
+  }
+
+  private createComparisonViewports(
+    canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement },
+  ): [ComparisonViewport, ComparisonViewport] {
+    const left = createStudioComparisonViewport(canvases.left);
+    try {
+      return [left, createStudioComparisonViewport(canvases.right)];
+    } catch (error) {
+      left.destroy();
+      throw error;
+    }
   }
 
   /** Explicit bowl replacement, separate from gesture commits. Persist first;

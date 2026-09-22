@@ -57,3 +57,13 @@ Both Garden backups were verified functional:
 - Git status shows only new artifacts/ directory (untracked)
 - Screenshot files are actual PNG format (converted from WebP using ffmpeg)
 - JSON backups contain full arrangement data including positions, orientations, and thumbnails
+
+## Round 3 — individual reed
+
+Headless Chrome on this branch, not a physical phone. Five separate `reed-v1` cuttings. Garden backup `reed-lines-garden.json` (“Reed lines and the spaces between”). Heights differ by seeded stock and two prunes; leans are aim; one culm is bent.
+
+- `reed-lines-front.png` — Front, 1280×800
+- `reed-lines-three-quarter.png` — Three-quarter, 1280×800
+- `reed-lines-above.png` — Above, 1280×800
+- `reed-count1-front.png` — one reed, Front
+- `reed-narrow-320.png` / `reed-narrow-390.png` — Materials menu open after a centerline pick. See `docs/development/REVIEW_reed-v1.md`.

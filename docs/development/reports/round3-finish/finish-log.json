@@ -1,0 +1,109 @@
+[
+  {
+    "step": "flower-volume-group-cut",
+    "branch": "plant-1:group-5",
+    "operation": "prune",
+    "materialDistance": 0.17237855372853553,
+    "intactHash": "5c6ba5af",
+    "openedHash": "430edfb2",
+    "hashChanged": true,
+    "organs": {
+      "plant-1:bloom-1": true,
+      "plant-1:bloom-2": true,
+      "plant-1:bloom-3": true,
+      "plant-1:bloom-4": true,
+      "plant-1:bloom-5": false,
+      "plant-1:leaf-1": true,
+      "plant-1:leaf-2": true
+    },
+    "groupLengths": {
+      "plant-1:group-1": 0.1847013163159135,
+      "plant-1:group-2": 0.3236592336674222,
+      "plant-1:group-3": 0.30924449107260465,
+      "plant-1:group-4": 0.3214233846170827,
+      "plant-1:group-5": 0.17237855372853553,
+      "plant-1:petiole-1": 0.23197519605979325,
+      "plant-1:petiole-2": 0.2374553771130743,
+      "plant-1:stem": 4.481007809303701
+    },
+    "branchCount": 8,
+    "organCount": 7
+  },
+  {
+    "step": "garden-pair",
+    "titles": [
+      "Round 3 revision",
+      "Round 3 original",
+      "Flower volume group opened"
+    ],
+    "originalWorkingHash": "79d8e7b4",
+    "viewedOriginalHash": "79d8e7b4",
+    "copyHash": "79d8e7b4",
+    "copyMatchesOriginal": true,
+    "editedHash": "9a0cf619",
+    "editChanged": true,
+    "cutBranch": "plant-3:trail",
+    "cutDistance": 1.2796834041945435,
+    "originalAfterRevisionHash": "79d8e7b4",
+    "originalUnchanged": true,
+    "revisionViewHash": "9a0cf619",
+    "revisionMatchesEdit": true,
+    "storedPlantJsonDiffers": true,
+    "originalTrailLength": 2.993199727856262,
+    "revisionTrailLength": 1.2796834041945435,
+    "originalLeafActive": [
+      [
+        "plant-3:leaf-1",
+        true
+      ],
+      [
+        "plant-3:leaf-2",
+        true
+      ],
+      [
+        "plant-3:leaf-3",
+        true
+      ]
+    ],
+    "revisionLeafActive": [
+      [
+        "plant-3:leaf-1",
+        false
+      ],
+      [
+        "plant-3:leaf-2",
+        false
+      ],
+      [
+        "plant-3:leaf-3",
+        false
+      ]
+    ],
+    "generators": [
+      [
+        "plant-1",
+        "reed-v1"
+      ],
+      [
+        "plant-2",
+        "flower-volume-v1"
+      ],
+      [
+        "plant-3",
+        "arching-trailer-v1"
+      ],
+      [
+        "plant-4",
+        "reed-v1"
+      ],
+      [
+        "plant-5",
+        "flower-volume-v1"
+      ],
+      [
+        "plant-6",
+        "arching-trailer-v1"
+      ]
+    ]
+  }
+]

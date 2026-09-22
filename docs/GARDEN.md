@@ -20,6 +20,25 @@ mission system, or school curriculum.
    without keeping / Cancel when the working bowl contains material. Copying
    leaves the Garden original intact. Replacement saves before changing memory;
    if saving fails, the existing working bowl stays available.
+6. **Compare** two kept moments when the Garden holds at least two. Choose
+   Compare on two cards — the first selected is on the left — then **Look at
+   both**. Both use one camera, the studio field of view, and world scale 1,
+   starting from Front rather than either saved framing. Orbit, Pan, zoom, and
+   Front / ¾ / Above apply to both together. Separately framing each arrangement
+   would hide size and placement changes, so comparison does not do that.
+   **Leave comparison** discards the temporary view. Neither kept arrangement,
+   its stored camera, nor the working bowl is changed. Comparison is not saved.
+   One pointer owns a drag. A second pointer does not take that drag. Cancel,
+   blur, a hidden page, or Escape during the drag restores its start pose and
+   stays in comparison. Escape with no drag leaves. Both canvases stay the same
+   size when one title is longer or wraps.
+
+**Optional study · Across the table.** The guide and Garden include this brief:
+“Make a lower arrangement for a table where people will talk across it.” It is
+for a person to interpret. The scene has no table and no sightline, so the app
+does not calculate whether an arrangement passes. One way to look again is the
+sequence above: keep a bowl, make a working copy, revise it, keep the revision,
+then compare the two.
 
 **Download backup** exports all Garden entries, including graph history and
 thumbnails. **Import backup** merges compatible entries without replacing the
@@ -41,13 +60,17 @@ removing an entry you may want again; removal has no built-in undo.
 - Plant identity is scoped to an arrangement. Copies preserve it. Ordinary player
   bowl replacement retains the larger current/snapshot insertion ordinal, so a
   subsequent seat cannot reuse an existing plant ID. An empty fresh bowl retains
-  that ordinal. No generator is rerun during Keep, View, Copy or Import.
+  that ordinal. No generator is rerun during Keep, View, Copy, Import, or Compare.
+- Comparison is transient UI state. It does not change `gardenVersion`, add a
+  record, or write either entry's camera. Reload restores the working bowl, not
+  a comparison that was open.
 - Garden mutation checks that storage still matches the last loaded collection.
   A stale tab must close and reopen Garden before writing. This is an optimistic
   check, not a cross-tab locking protocol; the working autosave remains single-tab.
 - Incompatible/corrupt Garden storage stays untouched and can still be downloaded
   for recovery. Keeping/importing are disabled until readable data is available.
-- Reload always restores the working bowl, never a temporary Garden viewer.
+- Reload always restores the working bowl, never a temporary Garden viewer or
+  comparison.
   Working autosave still does not store camera framing; Garden entries do.
 - Data lives in this browser/origin. A downloaded standalone file, GitHub Pages,
   localhost, private browsing and another device can have separate storage.
@@ -72,6 +95,9 @@ Physical phone observations are still required:
 - Export, import the same file (no duplicates), then import on another origin.
 - Try 320px portrait, short landscape and enlarged text. All modal actions must
   remain reachable by scrolling; no controls belong beneath the plant.
+- Compare two kept arrangements at 320px. Both panes and Leave comparison must
+  stay reachable by scrolling. This comparison phone pass has not been observed;
+  a desktop or resized-browser screenshot is not that evidence.
 - Use keyboard Tab/Shift-Tab and Escape. Dialog focus must stay contained and return
   to the opener. Kept arrangements must not expose Arrange or material editing.
 - Open Garden with a second pointer during bend/insert preview. Releasing the first
@@ -79,4 +105,11 @@ Physical phone observations are still required:
 
 The September 18 implementation was typechecked and tested in the repository.
 Cloud Browser could not access the local preview (`ERR_BLOCKED_BY_CLIENT`), so no
-browser visual pass or physical-phone signoff is claimed for this version.
+browser visual pass or physical-phone signoff is claimed for that version.
+
+Comparison preserves the Garden contract: it adds a transient matched view and
+does not revise gesture laws, persistence, generators, or fixture profiles.
+Automated tests cover non-mutation, the shared camera, field of view, and
+world scale, second-pointer ownership, interruption rollback, and equal canvas
+slots when titles differ. Physical-phone observations for comparison are still
+open. A resized-browser screenshot is not that phone pass.

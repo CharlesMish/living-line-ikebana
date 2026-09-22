@@ -47,11 +47,38 @@ const singleFlower: MaterialAppearance = Object.freeze({
     roughness: 0.7, hitRadius: 0.34, hitCenterY: 0 }),
   bloom: Object.freeze({ form: "open-face", color: 0xf0d2ae, roughness: 0.62, hitRadius: 0.7 }),
 });
+const reed: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x4e6240, lateral: 0x4e6240,
+    twig: 0x5d704c, pedicel: 0x5d704c, petiole: 0x5d704c }),
+  stemRoughness: 0.8,
+  // No leaves or blooms are generated. The record still requires both slots.
+  leaf: flowering.leaf,
+  bloom: flowering.bloom,
+});
+const flowerVolume: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x3f5a40, lateral: 0x4a6648,
+    twig: 0x567252, pedicel: 0x5d7a52, petiole: 0x567252 }),
+  stemRoughness: 0.72,
+  leaf: Object.freeze({ form: "elliptic", color: 0x3d5a42, veinColor: 0x7d8f58,
+    roughness: 0.7, hitRadius: 0.34, hitCenterY: 0 }),
+  bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
+});
+const archingTrailer: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x3d6d62, lateral: 0x3d6d62,
+    twig: 0x4d7c6a, pedicel: 0x5a8460, petiole: 0x4f7a58 }),
+  stemRoughness: 0.58,
+  leaf: Object.freeze({ form: "elliptic", color: 0x2f5c48, veinColor: 0x7f9460,
+    roughness: 0.66, hitRadius: 0.34, hitCenterY: 0 }),
+  bloom: flowering.bloom,
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
+  "reed-v1": reed,
+  "flower-volume-v1": flowerVolume,
+  "arching-trailer-v1": archingTrailer,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

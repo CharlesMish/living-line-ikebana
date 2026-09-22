@@ -181,6 +181,37 @@
                   </svg>
                   <span class="material-choice-name">Single flower</span>
                 </button>
+                <button type="button" data-material-choice="reed" data-testid="material-choice-reed" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M146 66 C144 48 149 28 158 6" />
+                  </svg>
+                  <span class="material-choice-name">Reed</span>
+                </button>
+                <button type="button" data-material-choice="flower-volume" data-testid="material-choice-flower-volume" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M24 64 C70 58 110 40 148 22" />
+                    <ellipse class="cutting-leaf" cx="78" cy="48" rx="14" ry="5" transform="rotate(32 78 48)" />
+                    <ellipse class="cutting-leaf" cx="118" cy="32" rx="12" ry="5" transform="rotate(-24 118 32)" />
+                    <g class="cutting-bloom" transform="translate(168 16)">
+                      <circle cx="-16" cy="6" r="8" />
+                      <circle cx="-6" cy="-8" r="8" />
+                      <circle cx="8" cy="-6" r="8" />
+                      <circle cx="16" cy="8" r="8" />
+                      <circle cx="0" cy="4" r="9" />
+                      <circle class="cutting-bloom-center" cx="0" cy="2" r="4" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Flower volume</span>
+                </button>
+                <button type="button" data-material-choice="arching-trailer" data-testid="material-choice-arching-trailer" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M18 58 C46 18 82 10 122 24 C168 40 214 54 282 64" />
+                    <ellipse class="cutting-leaf" cx="118" cy="26" rx="14" ry="5" transform="rotate(-18 118 26)" />
+                    <ellipse class="cutting-leaf" cx="176" cy="44" rx="13" ry="5" transform="rotate(24 176 44)" />
+                    <ellipse class="cutting-leaf" cx="228" cy="58" rx="12" ry="4" transform="rotate(-12 228 58)" />
+                  </svg>
+                  <span class="material-choice-name">Arching trailer</span>
+                </button>
               </nav>
             </div>
           </div>
@@ -259,6 +290,49 @@
               </span>
               <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
             </template>
+            <template id="material-template-reed" data-material-label="reed">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M146 66 C144 48 149 28 158 6" />
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Reed</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-flower-volume" data-material-label="flower volume">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M24 64 C70 58 110 40 148 22" />
+                <ellipse class="cutting-leaf" cx="78" cy="48" rx="14" ry="5" transform="rotate(32 78 48)" />
+                <ellipse class="cutting-leaf" cx="118" cy="32" rx="12" ry="5" transform="rotate(-24 118 32)" />
+                <g class="cutting-bloom" transform="translate(168 16)">
+                  <circle cx="-16" cy="6" r="8" />
+                  <circle cx="-6" cy="-8" r="8" />
+                  <circle cx="8" cy="-6" r="8" />
+                  <circle cx="16" cy="8" r="8" />
+                  <circle cx="0" cy="4" r="9" />
+                  <circle class="cutting-bloom-center" cx="0" cy="2" r="4" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Flower volume</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-arching-trailer" data-material-label="arching trailer">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M18 58 C46 18 82 10 122 24 C168 40 214 54 282 64" />
+                <ellipse class="cutting-leaf" cx="118" cy="26" rx="14" ry="5" transform="rotate(-18 118 26)" />
+                <ellipse class="cutting-leaf" cx="176" cy="44" rx="13" ry="5" transform="rotate(24 176 44)" />
+                <ellipse class="cutting-leaf" cx="228" cy="58" rx="12" ry="4" transform="rotate(-12 228 58)" />
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Arching trailer</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
           </div>
         </div>
       </header>
@@ -303,6 +377,12 @@
           <p class="looking-prompt">Name what you would reveal before removing anything.</p>
           <p class="panel-note">Preview a cut and compare the remaining line with what would leave. Switch to Shape or press Escape to cancel. Release only if you want that permanent cut.</p>
           <p class="panel-note">Keeping the material is also a decision. This study needs no cut to be complete.</p>
+        </details>
+        <details class="looking-study" data-testid="table-talk-study">
+          <summary>Optional study · Across the table</summary>
+          <p class="looking-prompt">Make a lower arrangement for a table where people will talk across it.</p>
+          <p class="panel-note">A brief for you to interpret. Nothing here decides whether an arrangement passes.</p>
+          <p class="panel-note">Keep a bowl, copy it, revise it, and keep the revision. Then compare the two in Garden.</p>
         </details>
         <p class="panel-note">Choose any study, or make freely. Before another change, give yourself a moment to look. You decide when enough is enough.</p>
         <button id="stop-and-look" data-testid="stop-and-look" class="quiet-button" type="button">Stop and look</button>

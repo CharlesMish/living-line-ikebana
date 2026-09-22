@@ -91,7 +91,7 @@ export class GardenUI {
       <dialog id="garden-compare-dialog" class="garden-dialog garden-compare" aria-labelledby="garden-compare-title">
         <div class="panel-heading"><div><p class="eyebrow">Same view and scale</p><h1 id="garden-compare-title">Compare two moments</h1></div>
           <button id="garden-compare-leave" class="icon-button" type="button" aria-label="Leave comparison">×</button></div>
-        <p class="garden-compare-note">Both use one camera and the same scale, starting from Front rather than either saved framing. Nothing is saved.</p>
+        <p class="garden-compare-note">Both use one camera and the same scale, starting from Front rather than either saved framing. Nothing is saved. The optional study is yours to judge.</p>
         <p class="panel-note garden-compare-brief">If you are using the optional study — “${TABLE_TALK_STUDY_PROMPT}” — decide for yourself. ${TABLE_TALK_STUDY_NOTE}</p>
         <div class="garden-compare-stage">
           <figure><figcaption id="garden-compare-left-title"></figcaption><canvas id="garden-compare-left"></canvas></figure>
@@ -106,7 +106,7 @@ export class GardenUI {
           <button type="button" id="garden-compare-zoom-in">Zoom in</button>
           <button type="button" id="garden-compare-zoom-out">Zoom out</button>
         </div>
-        <p class="panel-note">Drag either arrangement. Both stay matched. Leave comparison to return to your Garden. Neither kept moment or your working bowl changes.</p>
+        <p class="panel-note garden-compare-help">Drag either arrangement. Both stay matched. Leave comparison to return to your Garden. Neither kept moment or your working bowl changes.</p>
       </dialog>
       <dialog id="workbench-dialog" class="garden-dialog workbench-dialog" aria-labelledby="workbench-title">
         <div class="panel-heading"><div><p class="eyebrow">Development only · separate saved bowl</p><h1 id="workbench-title">Material workbench</h1></div><button id="workbench-close" class="icon-button" type="button" aria-label="Close workbench">×</button></div>

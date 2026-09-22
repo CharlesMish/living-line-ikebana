@@ -854,13 +854,19 @@ noscript {
     width: calc(100vw - .75rem);
     height: calc(100dvh - .75rem);
     padding: .75rem;
+    overflow: auto;
   }
-  .garden-compare h1 { font-size: 1.35rem; }
+  .garden-compare h1 { font-size: 1.25rem; }
+  .garden-compare-brief, .garden-compare-help { display: none; }
+  .garden-compare-note { margin: 0; font-size: .9rem; }
   .garden-compare-stage {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(9rem, 1fr) minmax(9rem, 1fr);
-    min-height: 20rem;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 0;
   }
+  .garden-compare-stage canvas { min-height: 0; }
+  .garden-compare-controls { flex-wrap: wrap; }
+  .garden-compare-controls button { flex: 1 1 4.25rem; padding-inline: .4rem; }
 }
 /* Respect native/explicit visibility even on components with display layouts. */
 .garden-host [hidden], #workbench-open[hidden] { display: none !important; }

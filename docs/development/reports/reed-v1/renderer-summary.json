@@ -1,0 +1,250 @@
+{
+  "reed-count1-report.json": {
+    "calls": 10,
+    "triangles": 8278,
+    "geometries": 9,
+    "capture": {
+      "status": "captured",
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-drawing-buffer"
+      },
+      "pixelRatio": {
+        "device": 1,
+        "renderer": 1,
+        "rendererCap": 1.8,
+        "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "visualViewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1,
+        "source": "window.visualViewport"
+      },
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "notes": [
+        "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+        "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+        "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+        "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+        "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+      ]
+    },
+    "fixture": "reed",
+    "count": 1
+  },
+  "flowering-count1-report.json": {
+    "calls": 107,
+    "triangles": 21026,
+    "geometries": 82,
+    "capture": {
+      "status": "captured",
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-drawing-buffer"
+      },
+      "pixelRatio": {
+        "device": 1,
+        "renderer": 1,
+        "rendererCap": 1.8,
+        "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "visualViewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1,
+        "source": "window.visualViewport"
+      },
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "notes": [
+        "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+        "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+        "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+        "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+        "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+      ]
+    },
+    "fixture": "flowering-branch",
+    "count": 1
+  },
+  "reed-count6-report.json": {
+    "calls": 25,
+    "triangles": 12218,
+    "geometries": 19,
+    "capture": {
+      "status": "captured",
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-drawing-buffer"
+      },
+      "pixelRatio": {
+        "device": 1,
+        "renderer": 1,
+        "rendererCap": 1.8,
+        "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "visualViewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1,
+        "source": "window.visualViewport"
+      },
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "notes": [
+        "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+        "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+        "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+        "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+        "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+      ]
+    },
+    "fixture": "reed",
+    "count": 6
+  },
+  "reference-pair-count6-report.json": {
+    "calls": 463,
+    "triangles": 65078,
+    "geometries": 343,
+    "capture": {
+      "status": "captured",
+      "cssViewport": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-client-rect"
+      },
+      "drawingBuffer": {
+        "width": 1280,
+        "height": 800,
+        "source": "canvas-drawing-buffer"
+      },
+      "pixelRatio": {
+        "device": 1,
+        "renderer": 1,
+        "rendererCap": 1.8,
+        "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+      },
+      "browserWindow": {
+        "width": 1280,
+        "height": 800,
+        "source": "window-inner"
+      },
+      "visualViewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1,
+        "source": "window.visualViewport"
+      },
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+      "camera": {
+        "position": {
+          "x": 0,
+          "y": 3.7,
+          "z": 15
+        },
+        "target": {
+          "x": 0,
+          "y": 2.55,
+          "z": 0
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "notes": [
+        "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+        "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+        "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+        "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+        "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+      ]
+    },
+    "fixture": "reference-pair",
+    "count": 6
+  }
+}

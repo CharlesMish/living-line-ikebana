@@ -1,0 +1,92 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "scale": 2,
+    "before": {
+      "ready": "true",
+      "view": "front",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 568
+      },
+      "headerBottom": 198.59375,
+      "dpr": 2,
+      "inner": {
+        "w": 320,
+        "h": 568
+      },
+      "targets": [
+        {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:culm",
+          "materialDistance": 2.5691356904071294,
+          "x": 154.96122550631,
+          "y": 261.2226623107929,
+          "region": "middle-left"
+        }
+      ]
+    },
+    "selected": "plant-1",
+    "hit": {
+      "x": 154.96122550631,
+      "y": 261.2226623107929,
+      "branchId": "plant-1:culm"
+    },
+    "menu": {
+      "expanded": "true",
+      "optionHeight": 233.1875,
+      "scrollHeight": 231,
+      "reedVisibleWithoutScroll": true,
+      "reedText": "Reed"
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "scale": 2,
+    "before": {
+      "ready": "true",
+      "view": "front",
+      "canvas": {
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 844
+      },
+      "headerBottom": 187.78125,
+      "dpr": 2,
+      "inner": {
+        "w": 390,
+        "h": 844
+      },
+      "targets": [
+        {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:culm",
+          "materialDistance": 2.5691356904071294,
+          "x": 187.51280691430568,
+          "y": 388.1548010392767,
+          "region": "middle-left"
+        }
+      ]
+    },
+    "selected": "plant-1",
+    "hit": {
+      "x": 187.51280691430568,
+      "y": 388.1548010392767,
+      "branchId": "plant-1:culm"
+    },
+    "menu": {
+      "expanded": "true",
+      "optionHeight": 233.1875,
+      "scrollHeight": 231,
+      "reedVisibleWithoutScroll": true,
+      "reedText": "Reed"
+    }
+  }
+]

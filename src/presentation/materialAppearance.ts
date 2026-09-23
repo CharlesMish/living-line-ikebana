@@ -15,6 +15,11 @@ export interface MaterialAppearance {
     form: BloomForm; color: number; roughness: number; hitRadius: number;
     /** Offset along the organ's local supporting tangent. Existing forms stay at 0. */
     hitCenterY?: number;
+    /**
+     * Tufted blooms only. Breaks exact eight-fold repetition in the instance
+     * matrices. Omitted blooms stay evenly spaced. Does not change the graph.
+     */
+    tuftScatter?: Readonly<{ azimuth: number; scale: number; tilt: number }>;
   }>;
   /** Present only for a generator that emits berry organs. One sphere per organ. */
   readonly berry?: Readonly<{
@@ -78,7 +83,11 @@ const flowerVolume: MaterialAppearance = Object.freeze({
   stemRoughness: 0.72,
   leaf: Object.freeze({ form: "elliptic", color: 0x3d5a42, veinColor: 0x7d8f58,
     roughness: 0.7, ...ellipticLeafHit }),
-  bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
+  bloom: Object.freeze({
+    form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56,
+    // Small scatter so an orbit does not strobe a perfect gear. The head stays dense.
+    tuftScatter: Object.freeze({ azimuth: 0.08, scale: 0.04, tilt: 0.035 }),
+  }),
 });
 const blossomSpray: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x7d9a55, lateral: 0x8aab62,
@@ -88,7 +97,11 @@ const blossomSpray: MaterialAppearance = Object.freeze({
   leaf: flowering.leaf,
   // Existing tufted surface and the flower-volume acquisition envelope.
   // Separation is topological. This does not add a smaller proxy or a new mesh.
-  bloom: Object.freeze({ form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56 }),
+  bloom: Object.freeze({
+    form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56,
+    // Wider than the flower-volume head so separated accents are not one stamp.
+    tuftScatter: Object.freeze({ azimuth: 0.22, scale: 0.09, tilt: 0.08 }),
+  }),
 });
 const noddingFlower: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x516846, lateral: 0x516846,
@@ -108,7 +121,8 @@ const berryTwig: MaterialAppearance = Object.freeze({
   leaf: flowering.leaf,
   bloom: flowering.bloom,
   berry: Object.freeze({
-    color: 0x8a2e45, roughness: 0.4, radius: 0.07, hitRadius: 0.145, centerY: 0.055,
+    // Lighter than the wood, still a small round accent. Radius stays inside hitRadius.
+    color: 0xa63e56, roughness: 0.3, radius: 0.078, hitRadius: 0.145, centerY: 0.055,
   }),
 });
 const archingTrailer: MaterialAppearance = Object.freeze({

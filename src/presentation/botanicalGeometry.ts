@@ -14,9 +14,10 @@ import * as THREE from "three";
  *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
  *   five-petal dish whose local +Z follows the supporting material frame.
  *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
- *   `bell` is one shell whose mouth continues local +Y, the supporting tangent.
- *   One bloom remains one organ; tufted petals may share a mesh inside that organ.
- *   A berry is a separate organ kind: one low-poly sphere, not a petal form.
+ *   Instance scatter, when the appearance asks for it, varies only the rebuildable
+ *   petal matrices. `bell` is one shell whose mouth continues local +Y. A short
+ *   sleeve of that same shell sits behind the attachment so the neck reads as
+ *   continuous; it is not a second organ. A berry is one sphere, not a petal.
  * - Cupped, open-face, and tufted surfaces face local +Z. The bell opens along
  *   local +Y so a downward neck presents the mouth. All require a DoubleSide
  *   material. Color values
@@ -416,7 +417,29 @@ export function createTuftedPetalGeometry(seed = 0): THREE.BufferGeometry {
       position: [x, y, z],
       color: [Math.min(1, value * 1.05), value * (0.8 + 0.1 * t), value * (0.9 + 0.05 * t)],
     };
-  }, 10, 6);
+  }, 10, 8);
+}
+
+export interface TuftScatter {
+  readonly azimuth: number;
+  readonly scale: number;
+  readonly tilt: number;
+}
+
+/** Even spacing when scatter is omitted. Scatter stays inside one organ. */
+export function tuftInstancePose(
+  seed: number,
+  index: number,
+  count: number,
+  scatter?: TuftScatter,
+): { azimuth: number; tilt: number; scale: number } {
+  const base = (index / count) * TAU;
+  if (!scatter) return { azimuth: base, tilt: 0, scale: 1 };
+  return {
+    azimuth: base + (variation(seed, 20 + index) - 0.5) * 2 * scatter.azimuth,
+    tilt: (variation(seed, 40 + index) - 0.5) * 2 * scatter.tilt,
+    scale: 1 + (variation(seed, 60 + index) - 0.5) * 2 * scatter.scale,
+  };
 }
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
@@ -430,9 +453,14 @@ export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): 
 
 /**
  * One bell shell. Local +Y continues the supporting tangent, so the mouth
- * follows the neck instead of opening perpendicular to it. The back sits at
- * the attachment. Existing cupped, open-face, and tufted petals are untouched.
+ * follows the neck instead of opening perpendicular to it. The first rings
+ * are a short sleeve behind the attachment, still this same shell, so the
+ * pedicel end is covered. Existing cupped, open-face, and tufted petals are
+ * untouched.
  */
+const BELL_SLEEVE = 0.14;
+const BELL_SLEEVE_BACK = -0.052;
+
 export function createBellGeometry(seed = 0): THREE.BufferGeometry {
   const rings = 14;
   const columns = 32;
@@ -447,10 +475,18 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
   };
   const profile = (t: number, theta: number) => {
     const lobe = Math.cos(theta * 5 + phase);
-    const swell = Math.sin(Math.min(1, t * 0.98) * Math.PI * 0.5);
-    const flare = t > 0.72 ? Math.sin(((t - 0.72) / 0.28) * Math.PI) * 0.07 : 0;
-    const radius = (0.034 + 0.36 * swell + flare) * (1 + 0.045 * lobe * t * t);
-    const y = t * 0.6 + 0.012 * lobe * t * t;
+    if (t <= BELL_SLEEVE) {
+      const u = t / BELL_SLEEVE;
+      return {
+        radius: 0.017 + (0.034 - 0.017) * u * u,
+        y: BELL_SLEEVE_BACK * (1 - u),
+      };
+    }
+    const body = (t - BELL_SLEEVE) / (1 - BELL_SLEEVE);
+    const swell = Math.sin(Math.min(1, body * 0.98) * Math.PI * 0.5);
+    const flare = body > 0.72 ? Math.sin(((body - 0.72) / 0.28) * Math.PI) * 0.07 : 0;
+    const radius = (0.034 + 0.36 * swell + flare) * (1 + 0.045 * lobe * body * body);
+    const y = body * 0.6 + 0.012 * lobe * body * body;
     return { radius, y };
   };
 
@@ -467,7 +503,8 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
       const sine = Math.sin(theta);
       const shade = 0.42 + 0.58 * Math.pow(t, 0.85);
       outer[ring][column] = push(cosine * radius, y, sine * radius, shade);
-      const innerRadius = Math.max(0.01, radius - 0.018);
+      const wall = t <= BELL_SLEEVE ? 0.005 : 0.018;
+      const innerRadius = Math.max(0.006, radius - wall);
       inner[ring][column] = push(cosine * innerRadius, y + 0.004, sine * innerRadius, shade * 0.62);
     }
   }
@@ -486,7 +523,7 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
     const next = (column + 1) % columns;
     quad(outer[rings][column], outer[rings][next], inner[rings][next], inner[rings][column]);
   }
-  const back = push(0, 0, 0, 0.36);
+  const back = push(0, BELL_SLEEVE_BACK, 0, 0.36);
   for (let column = 0; column < columns; column += 1) {
     const next = (column + 1) % columns;
     indices.push(back, outer[0][next], outer[0][column]);
@@ -504,11 +541,12 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
 }
 
 /**
- * One fruit. Local +Y continues the supporting tangent. An 8×6 sphere is 96
- * triangles. Cupped, open-face, tufted, and bell surfaces are untouched.
+ * One fruit. Local +Y continues the supporting tangent. A 12×8 sphere is 168
+ * triangles, rounder than the previous 8×6 faceting. Cupped, open-face,
+ * tufted, and bell surfaces are untouched.
  */
-export function createBerryGeometry(seed = 0, radius = 0.07): THREE.BufferGeometry {
-  const geometry = new THREE.SphereGeometry(radius, 8, 6);
+export function createBerryGeometry(seed = 0, radius = 0.078): THREE.BufferGeometry {
+  const geometry = new THREE.SphereGeometry(radius, 12, 8);
   geometry.name = "living-line/berry";
   const positions = geometry.getAttribute("position");
   const squash = 0.9 + variation(seed, 8) * 0.08;
@@ -516,10 +554,11 @@ export function createBerryGeometry(seed = 0, radius = 0.07): THREE.BufferGeomet
   for (let index = 0; index < positions.count; index += 1) {
     const y = positions.getY(index) * squash;
     positions.setY(index, y);
-    const cheek = 0.42 + 0.5 * ((y / radius) * 0.5 + 0.5);
-    colors[index * 3] = Math.min(1, cheek * 1.05);
-    colors[index * 3 + 1] = cheek * 0.62;
-    colors[index * 3 + 2] = cheek * 0.7;
+    const pole = (y / (radius * squash)) * 0.5 + 0.5;
+    const cheek = 0.62 + 0.38 * Math.pow(Math.max(0, Math.min(1, pole)), 0.8);
+    colors[index * 3] = Math.min(1, cheek * 1.06);
+    colors[index * 3 + 1] = cheek * 0.52;
+    colors[index * 3 + 2] = cheek * 0.6;
   }
   geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geometry.computeVertexNormals();

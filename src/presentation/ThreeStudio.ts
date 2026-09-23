@@ -6,7 +6,7 @@ import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/a
 import { sampleMaterialFrame } from "../core/frames.ts";
 import type { Vec3 } from "../core/math.ts";
 import type { Branch, CutPlan, Organ, PlantGraph } from "../core/types.ts";
-import { bloomSurfaceProfile, botanicalSeed, createBellGeometry, createBerryGeometry, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
+import { bloomSurfaceProfile, botanicalSeed, createBellGeometry, createBerryGeometry, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry, tuftInstancePose } from "./botanicalGeometry.ts";
 import {
   disposeObject,
   splitBranchAtMaterialDistance,
@@ -600,12 +600,17 @@ export class ThreeStudio {
           );
           const petalMatrix = new THREE.Matrix4();
           const petalQuaternion = new THREE.Quaternion();
+          const tiltQuaternion = new THREE.Quaternion();
           for (let index = 0; index < profile.petalCount; index += 1) {
-            petalQuaternion.setFromAxisAngle(
-              new THREE.Vector3(0, 0, 1),
-              (index / profile.petalCount) * Math.PI * 2,
+            const pose = tuftInstancePose(seed, index, profile.petalCount, bloom.tuftScatter);
+            petalQuaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), pose.azimuth);
+            tiltQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pose.tilt);
+            petalQuaternion.multiply(tiltQuaternion);
+            petalMatrix.compose(
+              new THREE.Vector3(),
+              petalQuaternion,
+              new THREE.Vector3(pose.scale, pose.scale, pose.scale),
             );
-            petalMatrix.compose(new THREE.Vector3(), petalQuaternion, new THREE.Vector3(1, 1, 1));
             petals.setMatrixAt(index, petalMatrix);
           }
           petals.instanceMatrix.needsUpdate = true;

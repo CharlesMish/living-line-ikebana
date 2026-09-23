@@ -1,4 +1,11 @@
-# Two material references — initial tuning pass
+# Material references and extension contract
+
+**Current status after PR #33:** all seven materials listed below are on main.
+The former flower Aim dead zone and visible-surface acquisition gaps are fixed;
+see [the correction report](development/FLOWER_AIM_POLISH.md). The two original
+references remain the comparison pair. Sections describing earlier prototype
+pauses are historical, not the current dispatch. The next proposed work is in
+[the Round 4 coordinator brief](development/GROK_BOT_ROUND4.md).
 
 This is a working extension contract, pending phone and composition review.
 Keep the flowering and leafy references together when proposing another material.
@@ -66,7 +73,7 @@ picker reduces crown occlusion versus a four-card stack; remaining occlusion
 from the top rail is a framing limit, not a reason to rewrite cameras. Numeric
 tests cannot sign off these observations.
 
-## Current external prototype round
+## Historical Round 2 prototype round
 
 Round 2 integration brings both prototype candidates onto one review branch:
 a sparse bare woody line (`bare-branch-v1`, zero organs) and a single flower
@@ -81,7 +88,7 @@ picker contract live in
 [Workbench fixture profiles](development/WORKBENCH_FIXTURE_PROFILES.md).
 `all-registered-materials` is the labeled dynamic catalog cycle.
 
-## Earlier palette pause
+## Historical two-reference palette pause
 
 The consolidated review supersedes the earlier bare-twig-first recommendation.
 No third material has been selected or commissioned. Multiple copies of either
@@ -101,13 +108,12 @@ Do not modify transactions, cancellation, cameras, insertion ordinals,
 `one-branch-v1`, schema or persistence fields. Return any necessary interface
 extension as a proposal. Add no new craft verbs inside a material prototype.
 
-## Round 3 registered cuttings
+## Round 3 cuttings, now merged
 
-Reed, flower volume, and the arching trailer are registered together on the
-Round 3 integration branch. Catalog order keeps the four established materials,
+Reed, flower volume, and the arching trailer were integrated together and are
+now on main. Catalog order keeps the four established materials,
 then appends `reed`, `flower-volume`, and `arching-trailer`. Each has a Materials
-choice and a source template. They are review cuttings, not a shipping-palette
-commitment. `reference-pair` and `all-four` do not list them. Named profiles
+choice and a source template. `reference-pair` and `all-four` do not list them. Named profiles
 `references-plus-reed`, `references-plus-flower-volume`,
 `references-plus-arching-trailer`, `round3-three`, and `round3-palette` are the
 comparison sets. `all-registered-materials` still cycles the live catalog.

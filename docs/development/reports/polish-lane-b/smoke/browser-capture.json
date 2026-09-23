@@ -1,0 +1,602 @@
+{
+  "label": "smoke",
+  "protocol": "Workbench or Garden view, then one view-button click, then three animation frames. Counters reset immediately before the click. Vessel included. Not a phone.",
+  "seed": 8278,
+  "specimens": [],
+  "costs": [],
+  "environment": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "smoke": [
+    {
+      "material": "berry-twig",
+      "stem": "plant-1:wood",
+      "pruneBranch": "plant-1:cluster-2",
+      "seatedHash": "0d768a64",
+      "aim": {
+        "acquired": true,
+        "offset": [
+          0,
+          -80
+        ],
+        "drag": [
+          48,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              -120
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              120
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              -180
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              180
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              -80
+            ],
+            "operation": "aim"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "aim",
+            "pointerId": 304,
+            "plantId": "plant-1",
+            "branchId": "plant-1:stem-3-2",
+            "materialDistance": 0.19159148512430435,
+            "acquisitionHash": "0d768a64"
+          },
+          "duringHash": "0d768a64",
+          "afterHash": "9fd75a98"
+        }
+      },
+      "afterAimHash": "9fd75a98",
+      "bend": {
+        "acquired": true,
+        "offset": [
+          0,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              0
+            ],
+            "operation": "aim"
+          },
+          {
+            "offset": [
+              0,
+              -16
+            ],
+            "operation": "bend"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "bend",
+            "pointerId": 401,
+            "plantId": "plant-1",
+            "branchId": "plant-1:wood",
+            "materialDistance": 2.5357226628854868,
+            "acquisitionHash": "9fd75a98"
+          },
+          "duringHash": "9fd75a98",
+          "afterHash": "b25f83d5"
+        }
+      },
+      "afterBendHash": "b25f83d5",
+      "preview": {
+        "cue": "Cut branch\nTip + 2 attached stems, 2 berries · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:cluster-2",
+          "materialDistance": 0.42112950963420737,
+          "acquisitionHash": "b25f83d5"
+        },
+        "hash": "b25f83d5"
+      },
+      "previewStill": "docs/development/reports/polish-lane-b/smoke/smoke-berry-twig-prune-preview-front.png",
+      "cancelled": {
+        "beforeHash": "b25f83d5",
+        "beforeTransaction": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:cluster-2",
+          "materialDistance": 0.42112950963420737,
+          "acquisitionHash": "b25f83d5"
+        },
+        "afterHash": "b25f83d5",
+        "afterTransaction": null,
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Cut branchTip + 2 attached stems, 2 berries · release to cut\n      "
+      },
+      "afterCancelHash": "b25f83d5",
+      "committed": {
+        "cue": "Cut branch\nTip + 2 attached stems, 2 berries · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 511,
+          "plantId": "plant-1",
+          "branchId": "plant-1:cluster-2",
+          "materialDistance": 0.42112950963420737,
+          "acquisitionHash": "b25f83d5"
+        },
+        "hash": "22801613"
+      },
+      "afterCommitHash": "22801613",
+      "ordinal": 1,
+      "reloadedHash": "22801613",
+      "kept": {
+        "error": "Kept. You can leave it here, or keep working.",
+        "cards": [
+          "Lane B berry",
+          "Berry and flower accents",
+          "Leafy fern and fan"
+        ]
+      },
+      "viewedHash": "22801613",
+      "copiedHash": "22801613"
+    },
+    {
+      "material": "blossom-spray",
+      "stem": "plant-1:stem",
+      "pruneBranch": "plant-1:group-2",
+      "seatedHash": "e313704c",
+      "aim": {
+        "acquired": true,
+        "offset": [
+          0,
+          -120
+        ],
+        "drag": [
+          48,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              -120
+            ],
+            "operation": "aim"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "aim",
+            "pointerId": 300,
+            "plantId": "plant-1",
+            "branchId": "plant-1:stalk-3-1",
+            "materialDistance": 0.5550935228075823,
+            "acquisitionHash": "e313704c"
+          },
+          "duringHash": "e313704c",
+          "afterHash": "81b56b19"
+        }
+      },
+      "afterAimHash": "81b56b19",
+      "bend": {
+        "acquired": true,
+        "offset": [
+          0,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              0
+            ],
+            "operation": "aim"
+          },
+          {
+            "offset": [
+              0,
+              -16
+            ],
+            "operation": "bend"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "bend",
+            "pointerId": 401,
+            "plantId": "plant-1",
+            "branchId": "plant-1:stem",
+            "materialDistance": 2.817604685582221,
+            "acquisitionHash": "81b56b19"
+          },
+          "duringHash": "81b56b19",
+          "afterHash": "1f47613f"
+        }
+      },
+      "afterBendHash": "1f47613f",
+      "preview": {
+        "cue": "Cut branch\nTip + 1 attached stem, 1 flower · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:group-2",
+          "materialDistance": 1.1873840370599145,
+          "acquisitionHash": "1f47613f"
+        },
+        "hash": "1f47613f"
+      },
+      "previewStill": "docs/development/reports/polish-lane-b/smoke/smoke-blossom-spray-prune-preview-front.png",
+      "cancelled": {
+        "beforeHash": "1f47613f",
+        "beforeTransaction": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:group-2",
+          "materialDistance": 1.1873840370599145,
+          "acquisitionHash": "1f47613f"
+        },
+        "afterHash": "1f47613f",
+        "afterTransaction": null,
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Cut branchTip + 1 attached stem, 1 flower · release to cut\n      "
+      },
+      "afterCancelHash": "1f47613f",
+      "committed": {
+        "cue": "Cut branch\nTip + 1 attached stem, 1 flower · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 511,
+          "plantId": "plant-1",
+          "branchId": "plant-1:group-2",
+          "materialDistance": 1.1873840370599145,
+          "acquisitionHash": "1f47613f"
+        },
+        "hash": "7d054682"
+      },
+      "afterCommitHash": "7d054682",
+      "ordinal": 1,
+      "reloadedHash": "7d054682",
+      "kept": {
+        "error": "Kept. You can leave it here, or keep working.",
+        "cards": [
+          "Lane B blossom",
+          "Lane B berry",
+          "Berry and flower accents",
+          "Leafy fern and fan"
+        ]
+      },
+      "viewedHash": "7d054682",
+      "copiedHash": "7d054682"
+    },
+    {
+      "material": "flower-volume",
+      "stem": "plant-1:stem",
+      "pruneBranch": "plant-1:group-2",
+      "seatedHash": "5c6ba5af",
+      "aim": {
+        "acquired": true,
+        "offset": [
+          0,
+          -120
+        ],
+        "drag": [
+          48,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              -120
+            ],
+            "operation": "aim"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "aim",
+            "pointerId": 300,
+            "plantId": "plant-1",
+            "branchId": "plant-1:group-2",
+            "materialDistance": 0.3236592336674222,
+            "acquisitionHash": "5c6ba5af"
+          },
+          "duringHash": "5c6ba5af",
+          "afterHash": "f9081463"
+        }
+      },
+      "afterAimHash": "f9081463",
+      "bend": {
+        "acquired": true,
+        "offset": [
+          0,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              0
+            ],
+            "operation": "aim"
+          },
+          {
+            "offset": [
+              0,
+              -16
+            ],
+            "operation": "bend"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "bend",
+            "pointerId": 401,
+            "plantId": "plant-1",
+            "branchId": "plant-1:stem",
+            "materialDistance": 2.419744217023999,
+            "acquisitionHash": "f9081463"
+          },
+          "duringHash": "f9081463",
+          "afterHash": "b0796cd7"
+        }
+      },
+      "afterBendHash": "b0796cd7",
+      "preview": {
+        "cue": "Cut flower stem\nTip + 1 flower · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:group-2",
+          "materialDistance": 0.3236592336674222,
+          "acquisitionHash": "b0796cd7"
+        },
+        "hash": "b0796cd7"
+      },
+      "previewStill": "docs/development/reports/polish-lane-b/smoke/smoke-flower-volume-prune-preview-front.png",
+      "cancelled": {
+        "beforeHash": "b0796cd7",
+        "beforeTransaction": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:group-2",
+          "materialDistance": 0.3236592336674222,
+          "acquisitionHash": "b0796cd7"
+        },
+        "afterHash": "b0796cd7",
+        "afterTransaction": null,
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Cut flower stemTip + 1 flower · release to cut\n      "
+      },
+      "afterCancelHash": "b0796cd7",
+      "committed": {
+        "cue": "Cut flower stem\nTip + 1 flower · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 511,
+          "plantId": "plant-1",
+          "branchId": "plant-1:group-2",
+          "materialDistance": 0.3236592336674222,
+          "acquisitionHash": "b0796cd7"
+        },
+        "hash": "06589c4f"
+      },
+      "afterCommitHash": "06589c4f",
+      "ordinal": 1,
+      "reloadedHash": "06589c4f",
+      "kept": {
+        "error": "Kept. You can leave it here, or keep working.",
+        "cards": [
+          "Lane B volume",
+          "Lane B blossom",
+          "Lane B berry",
+          "Berry and flower accents",
+          "Leafy fern and fan"
+        ]
+      },
+      "viewedHash": "06589c4f",
+      "copiedHash": "06589c4f"
+    },
+    {
+      "material": "nodding-flower",
+      "stem": "plant-1:stem",
+      "pruneBranch": "plant-1:neck",
+      "seatedHash": "f4ed4497",
+      "aim": {
+        "acquired": true,
+        "offset": [
+          0,
+          80
+        ],
+        "drag": [
+          48,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              -120
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              120
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              -180
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              180
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              -80
+            ],
+            "operation": null
+          },
+          {
+            "offset": [
+              0,
+              80
+            ],
+            "operation": "aim"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "aim",
+            "pointerId": 305,
+            "plantId": "plant-1",
+            "branchId": "plant-1:stem",
+            "materialDistance": 0.0461404502486121,
+            "acquisitionHash": "f4ed4497"
+          },
+          "duringHash": "f4ed4497",
+          "afterHash": "fec1a404"
+        }
+      },
+      "afterAimHash": "fec1a404",
+      "bend": {
+        "acquired": true,
+        "offset": [
+          0,
+          0
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              0
+            ],
+            "operation": "bend"
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "bend",
+            "pointerId": 400,
+            "plantId": "plant-1",
+            "branchId": "plant-1:stem",
+            "materialDistance": 1.2705613314427433,
+            "acquisitionHash": "fec1a404"
+          },
+          "duringHash": "fec1a404",
+          "afterHash": "5bad3850"
+        }
+      },
+      "afterBendHash": "5bad3850",
+      "preview": {
+        "cue": "Cut flower stem\nTip + 1 flower · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:neck",
+          "materialDistance": 0.8012905258026907,
+          "acquisitionHash": "5bad3850"
+        },
+        "hash": "5bad3850"
+      },
+      "previewStill": "docs/development/reports/polish-lane-b/smoke/smoke-nodding-flower-prune-preview-front.png",
+      "cancelled": {
+        "beforeHash": "5bad3850",
+        "beforeTransaction": {
+          "operation": "prune",
+          "pointerId": 510,
+          "plantId": "plant-1",
+          "branchId": "plant-1:neck",
+          "materialDistance": 0.8012905258026907,
+          "acquisitionHash": "5bad3850"
+        },
+        "afterHash": "5bad3850",
+        "afterTransaction": null,
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Cut flower stemTip + 1 flower · release to cut\n      "
+      },
+      "afterCancelHash": "5bad3850",
+      "committed": {
+        "cue": "Cut flower stem\nTip + 1 flower · release to cut",
+        "during": {
+          "operation": "prune",
+          "pointerId": 511,
+          "plantId": "plant-1",
+          "branchId": "plant-1:neck",
+          "materialDistance": 0.8012905258026907,
+          "acquisitionHash": "5bad3850"
+        },
+        "hash": "afc3b15a"
+      },
+      "afterCommitHash": "afc3b15a",
+      "ordinal": 1,
+      "reloadedHash": "afc3b15a",
+      "kept": {
+        "error": "Kept. You can leave it here, or keep working.",
+        "cards": [
+          "Lane B nodding",
+          "Lane B volume",
+          "Lane B blossom",
+          "Lane B berry",
+          "Berry and flower accents",
+          "Leafy fern and fan"
+        ]
+      },
+      "viewedHash": "afc3b15a",
+      "copiedHash": "afc3b15a"
+    }
+  ]
+}

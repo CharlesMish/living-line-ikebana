@@ -1,0 +1,350 @@
+{
+  "label": "after",
+  "protocol": "Workbench or Garden view, then one view-button click, then three animation frames. Counters reset immediately before the click. Vessel included. Not a phone.",
+  "seed": 8278,
+  "specimens": [
+    {
+      "material": "berry-twig",
+      "summary": {
+        "canonicalHash": "0d768a64",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 13,
+            "organs": 9,
+            "activeOrgans": 9,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 97.5,
+            "calls": 95,
+            "triangles": 15922
+          },
+          "canonicalHash": "0d768a64",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-b/after/berry-twig-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 105.89999999990687,
+            "calls": 95,
+            "triangles": 15922
+          },
+          "canonicalHash": "0d768a64",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-b/after/berry-twig-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 149.9000000001397,
+            "calls": 95,
+            "triangles": 15922
+          },
+          "canonicalHash": "0d768a64",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-b/after/berry-twig-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "blossom-spray",
+      "summary": {
+        "canonicalHash": "e313704c",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 10,
+            "organs": 6,
+            "activeOrgans": 6,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 132.5,
+            "calls": 83,
+            "triangles": 17998
+          },
+          "canonicalHash": "e313704c",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-b/after/blossom-spray-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 120.9000000001397,
+            "calls": 83,
+            "triangles": 17998
+          },
+          "canonicalHash": "e313704c",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-b/after/blossom-spray-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 178.5,
+            "calls": 83,
+            "triangles": 17998
+          },
+          "canonicalHash": "e313704c",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-b/after/blossom-spray-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "flower-volume",
+      "summary": {
+        "canonicalHash": "5c6ba5af",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 126.19999999995343,
+            "calls": 81,
+            "triangles": 16734
+          },
+          "canonicalHash": "5c6ba5af",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-b/after/flower-volume-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 124.9000000001397,
+            "calls": 81,
+            "triangles": 16734
+          },
+          "canonicalHash": "5c6ba5af",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-b/after/flower-volume-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 150.0999999998603,
+            "calls": 81,
+            "triangles": 16734
+          },
+          "canonicalHash": "5c6ba5af",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-b/after/flower-volume-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "nodding-flower",
+      "summary": {
+        "canonicalHash": "f4ed4497",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "organs": 2,
+            "activeOrgans": 2,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 103.69999999995343,
+            "calls": 29,
+            "triangles": 12302
+          },
+          "canonicalHash": "f4ed4497",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-b/after/nodding-flower-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 89.30000000004657,
+            "calls": 29,
+            "triangles": 12302
+          },
+          "canonicalHash": "f4ed4497",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-b/after/nodding-flower-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 138.5999999998603,
+            "calls": 29,
+            "triangles": 12302
+          },
+          "canonicalHash": "f4ed4497",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-b/after/nodding-flower-seed8278-count1-above.png"
+        }
+      }
+    }
+  ],
+  "costs": [
+    {
+      "title": "Berry and flower accents",
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 166.69999999995343,
+            "calls": 253,
+            "triangles": 43674
+          },
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-b/after/arrangement-b-berry-flower-accents-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 171.30000000004657,
+            "calls": 253,
+            "triangles": 43674
+          },
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-b/after/arrangement-b-berry-flower-accents-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 186.0999999998603,
+            "calls": 253,
+            "triangles": 43674
+          },
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-b/after/arrangement-b-berry-flower-accents-above.png"
+        }
+      },
+      "summary": {
+        "canonicalHash": "1f7e3e94",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 4,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 13,
+            "organs": 9,
+            "activeOrgans": 9,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 8,
+            "organs": 5,
+            "activeOrgans": 5,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-4",
+            "seed": 11209,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "organs": 2,
+            "activeOrgans": 2,
+            "inactiveOrganIds": []
+          }
+        ]
+      }
+    }
+  ],
+  "environment": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "orbit": "/workspace/docs/development/reports/polish-lane-b/after/flower-volume-seed8278-count1-orbit.mp4",
+  "import": {
+    "dialogOpened": true,
+    "error": "Imported 0 arrangements.",
+    "count": "2 / 24 moments kept",
+    "titles": [
+      "Berry and flower accents",
+      "Leafy fern and fan"
+    ]
+  }
+}

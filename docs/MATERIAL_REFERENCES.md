@@ -123,7 +123,7 @@ comparison sets. `all-registered-materials` still cycles the live catalog.
 | Cutting | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
 | Reed / `reed-v1` | One 16-segment culm, zero organs. Length is one later seeded sample in `3.35..6.25` | Olive culm `0x4e6240`, roughness `0.8` | Culm stiffness `0.56`, copied once. Shared solver |
-| Flower volume / `flower-volume-v1` | One stem, two modest leaves, five flower-bearing pedicel groups packed into one head | Tufted eight-petal cups in a dusty rose; darker green stem than the single flower | Stem stiffness `0.55`; groups `0.2`; leaf stalks `0.18`; shared solver |
+| Flower volume / `flower-volume-v1` | One stem, two modest leaves, five flower-bearing pedicel groups packed into one head | Tufted eight-petal cups in a dusty rose; darker green stem than the single flower. Petal matrices scatter slightly so the head is not a perfect gear. Hit radius stays `0.56` | Stem stiffness `0.55`; groups `0.2`; leaf stalks `0.18`; shared solver |
 | Arching trailer / `arching-trailer-v1` | One authored arching cane and three small leaves on the descending limb | Cool blue-green cane `0x3d6d62`, roughness `0.58` | Cane stiffness `0.50`; petioles `0.18`. Shared single station. No bowl collision |
 
 Each flower-volume group is one pedicel and one bloom. Pruning that pedicel
@@ -147,8 +147,8 @@ generators, fixtures, or the orders above. `reference-pair`, `mixed`, `all-four`
 | Cutting | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
 | Foliage fan / `foliage-fan-v1` | One stem, three lateral arms, eight small leaves on those arms. A basal span stays below the first arm | Yellow-green stock `0x7c9a34`; existing elliptic leaves, smaller than the leafy shoot's blades | Stem `0.47`, arms `0.36`, stalks `0.18`, copied once. Shared solver |
-| Blossom spray / `blossom-spray-v1` | Thin green stem and two or three laterals. Four to six small flowers, each a pedicel and one bloom on a lateral, with open space between them | Existing tufted bloom, pale `0xf6d0d8`. Stem `0x7d9a55`, roughness `0.66`. Same tuft hit radius `0.56` as flower volume | Stem `0.48`, laterals `0.41`, stalks `0.18`. Copied once. Shared solver |
-| Nodding flower / `nodding-flower-v1` | One supporting stem, one leaf, and one pedicel neck whose rest curve ends downward. The bell opens along that neck | Bell `0x7d94b8`, roughness `0.56`, hit radius `0.66` centered at local Y `0.32`. Stem `0x516846` | Stem `0.48`, stalk `0.18`, copied once. The neck is rest geometry. Shared solver |
+| Blossom spray / `blossom-spray-v1` | Thin green stem and two or three laterals. Four to six small flowers, each a pedicel and one bloom on a lateral, with open space between them | Existing tufted bloom, pale `0xf6d0d8`. Stem `0x7d9a55`, roughness `0.66`. Same tuft hit radius `0.56` as flower volume. Petal scatter is wider than the packed head, still one instanced tuft per bloom | Stem `0.48`, laterals `0.41`, stalks `0.18`. Copied once. Shared solver |
+| Nodding flower / `nodding-flower-v1` | One supporting stem, one leaf, and one pedicel neck whose rest curve ends downward. The bell opens along that neck | Bell `0x7d94b8`, roughness `0.56`, hit radius `0.66` centered at local Y `0.32`. The same shell has a short sleeve behind the attachment. Stem `0x516846` | Stem `0.48`, stalk `0.18`, copied once. The neck is rest geometry. Shared solver |
 
 Cutting the foliage fan's opening arm deactivates that arm's leaf stalks and
 leaves and leaves the answering and crown arms unchanged. A blossom-spray
@@ -156,9 +156,11 @@ flower-stalk cut removes that one bloom. A lateral cut removes that group's
 descendant stalks and blooms and leaves the stem and the other groups. Those
 cuts are graph facts. They do not add a draw call. The fan's leaves stay
 separate organs on the existing elliptic surface. The blossom spray uses the
-existing tufted bloom. The nodding flower uses one bell shell along the
-supporting tangent. Cupped, open-face, and tufted blooms keep their radial
-paths. None of these cuttings is a named species.
+existing tufted bloom. Its petal matrices scatter more than the flower-volume
+head; both stay one instanced tuft per bloom, and the hit radius stays `0.56`.
+The nodding flower uses one bell shell along the supporting tangent, with a
+short sleeve of that shell behind the attachment. Cupped and open-face blooms
+keep their radial paths. None of these cuttings is a named species.
 
 ## Phase 2 candidates
 
@@ -175,7 +177,7 @@ stops at flower volume and omits both Phase 2 cuttings.
 
 | Cutting | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
-| Berry twig / `berry-twig-v1` | One woody twig, two or three short laterals, and three or four berries on each lateral. Each berry is one short pedicel and one berry organ at that tip | Warm wood `0x6a4532`, roughness `0.9`. One low-poly berry sphere `0x8a2e45`, roughness `0.4`, radius `0.07`, hit radius `0.145` centered at local Y `0.055`. Unused leaf and bloom slots copy flowering | Wood `0.78`, cluster `0.52`, berry stem `0.18`, copied once. Shared solver. Pedicels are not bend handles |
+| Berry twig / `berry-twig-v1` | One woody twig, two or three short laterals, and three or four berries on each lateral. Each berry is one short pedicel and one berry organ at that tip | Warm wood `0x6a4532`, roughness `0.9`. One berry sphere `0xa63e56`, roughness `0.3`, radius `0.078`, 12×8, hit radius `0.145` centered at local Y `0.055`. Unused leaf and bloom slots copy flowering | Wood `0.78`, cluster `0.52`, berry stem `0.18`, copied once. Shared solver. Pedicels are not bend handles |
 | Fern frond / `fern-frond-v1` | One 16-segment rachis and eight alternating pinna stalks. Each stalk carries one divided pinna, not a swarm of pinnules. A basal span stays below the first pinna | Rachis `0x2c5c45`, roughness `0.72`. Pinnae use a new `pinnate` surface: a costa plus three pairs of separate pinnules, color `0x7eae62`. Hit radius `0.78` centered at local Y `0.56`. No bloom is generated | Rachis `0.43`, stalks `0.18`, copied once. Stalks are petioles, so the shared solver bends the rachis only |
 
 Cutting one berry stem deactivates that berry and leaves the other berries on the same lateral. Cutting the lateral deactivates that cluster’s stems and berries and leaves the wood and the other clusters. Those cuts are graph facts. Each berry is one sphere draw. Removing a cluster hides those spheres and does not allocate a new mesh. This is a generic woody accent, not a named species, and not a recolored blossom or a packed flower head.

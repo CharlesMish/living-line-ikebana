@@ -1,7 +1,17 @@
+import { bendStationsMode, type BendStationsMode } from "./bendStations.ts";
+
 export type BendVariant = "bead" | "touch";
 
 export type ExperimentConfig = {
   bendVariant: BendVariant;
+  /**
+   * `?experiment=bend-stations` was present. Stays true even when touch
+   * excludes the experiment, so a later return to the fixed bead can
+   * restore it without a save-field migration.
+   */
+  bendStationsRequested: boolean;
+  /** `on` only when requested and the touch variant is not active. */
+  bendStationsMode: BendStationsMode;
   debug: boolean;
   workbench: boolean;
   /** Starts a clean specimen/arrangement session. Never touches study telemetry. */
@@ -17,8 +27,12 @@ export type ExperimentConfig = {
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
   const bend = url.searchParams.get("bend");
+  const bendVariant = bend === "touch" ? "touch" : "bead";
+  const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
   return {
-    bendVariant: bend === "touch" ? "touch" : "bead",
+    bendVariant,
+    bendStationsRequested,
+    bendStationsMode: bendStationsMode(bendStationsRequested, bendVariant),
     debug: url.searchParams.get("debug") === "1",
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",

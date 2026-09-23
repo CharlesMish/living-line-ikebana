@@ -2,6 +2,7 @@
 
 - Candidate / role: Round 4 Lane D, optional bend-position experiment (`bend-stations`)
 - Baseline SHA: `59e42e6554b05ff2fc415514370430716e9e8515` (merged PR #33)
+- Experiment commit: `e7dea13c4037c022b45ffdcf67d6cdea778a4877`
 - Branch: `cursor/bend-stations-220e`
 - Contract: preserved. The default bead remains `0.54` of active rest arc. This flag does not revise the solver, gain, caps, stiffness, rest lengths, frame transport, transactions, persistence, or `?bend=touch`.
 
@@ -58,7 +59,7 @@ Visually, the reed and bare branch showed a readable change of direction after t
 
 | Check | Result | Notes |
 | --- | --- | --- |
-| `npm ci` + `npm run verify` on the tip | pass | 193 tests, typecheck, production build, dist validation |
+| `npm ci` + `npm run verify` | pass | Run on the tree committed as `e7dea13`. 193 tests, typecheck, production build, dist validation |
 | Baseline test count | ~182 at `59e42e6` | This branch adds 11 focused tests |
 | Default interaction without the flag | pass | Seated leafy shoot keeps the selector hidden. Bead path remains the 54% station |
 | Lower / Middle / Upper | pass | Browser: hidden before a branch is selected; Middle after seating; Lower and Upper move the one bead; canonical hash unchanged until a bend is released |

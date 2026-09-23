@@ -1,0 +1,77 @@
+{
+  "fernAim": {
+    "operation": "aim",
+    "before": {
+      "hash": "32a97877",
+      "rest": 3.75022561246995,
+      "active": 3.75022561246995
+    },
+    "after": {
+      "hash": "ea7563af",
+      "ordinal": 1,
+      "rest": 3.75022561246995,
+      "active": 3.75022561246995
+    }
+  },
+  "fernBend": {
+    "operation": "bend",
+    "before": {
+      "hash": "ea7563af",
+      "rest": 3.75022561246995,
+      "active": 3.75022561246995
+    },
+    "after": {
+      "hash": "92aa9f8e",
+      "ordinal": 1,
+      "rest": 3.75022561246995,
+      "active": 3.75022561246995
+    }
+  },
+  "fanAim": {
+    "operation": "aim",
+    "before": {
+      "hash": "0c41197f",
+      "rest": 2.6202256124699494,
+      "active": 2.6202256124699494
+    },
+    "after": {
+      "hash": "90fbf98a",
+      "ordinal": 1,
+      "rest": 2.6202256124699494,
+      "active": 2.6202256124699494
+    }
+  },
+  "fanBend": {
+    "operation": "bend",
+    "before": {
+      "hash": "90fbf98a",
+      "rest": 2.6202256124699494,
+      "active": 2.6202256124699494
+    },
+    "after": {
+      "hash": "c3024a34",
+      "ordinal": 1,
+      "rest": 2.6202256124699494,
+      "active": 2.6202256124699494
+    }
+  },
+  "fanArmPreview": {
+    "hash": "c3024a34",
+    "branch": "plant-1:arm-opening",
+    "cue": "Cut branch / Tip + 3 attached stems, 3 leaves · release to cut",
+    "saves": 2
+  },
+  "fanArmCancelHash": "c3024a34",
+  "fanArmCommit": {
+    "hash": "9c4b8f77",
+    "ordinal": 1,
+    "inactive": [
+      "plant-1:leaf-opening-1",
+      "plant-1:leaf-opening-2",
+      "plant-1:leaf-opening-3"
+    ],
+    "opening": 0.42676371890049347,
+    "organs": 8,
+    "branches": 12
+  }
+}

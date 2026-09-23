@@ -296,6 +296,8 @@ export class IkebanaApp {
     this.ui.studio.append(this.canvas);
     this.studio = new ThreeStudio(this.canvas, {
       debugHitTargets: this.config.debug,
+      pinnateDraw: this.config.pinnateDraw,
+      fanLeafDraw: this.config.fanLeafDraw,
     });
 
     const initial = this.loadInitialDocument();

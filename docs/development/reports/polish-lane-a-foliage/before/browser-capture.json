@@ -1,0 +1,217 @@
+{
+  "label": "before",
+  "query": "",
+  "app": "http://127.0.0.1:5173/?workbench=1&fresh=1&test=1",
+  "specimens": [
+    {
+      "material": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 196.39999999996508,
+            "calls": 91,
+            "triangles": 16726
+          },
+          "canonicalHash": "32a97877",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/fern-frond-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 32,
+            "calls": 91,
+            "triangles": 16726
+          },
+          "canonicalHash": "32a97877",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/fern-frond-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 135.90000000002328,
+            "calls": 91,
+            "triangles": 16726
+          },
+          "canonicalHash": "32a97877",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/fern-frond-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "foliage-fan",
+      "seed": 8278,
+      "count": 1,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 87.79999999998836,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/foliage-fan-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 24.599999999976717,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/foliage-fan-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 139.10000000003492,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/foliage-fan-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "leafy-shoot",
+      "seed": 8278,
+      "count": 1,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 89.39999999996508,
+            "calls": 81,
+            "triangles": 14034
+          },
+          "canonicalHash": "6645d73a",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/leafy-shoot-seed8278-count1-front.png"
+        }
+      }
+    },
+    {
+      "material": "flowering-branch",
+      "seed": 8278,
+      "count": 1,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 41,
+            "calls": 153,
+            "triangles": 26042
+          },
+          "canonicalHash": "b81a82aa",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/flowering-branch-seed8278-count1-front.png"
+        }
+      }
+    },
+    {
+      "material": "arching-trailer",
+      "seed": 8278,
+      "count": 1,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 80.59999999997672,
+            "calls": 41,
+            "triangles": 10058
+          },
+          "canonicalHash": "d0ebb2e1",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-a-foliage/before/arching-trailer-seed8278-count1-front.png"
+        }
+      }
+    }
+  ],
+  "arrangement": {
+    "title": "Leafy fern and fan",
+    "views": {
+      "front": {
+        "counts": {
+          "renderElapsedMs": 168.5,
+          "calls": 255,
+          "triangles": 34414
+        },
+        "canonicalHash": "3b1e9ad9",
+        "cameraHash": "f3827392",
+        "still": "docs/development/reports/polish-lane-a-foliage/before/arrangement-a-leafy-fern-fan-front.png"
+      },
+      "three-quarter": {
+        "counts": {
+          "renderElapsedMs": 132.89999999996508,
+          "calls": 255,
+          "triangles": 34414
+        },
+        "canonicalHash": "3b1e9ad9",
+        "cameraHash": "3873951b",
+        "still": "docs/development/reports/polish-lane-a-foliage/before/arrangement-a-leafy-fern-fan-three-quarter.png"
+      },
+      "above": {
+        "counts": {
+          "renderElapsedMs": 148.39999999996508,
+          "calls": 255,
+          "triangles": 34414
+        },
+        "canonicalHash": "3b1e9ad9",
+        "cameraHash": "fb0ff9ba",
+        "still": "docs/development/reports/polish-lane-a-foliage/before/arrangement-a-leafy-fern-fan-above.png"
+      }
+    },
+    "summary": {
+      "canonicalHash": "3b1e9ad9",
+      "cameraHash": "fb0ff9ba",
+      "ordinal": 3,
+      "view": "above",
+      "tool": "shape",
+      "plants": [
+        {
+          "id": "plant-1",
+          "seed": 8278,
+          "generatorVersion": "leafy-shoot-v1",
+          "activeOrgans": 7,
+          "inactiveOrganIds": []
+        },
+        {
+          "id": "plant-2",
+          "seed": 9255,
+          "generatorVersion": "fern-frond-v1",
+          "activeOrgans": 7,
+          "inactiveOrganIds": [
+            "plant-2:pinna-blade-4"
+          ]
+        },
+        {
+          "id": "plant-3",
+          "seed": 10232,
+          "generatorVersion": "foliage-fan-v1",
+          "activeOrgans": 8,
+          "inactiveOrganIds": []
+        }
+      ]
+    }
+  },
+  "environment": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+  }
+}

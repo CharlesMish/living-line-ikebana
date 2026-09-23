@@ -1,0 +1,234 @@
+{
+  "steps": [
+    {
+      "step": "fern-loaded",
+      "hash": "32a97877",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-aim-pinna",
+      "hash": "1069f03c",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": "plant-1:pinna-3",
+      "saves": 1,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-bend-or-aim-rachis",
+      "hash": "491de623",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": "plant-1:rachis",
+      "saves": 2,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-prune-preview",
+      "hash": "491de623",
+      "ordinal": 1,
+      "tool": "prune",
+      "transaction": {
+        "operation": "prune",
+        "pointerId": 21,
+        "plantId": "plant-1",
+        "branchId": "plant-1:pinna-4",
+        "materialDistance": 0.07477331411119612,
+        "acquisitionHash": "491de623"
+      },
+      "selected": "plant-1:pinna-4",
+      "saves": 2,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-prune-cancel",
+      "hash": "491de623",
+      "ordinal": 1,
+      "tool": "prune",
+      "transaction": null,
+      "selected": "plant-1:pinna-4",
+      "saves": 2,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-prune-commit",
+      "hash": "05b5752d",
+      "ordinal": 1,
+      "tool": "prune",
+      "transaction": null,
+      "selected": "plant-1:pinna-4",
+      "saves": 3,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-reload",
+      "hash": "05b5752d",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-garden-view",
+      "hash": "05b5752d",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fern-garden-copy",
+      "hash": "05b5752d",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-loaded",
+      "hash": "0c41197f",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-aim-stem",
+      "hash": "90fbf98a",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": "plant-1:stem",
+      "saves": 1,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-bend-or-aim-stem",
+      "hash": "c3024a34",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": "plant-1:stem",
+      "saves": 2,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-prune-preview",
+      "hash": "c3024a34",
+      "ordinal": 1,
+      "tool": "prune",
+      "transaction": {
+        "operation": "prune",
+        "pointerId": 41,
+        "plantId": "plant-1",
+        "branchId": "plant-1:petiole-opening-1",
+        "materialDistance": 0.2047339999489484,
+        "acquisitionHash": "c3024a34"
+      },
+      "selected": "plant-1:petiole-opening-1",
+      "saves": 2,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-prune-cancel",
+      "hash": "c3024a34",
+      "ordinal": 1,
+      "tool": "prune",
+      "transaction": null,
+      "selected": "plant-1:petiole-opening-1",
+      "saves": 2,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-prune-commit",
+      "hash": "48335719",
+      "ordinal": 1,
+      "tool": "prune",
+      "transaction": null,
+      "selected": "plant-1:petiole-opening-1",
+      "saves": 3,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-reload",
+      "hash": "48335719",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-garden-view",
+      "hash": "48335719",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    },
+    {
+      "step": "fan-garden-copy",
+      "hash": "48335719",
+      "ordinal": 1,
+      "tool": "shape",
+      "transaction": null,
+      "selected": null,
+      "saves": 0,
+      "lastSaveHash": null
+    }
+  ],
+  "fernPreviewCue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+  "fernOrgan": {
+    "active": false,
+    "organs": 8,
+    "inactive": [
+      "plant-1:pinna-blade-4"
+    ]
+  },
+  "fernReloadMatched": true,
+  "fernGarden": {
+    "viewed": "05b5752d",
+    "copied": "05b5752d",
+    "kept": "05b5752d"
+  },
+  "fanPreviewCue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+  "fanCancelAddedSave": false,
+  "fanOrgans": {
+    "organs": 8,
+    "inactive": [
+      "plant-1:leaf-opening-1"
+    ],
+    "openingLength": 1.627900784239173
+  },
+  "fanReloadMatched": true,
+  "gardenCards": [
+    "Lane A fan\n9/23/2026 · 1 cutting\nCompare\nRemove",
+    "Lane A fern\n9/23/2026 · 1 cutting\nCompare\nRemove",
+    "Berry and flower accents\n9/23/2026 · 4 cuttings\nCompare\nRemove",
+    "Leafy fern and fan\n9/23/2026 · 3 cuttings\nCompare\nRemove"
+  ],
+  "fanGarden": {
+    "found": true,
+    "viewed": "48335719",
+    "copied": "48335719",
+    "kept": "48335719"
+  }
+}

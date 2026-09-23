@@ -109,14 +109,15 @@ test("material preparation requires an exact catalog ID without fallback", () =>
   );
 });
 
-test("catalog order keeps the four established materials, then the Round 3 cuttings", () => {
+test("catalog order keeps the four established materials, then Round 3, then blossom-spray", () => {
   assert.deepEqual(
     getMaterialDefinitions().map((definition) => definition.materialId),
-    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer"],
+    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "blossom-spray"],
   );
   assert.equal(isSupportedGeneratorVersion("bare-branch-v1"), true);
   assert.equal(isSupportedGeneratorVersion("single-flower-v1"), true);
   assert.equal(isSupportedGeneratorVersion("reed-v1"), true);
   assert.equal(isSupportedGeneratorVersion("flower-volume-v1"), true);
   assert.equal(isSupportedGeneratorVersion("arching-trailer-v1"), true);
+  assert.equal(isSupportedGeneratorVersion("blossom-spray-v1"), true);
 });

@@ -99,6 +99,7 @@ test("adding an unrelated registered material cannot change reference-pair graph
   assert.equal(dynamicSequence[4]?.materialId, "reed");
   assert.equal(dynamicSequence[5]?.materialId, "flower-volume");
   assert.equal(dynamicSequence[6]?.materialId, "arching-trailer");
+  assert.equal(dynamicSequence[7]?.materialId, "blossom-spray");
   assert.equal(dynamicSequence.at(-1)?.materialId, "unrelated-candidate");
   assert.notEqual(pairSequence[4]?.materialId, dynamicSequence[4]?.materialId);
 });
@@ -126,7 +127,7 @@ test("candidate profiles stay listed and disabled until their materials are in t
   for (const id of [
     "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
-    "round3-three", "round3-palette",
+    "round3-three", "round3-palette", "blossom-compare",
   ] as const) {
     const resolved = resolveWorkbenchFixture(id, catalog);
     assert.ok(resolved.missingMaterialIds.length > 0, `${id} should be gated without candidates`);
@@ -153,10 +154,10 @@ test("candidate profiles stay listed and disabled until their materials are in t
 test("this integration catalog makes named candidate profiles available to the picker", () => {
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
-    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "blossom-spray",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
-    "round3-three", "round3-palette", "all-registered-materials",
+    "round3-three", "round3-palette", "blossom-compare", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);
   assert.ok(options.every((option) => option.available));

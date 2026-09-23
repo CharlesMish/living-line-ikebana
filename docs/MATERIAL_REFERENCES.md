@@ -3,9 +3,9 @@
 This is a working extension contract, pending phone and composition review.
 Keep the flowering and leafy references together when proposing another material.
 The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1`,
-`single-flower-v1`, `reed-v1`, `flower-volume-v1`, and `arching-trailer-v1` are
-additive. Catalog order is flowering → leafy → bare-branch → single-flower →
-reed → flower-volume → arching-trailer.
+`single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`, and
+`blossom-spray-v1` are additive. Catalog order is flowering → leafy → bare-branch → single-flower →
+reed → flower-volume → arching-trailer → blossom-spray.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -122,6 +122,22 @@ Each flower-volume group is one pedicel and one bloom. Pruning that pedicel
 deactivates that bloom and leaves the other groups unchanged. That cut is a
 graph fact. The current renderer draws one instanced mesh per bloom; a group
 cut does not require a separate draw call.
+
+## Round 4 candidate — blossom spray
+
+`blossom-spray-v1` is an additive review cutting, not a shipping-palette
+commitment. Catalog order appends `blossom-spray` after the arching trailer.
+`reference-pair`, `mixed`, `all-four`, `round3-three`, and `round3-palette`
+do not list it. The comparison profile is `blossom-compare`: flowering branch,
+flower volume, then blossom spray.
+
+| Cutting | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Blossom spray / `blossom-spray-v1` | Thin green stem and two or three laterals. Four to six small flowers, each a pedicel and one bloom on a lateral, with open space between them | Existing tufted bloom, pale `0xf6d0d8`. Stem `0x7d9a55`, roughness `0.66`. Same tuft hit radius `0.56` as flower volume | Stem `0.48`, laterals `0.41`, stalks `0.18`. Copied once. Shared solver |
+
+A flower-stalk cut removes that one bloom. A lateral cut removes that group's
+descendant stalks and blooms and leaves the stem and the other groups. The
+renderer hides those organs. It does not need a new draw call for the prune.
 
 The trailer’s centered rest pose crosses the open water and stays clear of the
 ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance

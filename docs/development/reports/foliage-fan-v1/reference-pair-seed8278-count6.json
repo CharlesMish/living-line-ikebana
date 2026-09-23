@@ -1,0 +1,4686 @@
+{
+  "reportVersion": 2,
+  "schema": "living-line-workbench-report",
+  "mode": "workbench",
+  "capturedAt": "2026-09-23T01:00:26.301Z",
+  "loadedFixture": {
+    "fixtureId": "reference-pair",
+    "profileId": "reference-pair",
+    "kind": "stable-profile",
+    "dynamic": false,
+    "seed": 8278,
+    "count": 6,
+    "materialSequence": [
+      "flowering-branch",
+      "leafy-shoot"
+    ],
+    "composition": {
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot"
+      ],
+      "assignedMaterialIds": [
+        "flowering-branch",
+        "leafy-shoot",
+        "flowering-branch",
+        "leafy-shoot",
+        "flowering-branch",
+        "leafy-shoot"
+      ],
+      "countsByMaterialId": {
+        "flowering-branch": 3,
+        "leafy-shoot": 3
+      },
+      "balancedEqualCopies": true,
+      "warnings": []
+    },
+    "construction": [
+      {
+        "index": 0,
+        "plantId": "plant-1",
+        "seed": 8278,
+        "materialId": "flowering-branch",
+        "base": {
+          "x": 0,
+          "y": 0.55,
+          "z": 0
+        },
+        "generatorVersion": "one-branch-v1"
+      },
+      {
+        "index": 1,
+        "plantId": "plant-2",
+        "seed": 9255,
+        "materialId": "leafy-shoot",
+        "base": {
+          "x": 0.18913732982375425,
+          "y": 0.55,
+          "z": -0.20646324241167097
+        },
+        "generatorVersion": "leafy-shoot-v1"
+      },
+      {
+        "index": 2,
+        "plantId": "plant-3",
+        "seed": 10232,
+        "materialId": "flowering-branch",
+        "base": {
+          "x": -0.3944636229074499,
+          "y": 0.55,
+          "z": 0.03461863952741615
+        },
+        "generatorVersion": "one-branch-v1"
+      },
+      {
+        "index": 3,
+        "plantId": "plant-4",
+        "seed": 11209,
+        "materialId": "leafy-shoot",
+        "base": {
+          "x": 0.38487570684224337,
+          "y": 0.55,
+          "z": 0.29507743099512634
+        },
+        "generatorVersion": "leafy-shoot-v1"
+      },
+      {
+        "index": 4,
+        "plantId": "plant-5",
+        "seed": 12186,
+        "materialId": "flowering-branch",
+        "base": {
+          "x": -0.0975413854865116,
+          "y": 0.55,
+          "z": -0.5514396414090773
+        },
+        "generatorVersion": "one-branch-v1"
+      },
+      {
+        "index": 5,
+        "plantId": "plant-6",
+        "seed": 13163,
+        "materialId": "leafy-shoot",
+        "base": {
+          "x": -0.3360455219075733,
+          "y": 0.55,
+          "z": 0.5282739887651737
+        },
+        "generatorVersion": "leafy-shoot-v1"
+      }
+    ],
+    "cameraView": "front",
+    "notes": "Stable comparison baseline. Registering another material must not change these graphs.",
+    "bowlMatchesLoadedFixture": true
+  },
+  "fixture": {
+    "successfulPlantOrdinal": 6,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "one-branch-v1",
+        "seed": 10232,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 11209,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "one-branch-v1",
+        "seed": 12186,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 13163,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      }
+    ],
+    "plantsInIdentityOrder": [
+      {
+        "id": "plant-1",
+        "generatorVersion": "one-branch-v1",
+        "seed": 8278,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-2",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 9255,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-3",
+        "generatorVersion": "one-branch-v1",
+        "seed": 10232,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-4",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 11209,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      },
+      {
+        "id": "plant-5",
+        "generatorVersion": "one-branch-v1",
+        "seed": 12186,
+        "branches": 15,
+        "organs": 10,
+        "activeBranches": 15,
+        "activeOrgans": 10
+      },
+      {
+        "id": "plant-6",
+        "generatorVersion": "leafy-shoot-v1",
+        "seed": 13163,
+        "branches": 8,
+        "organs": 7,
+        "activeBranches": 8,
+        "activeOrgans": 7
+      }
+    ],
+    "byGeneratorVersion": {
+      "one-branch-v1": 3,
+      "leafy-shoot-v1": 3
+    }
+  },
+  "capture": {
+    "status": "captured",
+    "cssViewport": {
+      "width": 1280,
+      "height": 800,
+      "source": "canvas-client-rect"
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800,
+      "source": "canvas-drawing-buffer"
+    },
+    "pixelRatio": {
+      "device": 1,
+      "renderer": 1,
+      "rendererCap": 1.8,
+      "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+    },
+    "browserWindow": {
+      "width": 1280,
+      "height": 800,
+      "source": "window-inner"
+    },
+    "visualViewport": {
+      "width": 1280,
+      "height": 800,
+      "scale": 1,
+      "source": "window.visualViewport"
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    "notes": [
+      "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+      "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+      "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+      "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+      "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+    ]
+  },
+  "renderer": {
+    "calls": 463,
+    "triangles": 65078,
+    "lines": 0,
+    "geometries": 343,
+    "textures": 2,
+    "programs": 13,
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "pixelRatio": 1,
+    "pixelRatioCap": 1.8,
+    "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+  },
+  "presentation": {
+    "plantIds": [
+      "plant-1",
+      "plant-2",
+      "plant-3",
+      "plant-4",
+      "plant-5",
+      "plant-6"
+    ],
+    "pendingPlantId": null,
+    "pendingBranchVisualCount": 0,
+    "pendingOrganVisualCount": 0,
+    "branchVisualCount": 69,
+    "organVisualCount": 51
+  },
+  "arrangement": {
+    "plants": [
+      {
+        "schemaVersion": 1,
+        "generatorVersion": "one-branch-v1",
+        "id": "plant-1",
+        "seed": 8278,
+        "rootBranchId": "plant-1:trunk",
+        "branches": [
+          {
+            "id": "plant-1:bloom-1",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-1:twig-a",
+            "parentDistance": 0.86,
+            "points": [
+              {
+                "x": -2.2170381577300358,
+                "y": 2.8904066462408706,
+                "z": -0.36573774147259
+              },
+              {
+                "x": -2.246257971047602,
+                "y": 2.7403692472533128,
+                "z": -0.3778246155865238
+              },
+              {
+                "x": -2.2749181603768243,
+                "y": 2.59020548819527,
+                "z": -0.3896799993543444
+              },
+              {
+                "x": -2.3038225905771794,
+                "y": 2.440096563842287,
+                "z": -0.40163641418046697
+              }
+            ],
+            "restLengths": [
+              0.15333333333333338,
+              0.1533333333333332,
+              0.15333333333333327
+            ],
+            "activeLength": 0.45999999999999985,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0,
+              "y": -0.08029893602220667,
+              "z": 0.99677082665661
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:bloom-2",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-1:lateral-b",
+            "parentDistance": 1.86,
+            "points": [
+              {
+                "x": 0.6741529375459012,
+                "y": 5.266205976511087,
+                "z": 0.618185661155674
+              },
+              {
+                "x": 0.7310825938019968,
+                "y": 5.271331890455091,
+                "z": 0.7604665465757211
+              },
+              {
+                "x": 0.7880391672107908,
+                "y": 5.2733472845407094,
+                "z": 0.9028147044258297
+              },
+              {
+                "x": 0.8449867549789247,
+                "y": 5.276735250615102,
+                "z": 1.0451404050015884
+              }
+            ],
+            "restLengths": [
+              0.15333333333333335,
+              0.15333333333333332,
+              0.15333333333333327
+            ],
+            "activeLength": 0.4599999999999999,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9284377537803342,
+              "y": 0,
+              "z": 0.3714880043222494
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:bud-1",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-1:lateral-c",
+            "parentDistance": 1.2,
+            "points": [
+              {
+                "x": -1.4527115317553299,
+                "y": 6.080447898904326,
+                "z": -0.2005747993525105
+              },
+              {
+                "x": -1.561206759002794,
+                "y": 6.1857475968861015,
+                "z": -0.1750430469532127
+              },
+              {
+                "x": -1.6712400311890563,
+                "y": 6.289349270193106,
+                "z": -0.1491493525261166
+              },
+              {
+                "x": -1.780592625632027,
+                "y": 6.393708781003816,
+                "z": -0.12341583929819702
+              }
+            ],
+            "restLengths": [
+              0.15333333333333354,
+              0.15333333333333338,
+              0.153333333333333
+            ],
+            "activeLength": 0.4599999999999999,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.2290687788827742,
+              "y": 0,
+              "z": -0.9734102395912808
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:lateral-a",
+            "label": "lower side branch",
+            "kind": "lateral",
+            "parentId": "plant-1:trunk",
+            "parentDistance": 2.15,
+            "points": [
+              {
+                "x": -0.3658185461870086,
+                "y": 2.6603423397218746,
+                "z": 0.16186602841921008
+              },
+              {
+                "x": -0.5953449554718084,
+                "y": 2.747729797715471,
+                "z": 0.07320898148032909
+              },
+              {
+                "x": -0.8278331035716935,
+                "y": 2.8358443080359206,
+                "z": -0.00656636815696382
+              },
+              {
+                "x": -1.0625290690602107,
+                "y": 2.9244707630547255,
+                "z": -0.07896918301862156
+              },
+              {
+                "x": -1.2986490967616957,
+                "y": 3.0134096611624033,
+                "z": -0.14617199000851594
+              },
+              {
+                "x": -1.5354597602662055,
+                "y": 3.1024939307067414,
+                "z": -0.2106988442320447
+              },
+              {
+                "x": -1.7722902930010402,
+                "y": 3.1915823159253285,
+                "z": -0.27514704614146973
+              },
+              {
+                "x": -2.008519332853627,
+                "y": 3.2805444490713485,
+                "z": -0.34193470923963354
+              },
+              {
+                "x": -2.2435781252353344,
+                "y": 3.369251991402929,
+                "z": -0.41304974564701646
+              },
+              {
+                "x": -2.477002498706761,
+                "y": 3.457587210079869,
+                "z": -0.4897893270665691
+              }
+            ],
+            "restLengths": [
+              0.26111111111111107,
+              0.2611111111111111,
+              0.2611111111111111,
+              0.26111111111111096,
+              0.261111111111111,
+              0.2611111111111111,
+              0.26111111111111124,
+              0.26111111111111135,
+              0.261111111111111
+            ],
+            "activeLength": 2.35,
+            "radius": 0.064,
+            "stiffness": 0.52,
+            "referenceNormal": {
+              "x": 0.36031578221241267,
+              "y": 0,
+              "z": -0.9328303903114742
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:lateral-b",
+            "label": "upper side branch",
+            "kind": "lateral",
+            "parentId": "plant-1:trunk",
+            "parentDistance": 3.62,
+            "points": [
+              {
+                "x": -0.725017411043847,
+                "y": 4.075119244195618,
+                "z": 0.3353772689885849
+              },
+              {
+                "x": -0.5472649496760875,
+                "y": 4.2349956759578,
+                "z": 0.38633485394361133
+              },
+              {
+                "x": -0.36613429317415913,
+                "y": 4.3932222080669865,
+                "z": 0.4300285174617238
+              },
+              {
+                "x": -0.18234698592117382,
+                "y": 4.549940696188848,
+                "z": 0.46764005283649496
+              },
+              {
+                "x": 0.0032336270751215923,
+                "y": 4.705519000709113,
+                "z": 0.5009313979921333
+              },
+              {
+                "x": 0.1897110518901677,
+                "y": 4.86048562806042,
+                "z": 0.5319894220996509
+              },
+              {
+                "x": 0.3762145676728971,
+                "y": 5.015434018999332,
+                "z": 0.5629816980063416
+              },
+              {
+                "x": 0.5619354723903754,
+                "y": 5.170918543644408,
+                "z": 0.5959270249370184
+              },
+              {
+                "x": 0.7461731017501932,
+                "y": 5.327360597604628,
+                "z": 0.6324710545497363
+              },
+              {
+                "x": 0.9284138710270601,
+                "y": 5.484981482590754,
+                "z": 0.6736662611801078
+              }
+            ],
+            "restLengths": [
+              0.24444444444444416,
+              0.2444444444444446,
+              0.24444444444444427,
+              0.24444444444444424,
+              0.24444444444444452,
+              0.24444444444444427,
+              0.2444444444444446,
+              0.24444444444444438,
+              0.24444444444444424
+            ],
+            "activeLength": 2.1999999999999993,
+            "radius": 0.06,
+            "stiffness": 0.5,
+            "referenceNormal": {
+              "x": -0.2755768247784849,
+              "y": 0,
+              "z": 0.9612790508718102
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:lateral-c",
+            "label": "crown twig",
+            "kind": "twig",
+            "parentId": "plant-1:trunk",
+            "parentDistance": 4.78,
+            "points": [
+              {
+                "x": -1.006103060674863,
+                "y": 5.192316018854624,
+                "z": 0.4709322955128249
+              },
+              {
+                "x": -1.0749892941336472,
+                "y": 5.34068674069206,
+                "z": 0.3509663163793095
+              },
+              {
+                "x": -1.1484751760446208,
+                "y": 5.490341986953245,
+                "z": 0.23540614662158582
+              },
+              {
+                "x": -1.225397550272357,
+                "y": 5.640868655327626,
+                "z": 0.1232647588138699
+              },
+              {
+                "x": -1.3040459066037633,
+                "y": 5.791803470153657,
+                "z": 0.012882975316939979
+              },
+              {
+                "x": -1.3825358833325432,
+                "y": 5.942701671461173,
+                "z": -0.09766148091418571
+              },
+              {
+                "x": -1.4591892839174334,
+                "y": 6.093162935283694,
+                "z": -0.21007449028527914
+              },
+              {
+                "x": -1.5328867907992856,
+                "y": 6.242874064518762,
+                "z": -0.32542732150637776
+              }
+            ],
+            "restLengths": [
+              0.20285714285714274,
+              0.20285714285714307,
+              0.2028571428571429,
+              0.20285714285714276,
+              0.20285714285714307,
+              0.20285714285714276,
+              0.20285714285714315
+            ],
+            "activeLength": 1.4200000000000006,
+            "radius": 0.044,
+            "stiffness": 0.38,
+            "referenceNormal": {
+              "x": 0.8672004215904744,
+              "y": 0,
+              "z": -0.4979592641906599
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-1",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:trunk",
+            "parentDistance": 1.42,
+            "points": [
+              {
+                "x": -0.2113223768177142,
+                "y": 1.9506196911190543,
+                "z": 0.08948037749117742
+              },
+              {
+                "x": -0.1339305224409658,
+                "y": 2.0176859761415598,
+                "z": 0.04093082822599168
+              },
+              {
+                "x": -0.05559991655699274,
+                "y": 2.0832159201192653,
+                "z": -0.008207619740676297
+              },
+              {
+                "x": 0.022316504590431274,
+                "y": 2.1494303910333254,
+                "z": -0.057086240850449416
+              }
+            ],
+            "restLengths": [
+              0.11333333333333344,
+              0.11333333333333345,
+              0.11333333333333324
+            ],
+            "activeLength": 0.34000000000000014,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.5314121725458936,
+              "y": 0,
+              "z": 0.847113394339892
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-2",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:trunk",
+            "parentDistance": 2.86,
+            "points": [
+              {
+                "x": -0.5349146165776616,
+                "y": 3.3450852642169915,
+                "z": 0.24313287452358467
+              },
+              {
+                "x": -0.4939637616363628,
+                "y": 3.3895550221986834,
+                "z": 0.3389969060947162
+              },
+              {
+                "x": -0.45268959822413013,
+                "y": 3.432043763397513,
+                "z": 0.43561778763904724
+              },
+              {
+                "x": -0.4115568537340745,
+                "y": 3.475412082388427,
+                "z": 0.5319076141165239
+              }
+            ],
+            "restLengths": [
+              0.11333333333333338,
+              0.11333333333333333,
+              0.11333333333333336
+            ],
+            "activeLength": 0.3400000000000001,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9196088717491322,
+              "y": 0,
+              "z": 0.3928352364545318
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-3",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:lateral-a",
+            "parentDistance": 0.7,
+            "points": [
+              {
+                "x": -0.9876261013511095,
+                "y": 2.896185724218937,
+                "z": -0.05586190167979463
+              },
+              {
+                "x": -0.984833756931023,
+                "y": 2.99180969876001,
+                "z": -0.11662951435342434
+              },
+              {
+                "x": -0.9819922648060201,
+                "y": 3.0867440658406533,
+                "z": -0.17846669017788805
+              },
+              {
+                "x": -0.9791726191717902,
+                "y": 3.18198707063881,
+                "z": -0.23982843787105707
+              }
+            ],
+            "restLengths": [
+              0.11333333333333331,
+              0.11333333333333342,
+              0.11333333333333326
+            ],
+            "activeLength": 0.33999999999999997,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.9989459128338195,
+              "y": 0,
+              "z": 0.04590275844224777
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-4",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:lateral-a",
+            "parentDistance": 1.82,
+            "points": [
+              {
+                "x": -2.0014827231558905,
+                "y": 3.2778945131904034,
+                "z": -0.33994528948777336
+              },
+              {
+                "x": -2.0668386486810637,
+                "y": 3.197560099673526,
+                "z": -0.3859825510059373
+              },
+              {
+                "x": -2.1312730217329188,
+                "y": 3.1161194754027233,
+                "z": -0.4313706632407585
+              },
+              {
+                "x": -2.196112213690283,
+                "y": 3.035160992014889,
+                "z": -0.47704393330435596
+              }
+            ],
+            "restLengths": [
+              0.11333333333333336,
+              0.11333333333333323,
+              0.11333333333333336
+            ],
+            "activeLength": 0.3399999999999999,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.5758786397816252,
+              "y": 0,
+              "z": -0.8175351932750449
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-5",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:lateral-b",
+            "parentDistance": 0.62,
+            "points": [
+              {
+                "x": -0.26755746473846687,
+                "y": 4.47728030624144,
+                "z": 0.45020197734455564
+              },
+              {
+                "x": -0.2930937501365303,
+                "y": 4.5562586732817225,
+                "z": 0.5273690695028295
+              },
+              {
+                "x": -0.31899764436343836,
+                "y": 4.634014666666783,
+                "z": 0.6056470242603992
+              },
+              {
+                "x": -0.3447387999619209,
+                "y": 4.712316309994668,
+                "z": 0.6834332055849237
+              }
+            ],
+            "restLengths": [
+              0.1133333333333336,
+              0.11333333333333359,
+              0.11333333333333315
+            ],
+            "activeLength": 0.3400000000000003,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9493678447509258,
+              "y": 0,
+              "z": -0.31416666811261507
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-6",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:lateral-b",
+            "parentDistance": 1.48,
+            "points": [
+              {
+                "x": 0.38634479883930545,
+                "y": 5.023914993070882,
+                "z": 0.564778715838924
+              },
+              {
+                "x": 0.3565688948421001,
+                "y": 5.125757506730621,
+                "z": 0.604602608128096
+              },
+              {
+                "x": 0.3262328981574549,
+                "y": 5.227137998969588,
+                "z": 0.6451755984415848
+              },
+              {
+                "x": 0.2961462171008103,
+                "y": 5.328725475117804,
+                "z": 0.6854151406516529
+              }
+            ],
+            "restLengths": [
+              0.11333333333333366,
+              0.11333333333333338,
+              0.11333333333333366
+            ],
+            "activeLength": 0.3400000000000007,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.8008873599215841,
+              "y": 0,
+              "z": -0.5988150271309456
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:leaf-7",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-1:lateral-c",
+            "parentDistance": 0.65,
+            "points": [
+              {
+                "x": -1.2414595385372216,
+                "y": 5.671693371031534,
+                "z": 0.1007220002123843
+              },
+              {
+                "x": -1.2664521278808916,
+                "y": 5.760739480563888,
+                "z": 0.16622471236611974
+              },
+              {
+                "x": -1.29185281359802,
+                "y": 5.84887222334226,
+                "z": 0.23279699834088075
+              },
+              {
+                "x": -1.3170723786840486,
+                "y": 5.937413324734274,
+                "z": 0.29889458790060025
+              }
+            ],
+            "restLengths": [
+              0.11333333333333366,
+              0.11333333333333306,
+              0.11333333333333354
+            ],
+            "activeLength": 0.3400000000000003,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9343017171649836,
+              "y": 0,
+              "z": -0.3564832412646675
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:trunk",
+            "label": "main branch",
+            "kind": "trunk",
+            "parentId": null,
+            "parentDistance": 0,
+            "points": [
+              {
+                "x": 0,
+                "y": 0.55,
+                "z": 0
+              },
+              {
+                "x": -0.03828939549557177,
+                "y": 0.8892123310740125,
+                "z": 0.014318790138462349
+              },
+              {
+                "x": -0.08473567838880836,
+                "y": 1.227173707933615,
+                "z": 0.03331778136627174
+              },
+              {
+                "x": -0.1390409130995262,
+                "y": 1.563676532528185,
+                "z": 0.056831641831983706
+              },
+              {
+                "x": -0.20067272621829854,
+                "y": 1.8985926312369883,
+                "z": 0.08455956184916116
+              },
+              {
+                "x": -0.2688970503708053,
+                "y": 2.2318909836064744,
+                "z": 0.11608353705582786
+              },
+              {
+                "x": -0.3428160845617837,
+                "y": 2.5636448188446654,
+                "z": 0.15088986263229948
+              },
+              {
+                "x": -0.42140782844796865,
+                "y": 2.89402801517513,
+                "z": 0.18839176240424402
+              },
+              {
+                "x": -0.5035643918007763,
+                "y": 3.2233021186348645,
+                "z": 0.2279515273170342
+              },
+              {
+                "x": -0.588127498106848,
+                "y": 3.5517961297445475,
+                "z": 0.2689012138610188
+              },
+              {
+                "x": -0.6739208305805519,
+                "y": 3.879881520313122,
+                "z": 0.31056164724370844
+              },
+              {
+                "x": -0.7597798387360885,
+                "y": 4.207944908804201,
+                "z": 0.3522600280445253
+              },
+              {
+                "x": -0.8445801857134677,
+                "y": 4.5363606396250695,
+                "z": 0.3933467657225402
+              },
+              {
+                "x": -0.9272661254331931,
+                "y": 4.8654653210673775,
+                "z": 0.4332122286765023
+              },
+              {
+                "x": -1.0068797792486723,
+                "y": 5.195536222773708,
+                "z": 0.4713039217870742
+              },
+              {
+                "x": -1.0825916100515414,
+                "y": 5.526775264247777,
+                "z": 0.5071442229985399
+              },
+              {
+                "x": -1.1537314947922066,
+                "y": 5.859300025450421,
+                "z": 0.5403483055385109
+              },
+              {
+                "x": -1.2198188574704474,
+                "y": 6.193142657714424,
+                "z": 0.5706413491027825
+              },
+              {
+                "x": -1.2805895710427835,
+                "y": 6.528256711092715,
+                "z": 0.5978737326083109
+              }
+            ],
+            "restLengths": [
+              0.3416666666666667,
+              0.3416666666666667,
+              0.3416666666666666,
+              0.3416666666666668,
+              0.3416666666666665,
+              0.3416666666666668,
+              0.3416666666666665,
+              0.3416666666666665,
+              0.3416666666666667,
+              0.34166666666666673,
+              0.3416666666666667,
+              0.3416666666666665,
+              0.34166666666666623,
+              0.34166666666666623,
+              0.34166666666666684,
+              0.341666666666667,
+              0.34166666666666634,
+              0.3416666666666668
+            ],
+            "activeLength": 6.149999999999999,
+            "radius": 0.105,
+            "stiffness": 0.72,
+            "referenceNormal": {
+              "x": 0,
+              "y": 0.04217432249438098,
+              "z": -0.9991102674490638
+            },
+            "active": true
+          },
+          {
+            "id": "plant-1:twig-a",
+            "label": "small twig",
+            "kind": "twig",
+            "parentId": "plant-1:lateral-a",
+            "parentDistance": 1.15,
+            "points": [
+              {
+                "x": -1.3943810671145827,
+                "y": 3.0494224509781995,
+                "z": -0.17225731405632547
+              },
+              {
+                "x": -1.5854784671232809,
+                "y": 3.0151347206386805,
+                "z": -0.2202795511770596
+              },
+              {
+                "x": -1.7767791931083086,
+                "y": 2.97855174476118,
+                "z": -0.2657297229429348
+              },
+              {
+                "x": -1.9681876001923604,
+                "y": 2.9403806498224783,
+                "z": -0.30938506864911963
+              },
+              {
+                "x": -2.1596210756448904,
+                "y": 2.901768571544432,
+                "z": -0.35253981215682295
+              },
+              {
+                "x": -2.3510113492620413,
+                "y": 2.863895487199227,
+                "z": -0.3965329098760464
+              },
+              {
+                "x": -2.5422938751079838,
+                "y": 2.827547050707243,
+                "z": -0.44224709225509073
+              }
+            ],
+            "restLengths": [
+              0.20000000000000004,
+              0.19999999999999998,
+              0.19999999999999996,
+              0.2000000000000001,
+              0.20000000000000007,
+              0.2
+            ],
+            "activeLength": 1.2,
+            "radius": 0.038,
+            "stiffness": 0.34,
+            "referenceNormal": {
+              "x": 0.24371950222653832,
+              "y": 0,
+              "z": -0.9698457631162022
+            },
+            "active": true
+          }
+        ],
+        "organs": [
+          {
+            "id": "plant-1:organ-bloom-1",
+            "kind": "bloom",
+            "branchId": "plant-1:bloom-1",
+            "distance": 0.45999999999999985,
+            "spin": 0.2,
+            "scale": 1,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-bloom-2",
+            "kind": "bloom",
+            "branchId": "plant-1:bloom-2",
+            "distance": 0.4599999999999999,
+            "spin": 2.4,
+            "scale": 0.86,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-bud-1",
+            "kind": "bud",
+            "branchId": "plant-1:bud-1",
+            "distance": 0.4599999999999999,
+            "spin": 1.4,
+            "scale": 0.78,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-1",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-1",
+            "distance": 0.34000000000000014,
+            "spin": 0.25,
+            "scale": 0.96,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-2",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-2",
+            "distance": 0.3400000000000001,
+            "spin": 2.7,
+            "scale": 1.08,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-3",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-3",
+            "distance": 0.33999999999999997,
+            "spin": 0.4,
+            "scale": 0.9,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-4",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-4",
+            "distance": 0.3399999999999999,
+            "spin": 2.9,
+            "scale": 1.02,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-5",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-5",
+            "distance": 0.3400000000000003,
+            "spin": 0.1,
+            "scale": 0.94,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-6",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-6",
+            "distance": 0.3400000000000007,
+            "spin": 2.7,
+            "scale": 1,
+            "active": true
+          },
+          {
+            "id": "plant-1:organ-leaf-7",
+            "kind": "leaf",
+            "branchId": "plant-1:leaf-7",
+            "distance": 0.3400000000000003,
+            "spin": 0.7,
+            "scale": 0.86,
+            "active": true
+          }
+        ]
+      },
+      {
+        "schemaVersion": 1,
+        "generatorVersion": "leafy-shoot-v1",
+        "id": "plant-2",
+        "seed": 9255,
+        "rootBranchId": "plant-2:stem",
+        "branches": [
+          {
+            "id": "plant-2:petiole-1",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 1.122117705855889,
+            "points": [
+              {
+                "x": 0.33763954865142004,
+                "y": 1.6598454315459206,
+                "z": -0.261993712165265
+              },
+              {
+                "x": 0.34389779201144005,
+                "y": 1.6983279943167797,
+                "z": -0.19560700796541255
+              },
+              {
+                "x": 0.34956299849871175,
+                "y": 1.7338182027504956,
+                "z": -0.12752163301107278
+              },
+              {
+                "x": 0.35549442676589227,
+                "y": 1.7706534724777203,
+                "z": -0.060177377096266235
+              }
+            ],
+            "restLengths": [
+              0.0769887507489572,
+              0.07698875074895721,
+              0.07698875074895722
+            ],
+            "activeLength": 0.23096625224687162,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9955860256232218,
+              "y": 0,
+              "z": 0.09385342606297191
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:petiole-2",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 1.6417648452822782,
+            "points": [
+              {
+                "x": 0.453224096899184,
+                "y": 2.1646977798431677,
+                "z": -0.3035464983724623
+              },
+              {
+                "x": 0.4359181798587155,
+                "y": 2.2047548619514967,
+                "z": -0.3860229638643848
+              },
+              {
+                "x": 0.41710665323288143,
+                "y": 2.2411042898967057,
+                "z": -0.46987567703305244
+              },
+              {
+                "x": 0.39896257443265176,
+                "y": 2.2791183674759936,
+                "z": -0.553135236616155
+              }
+            ],
+            "restLengths": [
+              0.09330826304076867,
+              0.09330826304076857,
+              0.09330826304076865
+            ],
+            "activeLength": 0.2799247891223059,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.9786872325210123,
+              "y": 0,
+              "z": -0.20535652144590427
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:petiole-3",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 2.1334174572385356,
+            "points": [
+              {
+                "x": 0.579305430382244,
+                "y": 2.637748332050545,
+                "z": -0.348511972653351
+              },
+              {
+                "x": 0.6306470040637743,
+                "y": 2.6642050564226953,
+                "z": -0.29779917204852924
+              },
+              {
+                "x": 0.6820485312572165,
+                "y": 2.687500925517664,
+                "z": -0.24561786233828678
+              },
+              {
+                "x": 0.733436358615162,
+                "y": 2.712213988553629,
+                "z": -0.1940789516727058
+              }
+            ],
+            "restLengths": [
+              0.07686158727078397,
+              0.07686158727078395,
+              0.07686158727078389
+            ],
+            "activeLength": 0.23058476181235182,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.7027368471460613,
+              "y": 0,
+              "z": 0.7114498743152698
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:petiole-4",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 2.6550026641743605,
+            "points": [
+              {
+                "x": 0.7217058513759741,
+                "y": 3.136955867911111,
+                "z": -0.39913445107589735
+              },
+              {
+                "x": 0.6681935379626929,
+                "y": 3.188218028704922,
+                "z": -0.4442428840157461
+              },
+              {
+                "x": 0.6123177600183831,
+                "y": 3.236382310199358,
+                "z": -0.48989643771776914
+              },
+              {
+                "x": 0.55748302506049,
+                "y": 3.28594199047525,
+                "z": -0.5353182108164668
+              }
+            ],
+            "restLengths": [
+              0.08675337191360695,
+              0.08675337191360688,
+              0.08675337191360691
+            ],
+            "activeLength": 0.26026011574082075,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.6445154717760234,
+              "y": 0,
+              "z": -0.764591267698847
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:petiole-5",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 3.154675708736497,
+            "points": [
+              {
+                "x": 0.857367989130091,
+                "y": 3.6154314382656025,
+                "z": -0.4473749446286946
+              },
+              {
+                "x": 0.9450547589617582,
+                "y": 3.6345024026209307,
+                "z": -0.43379543557836053
+              },
+              {
+                "x": 1.0334006311677852,
+                "y": 3.6495769897348826,
+                "z": -0.4194832715734903
+              },
+              {
+                "x": 1.1214746860057465,
+                "y": 3.66643972773729,
+                "z": -0.40549458748727063
+              }
+            ],
+            "restLengths": [
+              0.0907583293753365,
+              0.09075832937533665,
+              0.09075832937533666
+            ],
+            "activeLength": 0.2722749881260098,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.1530395446025285,
+              "y": 0,
+              "z": 0.988220065465102
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:petiole-6",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 3.7459835670819124,
+            "points": [
+              {
+                "x": 1.0051930472753579,
+                "y": 4.1854937483015675,
+                "z": -0.5001667923268439
+              },
+              {
+                "x": 0.9356192560668812,
+                "y": 4.246260348509128,
+                "z": -0.4927461204727018
+              },
+              {
+                "x": 0.8634134625486326,
+                "y": 4.303799204924554,
+                "z": -0.4847610168742513
+              },
+              {
+                "x": 0.7923644580429601,
+                "y": 4.362793825946905,
+                "z": -0.4770258928380645
+              }
+            ],
+            "restLengths": [
+              0.09267231784450528,
+              0.09267231784450537,
+              0.09267231784450518
+            ],
+            "activeLength": 0.27801695353351585,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.10605745584394925,
+              "y": 0,
+              "z": -0.9943600032482746
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:petiole-7",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-2:stem",
+            "parentDistance": 4.228395919634653,
+            "points": [
+              {
+                "x": 1.1077413803031548,
+                "y": 4.655383940858986,
+                "z": -0.5371351961658908
+              },
+              {
+                "x": 1.1899725462817978,
+                "y": 4.679474725250802,
+                "z": -0.5801550179966812
+              },
+              {
+                "x": 1.2730233096232966,
+                "y": 4.699334995529519,
+                "z": -0.6237574949220095
+              },
+              {
+                "x": 1.355729250919633,
+                "y": 4.721089171774988,
+                "z": -0.6671109112965129
+              }
+            ],
+            "restLengths": [
+              0.09588031925881912,
+              0.0958803192588191,
+              0.09588031925881899
+            ],
+            "activeLength": 0.2876409577764572,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.46355333573410845,
+              "y": 0,
+              "z": 0.8860690181525258
+            },
+            "active": true
+          },
+          {
+            "id": "plant-2:stem",
+            "label": "leafy stem",
+            "kind": "trunk",
+            "parentId": null,
+            "parentDistance": 0,
+            "points": [
+              {
+                "x": 0.18913732982375425,
+                "y": 0.55,
+                "z": -0.20646324241167097
+              },
+              {
+                "x": 0.21202828388258618,
+                "y": 0.8385867875560595,
+                "z": -0.2155692023920364
+              },
+              {
+                "x": 0.2459376792185431,
+                "y": 1.1259447431867429,
+                "z": -0.2284069000250952
+              },
+              {
+                "x": 0.29037572007906787,
+                "y": 1.4116815109290783,
+                "z": -0.24480837317401616
+              },
+              {
+                "x": 0.3444391748966053,
+                "y": 1.6955476156199683,
+                "z": -0.26446608661242643
+              },
+              {
+                "x": 0.40688526281992193,
+                "y": 1.9774764010926305,
+                "z": -0.28695817992978745
+              },
+              {
+                "x": 0.47621690116153914,
+                "y": 2.2575949059982223,
+                "z": -0.31177743397048874
+              },
+              {
+                "x": 0.5507669493177263,
+                "y": 2.5362073931200158,
+                "z": -0.33835976976952176
+              },
+              {
+                "x": 0.6287735521307475,
+                "y": 2.813757683007838,
+                "z": -0.3661096299055856
+              },
+              {
+                "x": 0.7084441770299877,
+                "y": 3.09077804311061,
+                "z": -0.3944214622996399
+              },
+              {
+                "x": 0.7880104864221488,
+                "y": 3.3678319805906596,
+                "z": -0.42269806699902873
+              },
+              {
+                "x": 0.8657787896521862,
+                "y": 3.6454571682382078,
+                "z": -0.45036744417305186
+              },
+              {
+                "x": 0.9401812759583567,
+                "y": 3.924113848280818,
+                "z": -0.47689993248274887
+              },
+              {
+                "x": 1.0098317543975648,
+                "y": 4.20414367552653,
+                "z": -0.5018269247349263
+              },
+              {
+                "x": 1.0735866475501503,
+                "y": 4.485743693337422,
+                "z": -0.5247614359532095
+              },
+              {
+                "x": 1.1306082020591028,
+                "y": 4.768959219891706,
+                "z": -0.5454195112937652
+              },
+              {
+                "x": 1.1804233675863052,
+                "y": 5.053697172838338,
+                "z": -0.5636402596887456
+              }
+            ],
+            "restLengths": [
+              0.2896364069601986,
+              0.28963640696019866,
+              0.28963640696019866,
+              0.2896364069601987,
+              0.2896364069601987,
+              0.28963640696019854,
+              0.28963640696019877,
+              0.2896364069601986,
+              0.2896364069601987,
+              0.28963640696019866,
+              0.28963640696019854,
+              0.28963640696019877,
+              0.2896364069601988,
+              0.2896364069601991,
+              0.2896364069601987,
+              0.2896364069601989
+            ],
+            "activeLength": 4.6341825113631785,
+            "radius": 0.057,
+            "stiffness": 0.39,
+            "referenceNormal": {
+              "x": 0,
+              "y": -0.03153793127445867,
+              "z": -0.9995025557200579
+            },
+            "active": true
+          }
+        ],
+        "organs": [
+          {
+            "id": "plant-2:leaf-1",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-1",
+            "distance": 0.23096625224687162,
+            "spin": -0.12094736635917798,
+            "scale": 1.0510435030087828,
+            "active": true
+          },
+          {
+            "id": "plant-2:leaf-2",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-2",
+            "distance": 0.2799247891223059,
+            "spin": -0.0031959072570316494,
+            "scale": 1.0078776024527847,
+            "active": true
+          },
+          {
+            "id": "plant-2:leaf-3",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-3",
+            "distance": 0.23058476181235182,
+            "spin": 0.05484147315146402,
+            "scale": 1.0294622411176562,
+            "active": true
+          },
+          {
+            "id": "plant-2:leaf-4",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-4",
+            "distance": 0.26026011574082075,
+            "spin": -0.12861004164442422,
+            "scale": 1.0093421985276043,
+            "active": true
+          },
+          {
+            "id": "plant-2:leaf-5",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-5",
+            "distance": 0.2722749881260098,
+            "spin": 0.29256584675749764,
+            "scale": 0.9605129585057497,
+            "active": true
+          },
+          {
+            "id": "plant-2:leaf-6",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-6",
+            "distance": 0.27801695353351585,
+            "spin": -0.2766674250364304,
+            "scale": 0.7380655522048473,
+            "active": true
+          },
+          {
+            "id": "plant-2:leaf-7",
+            "kind": "leaf",
+            "branchId": "plant-2:petiole-7",
+            "distance": 0.2876409577764572,
+            "spin": 0.13707375896628946,
+            "scale": 0.6125088968817145,
+            "active": true
+          }
+        ]
+      },
+      {
+        "schemaVersion": 1,
+        "generatorVersion": "one-branch-v1",
+        "id": "plant-3",
+        "seed": 10232,
+        "rootBranchId": "plant-3:trunk",
+        "branches": [
+          {
+            "id": "plant-3:bloom-1",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-3:twig-a",
+            "parentDistance": 0.86,
+            "points": [
+              {
+                "x": -2.5037725264889805,
+                "y": 2.727200627820392,
+                "z": 1.0951027568903828
+              },
+              {
+                "x": -2.515304503109413,
+                "y": 2.586343319111313,
+                "z": 1.1545783250639798
+              },
+              {
+                "x": -2.526628426872244,
+                "y": 2.4450209131213025,
+                "z": 1.212980871471815
+              },
+              {
+                "x": -2.538043273359851,
+                "y": 2.303900532775116,
+                "z": 1.271852347092214
+              }
+            ],
+            "restLengths": [
+              0.15333333333333327,
+              0.15333333333333352,
+              0.1533333333333336
+            ],
+            "activeLength": 0.46000000000000035,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0,
+              "y": 0.38898581541969196,
+              "z": 0.9212437437520415
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:bloom-2",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-3:lateral-b",
+            "parentDistance": 1.86,
+            "points": [
+              {
+                "x": 0.09370519282328543,
+                "y": 5.284157361081262,
+                "z": -0.3542680284968964
+              },
+              {
+                "x": 0.240490860794696,
+                "y": 5.241034377007712,
+                "z": -0.3439973404045514
+              },
+              {
+                "x": 0.38642093667776045,
+                "y": 5.195085892997414,
+                "z": -0.3337865186438116
+              },
+              {
+                "x": 0.5327338619281518,
+                "y": 5.150377612358224,
+                "z": -0.3235489086653084
+              }
+            ],
+            "restLengths": [
+              0.15333333333333324,
+              0.1533333333333334,
+              0.15333333333333338
+            ],
+            "activeLength": 0.46,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.06979998859522529,
+              "y": 0,
+              "z": 0.9975610064512879
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:bud-1",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-3:lateral-c",
+            "parentDistance": 1.2,
+            "points": [
+              {
+                "x": -2.333571181889453,
+                "y": 5.895711032934077,
+                "z": 0.7784182730449406
+              },
+              {
+                "x": -2.446181054447112,
+                "y": 5.9230059968060855,
+                "z": 0.8788429346619195
+              },
+              {
+                "x": -2.55917738051398,
+                "y": 5.947264809234285,
+                "z": 0.9796122326949744
+              },
+              {
+                "x": -2.672008531156957,
+                "y": 5.972866694273494,
+                "z": 1.0802342284917783
+              }
+            ],
+            "restLengths": [
+              0.1533333333333335,
+              0.15333333333333346,
+              0.15333333333333324
+            ],
+            "activeLength": 0.4600000000000002,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.6655736118648707,
+              "y": 0,
+              "z": -0.7463322096688245
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:lateral-a",
+            "label": "lower side branch",
+            "kind": "lateral",
+            "parentId": "plant-3:trunk",
+            "parentDistance": 2.15,
+            "points": [
+              {
+                "x": -0.7602821690944586,
+                "y": 2.6603423397218746,
+                "z": 0.19648466794662625
+              },
+              {
+                "x": -0.9802245265032348,
+                "y": 2.713872488787975,
+                "z": 0.3266341777578825
+              },
+              {
+                "x": -1.1993167900765072,
+                "y": 2.7679348687531937,
+                "z": 0.4579919010196498
+              },
+              {
+                "x": -1.417726729250298,
+                "y": 2.822419498270328,
+                "z": 0.5903079467667951
+              },
+              {
+                "x": -1.635666585764102,
+                "y": 2.8771925273231957,
+                "z": 0.7232784193417066
+              },
+              {
+                "x": -1.8533678139788898,
+                "y": 2.932111185837863,
+                "z": 0.8565793140363833
+              },
+              {
+                "x": -2.0710620604301293,
+                "y": 2.987034097406956,
+                "z": 0.9898898582273047
+              },
+              {
+                "x": -2.2889647555046557,
+                "y": 3.0418298391935967,
+                "z": 1.1229118658312673
+              },
+              {
+                "x": -2.5072574628334285,
+                "y": 3.0963865811515268,
+                "z": 1.2553915555187425
+              },
+              {
+                "x": -2.7260663848484787,
+                "y": 3.1506248320885,
+                "z": 1.3871484533555867
+              }
+            ],
+            "restLengths": [
+              0.2611111111111112,
+              0.26111111111111107,
+              0.2611111111111112,
+              0.2611111111111111,
+              0.26111111111111124,
+              0.26111111111111107,
+              0.261111111111111,
+              0.26111111111111135,
+              0.26111111111111107
+            ],
+            "activeLength": 2.3500000000000005,
+            "radius": 0.064,
+            "stiffness": 0.52,
+            "referenceNormal": {
+              "x": -0.5092616116911397,
+              "y": 0,
+              "z": -0.860611765465557
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:lateral-b",
+            "label": "upper side branch",
+            "kind": "lateral",
+            "parentId": "plant-3:trunk",
+            "parentDistance": 3.62,
+            "points": [
+              {
+                "x": -1.1194810339512968,
+                "y": 4.075119244195618,
+                "z": 0.36999590851600106
+              },
+              {
+                "x": -0.9632354926048706,
+                "y": 4.241081974217591,
+                "z": 0.2816964777547046
+              },
+              {
+                "x": -0.8052209727220738,
+                "y": 4.403301222742694,
+                "z": 0.18966706216429063
+              },
+              {
+                "x": -0.6458266073976069,
+                "y": 4.562409804835068,
+                "z": 0.09463558407877355
+              },
+              {
+                "x": -0.4855040191072748,
+                "y": 4.719320345308531,
+                "z": -0.002466611529602855
+              },
+              {
+                "x": -0.32471760048195214,
+                "y": 4.875097946351374,
+                "z": -0.10062033289936134
+              },
+              {
+                "x": -0.16391768774459206,
+                "y": 5.030842226273538,
+                "z": -0.19880482126151144
+              },
+              {
+                "x": -0.0035225354913948626,
+                "y": 5.187577093369133,
+                "z": -0.2960707607776295
+              },
+              {
+                "x": 0.15610507815957295,
+                "y": 5.346141712000987,
+                "z": -0.39161851374956036
+              },
+              {
+                "x": 0.31469711584761356,
+                "y": 5.5070806985029535,
+                "z": -0.48489388362514985
+              }
+            ],
+            "restLengths": [
+              0.24444444444444444,
+              0.2444444444444444,
+              0.24444444444444471,
+              0.24444444444444438,
+              0.24444444444444433,
+              0.24444444444444463,
+              0.24444444444444455,
+              0.24444444444444463,
+              0.2444444444444442
+            ],
+            "activeLength": 2.2,
+            "radius": 0.06,
+            "stiffness": 0.5,
+            "referenceNormal": {
+              "x": 0.49200123274717117,
+              "y": 0,
+              "z": 0.8705945020359731
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:lateral-c",
+            "label": "crown twig",
+            "kind": "twig",
+            "parentId": "plant-3:trunk",
+            "parentDistance": 4.78,
+            "points": [
+              {
+                "x": -1.400566683582313,
+                "y": 5.192316018854624,
+                "z": 0.5055509350402411
+              },
+              {
+                "x": -1.557578305294725,
+                "y": 5.313907801812275,
+                "z": 0.5469491158285472
+              },
+              {
+                "x": -1.7151139653273826,
+                "y": 5.4336233514957115,
+                "z": 0.5916897393180651
+              },
+              {
+                "x": -1.8729938077482786,
+                "y": 5.551951056829407,
+                "z": 0.6388440595419694
+              },
+              {
+                "x": -2.0310323456346486,
+                "y": 5.669585659378552,
+                "z": 0.6871859795907875
+              },
+              {
+                "x": -2.189056701742613,
+                "y": 5.787283760996841,
+                "z": 0.7354195795007833
+              },
+              {
+                "x": -2.3469109800568537,
+                "y": 5.905719704189822,
+                "z": 0.7823873832182475
+              },
+              {
+                "x": -2.504468961726095,
+                "y": 6.025349463865332,
+                "z": 0.8272786231260298
+              }
+            ],
+            "restLengths": [
+              0.2028571428571432,
+              0.20285714285714296,
+              0.20285714285714293,
+              0.2028571428571431,
+              0.2028571428571428,
+              0.20285714285714265,
+              0.2028571428571428
+            ],
+            "activeLength": 1.4200000000000004,
+            "radius": 0.044,
+            "stiffness": 0.38,
+            "referenceNormal": {
+              "x": -0.25495019880206904,
+              "y": 0,
+              "z": -0.9669541851250169
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-1",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:trunk",
+            "parentDistance": 1.42,
+            "points": [
+              {
+                "x": -0.6057859997251641,
+                "y": 1.9506196911190543,
+                "z": 0.12409901701859358
+              },
+              {
+                "x": -0.5162032110199447,
+                "y": 2.010379555266637,
+                "z": 0.15942785862574121
+              },
+              {
+                "x": -0.42565726503969936,
+                "y": 2.0684378542916333,
+                "z": 0.1951365413977373
+              },
+              {
+                "x": -0.3355352691519087,
+                "y": 2.127253437655933,
+                "z": 0.23067803060630293
+              }
+            ],
+            "restLengths": [
+              0.11333333333333337,
+              0.11333333333333331,
+              0.11333333333333324
+            ],
+            "activeLength": 0.3399999999999999,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.3668719534845509,
+              "y": 0,
+              "z": 0.9302714494954842
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-2",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:trunk",
+            "parentDistance": 2.86,
+            "points": [
+              {
+                "x": -0.9293782394851116,
+                "y": 3.3450852642169915,
+                "z": 0.2777515140510008
+              },
+              {
+                "x": -0.9057247056713781,
+                "y": 3.3837410376095014,
+                "z": 0.3816297406723382
+              },
+              {
+                "x": -0.8819098884469146,
+                "y": 3.4203327996583384,
+                "z": 0.4862162688448096
+              },
+              {
+                "x": -0.8581653910791963,
+                "y": 3.4578401725812866,
+                "z": 0.5904939762688691
+              }
+            ],
+            "restLengths": [
+              0.11333333333333331,
+              0.11333333333333344,
+              0.11333333333333336
+            ],
+            "activeLength": 0.3400000000000001,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9750418039352411,
+              "y": 0,
+              "z": 0.22202135162797004
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-3",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:lateral-a",
+            "parentDistance": 0.7,
+            "points": [
+              {
+                "x": -1.3480214295139816,
+                "y": 2.8050307867223063,
+                "z": 0.5480794215283444
+              },
+              {
+                "x": -1.420121053017517,
+                "y": 2.8810392005618035,
+                "z": 0.5048496891593303
+              },
+              {
+                "x": -1.493217704753137,
+                "y": 2.9557417522168077,
+                "z": 0.46102215528258356
+              },
+              {
+                "x": -1.5658733277326295,
+                "y": 3.0310269511514534,
+                "z": 0.41745905489616564
+              }
+            ],
+            "restLengths": [
+              0.11333333333333319,
+              0.1133333333333334,
+              0.11333333333333345
+            ],
+            "activeLength": 0.34,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.5142329687356856,
+              "y": 0,
+              "z": -0.8576505429749831
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-4",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:lateral-a",
+            "parentDistance": 1.82,
+            "points": [
+              {
+                "x": -2.2824740369279675,
+                "y": 3.040197625608463,
+                "z": 1.1189495081579577
+              },
+              {
+                "x": -2.318664014581137,
+                "y": 2.9551575411082984,
+                "z": 1.1845461086042646
+              },
+              {
+                "x": -2.35431525186809,
+                "y": 2.86914779499708,
+                "z": 1.2491662084048494
+              },
+              {
+                "x": -2.390202885924327,
+                "y": 2.7835603898554013,
+                "z": 1.3142147921511862
+              }
+            ],
+            "restLengths": [
+              0.11333333333333327,
+              0.11333333333333329,
+              0.1133333333333333
+            ],
+            "activeLength": 0.33999999999999986,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.8755847422396303,
+              "y": 0,
+              "z": -0.48306454967960566
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-5",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:lateral-b",
+            "parentDistance": 0.62,
+            "points": [
+              {
+                "x": -0.7197276313207689,
+                "y": 4.488641280410421,
+                "z": 0.1386956330093315
+              },
+              {
+                "x": -0.6268429625782215,
+                "y": 4.436874312541371,
+                "z": 0.09949022783764182
+              },
+              {
+                "x": -0.5348187921071093,
+                "y": 4.383327323966371,
+                "z": 0.06064802774422685
+              },
+              {
+                "x": -0.4424134532761534,
+                "y": 4.330559369100279,
+                "z": 0.02164494146594835
+              }
+            ],
+            "restLengths": [
+              0.1133333333333332,
+              0.11333333333333327,
+              0.11333333333333334
+            ],
+            "activeLength": 0.3399999999999998,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.38886625326128443,
+              "y": 0,
+              "z": 0.9212942185179123
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-6",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:lateral-b",
+            "parentDistance": 1.48,
+            "points": [
+              {
+                "x": -0.15516886125805412,
+                "y": 5.039391400842389,
+                "z": -0.20411023614420873
+              },
+              {
+                "x": -0.04884159397725958,
+                "y": 5.000868622681645,
+                "z": -0.19669725834705923
+              },
+              {
+                "x": 0.056743153288722606,
+                "y": 4.960345565412186,
+                "z": -0.1893360479330515
+              },
+              {
+                "x": 0.162658767082203,
+                "y": 4.920699637013322,
+                "z": -0.18195177000038285
+              }
+            ],
+            "restLengths": [
+              0.11333333333333342,
+              0.11333333333333344,
+              0.11333333333333323
+            ],
+            "activeLength": 0.3400000000000001,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.06954967790646717,
+              "y": 0,
+              "z": 0.9975784892945049
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:leaf-7",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-3:lateral-c",
+            "parentDistance": 0.65,
+            "points": [
+              {
+                "x": -1.9052692837954945,
+                "y": 5.575975024955641,
+                "z": 0.648716705185742
+              },
+              {
+                "x": -1.962359242876226,
+                "y": 5.5485401380862,
+                "z": 0.7426981288771601
+              },
+              {
+                "x": -2.0191606319473236,
+                "y": 5.518966441523524,
+                "z": 0.8362045089571151
+              },
+              {
+                "x": -2.076091614206459,
+                "y": 5.490332152769515,
+                "z": 0.9299242251912483
+              }
+            ],
+            "restLengths": [
+              0.11333333333333333,
+              0.11333333333333333,
+              0.11333333333333323
+            ],
+            "activeLength": 0.33999999999999986,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.854667235536311,
+              "y": 0,
+              "z": -0.5191761902290202
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:trunk",
+            "label": "main branch",
+            "kind": "trunk",
+            "parentId": null,
+            "parentDistance": 0,
+            "points": [
+              {
+                "x": -0.3944636229074499,
+                "y": 0.55,
+                "z": 0.03461863952741615
+              },
+              {
+                "x": -0.43275301840302166,
+                "y": 0.8892123310740125,
+                "z": 0.0489374296658785
+              },
+              {
+                "x": -0.47919930129625826,
+                "y": 1.227173707933615,
+                "z": 0.0679364208936879
+              },
+              {
+                "x": -0.5335045360069761,
+                "y": 1.563676532528185,
+                "z": 0.09145028135939987
+              },
+              {
+                "x": -0.5951363491257484,
+                "y": 1.8985926312369883,
+                "z": 0.11917820137657732
+              },
+              {
+                "x": -0.6633606732782552,
+                "y": 2.2318909836064744,
+                "z": 0.150702176583244
+              },
+              {
+                "x": -0.7372797074692337,
+                "y": 2.5636448188446654,
+                "z": 0.18550850215971565
+              },
+              {
+                "x": -0.8158714513554186,
+                "y": 2.89402801517513,
+                "z": 0.2230104019316602
+              },
+              {
+                "x": -0.8980280147082262,
+                "y": 3.2233021186348645,
+                "z": 0.26257016684445034
+              },
+              {
+                "x": -0.9825911210142979,
+                "y": 3.5517961297445475,
+                "z": 0.30351985338843496
+              },
+              {
+                "x": -1.0683844534880018,
+                "y": 3.879881520313122,
+                "z": 0.3451802867711246
+              },
+              {
+                "x": -1.1542434616435384,
+                "y": 4.207944908804201,
+                "z": 0.38687866757194145
+              },
+              {
+                "x": -1.2390438086209177,
+                "y": 4.5363606396250695,
+                "z": 0.42796540524995635
+              },
+              {
+                "x": -1.321729748340643,
+                "y": 4.8654653210673775,
+                "z": 0.46783086820391845
+              },
+              {
+                "x": -1.4013434021561222,
+                "y": 5.195536222773708,
+                "z": 0.5059225613144903
+              },
+              {
+                "x": -1.4770552329589912,
+                "y": 5.526775264247777,
+                "z": 0.541762862525956
+              },
+              {
+                "x": -1.5481951176996565,
+                "y": 5.859300025450421,
+                "z": 0.5749669450659269
+              },
+              {
+                "x": -1.6142824803778972,
+                "y": 6.193142657714424,
+                "z": 0.6052599886301986
+              },
+              {
+                "x": -1.6750531939502333,
+                "y": 6.528256711092715,
+                "z": 0.632492372135727
+              }
+            ],
+            "restLengths": [
+              0.3416666666666667,
+              0.3416666666666667,
+              0.3416666666666666,
+              0.34166666666666673,
+              0.3416666666666665,
+              0.3416666666666668,
+              0.3416666666666665,
+              0.3416666666666665,
+              0.3416666666666667,
+              0.34166666666666673,
+              0.3416666666666667,
+              0.3416666666666665,
+              0.3416666666666662,
+              0.34166666666666623,
+              0.34166666666666684,
+              0.341666666666667,
+              0.34166666666666634,
+              0.3416666666666668
+            ],
+            "activeLength": 6.149999999999999,
+            "radius": 0.105,
+            "stiffness": 0.72,
+            "referenceNormal": {
+              "x": 0,
+              "y": 0.04217432249438099,
+              "z": -0.9991102674490638
+            },
+            "active": true
+          },
+          {
+            "id": "plant-3:twig-a",
+            "label": "small twig",
+            "kind": "twig",
+            "parentId": "plant-3:lateral-a",
+            "parentDistance": 1.15,
+            "points": [
+              {
+                "x": -1.7236734652551862,
+                "y": 2.8993936871482737,
+                "z": 0.7771660150693417
+              },
+              {
+                "x": -1.9078271549813852,
+                "y": 2.861525577156787,
+                "z": 0.8453820308273694
+              },
+              {
+                "x": -2.089679479028356,
+                "y": 2.8217800688248413,
+                "z": 0.9185259082618535
+              },
+              {
+                "x": -2.2698817021185547,
+                "y": 2.7807773052217213,
+                "z": 0.9949846041064527
+              },
+              {
+                "x": -2.449617951407444,
+                "y": 2.739431457304369,
+                "z": 1.07234998106254
+              },
+              {
+                "x": -2.630133201679233,
+                "y": 2.698662025691112,
+                "z": 1.1481925671553497
+              },
+              {
+                "x": -2.812225354164526,
+                "y": 2.6591050813373496,
+                "z": 1.2208403211238399
+              }
+            ],
+            "restLengths": [
+              0.2,
+              0.20000000000000012,
+              0.2000000000000001,
+              0.20000000000000007,
+              0.2,
+              0.20000000000000012
+            ],
+            "activeLength": 1.2000000000000004,
+            "radius": 0.038,
+            "stiffness": 0.34,
+            "referenceNormal": {
+              "x": -0.34736336773412635,
+              "y": 0,
+              "z": -0.9377306067077079
+            },
+            "active": true
+          }
+        ],
+        "organs": [
+          {
+            "id": "plant-3:organ-bloom-1",
+            "kind": "bloom",
+            "branchId": "plant-3:bloom-1",
+            "distance": 0.46000000000000035,
+            "spin": 0.2,
+            "scale": 1,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-bloom-2",
+            "kind": "bloom",
+            "branchId": "plant-3:bloom-2",
+            "distance": 0.46,
+            "spin": 2.4,
+            "scale": 0.86,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-bud-1",
+            "kind": "bud",
+            "branchId": "plant-3:bud-1",
+            "distance": 0.4600000000000002,
+            "spin": 1.4,
+            "scale": 0.78,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-1",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-1",
+            "distance": 0.3399999999999999,
+            "spin": 0.25,
+            "scale": 0.96,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-2",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-2",
+            "distance": 0.3400000000000001,
+            "spin": 2.7,
+            "scale": 1.08,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-3",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-3",
+            "distance": 0.34,
+            "spin": 0.4,
+            "scale": 0.9,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-4",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-4",
+            "distance": 0.33999999999999986,
+            "spin": 2.9,
+            "scale": 1.02,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-5",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-5",
+            "distance": 0.3399999999999998,
+            "spin": 0.1,
+            "scale": 0.94,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-6",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-6",
+            "distance": 0.3400000000000001,
+            "spin": 2.7,
+            "scale": 1,
+            "active": true
+          },
+          {
+            "id": "plant-3:organ-leaf-7",
+            "kind": "leaf",
+            "branchId": "plant-3:leaf-7",
+            "distance": 0.33999999999999986,
+            "spin": 0.7,
+            "scale": 0.86,
+            "active": true
+          }
+        ]
+      },
+      {
+        "schemaVersion": 1,
+        "generatorVersion": "leafy-shoot-v1",
+        "id": "plant-4",
+        "seed": 11209,
+        "rootBranchId": "plant-4:stem",
+        "branches": [
+          {
+            "id": "plant-4:petiole-1",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 1.1522909925671379,
+            "points": [
+              {
+                "x": 0.5459170204107716,
+                "y": 1.6883047917338354,
+                "z": 0.23756292631331297
+              },
+              {
+                "x": 0.4850873146493393,
+                "y": 1.7353726315685818,
+                "z": 0.21926278659181556
+              },
+              {
+                "x": 0.4221552050005473,
+                "y": 1.7795386104059727,
+                "z": 0.2008387356787923
+              },
+              {
+                "x": 0.36014578493284327,
+                "y": 1.825011452461503,
+                "z": 0.1824653249497545
+              }
+            ],
+            "restLengths": [
+              0.07906029195214308,
+              0.07906029195214316,
+              0.07906029195214315
+            ],
+            "activeLength": 0.23718087585642939,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.28808766248239187,
+              "y": 0,
+              "z": -0.9576040406793569
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:petiole-2",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 1.654532865432428,
+            "points": [
+              {
+                "x": 0.6654744321532219,
+                "y": 2.1743734075671903,
+                "z": 0.19709050937333425
+              },
+              {
+                "x": 0.7469136149612116,
+                "y": 2.1908071024338374,
+                "z": 0.1857324842899017
+              },
+              {
+                "x": 0.8290349662630895,
+                "y": 2.203501379802179,
+                "z": 0.1744919086975098
+              },
+              {
+                "x": 0.9108726190079397,
+                "y": 2.217868474482764,
+                "z": 0.16319603596223492
+              }
+            ],
+            "restLengths": [
+              0.08385351249172036,
+              0.08385351249172046,
+              0.08385351249172036
+            ],
+            "activeLength": 0.25156053747516116,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.13812944530743282,
+              "y": 0,
+              "z": 0.9904141842376152
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:petiole-3",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 2.114057304672543,
+            "points": [
+              {
+                "x": 0.7902962825046541,
+                "y": 2.614609121108094,
+                "z": 0.15525295671696757
+              },
+              {
+                "x": 0.730306957680863,
+                "y": 2.6801105567849315,
+                "z": 0.1877877854041759
+              },
+              {
+                "x": 0.6676536909791961,
+                "y": 2.7424556947264014,
+                "z": 0.22148235756225645
+              },
+              {
+                "x": 0.6061739024514768,
+                "y": 2.806225919717598,
+                "z": 0.25466768946365925
+              }
+            ],
+            "restLengths": [
+              0.0945921362812322,
+              0.09459213628123217,
+              0.09459213628123211
+            ],
+            "activeLength": 0.2837764088436965,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.47674317742511935,
+              "y": 0,
+              "z": -0.8790426285332248
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:petiole-4",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 2.658288648183827,
+            "points": [
+              {
+                "x": 0.9477191801270284,
+                "y": 3.1329166435678437,
+                "z": 0.10271714564433523
+              },
+              {
+                "x": 1.0119389642915713,
+                "y": 3.149338860553159,
+                "z": 0.041573124685575
+              },
+              {
+                "x": 1.0762151713252475,
+                "y": 3.1617666894129712,
+                "z": -0.020447673979500036
+              },
+              {
+                "x": 1.1404825281876516,
+                "y": 3.175981108134884,
+                "z": -0.08209277378619267
+              }
+            ],
+            "restLengths": [
+              0.0901801596131797,
+              0.09018015961317966,
+              0.09018015961317967
+            ],
+            "activeLength": 0.270540478839539,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.6895506224779121,
+              "y": 0,
+              "z": 0.7242374880108898
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:petiole-5",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 3.187220986981419,
+            "points": [
+              {
+                "x": 1.0997883331703688,
+                "y": 3.6369631426973297,
+                "z": 0.05194713361414537
+              },
+              {
+                "x": 1.0827617059762031,
+                "y": 3.6844183858165485,
+                "z": 0.11276870182868745
+              },
+              {
+                "x": 1.0642778098385897,
+                "y": 3.7290638370803126,
+                "z": 0.1752690902932259
+              },
+              {
+                "x": 1.046439861503456,
+                "y": 3.7749751660704143,
+                "z": 0.23703580270974703
+              }
+            ],
+            "restLengths": [
+              0.07900107146861655,
+              0.0790010714686164,
+              0.07900107146861661
+            ],
+            "activeLength": 0.2370032144058496,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9629780444156381,
+              "y": 0,
+              "z": -0.2695798322824494
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:petiole-6",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 3.7180826683254153,
+            "points": [
+              {
+                "x": 1.2400002825736114,
+                "y": 4.146778371805451,
+                "z": 0.004856270930877472
+              },
+              {
+                "x": 1.2535551163726306,
+                "y": 4.1749455807711895,
+                "z": -0.07237649477678253
+              },
+              {
+                "x": 1.2663277698736073,
+                "y": 4.199654362995228,
+                "z": -0.15091540667809392
+              },
+              {
+                "x": 1.2794529016718812,
+                "y": 4.2259135592650265,
+                "z": -0.22889111318746186
+              }
+            ],
+            "restLengths": [
+              0.08331881707689404,
+              0.0833188170768941,
+              0.08331881707689405
+            ],
+            "activeLength": 0.24995645123068216,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.9849456796914228,
+              "y": 0,
+              "z": 0.17286413178332063
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:petiole-7",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-4:stem",
+            "parentDistance": 4.252055993023616,
+            "points": [
+              {
+                "x": 1.3603769345630363,
+                "y": 4.665323612167697,
+                "z": -0.03607422797821793
+              },
+              {
+                "x": 1.3932930749304187,
+                "y": 4.708150285929429,
+                "z": 0.04352921560102672
+              },
+              {
+                "x": 1.425907133297229,
+                "y": 4.747146309748667,
+                "z": 0.12519890297026345
+              },
+              {
+                "x": 1.45866435830333,
+                "y": 4.787862571719955,
+                "z": 0.20596680954730787
+              }
+            ],
+            "restLengths": [
+              0.09619929579707465,
+              0.09619929579707487,
+              0.09619929579707498
+            ],
+            "activeLength": 0.2885978873912245,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9241120210175359,
+              "y": 0,
+              "z": 0.3821216725218361
+            },
+            "active": true
+          },
+          {
+            "id": "plant-4:stem",
+            "label": "leafy stem",
+            "kind": "trunk",
+            "parentId": null,
+            "parentDistance": 0,
+            "points": [
+              {
+                "x": 0.38487570684224337,
+                "y": 0.55,
+                "z": 0.29507743099512634
+              },
+              {
+                "x": 0.40822047418382457,
+                "y": 0.83850012969206,
+                "z": 0.2859742053847168
+              },
+              {
+                "x": 0.4434812993818677,
+                "y": 1.125645186329843,
+                "z": 0.27314601900006324
+              },
+              {
+                "x": 0.49010993595071406,
+                "y": 1.4109830286461444,
+                "z": 0.2567674444256422
+              },
+              {
+                "x": 0.5471085847828855,
+                "y": 1.6942260244178975,
+                "z": 0.23715288124846737
+              },
+              {
+                "x": 0.6131160075119269,
+                "y": 1.97529607747754,
+                "z": 0.21472929703895036
+              },
+              {
+                "x": 0.6865048921764932,
+                "y": 2.2543354740478527,
+                "z": 0.19000565490335958
+              },
+              {
+                "x": 0.7654755679806029,
+                "y": 2.531686457273034,
+                "z": 0.16354367882164553
+              },
+              {
+                "x": 0.8481370780742916,
+                "y": 2.8078474278589263,
+                "z": 0.13593272474231283
+              },
+              {
+                "x": 0.9325734778775568,
+                "y": 3.083415008410632,
+                "z": 0.10776936826223116
+              },
+              {
+                "x": 1.0168986494908683,
+                "y": 3.3590201808229603,
+                "z": 0.07964062703482494
+              },
+              {
+                "x": 1.0993058794407595,
+                "y": 3.6352650355581955,
+                "z": 0.052108820058593075
+              },
+              {
+                "x": 1.1781188752189933,
+                "y": 3.9126655458536486,
+                "z": 0.025695938819239223
+              },
+              {
+                "x": 1.2518491225211146,
+                "y": 4.191605493924119,
+                "z": 0.0008659626957514925
+              },
+              {
+                "x": 1.3192609680059293,
+                "y": 4.47230671463002,
+                "z": -0.02199534727614096
+              },
+              {
+                "x": 1.379441265780857,
+                "y": 4.754820184264174,
+                "z": -0.04260221375493041
+              },
+              {
+                "x": 1.4318660485141372,
+                "y": 5.039040213225423,
+                "z": -0.06078981952692104
+              }
+            ],
+            "restLengths": [
+              0.2895862077362836,
+              0.28958620773628346,
+              0.2895862077362836,
+              0.2895862077362834,
+              0.2895862077362836,
+              0.2895862077362836,
+              0.2895862077362834,
+              0.2895862077362835,
+              0.2895862077362835,
+              0.2895862077362834,
+              0.28958620773628346,
+              0.28958620773628335,
+              0.28958620773628346,
+              0.2895862077362837,
+              0.2895862077362835,
+              0.2895862077362838
+            ],
+            "activeLength": 4.633379323780537,
+            "radius": 0.057,
+            "stiffness": 0.39,
+            "referenceNormal": {
+              "x": 0,
+              "y": -0.03153793127445876,
+              "z": -0.9995025557200578
+            },
+            "active": true
+          }
+        ],
+        "organs": [
+          {
+            "id": "plant-4:leaf-1",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-1",
+            "distance": 0.23718087585642939,
+            "spin": 0.23269243875984102,
+            "scale": 1.000735470598191,
+            "active": true
+          },
+          {
+            "id": "plant-4:leaf-2",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-2",
+            "distance": 0.25156053747516116,
+            "spin": 0.31270715104183183,
+            "scale": 1.0278804939113557,
+            "active": true
+          },
+          {
+            "id": "plant-4:leaf-3",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-3",
+            "distance": 0.2837764088436965,
+            "spin": -0.19421690811868758,
+            "scale": 1.0233634441033006,
+            "active": true
+          },
+          {
+            "id": "plant-4:leaf-4",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-4",
+            "distance": 0.270540478839539,
+            "spin": -0.11206124676391482,
+            "scale": 1.0405113982632757,
+            "active": true
+          },
+          {
+            "id": "plant-4:leaf-5",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-5",
+            "distance": 0.2370032144058496,
+            "spin": 0.2753696958301589,
+            "scale": 0.8750855288892985,
+            "active": true
+          },
+          {
+            "id": "plant-4:leaf-6",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-6",
+            "distance": 0.24995645123068216,
+            "spin": 0.22134793975856157,
+            "scale": 0.7717427273349836,
+            "active": true
+          },
+          {
+            "id": "plant-4:leaf-7",
+            "kind": "leaf",
+            "branchId": "plant-4:petiole-7",
+            "distance": 0.2885978873912245,
+            "spin": -0.3225802263477817,
+            "scale": 0.6604160594209096,
+            "active": true
+          }
+        ]
+      },
+      {
+        "schemaVersion": 1,
+        "generatorVersion": "one-branch-v1",
+        "id": "plant-5",
+        "seed": 12186,
+        "rootBranchId": "plant-5:trunk",
+        "branches": [
+          {
+            "id": "plant-5:bloom-1",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-5:twig-a",
+            "parentDistance": 0.86,
+            "points": [
+              {
+                "x": -1.8063928361002815,
+                "y": 3.3391080589604165,
+                "z": 0.8103523570801475
+              },
+              {
+                "x": -1.879142011715885,
+                "y": 3.250306045753407,
+                "z": 0.9120030875681437
+              },
+              {
+                "x": -1.951045387737769,
+                "y": 3.1594929802385585,
+                "z": 1.0124720019624107
+              },
+              {
+                "x": -2.0233217353539796,
+                "y": 3.0695582890197564,
+                "z": 1.1134620608877843
+              }
+            ],
+            "restLengths": [
+              0.1533333333333332,
+              0.1533333333333334,
+              0.15333333333333313
+            ],
+            "activeLength": 0.45999999999999974,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.8131976843455412,
+              "y": 0,
+              "z": -0.581987565309646
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:bloom-2",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-5:lateral-b",
+            "parentDistance": 1.86,
+            "points": [
+              {
+                "x": 0.589920067972279,
+                "y": 5.280767438091008,
+                "z": -0.12632161345401288
+              },
+              {
+                "x": 0.7237695910236761,
+                "y": 5.230289754485886,
+                "z": -0.07111817381583613
+              },
+              {
+                "x": 0.856712527811918,
+                "y": 5.17708253191582,
+                "z": -0.016288636743122177
+              },
+              {
+                "x": 0.9900597141304999,
+                "y": 5.125072434339293,
+                "z": 0.038707624603523755
+              }
+            ],
+            "restLengths": [
+              0.15333333333333324,
+              0.15333333333333335,
+              0.1533333333333332
+            ],
+            "activeLength": 0.4599999999999998,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.3812749166706833,
+              "y": 0,
+              "z": 0.9244617017041667
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:bud-1",
+            "label": "flower stalk",
+            "kind": "pedicel",
+            "parentId": "plant-5:lateral-c",
+            "parentDistance": 1.2,
+            "points": [
+              {
+                "x": -0.7737427787432902,
+                "y": 6.229880020709411,
+                "z": 0.42333192029418676
+              },
+              {
+                "x": -0.7322062264333951,
+                "y": 6.296361819216405,
+                "z": 0.5551120265340661
+              },
+              {
+                "x": -0.6903056744112611,
+                "y": 6.360266090498749,
+                "z": 0.6880469691309021
+              },
+              {
+                "x": -0.6485646879464729,
+                "y": 6.4253156142331465,
+                "z": 0.8204756692754913
+              }
+            ],
+            "restLengths": [
+              0.1533333333333334,
+              0.1533333333333332,
+              0.15333333333333318
+            ],
+            "activeLength": 0.45999999999999985,
+            "radius": 0.022,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9537450825541541,
+              "y": 0,
+              "z": 0.30061656225791933
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:lateral-a",
+            "label": "lower side branch",
+            "kind": "lateral",
+            "parentId": "plant-5:trunk",
+            "parentDistance": 2.15,
+            "points": [
+              {
+                "x": -0.46335993167352024,
+                "y": 2.6603423397218746,
+                "z": -0.38957361298986726
+              },
+              {
+                "x": -0.6864320004489993,
+                "y": 2.714003312328755,
+                "z": -0.26492063670453886
+              },
+              {
+                "x": -0.9085562949595717,
+                "y": 2.7681988294128814,
+                "z": -0.13881490304486857
+              },
+              {
+                "x": -1.1299183213529986,
+                "y": 2.8228180644674885,
+                "z": -0.01155687862705701
+              },
+              {
+                "x": -1.3507544147376749,
+                "y": 2.8777265075979717,
+                "z": 0.11648801614528495
+              },
+              {
+                "x": -1.5713232921748712,
+                "y": 2.9327809268550626,
+                "z": 0.2449301960241648
+              },
+              {
+                "x": -1.7918843490646712,
+                "y": 2.9878396086607912,
+                "z": 0.3733839779348155
+              },
+              {
+                "x": -2.0126788394509996,
+                "y": 3.042770821339909,
+                "z": 0.5014908365893076
+              },
+              {
+                "x": -2.2339097640648387,
+                "y": 3.097462386035477,
+                "z": 0.6289456250098895
+              },
+              {
+                "x": -2.455717683303774,
+                "y": 3.151834426094916,
+                "z": 0.7555313294490072
+              }
+            ],
+            "restLengths": [
+              0.26111111111111124,
+              0.2611111111111112,
+              0.26111111111111107,
+              0.26111111111111124,
+              0.2611111111111111,
+              0.26111111111111124,
+              0.26111111111111096,
+              0.261111111111111,
+              0.26111111111111096
+            ],
+            "activeLength": 2.35,
+            "radius": 0.064,
+            "stiffness": 0.52,
+            "referenceNormal": {
+              "x": -0.4878066127660045,
+              "y": 0,
+              "z": -0.872951721770315
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:lateral-b",
+            "label": "upper side branch",
+            "kind": "lateral",
+            "parentId": "plant-5:trunk",
+            "parentDistance": 3.62,
+            "points": [
+              {
+                "x": -0.8225587965303587,
+                "y": 4.075119244195618,
+                "z": -0.21606237242049245
+              },
+              {
+                "x": -0.6418832227868607,
+                "y": 4.23790004934511,
+                "z": -0.1913271152539673
+              },
+              {
+                "x": -0.4584546968858818,
+                "y": 4.398485333877607,
+                "z": -0.17345454696723667
+              },
+              {
+                "x": -0.2728859811567632,
+                "y": 4.557132723743563,
+                "z": -0.16127489791161614
+              },
+              {
+                "x": -0.08588547240120278,
+                "y": 4.714349915197749,
+                "z": -0.15311090035083574
+              },
+              {
+                "x": 0.1018270187375242,
+                "y": 4.870810563772806,
+                "z": -0.14701397180287107
+              },
+              {
+                "x": 0.2895601824146967,
+                "y": 5.027248763706275,
+                "z": -0.1409778076989929
+              },
+              {
+                "x": 0.47667224968915123,
+                "y": 5.18434950391045,
+                "z": -0.13313445845690147
+              },
+              {
+                "x": 0.6626015035868232,
+                "y": 5.342647604803902,
+                "z": -0.12194919054171127
+              },
+              {
+                "x": 0.8469270485098477,
+                "y": 5.502447644271034,
+                "z": -0.1064209164944641
+              }
+            ],
+            "restLengths": [
+              0.24444444444444444,
+              0.2444444444444444,
+              0.24444444444444438,
+              0.24444444444444433,
+              0.24444444444444444,
+              0.24444444444444458,
+              0.24444444444444452,
+              0.2444444444444445,
+              0.24444444444444446
+            ],
+            "activeLength": 2.1999999999999997,
+            "radius": 0.06,
+            "stiffness": 0.5,
+            "referenceNormal": {
+              "x": -0.13563904265265755,
+              "y": 0,
+              "z": 0.9907583207363291
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:lateral-c",
+            "label": "crown twig",
+            "kind": "twig",
+            "parentId": "plant-5:trunk",
+            "parentDistance": 4.78,
+            "points": [
+              {
+                "x": -1.1036444461613748,
+                "y": 5.192316018854624,
+                "z": -0.08050734589625243
+              },
+              {
+                "x": -1.0407726034059213,
+                "y": 5.367992213037639,
+                "z": -0.000908183877622884
+              },
+              {
+                "x": -0.982818048953099,
+                "y": 5.543544311539208,
+                "z": 0.08260080209414954
+              },
+              {
+                "x": -0.9285748165561044,
+                "y": 5.718893690876684,
+                "z": 0.1689795455050748
+              },
+              {
+                "x": -0.8762082464407855,
+                "y": 5.894105675279631,
+                "z": 0.256783436444499
+              },
+              {
+                "x": -0.8236691084575116,
+                "y": 6.069331261069987,
+                "z": 0.3444569984376362
+              },
+              {
+                "x": -0.7691341944619775,
+                "y": 6.244699906214588,
+                "z": 0.43061268231171435
+              },
+              {
+                "x": -0.7114072437776999,
+                "y": 6.42024224114453,
+                "z": 0.5142996479646879
+              }
+            ],
+            "restLengths": [
+              0.20285714285714251,
+              0.20285714285714268,
+              0.20285714285714257,
+              0.20285714285714307,
+              0.2028571428571431,
+              0.2028571428571428,
+              0.20285714285714246
+            ],
+            "activeLength": 1.4199999999999993,
+            "radius": 0.044,
+            "stiffness": 0.38,
+            "referenceNormal": {
+              "x": -0.7847369889822856,
+              "y": 0,
+              "z": 0.6198288942305097
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-1",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:trunk",
+            "parentDistance": 1.42,
+            "points": [
+              {
+                "x": -0.30886376230422585,
+                "y": 1.9506196911190543,
+                "z": -0.46195926391789993
+              },
+              {
+                "x": -0.2724082605722079,
+                "y": 1.9920233221576833,
+                "z": -0.36295835394870646
+              },
+              {
+                "x": -0.23568566107886213,
+                "y": 2.0314005823900967,
+                "z": -0.26323209608506976
+              },
+              {
+                "x": -0.19907970437713665,
+                "y": 2.0716771344542897,
+                "z": -0.16382260090369277
+              }
+            ],
+            "restLengths": [
+              0.1133333333333333,
+              0.11333333333333334,
+              0.11333333333333342
+            ],
+            "activeLength": 0.3400000000000001,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9384000423736774,
+              "y": 0,
+              "z": 0.34555080736858407
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-2",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:trunk",
+            "parentDistance": 2.86,
+            "points": [
+              {
+                "x": -0.6324560020641733,
+                "y": 3.3450852642169915,
+                "z": -0.30830676688549274
+              },
+              {
+                "x": -0.7381081091760893,
+                "y": 3.361239718124509,
+                "z": -0.27060914990236556
+              },
+              {
+                "x": -0.8440456947197568,
+                "y": 3.375127549427313,
+                "z": -0.23280967166089445
+              },
+              {
+                "x": -0.9498624792740751,
+                "y": 3.390017434252806,
+                "z": -0.19505329629311086
+              }
+            ],
+            "restLengths": [
+              0.11333333333333329,
+              0.1133333333333334,
+              0.11333333333333331
+            ],
+            "activeLength": 0.33999999999999997,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.33605746684204035,
+              "y": 0,
+              "z": -0.9418414829363331
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-3",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:lateral-a",
+            "parentDistance": 0.7,
+            "points": [
+              {
+                "x": -1.0592708661210537,
+                "y": 2.80538639370538,
+                "z": -0.0521711417391246
+              },
+              {
+                "x": -1.064082905920334,
+                "y": 2.905907424199745,
+                "z": -0.000048103207536287496
+              },
+              {
+                "x": -1.068984222118547,
+                "y": 3.0059167578734933,
+                "z": 0.05304195915918618
+              },
+              {
+                "x": -1.0738458101801822,
+                "y": 3.106155281849822,
+                "z": 0.10570169441308255
+              }
+            ],
+            "restLengths": [
+              0.11333333333333324,
+              0.11333333333333337,
+              0.11333333333333355
+            ],
+            "activeLength": 0.3400000000000002,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9957654857234183,
+              "y": 0,
+              "z": -0.09192985065801398
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-4",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:lateral-a",
+            "parentDistance": 1.82,
+            "points": [
+              {
+                "x": -2.0061019822905557,
+                "y": 3.0411345724515946,
+                "z": 0.49767488760810985
+              },
+              {
+                "x": -2.041994242058755,
+                "y": 3.1482791308572504,
+                "z": 0.4889436942627814
+              },
+              {
+                "x": -2.0785988413241543,
+                "y": 3.2551681294987254,
+                "z": 0.4800392163731604
+              },
+              {
+                "x": -2.114885985858036,
+                "y": 3.3621717144015464,
+                "z": 0.47121196289507455
+              }
+            ],
+            "restLengths": [
+              0.11333333333333319,
+              0.11333333333333333,
+              0.11333333333333333
+            ],
+            "activeLength": 0.33999999999999986,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0,
+              "y": -0.08122061359316622,
+              "z": -0.9966961482455672
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-5",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:lateral-b",
+            "parentDistance": 0.62,
+            "points": [
+              {
+                "x": -0.35892238572208174,
+                "y": 4.483578024805711,
+                "z": -0.16692182611013112
+              },
+              {
+                "x": -0.2650697593612177,
+                "y": 4.436061888530206,
+                "z": -0.12475138903556268
+              },
+              {
+                "x": -0.17201814770395324,
+                "y": 4.38668859200614,
+                "z": -0.08294086879511745
+              },
+              {
+                "x": -0.07861112432053391,
+                "y": 4.338128594119273,
+                "z": -0.04097065278040853
+              }
+            ],
+            "restLengths": [
+              0.11333333333333317,
+              0.11333333333333338,
+              0.11333333333333337
+            ],
+            "activeLength": 0.33999999999999997,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.40985344899393444,
+              "y": 0,
+              "z": 0.9121513856525004
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-6",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:lateral-b",
+            "parentDistance": 1.48,
+            "points": [
+              {
+                "x": 0.29976629517512177,
+                "y": 5.0358178949901395,
+                "z": -0.14054998864942428
+              },
+              {
+                "x": 0.2770301659128949,
+                "y": 5.141543168011149,
+                "z": -0.1744569129459264
+              },
+              {
+                "x": 0.25384911967998997,
+                "y": 5.246956489071629,
+                "z": -0.20902735238473882
+              },
+              {
+                "x": 0.2308662899484719,
+                "y": 5.352509649618311,
+                "z": -0.2433021868932077
+              }
+            ],
+            "restLengths": [
+              0.11333333333333354,
+              0.11333333333333358,
+              0.11333333333333294
+            ],
+            "activeLength": 0.3400000000000001,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0,
+              "y": -0.30538708343603427,
+              "z": -0.9522282968230006
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:leaf-7",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-5:lateral-c",
+            "parentDistance": 0.65,
+            "points": [
+              {
+                "x": -0.9178802353353701,
+                "y": 5.754676420085738,
+                "z": 0.18691132604904206
+              },
+              {
+                "x": -0.8914961747334099,
+                "y": 5.752397857679426,
+                "z": 0.29710721501027815
+              },
+              {
+                "x": -0.8651282757754793,
+                "y": 5.747824403536783,
+                "z": 0.4072356031134096
+              },
+              {
+                "x": -0.8387519161626129,
+                "y": 5.744262689884839,
+                "z": 0.5173993280589594
+              }
+            ],
+            "restLengths": [
+              0.1133333333333333,
+              0.11333333333333334,
+              0.11333333333333331
+            ],
+            "activeLength": 0.33999999999999997,
+            "radius": 0.018,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9725132367219601,
+              "y": 0,
+              "z": 0.2328475990869926
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:trunk",
+            "label": "main branch",
+            "kind": "trunk",
+            "parentId": null,
+            "parentDistance": 0,
+            "points": [
+              {
+                "x": -0.0975413854865116,
+                "y": 0.55,
+                "z": -0.5514396414090773
+              },
+              {
+                "x": -0.13583078098208337,
+                "y": 0.8892123310740125,
+                "z": -0.5371208512706149
+              },
+              {
+                "x": -0.18227706387531997,
+                "y": 1.227173707933615,
+                "z": -0.5181218600428056
+              },
+              {
+                "x": -0.23658229858603785,
+                "y": 1.563676532528185,
+                "z": -0.4946079995770936
+              },
+              {
+                "x": -0.29821411170481016,
+                "y": 1.8985926312369883,
+                "z": -0.4668800795599162
+              },
+              {
+                "x": -0.36643843585731695,
+                "y": 2.2318909836064744,
+                "z": -0.4353561043532495
+              },
+              {
+                "x": -0.44035747004829534,
+                "y": 2.5636448188446654,
+                "z": -0.4005497787767779
+              },
+              {
+                "x": -0.5189492139344803,
+                "y": 2.89402801517513,
+                "z": -0.3630478790048334
+              },
+              {
+                "x": -0.601105777287288,
+                "y": 3.2233021186348645,
+                "z": -0.3234881140920432
+              },
+              {
+                "x": -0.6856688835933596,
+                "y": 3.5517961297445475,
+                "z": -0.2825384275480586
+              },
+              {
+                "x": -0.7714622160670636,
+                "y": 3.879881520313122,
+                "z": -0.2408779941653689
+              },
+              {
+                "x": -0.8573212242226002,
+                "y": 4.207944908804201,
+                "z": -0.19917961336455206
+              },
+              {
+                "x": -0.9421215711999794,
+                "y": 4.5363606396250695,
+                "z": -0.15809287568653715
+              },
+              {
+                "x": -1.0248075109197048,
+                "y": 4.8654653210673775,
+                "z": -0.11822741273257506
+              },
+              {
+                "x": -1.104421164735184,
+                "y": 5.195536222773708,
+                "z": -0.08013571962200315
+              },
+              {
+                "x": -1.180132995538053,
+                "y": 5.526775264247777,
+                "z": -0.04429541841053751
+              },
+              {
+                "x": -1.2512728802787183,
+                "y": 5.859300025450421,
+                "z": -0.011091335870566571
+              },
+              {
+                "x": -1.317360242956959,
+                "y": 6.193142657714424,
+                "z": 0.019201707693705033
+              },
+              {
+                "x": -1.3781309565292952,
+                "y": 6.528256711092715,
+                "z": 0.04643409119923339
+              }
+            ],
+            "restLengths": [
+              0.3416666666666667,
+              0.3416666666666667,
+              0.3416666666666666,
+              0.34166666666666673,
+              0.3416666666666665,
+              0.3416666666666668,
+              0.3416666666666665,
+              0.3416666666666665,
+              0.3416666666666667,
+              0.34166666666666673,
+              0.3416666666666667,
+              0.3416666666666665,
+              0.34166666666666623,
+              0.34166666666666623,
+              0.34166666666666684,
+              0.341666666666667,
+              0.34166666666666634,
+              0.3416666666666668
+            ],
+            "activeLength": 6.149999999999999,
+            "radius": 0.105,
+            "stiffness": 0.72,
+            "referenceNormal": {
+              "x": 0,
+              "y": 0.04217432249438107,
+              "z": -0.9991102674490638
+            },
+            "active": true
+          },
+          {
+            "id": "plant-5:twig-a",
+            "label": "small twig",
+            "kind": "twig",
+            "parentId": "plant-5:lateral-a",
+            "parentDistance": 1.15,
+            "points": [
+              {
+                "x": -1.439920556680371,
+                "y": 2.899982549425306,
+                "z": 0.1684114505644064
+              },
+              {
+                "x": -1.530947220038018,
+                "y": 3.0035341546592362,
+                "z": 0.3132948920318491
+              },
+              {
+                "x": -1.6169791500851634,
+                "y": 3.105879428586538,
+                "z": 0.4620361167044618
+              },
+              {
+                "x": -1.6996510056642375,
+                "y": 3.2073667739709357,
+                "z": 0.6132501472106973
+              },
+              {
+                "x": -1.7814039375944153,
+                "y": 3.308613196817591,
+                "z": 0.7651238446753208
+              },
+              {
+                "x": -1.8647002659473024,
+                "y": 3.4102627372936767,
+                "z": 0.9158855526914101
+              },
+              {
+                "x": -1.9512351197851987,
+                "y": 3.5127332625924614,
+                "z": 1.0642483193016516
+              }
+            ],
+            "restLengths": [
+              0.2,
+              0.19999999999999998,
+              0.20000000000000007,
+              0.19999999999999993,
+              0.19999999999999993,
+              0.19999999999999987
+            ],
+            "activeLength": 1.2,
+            "radius": 0.038,
+            "stiffness": 0.34,
+            "referenceNormal": {
+              "x": -0.8467495695045216,
+              "y": 0,
+              "z": -0.531991697814832
+            },
+            "active": true
+          }
+        ],
+        "organs": [
+          {
+            "id": "plant-5:organ-bloom-1",
+            "kind": "bloom",
+            "branchId": "plant-5:bloom-1",
+            "distance": 0.45999999999999974,
+            "spin": 0.2,
+            "scale": 1,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-bloom-2",
+            "kind": "bloom",
+            "branchId": "plant-5:bloom-2",
+            "distance": 0.4599999999999998,
+            "spin": 2.4,
+            "scale": 0.86,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-bud-1",
+            "kind": "bud",
+            "branchId": "plant-5:bud-1",
+            "distance": 0.45999999999999985,
+            "spin": 1.4,
+            "scale": 0.78,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-1",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-1",
+            "distance": 0.3400000000000001,
+            "spin": 0.25,
+            "scale": 0.96,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-2",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-2",
+            "distance": 0.33999999999999997,
+            "spin": 2.7,
+            "scale": 1.08,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-3",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-3",
+            "distance": 0.3400000000000002,
+            "spin": 0.4,
+            "scale": 0.9,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-4",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-4",
+            "distance": 0.33999999999999986,
+            "spin": 2.9,
+            "scale": 1.02,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-5",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-5",
+            "distance": 0.33999999999999997,
+            "spin": 0.1,
+            "scale": 0.94,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-6",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-6",
+            "distance": 0.3400000000000001,
+            "spin": 2.7,
+            "scale": 1,
+            "active": true
+          },
+          {
+            "id": "plant-5:organ-leaf-7",
+            "kind": "leaf",
+            "branchId": "plant-5:leaf-7",
+            "distance": 0.33999999999999997,
+            "spin": 0.7,
+            "scale": 0.86,
+            "active": true
+          }
+        ]
+      },
+      {
+        "schemaVersion": 1,
+        "generatorVersion": "leafy-shoot-v1",
+        "id": "plant-6",
+        "seed": 13163,
+        "rootBranchId": "plant-6:stem",
+        "branches": [
+          {
+            "id": "plant-6:petiole-1",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 1.0972717858873666,
+            "points": [
+              {
+                "x": -0.19459934670971485,
+                "y": 1.635854365302191,
+                "z": 0.4741137996930837
+              },
+              {
+                "x": -0.24420305988333957,
+                "y": 1.6774707702994258,
+                "z": 0.4308937517815016
+              },
+              {
+                "x": -0.29559403332844636,
+                "y": 1.7161159734655107,
+                "z": 0.38700819393383507
+              },
+              {
+                "x": -0.34620008951276526,
+                "y": 1.7560975958039946,
+                "z": 0.34340861802262995
+              }
+            ],
+            "restLengths": [
+              0.07784873837760345,
+              0.07784873837760335,
+              0.07784873837760335
+            ],
+            "activeLength": 0.23354621513281015,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.6569260559175678,
+              "y": 0,
+              "z": -0.7539550099684916
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:petiole-2",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 1.6151728251782769,
+            "points": [
+              {
+                "x": -0.08318371365059496,
+                "y": 2.1398663778797076,
+                "z": 0.43277180242815866
+              },
+              {
+                "x": -0.005346743543456378,
+                "y": 2.1608720407214856,
+                "z": 0.45072592794758826
+              },
+              {
+                "x": 0.07319968157360852,
+                "y": 2.178276235588108,
+                "z": 0.4694271448177128
+              },
+              {
+                "x": 0.15144931624458247,
+                "y": 2.1972928529797073,
+                "z": 0.4877995520331573
+              }
+            ],
+            "restLengths": [
+              0.08259650361879414,
+              0.08259650361879418,
+              0.08259650361879418
+            ],
+            "activeLength": 0.2477895108563825,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.22476142253802875,
+              "y": 0,
+              "z": 0.9744138253014895
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:petiole-3",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 2.086999673107086,
+            "points": [
+              {
+                "x": 0.03385188037068232,
+                "y": 2.594881287887223,
+                "z": 0.38962395880639505
+              },
+              {
+                "x": -0.024669996495304727,
+                "y": 2.6473234458825283,
+                "z": 0.3896908985031183
+              },
+              {
+                "x": -0.0854953592512276,
+                "y": 2.697073486248597,
+                "z": 0.39014169472121873
+              },
+              {
+                "x": -0.14530771691531638,
+                "y": 2.748038162490603,
+                "z": 0.39042121977553335
+              }
+            ],
+            "restLengths": [
+              0.07858113315577295,
+              0.07858113315577299,
+              0.07858113315577318
+            ],
+            "activeLength": 0.23574339946731915,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.001143839817126305,
+              "y": 0,
+              "z": -0.9999993458150225
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:petiole-4",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 2.597559523502757,
+            "points": [
+              {
+                "x": 0.16885429686007125,
+                "y": 3.084758057436974,
+                "z": 0.3399836494556005
+              },
+              {
+                "x": 0.2528052869886861,
+                "y": 3.1009501374764747,
+                "z": 0.3042920061932545
+              },
+              {
+                "x": 0.33731958803077583,
+                "y": 3.1129899683453597,
+                "z": 0.268288937013494
+              },
+              {
+                "x": 0.4216038669068086,
+                "y": 3.1268867728535406,
+                "z": 0.23241576100194622
+              }
+            ],
+            "restLengths": [
+              0.09264904531805467,
+              0.09264904531805467,
+              0.09264904531805468
+            ],
+            "activeLength": 0.277947135954164,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.3912564443050109,
+              "y": 0,
+              "z": 0.920281693173237
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:petiole-5",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 3.1368655650253703,
+            "points": [
+              {
+                "x": 0.31075833751923426,
+                "y": 3.6024330946652094,
+                "z": 0.28779527112776027
+              },
+              {
+                "x": 0.2653729756103482,
+                "y": 3.6613847441916363,
+                "z": 0.33783336459911534
+              },
+              {
+                "x": 0.21782491783743366,
+                "y": 3.7172445159614664,
+                "z": 0.3893872873943922
+              },
+              {
+                "x": 0.17123038032295348,
+                "y": 3.7744989634397914,
+                "z": 0.4402775239186874
+              }
+            ],
+            "restLengths": [
+              0.08966012968836981,
+              0.08966012968836987,
+              0.08966012968836974
+            ],
+            "activeLength": 0.2689803890651094,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.740704487614227,
+              "y": 0,
+              "z": -0.6718309772763872
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:petiole-6",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 3.639482142673345,
+            "points": [
+              {
+                "x": 0.4326354235599983,
+                "y": 4.087950481370769,
+                "z": 0.2428186356726082
+              },
+              {
+                "x": 0.4786449390923678,
+                "y": 4.113262849494267,
+                "z": 0.1648690694017685
+              },
+              {
+                "x": 0.5245373965920621,
+                "y": 4.13450886773882,
+                "z": 0.08564650042836482
+              },
+              {
+                "x": 0.5704937864307545,
+                "y": 4.1575758475705005,
+                "z": 0.006972164995558014
+              }
+            ],
+            "restLengths": [
+              0.09398790550573428,
+              0.09398790550573424,
+              0.0939879055057343
+            ],
+            "activeLength": 0.28196371651720287,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": 0.8611760632296034,
+              "y": 0,
+              "z": 0.5083067854360809
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:petiole-7",
+            "label": "leaf stalk",
+            "kind": "petiole",
+            "parentId": "plant-6:stem",
+            "parentDistance": 4.202817461687811,
+            "points": [
+              {
+                "x": 0.549864326645906,
+                "y": 4.63715934506384,
+                "z": 0.19924857989751532
+              },
+              {
+                "x": 0.5487522481641847,
+                "y": 4.6789833445732985,
+                "z": 0.26774180256829705
+              },
+              {
+                "x": 0.5468381855916563,
+                "y": 4.7177293069162545,
+                "z": 0.3380048225143018
+              },
+              {
+                "x": 0.5452817094067596,
+                "y": 4.7578594143112145,
+                "z": 0.4074955202205472
+              }
+            ],
+            "restLengths": [
+              0.0802608572427803,
+              0.08026085724278045,
+              0.08026085724278027
+            ],
+            "activeLength": 0.240782571728341,
+            "radius": 0.016,
+            "stiffness": 0.18,
+            "referenceNormal": {
+              "x": -0.9998682168688233,
+              "y": 0,
+              "z": -0.016234189094613084
+            },
+            "active": true
+          },
+          {
+            "id": "plant-6:stem",
+            "label": "leafy stem",
+            "kind": "trunk",
+            "parentId": null,
+            "parentDistance": 0,
+            "points": [
+              {
+                "x": -0.3360455219075733,
+                "y": 0.55,
+                "z": 0.5282739887651737
+              },
+              {
+                "x": -0.31370152628275755,
+                "y": 0.8346029877687164,
+                "z": 0.5192937321191173
+              },
+              {
+                "x": -0.280943562917306,
+                "y": 1.1180554854692892,
+                "z": 0.5066305105603867
+              },
+              {
+                "x": -0.23822664016886602,
+                "y": 1.3999989391005632,
+                "z": 0.4904467760666258
+              },
+              {
+                "x": -0.18639549164296182,
+                "y": 1.6802055862890513,
+                "z": 0.4710424798757611
+              },
+              {
+                "x": -0.12661735453169984,
+                "y": 1.9586153385922351,
+                "z": 0.4488311327131501
+              },
+              {
+                "x": -0.060303605619482295,
+                "y": 2.235346362415218,
+                "z": 0.4243120186206314
+              },
+              {
+                "x": 0.01096871726719939,
+                "y": 2.5106805706166293,
+                "z": 0.39804246245328223
+              },
+              {
+                "x": 0.08552826499889248,
+                "y": 2.785029329570503,
+                "z": 0.3706126957881143
+              },
+              {
+                "x": 0.16167115072067015,
+                "y": 3.0588863409965374,
+                "z": 0.342624161643714
+              },
+              {
+                "x": 0.2377147626131791,
+                "y": 3.3327745128100146,
+                "z": 0.3146706604711647
+              },
+              {
+                "x": 0.3120476103274131,
+                "y": 3.6071927669228327,
+                "z": 0.2873209007435857
+              },
+              {
+                "x": 0.38317965074782606,
+                "y": 3.8825679693591306,
+                "z": 0.2611008605912941
+              },
+              {
+                "x": 0.4497962256064624,
+                "y": 4.159216754892023,
+                "z": 0.23647483342347453
+              },
+              {
+                "x": 0.5108160687963633,
+                "y": 4.43732163191934,
+                "z": 0.21382497895391445
+              },
+              {
+                "x": 0.5654504739155748,
+                "y": 4.716924748148026,
+                "z": 0.19343039709330712
+              },
+              {
+                "x": 0.6132576460337347,
+                "y": 4.99794051566361,
+                "z": 0.17544783613880213
+              }
+            ],
+            "restLengths": [
+              0.2856199569301679,
+              0.28561995693016795,
+              0.28561995693016806,
+              0.28561995693016795,
+              0.28561995693016806,
+              0.2856199569301679,
+              0.2856199569301679,
+              0.2856199569301678,
+              0.28561995693016806,
+              0.28561995693016795,
+              0.28561995693016806,
+              0.2856199569301681,
+              0.2856199569301679,
+              0.28561995693016823,
+              0.2856199569301684,
+              0.28561995693016773
+            ],
+            "activeLength": 4.569919310882687,
+            "radius": 0.057,
+            "stiffness": 0.39,
+            "referenceNormal": {
+              "x": 0,
+              "y": -0.03153793127445875,
+              "z": -0.999502555720058
+            },
+            "active": true
+          }
+        ],
+        "organs": [
+          {
+            "id": "plant-6:leaf-1",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-1",
+            "distance": 0.23354621513281015,
+            "spin": -0.20208882915321738,
+            "scale": 1.0957044001631437,
+            "active": true
+          },
+          {
+            "id": "plant-6:leaf-2",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-2",
+            "distance": 0.2477895108563825,
+            "spin": 0.11684797583147884,
+            "scale": 0.977931297648698,
+            "active": true
+          },
+          {
+            "id": "plant-6:leaf-3",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-3",
+            "distance": 0.23574339946731915,
+            "spin": -0.24511669526109472,
+            "scale": 1.0183264235287905,
+            "active": true
+          },
+          {
+            "id": "plant-6:leaf-4",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-4",
+            "distance": 0.277947135954164,
+            "spin": 0.2639857437228784,
+            "scale": 1.0223273139826954,
+            "active": true
+          },
+          {
+            "id": "plant-6:leaf-5",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-5",
+            "distance": 0.2689803890651094,
+            "spin": 0.1514277450158261,
+            "scale": 0.9337483026789503,
+            "active": true
+          },
+          {
+            "id": "plant-6:leaf-6",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-6",
+            "distance": 0.28196371651720287,
+            "spin": 0.10427868438418955,
+            "scale": 0.7578049450317398,
+            "active": true
+          },
+          {
+            "id": "plant-6:leaf-7",
+            "kind": "leaf",
+            "branchId": "plant-6:petiole-7",
+            "distance": 0.240782571728341,
+            "spin": -0.02193219882901758,
+            "scale": 0.6471262205583043,
+            "active": true
+          }
+        ]
+      }
+    ],
+    "successfulPlantOrdinal": 6,
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    }
+  },
+  "checks": {
+    "bend": "not recorded",
+    "cut": "not recorded",
+    "cancel": "not recorded",
+    "reload": "not recorded",
+    "physicalPhone": "not recorded"
+  }
+}

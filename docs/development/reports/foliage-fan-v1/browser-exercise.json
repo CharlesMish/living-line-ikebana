@@ -1,0 +1,234 @@
+{
+  "browser": "Headless Chrome 148, SwiftShader, Linux",
+  "phone": "not run",
+  "log": [
+    {
+      "step": "leaf-cues",
+      "detail": [
+        {
+          "branchId": "plant-1:petiole-answering-1",
+          "dx": 0,
+          "dy": 0,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-answering-2",
+          "dx": 0,
+          "dy": 0,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-answering-2",
+          "dx": 18,
+          "dy": -12,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-answering-2",
+          "dx": -16,
+          "dy": 10,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-answering-2",
+          "dx": 28,
+          "dy": -22,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-answering-3",
+          "dx": 0,
+          "dy": 0,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-answering-3",
+          "dx": 18,
+          "dy": -12,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-crown-1",
+          "dx": 18,
+          "dy": -12,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-crown-1",
+          "dx": -16,
+          "dy": 10,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-crown-1",
+          "dx": 28,
+          "dy": -22,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-crown-1",
+          "dx": -24,
+          "dy": -8,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        {
+          "branchId": "plant-1:petiole-crown-2",
+          "dx": 18,
+          "dy": -12,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        }
+      ]
+    },
+    {
+      "step": "leaf-acquire",
+      "detail": {
+        "cue": {
+          "branchId": "plant-1:petiole-answering-1",
+          "dx": 0,
+          "dy": 0,
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim leaf stemDrag to change its direction.\n      "
+        },
+        "transaction": {
+          "operation": "aim",
+          "pointerId": 1,
+          "plantId": "plant-1",
+          "branchId": "plant-1:petiole-answering-1",
+          "materialDistance": 0.117001498671679,
+          "acquisitionHash": "0c41197f"
+        },
+        "selected": "plant-1:petiole-answering-1"
+      }
+    },
+    {
+      "step": "basal-preview",
+      "detail": {
+        "transaction": {
+          "operation": "prune",
+          "pointerId": 1,
+          "plantId": "plant-1",
+          "branchId": "plant-1:petiole-opening-1",
+          "materialDistance": 0.2047339999489484,
+          "acquisitionHash": "a0ad949c"
+        },
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Cut leaf stemTip + 1 leaf · release to cut\n      "
+      }
+    },
+    {
+      "step": "cancel-same",
+      "detail": true
+    },
+    {
+      "step": "basal-cut",
+      "detail": {
+        "armActiveLength": 1.627900784239173,
+        "answeringPoints": 7,
+        "answeringActive": true,
+        "crownActive": true,
+        "openingLeavesActive": 2,
+        "answeringLeavesActive": 3
+      }
+    },
+    {
+      "step": "reload",
+      "detail": {
+        "plants": 1,
+        "hash": "322b09f2",
+        "armActiveLength": 1.627900784239173,
+        "hashSame": true
+      }
+    },
+    {
+      "step": "keep-disabled",
+      "detail": false
+    },
+    {
+      "step": "viewed",
+      "detail": true
+    },
+    {
+      "step": "garden",
+      "detail": {
+        "viewed": "322b09f2",
+        "copyHash": "06b9cbf6",
+        "originalAgain": "322b09f2",
+        "preserved": true
+      }
+    },
+    {
+      "step": "picker-portrait-390x844",
+      "detail": {
+        "names": [
+          "Flowering branch",
+          "Leafy shoot",
+          "Bare branch",
+          "Single flower",
+          "Reed",
+          "Flower volume",
+          "Arching trailer",
+          "Foliage fan"
+        ],
+        "scrollHeight": 363,
+        "clientHeight": 286,
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "canvas": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "step": "picker-landscape-844x360",
+      "detail": {
+        "names": [
+          "Flowering branch",
+          "Leafy shoot",
+          "Bare branch",
+          "Single flower",
+          "Reed",
+          "Flower volume",
+          "Arching trailer",
+          "Foliage fan"
+        ],
+        "scrollHeight": 363,
+        "clientHeight": 190,
+        "innerWidth": 844,
+        "innerHeight": 360,
+        "canvas": {
+          "width": 844,
+          "height": 360
+        }
+      }
+    },
+    {
+      "step": "import-message",
+      "detail": "Imported 1 arrangement."
+    },
+    {
+      "step": "study",
+      "detail": [
+        {
+          "id": "plant-1",
+          "generatorVersion": "leafy-shoot-v1",
+          "seed": 8278,
+          "opening": null,
+          "activeOpeningLeaves": 0
+        },
+        {
+          "id": "plant-2",
+          "generatorVersion": "foliage-fan-v1",
+          "seed": 9255,
+          "opening": 1.6802027266472574,
+          "activeOpeningLeaves": 3
+        },
+        {
+          "id": "plant-3",
+          "generatorVersion": "foliage-fan-v1",
+          "seed": 10232,
+          "opening": 0.18,
+          "activeOpeningLeaves": 0
+        }
+      ]
+    }
+  ]
+}

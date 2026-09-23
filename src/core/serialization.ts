@@ -74,7 +74,7 @@ const asBoolean = (value: unknown, label: string): boolean => {
 };
 
 const branchKinds = new Set(["trunk", "lateral", "twig", "petiole", "pedicel"]);
-const organKinds = new Set(["leaf", "bloom", "bud"]);
+const organKinds = new Set(["leaf", "bloom", "bud", "berry"]);
 
 const decodeVec3 = (value: unknown, label: string) => {
   const record = asRecord(value, label);

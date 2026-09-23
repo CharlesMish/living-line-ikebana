@@ -1,6 +1,6 @@
 # Material references and extension contract
 
-**Current status:** the seven materials in the tables below remain. Round 4 appends foliage fan, blossom spray, and nodding flower, in that order.
+**Current status:** the seven materials in the tables below remain. Round 4 appends foliage fan, blossom spray, and nodding flower, in that order. Phase 2 appends berry twig after those ten. Berry twig is not part of `round4-palette`.
 The former flower Aim dead zone and visible-surface acquisition gaps are fixed;
 see [the correction report](development/FLOWER_AIM_POLISH.md). The two original
 references remain the comparison pair. Sections describing earlier prototype
@@ -11,9 +11,9 @@ This is a working extension contract, pending phone and composition review.
 Keep the flowering and leafy references together when proposing another material.
 The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1`,
 `single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`,
-`foliage-fan-v1`, `blossom-spray-v1`, and `nodding-flower-v1` are additive.
+`foliage-fan-v1`, `blossom-spray-v1`, `nodding-flower-v1`, and `berry-twig-v1` are additive.
 Catalog order is flowering → leafy → bare-branch → single-flower →
-reed → flower-volume → arching-trailer → foliage-fan → blossom-spray → nodding-flower.
+reed → flower-volume → arching-trailer → foliage-fan → blossom-spray → nodding-flower → berry-twig.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -158,6 +158,20 @@ separate organs on the existing elliptic surface. The blossom spray uses the
 existing tufted bloom. The nodding flower uses one bell shell along the
 supporting tangent. Cupped, open-face, and tufted blooms keep their radial
 paths. None of these cuttings is a named species.
+
+## Phase 2 candidate
+
+`berry-twig-v1` is appended after the ten materials above. It does not change
+those generators, fixtures, or the orders above. `reference-pair`, `mixed`,
+`all-four`, `round3-three`, `round3-palette`, `round4-candidates`, and
+`round4-palette` do not list it. `references-plus-berry-twig` is flowering →
+leafy → berry twig.
+
+| Cutting | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Berry twig / `berry-twig-v1` | One woody twig, two or three short laterals, and three or four berries on each lateral. Each berry is one short pedicel and one berry organ at that tip | Warm wood `0x6a4532`, roughness `0.9`. One low-poly berry sphere `0x8a2e45`, roughness `0.4`, radius `0.07`, hit radius `0.145` centered at local Y `0.055`. Unused leaf and bloom slots copy flowering | Wood `0.78`, cluster `0.52`, berry stem `0.18`, copied once. Shared solver. Pedicels are not bend handles |
+
+Cutting one berry stem deactivates that berry and leaves the other berries on the same lateral. Cutting the lateral deactivates that cluster’s stems and berries and leaves the wood and the other clusters. Those cuts are graph facts. Each berry is one sphere draw. Removing a cluster hides those spheres and does not allocate a new mesh. This is a generic woody accent, not a named species, and not a recolored blossom or a packed flower head.
 
 The trailer’s centered rest pose crosses the open water and stays clear of the
 ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance

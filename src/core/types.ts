@@ -5,7 +5,7 @@ export const GENERATOR_VERSION = "one-branch-v1" as const;
 export type GeneratorVersion = string;
 
 export type BranchKind = "trunk" | "lateral" | "twig" | "petiole" | "pedicel";
-export type OrganKind = "leaf" | "bloom" | "bud";
+export type OrganKind = "leaf" | "bloom" | "bud" | "berry";
 
 export interface Branch {
   id: string;

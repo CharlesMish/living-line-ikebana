@@ -26,6 +26,7 @@ the live catalog was a comparison-tooling flaw, not a persistence failure.
 | `references-plus-nodding-flower` | stable | flowering → leafy → `nodding-flower` | Round 4; does not change the rows above |
 | `round4-candidates` | stable | `foliage-fan` → `blossom-spray` → `nodding-flower` | Round 4; lane order |
 | `round4-palette` | stable | the seven established materials, then foliage-fan → blossom-spray → nodding-flower | Round 4; **not** `round3-palette` and **not** the live catalog |
+| `references-plus-berry-twig` | stable | flowering → leafy → `berry-twig` | Phase 2; does not change the rows above |
 | `all-registered-materials` | **dynamic** | live `getMaterialDefinitions()` order | yes; **not** a comparison baseline |
 | `mixed` | alias | same as `reference-pair` | yes; keep only for the old picker |
 
@@ -70,7 +71,9 @@ equal fill.
 - `round4-candidates` × 12 = 4 of each
 - `round4-palette` × 6 omits `arching-trailer`, `foliage-fan`, `blossom-spray`, and `nodding-flower`
 - `round4-palette` × 12 = 2 flowering, 2 leafy, and 1 each of the other eight
-- `all-registered-materials` × 6 still cycles the first six catalog entries and omits `arching-trailer` and the three Round 4 cuttings
+- `references-plus-berry-twig` × 6 = 2 flowering, 2 leafy, 2 berry twig
+- `references-plus-berry-twig` × 12 = 4 of each
+- `all-registered-materials` × 6 still cycles the first six catalog entries and omits `arching-trailer`, the three Round 4 cuttings, and `berry-twig`
 
 Single material IDs `reed`, `flower-volume`, and `arching-trailer` still load `count`
 copies of that one cutting. They are not substitutes for the named profiles above.

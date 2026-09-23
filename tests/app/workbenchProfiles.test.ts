@@ -52,6 +52,7 @@ test("named fixture profiles keep explicit ordered material lists", () => {
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
     "foliage-fan", "blossom-spray", "nodding-flower",
   ]);
+  assert.deepEqual(byId["references-plus-berry-twig"]?.materialIds, ["flowering-branch", "leafy-shoot", "berry-twig"]);
   assert.equal(byId["all-registered-materials"]?.materialIds, "catalog");
   assert.equal(byId["all-registered-materials"]?.kind, "dynamic");
   assert.equal(resolveWorkbenchFixture(MIXED_FIXTURE_ALIAS).profileId, "reference-pair");
@@ -111,6 +112,7 @@ test("adding an unrelated registered material cannot change reference-pair graph
   assert.equal(dynamicSequence[7]?.materialId, "foliage-fan");
   assert.equal(dynamicSequence[8]?.materialId, "blossom-spray");
   assert.equal(dynamicSequence[9]?.materialId, "nodding-flower");
+  assert.equal(dynamicSequence[10]?.materialId, "berry-twig");
   assert.equal(dynamicSequence.at(-1)?.materialId, "unrelated-candidate");
   assert.notEqual(pairSequence[4]?.materialId, dynamicSequence[4]?.materialId);
 });
@@ -141,6 +143,7 @@ test("candidate profiles stay listed and disabled until their materials are in t
     "round3-three", "round3-palette",
     "references-plus-foliage-fan", "references-plus-blossom-spray", "blossom-compare",
     "references-plus-nodding-flower", "round4-candidates", "round4-palette",
+    "references-plus-berry-twig",
   ] as const) {
     const resolved = resolveWorkbenchFixture(id, catalog);
     assert.ok(resolved.missingMaterialIds.length > 0, `${id} should be gated without candidates`);
@@ -168,12 +171,13 @@ test("this integration catalog makes named candidate profiles available to the p
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
-    "foliage-fan", "blossom-spray", "nodding-flower",
+    "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
     "round3-three", "round3-palette",
     "references-plus-foliage-fan", "references-plus-blossom-spray", "blossom-compare",
-    "references-plus-nodding-flower", "round4-candidates", "round4-palette", "all-registered-materials",
+    "references-plus-nodding-flower", "round4-candidates", "round4-palette",
+    "references-plus-berry-twig", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);
   assert.ok(options.every((option) => option.available));

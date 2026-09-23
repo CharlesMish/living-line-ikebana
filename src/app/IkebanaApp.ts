@@ -10,6 +10,7 @@ import {
   previewPrune,
   sampleBranch,
   toCanonicalPlantGraph,
+  type Branch,
   type CanonicalPlantGraph,
   type CutPlan,
   type PlantGraph,
@@ -37,6 +38,17 @@ import {
   panCameraPose,
   type CameraPose,
 } from "./camera.ts";
+import {
+  DEFAULT_BEND_STATION,
+  bendStationsMode,
+  planBendStationChange,
+  preferenceAfterBranchChange,
+  recordsFixedTouchStudy,
+  resolveBendStations,
+  selectBendStation,
+  type BendStationId,
+  type BendStationsMode,
+} from "./bendStations.ts";
 import {
   readExperimentConfig,
   urlForBendVariant,
@@ -251,6 +263,10 @@ export class IkebanaApp {
   private gesture: Gesture | null = null;
   private selectedBranchId: string | null = null;
   private bendVariant: BendVariant;
+  private readonly bendStationsRequested: boolean;
+  private bendStationsMode: BendStationsMode;
+  /** Temporary selector state. Not persisted. Resets to Middle when the branch changes. */
+  private bendStationPreference: BendStationId = DEFAULT_BEND_STATION;
   /** The hit that opened the transaction currently pending commit/cancel/decline. */
   private pendingAcquisitionRecord: AcquisitionRecord | null = null;
   private cameraIsFree = false;
@@ -268,6 +284,8 @@ export class IkebanaApp {
   constructor(root: HTMLElement) {
     this.root = root;
     this.bendVariant = this.config.bendVariant;
+    this.bendStationsRequested = this.config.bendStationsRequested;
+    this.bendStationsMode = this.config.bendStationsMode;
     // A fresh specimen (?fresh=1) never implies clearing study data; that is
     // a distinct, explicit action (?clearStudyData=1). See config.ts. It is
     // also one-shot: act on it once, then strip it from the URL so an
@@ -286,6 +304,7 @@ export class IkebanaApp {
       root,
       initialState: {
         bendVariant: uiVariant(this.bendVariant),
+        bendStationsMode: this.bendStationsMode,
         selectedMaterialId: getMaterialDefinitions()[0]?.materialId ?? "flowering-branch",
       },
     });
@@ -345,9 +364,11 @@ export class IkebanaApp {
     this.ui.setStatus(
       this.loadWarning
         ? "Saved work could not be opened."
-        : this.restored
-          ? "Your arrangement is here."
-          : "Place a cutting.",
+        : this.bendStationsMode === "excluded"
+          ? "Bend stations stay off while touch bend is active."
+          : this.restored
+            ? "Your arrangement is here."
+            : "Place a cutting.",
       this.loadWarning ? "warning" : "quiet",
     );
     this.syncPresentation();
@@ -476,7 +497,7 @@ export class IkebanaApp {
     if (!this.workingSession) this.workingSession = {
       coordinator: this.coordinator, selectedBranchId: this.selectedBranchId, cameraIsFree: this.cameraIsFree,
     };
-    this.selectedBranchId = null;
+    this.assignSelectedBranch(null);
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
     this.coordinator.commandPosture("step-back");
     this.cameraIsFree = true;
@@ -492,7 +513,7 @@ export class IkebanaApp {
     const saved = this.workingSession;
     this.workingSession = null;
     this.coordinator = saved.coordinator;
-    this.selectedBranchId = saved.selectedBranchId;
+    this.assignSelectedBranch(saved.selectedBranchId);
     this.cameraIsFree = saved.cameraIsFree;
     this.ui.setState({ posture: "step-back", tool: this.coordinator.getDebugState().tool, trayEnabled: true });
     this.ui.setStatus("Your working bowl is here.");
@@ -558,7 +579,7 @@ export class IkebanaApp {
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants)) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
     const loaded = getLastWorkbenchFixtureLoad();
     if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
-    this.selectedBranchId = null;
+    this.assignSelectedBranch(null);
     this.cameraIsFree = value !== null;
     this.metrics.resetAttempt();
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
@@ -682,13 +703,44 @@ export class IkebanaApp {
         break;
       }
       case "set-bend-variant": {
+        const transactionActive = this.coordinator.getDebugState().active !== null;
+        // Cancel while bend-stations recording is still suppressed, then hide
+        // station controls before the coordinator enters touch behavior.
         this.interruptActive("experiment-command");
         this.bendVariant = domainVariant(command.bendVariant);
+        this.bendStationsMode = bendStationsMode(this.bendStationsRequested, this.bendVariant);
+        this.ui.setState({
+          bendVariant: command.bendVariant,
+          bendStationsMode: this.bendStationsMode,
+          bendStationChoices: [],
+          bendStationSelected: null,
+        });
         this.metrics.setBendVariant(this.bendVariant);
         this.coordinator.commandBendVariant(this.bendVariant);
-        this.ui.setState({ bendVariant: command.bendVariant });
         history.replaceState(null, "", urlForBendVariant(this.bendVariant));
-        this.ui.setStatus(this.bendVariant === "touch" ? "Bend where you touch." : "Use the pale bend point.");
+        if (!transactionActive) {
+          this.ui.setStatus(this.bendVariant === "touch"
+            ? this.bendStationsMode === "excluded"
+              ? "Bend stations stay off while touch bend is active."
+              : "Bend where you touch."
+            : "Use the pale bend point.");
+        }
+        break;
+      }
+      case "set-bend-station": {
+        const branch = this.committedSelectedBranch();
+        const plan = planBendStationChange({
+          mode: this.bendStationsMode,
+          transactionActive: this.coordinator.getDebugState().active !== null,
+          branch,
+          current: this.bendStationPreference,
+          requested: command.station,
+        });
+        if (!plan.cancelFirst && plan.preference === this.bendStationPreference) break;
+        if (plan.cancelFirst) this.interruptActive("experiment-command");
+        this.bendStationPreference = plan.preference;
+        this.syncPresentation();
+        if (!plan.cancelFirst) this.ui.setStatus(`Bend from the ${plan.preference} point.`);
         break;
       }
       case "set-experiment-panel": {
@@ -802,7 +854,7 @@ export class IkebanaApp {
     const released = this.coordinator.release(owner);
     if (!released.ok) return;
     const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(prepared.plantId);
-    this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
+    this.assignSelectedBranch(seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null);
     this.sound.seat();
     if (this.lastSaveSucceeded) this.ui.setStatus(this.bendVariant === "bead"
       ? "Drag a branch to aim. Use the pale point to bend."
@@ -909,7 +961,7 @@ export class IkebanaApp {
       startPlaneHit,
       grabbedPoint,
     };
-    this.selectedBranchId = branch.id;
+    this.assignSelectedBranch(branch.id);
     this.gesture = gesture;
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginAim(
@@ -927,11 +979,37 @@ export class IkebanaApp {
     this.ui.setStatus("Shape the line.");
   }
 
+  private assignSelectedBranch(branchId: string | null) {
+    this.bendStationPreference = preferenceAfterBranchChange(
+      this.selectedBranchId,
+      branchId,
+      this.bendStationPreference,
+    );
+    this.selectedBranchId = branchId;
+  }
+
+  private committedSelectedBranch() {
+    const selectedPlantId = this.coordinator.getDocumentSnapshot().selectedPlantId;
+    const graph = selectedPlantId
+      ? this.coordinator.getDocumentSnapshot().plants.get(selectedPlantId)
+      : null;
+    const branch = this.selectedBranchId ? graph?.branches.get(this.selectedBranchId) : undefined;
+    return branch?.active ? branch : null;
+  }
+
+  /** Same distance the idle bead renders, frozen into the acquisition snapshot. */
+  private acquiredBeadDistance(branch: Branch) {
+    if (this.bendStationsMode === "on") {
+      return selectBendStation(branch, this.bendStationPreference)?.distance ?? null;
+    }
+    return bendStationAtFraction(branch);
+  }
+
   private beginBend(event: PointerEvent, candidate: HitCandidate, requestedStation: number) {
     const graph = this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId);
     const branch = graph?.branches.get(candidate.branchId);
     if (!graph || !branch?.active) return;
-    const beadDistance = bendStationAtFraction(branch, 0.54);
+    const beadDistance = this.acquiredBeadDistance(branch);
     const touchDistance = legalBendStation(branch, requestedStation);
     if (beadDistance === null || touchDistance === null) return;
     const stationDistance = this.bendVariant === "touch" ? touchDistance : beadDistance;
@@ -1005,7 +1083,7 @@ export class IkebanaApp {
       plantId: graph.id,
       branchId: branch.id,
     };
-    this.selectedBranchId = branch.id;
+    this.assignSelectedBranch(branch.id);
     this.gesture = gesture;
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginPrune(
@@ -1203,7 +1281,7 @@ export class IkebanaApp {
       if (insertionWasValid) {
         // The coordinator's onAutosave already resolved this acquisition as "committed".
         const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(gesture.plantId);
-        this.selectedBranchId = seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null;
+        this.assignSelectedBranch(seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null);
         this.sound.seat();
         if (this.lastSaveSucceeded) this.ui.setStatus(this.bendVariant === "bead"
           ? "Drag a branch to aim. Use the pale point to bend."
@@ -1313,7 +1391,13 @@ export class IkebanaApp {
    */
   private trackAcquisition(
     input: Parameters<SessionMetrics["recordAcquisition"]>[0],
-  ): AcquisitionRecord {
+  ): AcquisitionRecord | null {
+    if (!recordsFixedTouchStudy(this.bendStationsMode)) {
+      // Bend-stations is not an arm of the fixed-versus-touch study.
+      // Skip the in-memory record as well so a later resolve cannot append
+      // it to the bead bucket. Transactions and committed saves still run.
+      return null;
+    }
     const record = this.metrics.recordAcquisition(input);
     if (record.result === "hit") {
       this.pendingAcquisitionRecord = record;
@@ -1566,6 +1650,13 @@ export class IkebanaApp {
         ? { plantId: selectedPlantId, branchId: selectedBranch.id }
         : null,
     );
+    const stationBranch = selectedBranch?.active ? selectedBranch : null;
+    const offerStations = this.bendStationsMode === "on"
+      && debug.posture === "arrange"
+      && debug.tool === "shape"
+      && stationBranch !== null;
+    const stations = offerStations && stationBranch ? resolveBendStations(stationBranch) : [];
+    const showStationChoices = stations.length >= 2;
     this.studio.setShapeAffordances({
       visible: debug.posture === "arrange" && debug.tool === "shape" && Boolean(selectedBranch?.active),
       bendVariant: debug.bendVariant,
@@ -1573,7 +1664,17 @@ export class IkebanaApp {
       touchCueDistance: debug.active?.kind === "bend" && debug.active.variant === "touch"
         ? debug.active.stationDistance
         : null,
+      beadStationDistance: this.bendStationsMode === "on"
+        ? stationBranch ? this.acquiredBeadDistance(stationBranch) : null
+        : undefined,
       showSelection: true,
+    });
+    this.ui.setState({
+      bendStationsMode: this.bendStationsMode,
+      bendStationChoices: showStationChoices ? stations.map((station) => station.id) : [],
+      bendStationSelected: showStationChoices && stationBranch
+        ? selectBendStation(stationBranch, this.bendStationPreference)?.id ?? null
+        : null,
     });
 
     const active = presentation.active;
@@ -1652,6 +1753,8 @@ export class IkebanaApp {
           cameraMode: this.ui.state.cameraMode,
           view: this.cameraIsFree ? "orbit" : debug.view,
           bendVariant: debug.bendVariant === "touch" ? "touch" : "fixed",
+          bendStations: this.bendStationsMode,
+          bendStation: this.bendStationsMode === "on" ? this.bendStationPreference : null,
           transaction: this.testTransaction(debug),
           selectedPlantId: debug.selectedPlantId,
           selectedBranchId: this.selectedBranchId,
@@ -1690,9 +1793,11 @@ export class IkebanaApp {
         if (options.clearTelemetry) this.telemetryStore.clear();
         this.autosaveWrites.length = 0;
         this.metrics.reset();
+        this.bendStationPreference = DEFAULT_BEND_STATION;
         this.selectedBranchId = null;
         this.cameraIsFree = false;
         this.bendVariant = options.bendVariant === "touch" ? "touch" : "bead";
+        this.bendStationsMode = bendStationsMode(this.bendStationsRequested, this.bendVariant);
         this.metrics.setBendVariant(this.bendVariant);
         this.studio.clearGraphs();
         this.studio.setPendingGraph(null);
@@ -1703,11 +1808,16 @@ export class IkebanaApp {
           cameraMode: "orbit",
           view: "front",
           bendVariant: uiVariant(this.bendVariant),
+          bendStationsMode: this.bendStationsMode,
+          bendStationChoices: [],
+          bendStationSelected: null,
           experimentPanelOpen: false,
           trayDragging: false,
           activeMaterialId: null,
         });
-        this.ui.setStatus("Place a cutting.");
+        this.ui.setStatus(this.bendStationsMode === "excluded"
+          ? "Bend stations stay off while touch bend is active."
+          : "Place a cutting.");
         this.syncPresentation();
       },
       interruptForTest: (reason) => this.interruptActive(this.testCancelReason(reason), false),

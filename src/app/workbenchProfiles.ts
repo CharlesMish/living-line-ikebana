@@ -28,6 +28,8 @@ export const ARCHING_TRAILER_MATERIAL_ID = "arching-trailer";
 export const FOLIAGE_FAN_MATERIAL_ID = "foliage-fan";
 export const BLOSSOM_SPRAY_MATERIAL_ID = "blossom-spray";
 export const NODDING_FLOWER_MATERIAL_ID = "nodding-flower";
+export const BERRY_TWIG_MATERIAL_ID = "berry-twig";
+export const FERN_FROND_MATERIAL_ID = "fern-frond";
 
 export const REFERENCE_MATERIAL_IDS = [
   FLOWERING_BRANCH_MATERIAL_ID,
@@ -53,6 +55,10 @@ export type WorkbenchFixtureProfileId =
   | "references-plus-nodding-flower"
   | "round4-candidates"
   | "round4-palette"
+  | "references-plus-berry-twig"
+  | "references-plus-fern-frond"
+  | "round5-candidates"
+  | "round5-palette"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -196,6 +202,47 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
       NODDING_FLOWER_MATERIAL_ID,
     ],
     notes: "Explicit ten-material list, not the live catalog and not round3-palette. Six cuttings omit the trailer and the three Round 4 cuttings. Twelve cuttings are two flowering, two leafy, and one of each remaining material.",
+  }),
+  Object.freeze({
+    id: "references-plus-berry-twig",
+    label: "References plus berry twig",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, BERRY_TWIG_MATERIAL_ID],
+    notes: "Flowering → leafy → berry-twig. Does not change reference-pair, mixed, all-four, round3-three, round3-palette, round4-candidates, or round4-palette.",
+  }),
+  Object.freeze({
+    id: "references-plus-fern-frond",
+    label: "References plus fern frond",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, FERN_FROND_MATERIAL_ID],
+    notes: "Flowering → leafy → fern-frond. Does not change reference-pair, mixed, all-four, round3-three, round3-palette, round4-candidates, or round4-palette.",
+  }),
+  Object.freeze({
+    id: "round5-candidates",
+    label: "Round 5 candidates (berry twig → fern frond)",
+    kind: "stable",
+    materialIds: [BERRY_TWIG_MATERIAL_ID, FERN_FROND_MATERIAL_ID],
+    notes: "The two accepted Phase 2 cuttings only, in lane order. Six cuttings are three of each. Twelve are six of each. Does not change round3 or round4 profiles.",
+  }),
+  Object.freeze({
+    id: "round5-palette",
+    label: "Round 5 palette (Round 4 ten, then berry twig → fern frond)",
+    kind: "stable",
+    materialIds: [
+      FLOWERING_BRANCH_MATERIAL_ID,
+      LEAFY_SHOOT_MATERIAL_ID,
+      BARE_BRANCH_MATERIAL_ID,
+      SINGLE_FLOWER_MATERIAL_ID,
+      REED_MATERIAL_ID,
+      FLOWER_VOLUME_MATERIAL_ID,
+      ARCHING_TRAILER_MATERIAL_ID,
+      FOLIAGE_FAN_MATERIAL_ID,
+      BLOSSOM_SPRAY_MATERIAL_ID,
+      NODDING_FLOWER_MATERIAL_ID,
+      BERRY_TWIG_MATERIAL_ID,
+      FERN_FROND_MATERIAL_ID,
+    ],
+    notes: "Explicit twelve-material list, not the live catalog and not round4-palette. Six cuttings are the first six and omit the trailer, the three Round 4 cuttings, and both Phase 2 cuttings. Twelve cuttings are one of each.",
   }),
   Object.freeze({
     id: "all-registered-materials",

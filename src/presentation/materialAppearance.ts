@@ -16,6 +16,15 @@ export interface MaterialAppearance {
     /** Offset along the organ's local supporting tangent. Existing forms stay at 0. */
     hitCenterY?: number;
   }>;
+  /** Present only for a generator that emits berry organs. One sphere per organ. */
+  readonly berry?: Readonly<{
+    color: number;
+    roughness: number;
+    radius: number;
+    hitRadius: number;
+    /** Center along local +Y, the supporting tangent, so the fruit sits past the stem tip. */
+    centerY: number;
+  }>;
 }
 
 // Elliptic blades run from local Y -0.115 to 0.609. Center acquisition on
@@ -91,12 +100,35 @@ const noddingFlower: MaterialAppearance = Object.freeze({
     form: "bell", color: 0x7d94b8, roughness: 0.56, hitRadius: 0.66, hitCenterY: 0.32,
   }),
 });
+const berryTwig: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x6a4532, lateral: 0x7b5540,
+    twig: 0x7b5540, pedicel: 0x8d684c, petiole: 0x7b5540 }),
+  stemRoughness: 0.9,
+  // No leaves or blooms are generated. The record still requires both slots.
+  leaf: flowering.leaf,
+  bloom: flowering.bloom,
+  berry: Object.freeze({
+    color: 0x8a2e45, roughness: 0.4, radius: 0.07, hitRadius: 0.145, centerY: 0.055,
+  }),
+});
 const archingTrailer: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x3d6d62, lateral: 0x3d6d62,
     twig: 0x4d7c6a, pedicel: 0x5a8460, petiole: 0x4f7a58 }),
   stemRoughness: 0.58,
   leaf: Object.freeze({ form: "elliptic", color: 0x2f5c48, veinColor: 0x7f9460,
     roughness: 0.66, ...ellipticLeafHit }),
+  bloom: flowering.bloom,
+});
+const fernFrond: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x2c5c45, lateral: 0x347256,
+    twig: 0x3d7a5c, pedicel: 0x3d7a5c, petiole: 0x3a7054 }),
+  stemRoughness: 0.72,
+  // Pinnate blades run along local Y to about 1.12 and about ±0.48 in X.
+  // The sphere is centered on that divided surface. No bloom is generated.
+  leaf: Object.freeze({
+    form: "pinnate", color: 0x7eae62, veinColor: 0xd2e6a0,
+    roughness: 0.5, hitRadius: 0.78, hitCenterY: 0.56,
+  }),
   bloom: flowering.bloom,
 });
 const foliageFan: MaterialAppearance = Object.freeze({
@@ -118,6 +150,8 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "foliage-fan-v1": foliageFan,
   "blossom-spray-v1": blossomSpray,
   "nodding-flower-v1": noddingFlower,
+  "berry-twig-v1": berryTwig,
+  "fern-frond-v1": fernFrond,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

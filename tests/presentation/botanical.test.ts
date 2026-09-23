@@ -93,7 +93,7 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig", "fern-frond"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -166,6 +166,15 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   assert.notEqual(stemColors[9], stemColors[0], "nodding flower must not inherit woody trunk appearance");
   assert.notEqual(stemColors[9], stemColors[7], "nodding flower must not inherit the foliage fan");
   assert.notEqual(stemColors[9], stemColors[8], "nodding flower must not inherit the blossom spray");
+  assert.notEqual(stemColors[10], stemColors[0], "berry twig must not inherit flowering wood");
+  assert.notEqual(stemColors[10], stemColors[2], "berry twig must not inherit bare wood");
+  assert.notEqual(stemColors[10], stemColors[8], "berry twig must not inherit the blossom spray");
+  assert.notEqual(stemColors[10], stemColors[1], "berry twig must not inherit the leafy stem");
+  assert.notEqual(stemColors[11], stemColors[1], "fern frond must not inherit the leafy stem");
+  assert.notEqual(stemColors[11], stemColors[7], "fern frond must not inherit the foliage fan");
+  assert.notEqual(stemColors[11], stemColors[4], "fern frond must not inherit the reed");
+  assert.notEqual(stemColors[11], stemColors[6], "fern frond must not inherit the arching trailer");
+  assert.notEqual(stemColors[11], stemColors[10], "fern frond must not inherit the berry twig");
 });
 
 test("every material's leaf and bloom acquisition proxies contain their visible surfaces", async () => {
@@ -176,9 +185,9 @@ test("every material's leaf and bloom acquisition proxies contain their visible 
     for (const seed of [0, 8278, 9255, 10232, 0xffffffff]) {
       const graph = definition.generator.generate("leaf-coverage", seed, { x: 0, y: 0.55, z: 0 });
       for (const organ of graph.organs.values()) {
-        if (organ.kind !== "leaf" && organ.kind !== "bloom") continue;
+        if (organ.kind !== "leaf" && organ.kind !== "bloom" && organ.kind !== "berry") continue;
         const appearance = getMaterialAppearance(graph.generatorVersion);
-        forms.add(`${organ.kind}:${appearance[organ.kind].form}`);
+        if (organ.kind === "leaf" || organ.kind === "bloom") forms.add(`${organ.kind}:${appearance[organ.kind].form}`);
         const visual = studio.createOrganVisual(graph, organ, false);
         visual.group.updateMatrixWorld(true);
         // Raycasting uses the polygonal proxy, not an ideal sphere. A point
@@ -220,7 +229,7 @@ test("every material's leaf and bloom acquisition proxies contain their visible 
       }
     }
   }
-  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate"]);
+  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate", "leaf:pinnate"]);
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {

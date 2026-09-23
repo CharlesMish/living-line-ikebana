@@ -1,7 +1,9 @@
 import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
 import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
+import { createFernFrond, FERN_FROND_VERSION } from "./fernFrond.ts";
 import { createNoddingFlower, NODDING_FLOWER_VERSION } from "./noddingFlower.ts";
+import { createBerryTwig, BERRY_TWIG_VERSION } from "./berryTwig.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
@@ -95,6 +97,16 @@ const noddingFlowerV1: GeneratorDefinition = Object.freeze({
   generate: createNoddingFlower,
 });
 
+const berryTwigV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: BERRY_TWIG_VERSION,
+  generate: createBerryTwig,
+});
+
+const fernFrondV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: FERN_FROND_VERSION,
+  generate: createFernFrond,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -109,13 +121,17 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   foliageFanV1,
   blossomSprayV1,
   noddingFlowerV1,
+  berryTwigV1,
+  fernFrondV1,
 ]);
 
 /**
- * Established catalog, then the accepted Round 4 cuttings in lane order.
- * The first seven IDs stay in their previous order. Named profiles
- * `reference-pair`, `all-four`, `round3-three`, and `round3-palette` do not
- * read this list. `round4-palette` is an explicit copy of this order.
+ * Established catalog, then the accepted Round 4 cuttings in lane order,
+ * then the accepted Phase 2 cuttings in lane order: berry-twig, then
+ * fern-frond. The first ten IDs stay in their previous order. Named profiles
+ * `reference-pair`, `all-four`, `round3-three`, `round3-palette`,
+ * `round4-candidates`, and `round4-palette` do not read this list.
+ * `round4-palette` is an explicit copy of the first ten, not this list.
  */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
@@ -128,6 +144,8 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "foliage-fan", generator: foliageFanV1 }),
   Object.freeze({ materialId: "blossom-spray", generator: blossomSprayV1 }),
   Object.freeze({ materialId: "nodding-flower", generator: noddingFlowerV1 }),
+  Object.freeze({ materialId: "berry-twig", generator: berryTwigV1 }),
+  Object.freeze({ materialId: "fern-frond", generator: fernFrondV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

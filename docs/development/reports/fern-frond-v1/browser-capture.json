@@ -1,0 +1,1757 @@
+{
+  "captures": [
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 91,
+        "triangles": 16726
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.58750000000466,
+        "medianMs": 16.699999999999818,
+        "maxMs": 16.700000000000273,
+        "minMs": 13.600000000186355
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:pinna-1",
+            "plant-1:pinna-2",
+            "plant-1:pinna-3",
+            "plant-1:pinna-4",
+            "plant-1:pinna-5",
+            "plant-1:pinna-6",
+            "plant-1:pinna-7",
+            "plant-1:pinna-8",
+            "plant-1:rachis"
+          ],
+          "organIds": [
+            "plant-1:pinna-blade-1",
+            "plant-1:pinna-blade-2",
+            "plant-1:pinna-blade-3",
+            "plant-1:pinna-blade-4",
+            "plant-1:pinna-blade-5",
+            "plant-1:pinna-blade-6",
+            "plant-1:pinna-blade-7",
+            "plant-1:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "view": "three-quarter",
+      "counts": {
+        "calls": 91,
+        "triangles": 16726
+      },
+      "timing": null,
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:pinna-1",
+            "plant-1:pinna-2",
+            "plant-1:pinna-3",
+            "plant-1:pinna-4",
+            "plant-1:pinna-5",
+            "plant-1:pinna-6",
+            "plant-1:pinna-7",
+            "plant-1:pinna-8",
+            "plant-1:rachis"
+          ],
+          "organIds": [
+            "plant-1:pinna-blade-1",
+            "plant-1:pinna-blade-2",
+            "plant-1:pinna-blade-3",
+            "plant-1:pinna-blade-4",
+            "plant-1:pinna-blade-5",
+            "plant-1:pinna-blade-6",
+            "plant-1:pinna-blade-7",
+            "plant-1:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "view": "above",
+      "counts": {
+        "calls": 91,
+        "triangles": 16726
+      },
+      "timing": null,
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:pinna-1",
+            "plant-1:pinna-2",
+            "plant-1:pinna-3",
+            "plant-1:pinna-4",
+            "plant-1:pinna-5",
+            "plant-1:pinna-6",
+            "plant-1:pinna-7",
+            "plant-1:pinna-8",
+            "plant-1:rachis"
+          ],
+          "organIds": [
+            "plant-1:pinna-blade-1",
+            "plant-1:pinna-blade-2",
+            "plant-1:pinna-blade-3",
+            "plant-1:pinna-blade-4",
+            "plant-1:pinna-blade-5",
+            "plant-1:pinna-blade-6",
+            "plant-1:pinna-blade-7",
+            "plant-1:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 9255,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 91,
+        "triangles": 16726
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.545000000000005,
+        "medianMs": 16.699999999999818,
+        "maxMs": 16.800000000000182,
+        "minMs": 11.899999999999636
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:pinna-1",
+            "plant-1:pinna-2",
+            "plant-1:pinna-3",
+            "plant-1:pinna-4",
+            "plant-1:pinna-5",
+            "plant-1:pinna-6",
+            "plant-1:pinna-7",
+            "plant-1:pinna-8",
+            "plant-1:rachis"
+          ],
+          "organIds": [
+            "plant-1:pinna-blade-1",
+            "plant-1:pinna-blade-2",
+            "plant-1:pinna-blade-3",
+            "plant-1:pinna-blade-4",
+            "plant-1:pinna-blade-5",
+            "plant-1:pinna-blade-6",
+            "plant-1:pinna-blade-7",
+            "plant-1:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 10232,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 91,
+        "triangles": 16726
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.5375000000035,
+        "medianMs": 16.69999999999891,
+        "maxMs": 16.799999999999272,
+        "minMs": 11.500000000140062
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:pinna-1",
+            "plant-1:pinna-2",
+            "plant-1:pinna-3",
+            "plant-1:pinna-4",
+            "plant-1:pinna-5",
+            "plant-1:pinna-6",
+            "plant-1:pinna-7",
+            "plant-1:pinna-8",
+            "plant-1:rachis"
+          ],
+          "organIds": [
+            "plant-1:pinna-blade-1",
+            "plant-1:pinna-blade-2",
+            "plant-1:pinna-blade-3",
+            "plant-1:pinna-blade-4",
+            "plant-1:pinna-blade-5",
+            "plant-1:pinna-blade-6",
+            "plant-1:pinna-blade-7",
+            "plant-1:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "leafy-shoot",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 81,
+        "triangles": 14034
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.61500000000233,
+        "medianMs": 16.700000000000728,
+        "maxMs": 16.700000000000728,
+        "minMs": 14.600000000093132
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:petiole-1",
+            "plant-1:petiole-2",
+            "plant-1:petiole-3",
+            "plant-1:petiole-4",
+            "plant-1:petiole-5",
+            "plant-1:petiole-6",
+            "plant-1:petiole-7",
+            "plant-1:stem"
+          ],
+          "organIds": [
+            "plant-1:leaf-1",
+            "plant-1:leaf-2",
+            "plant-1:leaf-3",
+            "plant-1:leaf-4",
+            "plant-1:leaf-5",
+            "plant-1:leaf-6",
+            "plant-1:leaf-7"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "foliage-fan",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 103,
+        "triangles": 16134
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.62500000000232,
+        "medianMs": 16.69999999999891,
+        "maxMs": 16.80000000000109,
+        "minMs": 15.000000000092768
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:arm-answering",
+            "plant-1:arm-crown",
+            "plant-1:arm-opening",
+            "plant-1:petiole-answering-1",
+            "plant-1:petiole-answering-2",
+            "plant-1:petiole-answering-3",
+            "plant-1:petiole-crown-1",
+            "plant-1:petiole-crown-2",
+            "plant-1:petiole-opening-1",
+            "plant-1:petiole-opening-2",
+            "plant-1:petiole-opening-3",
+            "plant-1:stem"
+          ],
+          "organIds": [
+            "plant-1:leaf-answering-1",
+            "plant-1:leaf-answering-2",
+            "plant-1:leaf-answering-3",
+            "plant-1:leaf-crown-1",
+            "plant-1:leaf-crown-2",
+            "plant-1:leaf-opening-1",
+            "plant-1:leaf-opening-2",
+            "plant-1:leaf-opening-3"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "references-plus-fern-frond",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "calls": 615,
+        "triangles": 85054
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.61500000000233,
+        "medianMs": 16.69999999999891,
+        "maxMs": 16.799999999999272,
+        "minMs": 14.600000000093132
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:bloom-1",
+            "plant-1:bloom-2",
+            "plant-1:bud-1",
+            "plant-1:lateral-a",
+            "plant-1:lateral-b",
+            "plant-1:lateral-c",
+            "plant-1:leaf-1",
+            "plant-1:leaf-2",
+            "plant-1:leaf-3",
+            "plant-1:leaf-4",
+            "plant-1:leaf-5",
+            "plant-1:leaf-6",
+            "plant-1:leaf-7",
+            "plant-1:trunk",
+            "plant-1:twig-a"
+          ],
+          "organIds": [
+            "plant-1:organ-bloom-1",
+            "plant-1:organ-bloom-2",
+            "plant-1:organ-bud-1",
+            "plant-1:organ-leaf-1",
+            "plant-1:organ-leaf-2",
+            "plant-1:organ-leaf-3",
+            "plant-1:organ-leaf-4",
+            "plant-1:organ-leaf-5",
+            "plant-1:organ-leaf-6",
+            "plant-1:organ-leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-2",
+          "branchIds": [
+            "plant-2:petiole-1",
+            "plant-2:petiole-2",
+            "plant-2:petiole-3",
+            "plant-2:petiole-4",
+            "plant-2:petiole-5",
+            "plant-2:petiole-6",
+            "plant-2:petiole-7",
+            "plant-2:stem"
+          ],
+          "organIds": [
+            "plant-2:leaf-1",
+            "plant-2:leaf-2",
+            "plant-2:leaf-3",
+            "plant-2:leaf-4",
+            "plant-2:leaf-5",
+            "plant-2:leaf-6",
+            "plant-2:leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-3",
+          "branchIds": [
+            "plant-3:pinna-1",
+            "plant-3:pinna-2",
+            "plant-3:pinna-3",
+            "plant-3:pinna-4",
+            "plant-3:pinna-5",
+            "plant-3:pinna-6",
+            "plant-3:pinna-7",
+            "plant-3:pinna-8",
+            "plant-3:rachis"
+          ],
+          "organIds": [
+            "plant-3:pinna-blade-1",
+            "plant-3:pinna-blade-2",
+            "plant-3:pinna-blade-3",
+            "plant-3:pinna-blade-4",
+            "plant-3:pinna-blade-5",
+            "plant-3:pinna-blade-6",
+            "plant-3:pinna-blade-7",
+            "plant-3:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-4",
+          "branchIds": [
+            "plant-4:bloom-1",
+            "plant-4:bloom-2",
+            "plant-4:bud-1",
+            "plant-4:lateral-a",
+            "plant-4:lateral-b",
+            "plant-4:lateral-c",
+            "plant-4:leaf-1",
+            "plant-4:leaf-2",
+            "plant-4:leaf-3",
+            "plant-4:leaf-4",
+            "plant-4:leaf-5",
+            "plant-4:leaf-6",
+            "plant-4:leaf-7",
+            "plant-4:trunk",
+            "plant-4:twig-a"
+          ],
+          "organIds": [
+            "plant-4:organ-bloom-1",
+            "plant-4:organ-bloom-2",
+            "plant-4:organ-bud-1",
+            "plant-4:organ-leaf-1",
+            "plant-4:organ-leaf-2",
+            "plant-4:organ-leaf-3",
+            "plant-4:organ-leaf-4",
+            "plant-4:organ-leaf-5",
+            "plant-4:organ-leaf-6",
+            "plant-4:organ-leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-5",
+          "branchIds": [
+            "plant-5:petiole-1",
+            "plant-5:petiole-2",
+            "plant-5:petiole-3",
+            "plant-5:petiole-4",
+            "plant-5:petiole-5",
+            "plant-5:petiole-6",
+            "plant-5:petiole-7",
+            "plant-5:stem"
+          ],
+          "organIds": [
+            "plant-5:leaf-1",
+            "plant-5:leaf-2",
+            "plant-5:leaf-3",
+            "plant-5:leaf-4",
+            "plant-5:leaf-5",
+            "plant-5:leaf-6",
+            "plant-5:leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-6",
+          "branchIds": [
+            "plant-6:pinna-1",
+            "plant-6:pinna-2",
+            "plant-6:pinna-3",
+            "plant-6:pinna-4",
+            "plant-6:pinna-5",
+            "plant-6:pinna-6",
+            "plant-6:pinna-7",
+            "plant-6:pinna-8",
+            "plant-6:rachis"
+          ],
+          "organIds": [
+            "plant-6:pinna-blade-1",
+            "plant-6:pinna-blade-2",
+            "plant-6:pinna-blade-3",
+            "plant-6:pinna-blade-4",
+            "plant-6:pinna-blade-5",
+            "plant-6:pinna-blade-6",
+            "plant-6:pinna-blade-7",
+            "plant-6:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "references-plus-fern-frond",
+      "seed": 8278,
+      "count": 6,
+      "view": "three-quarter",
+      "counts": {
+        "calls": 615,
+        "triangles": 85054
+      },
+      "timing": null,
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:bloom-1",
+            "plant-1:bloom-2",
+            "plant-1:bud-1",
+            "plant-1:lateral-a",
+            "plant-1:lateral-b",
+            "plant-1:lateral-c",
+            "plant-1:leaf-1",
+            "plant-1:leaf-2",
+            "plant-1:leaf-3",
+            "plant-1:leaf-4",
+            "plant-1:leaf-5",
+            "plant-1:leaf-6",
+            "plant-1:leaf-7",
+            "plant-1:trunk",
+            "plant-1:twig-a"
+          ],
+          "organIds": [
+            "plant-1:organ-bloom-1",
+            "plant-1:organ-bloom-2",
+            "plant-1:organ-bud-1",
+            "plant-1:organ-leaf-1",
+            "plant-1:organ-leaf-2",
+            "plant-1:organ-leaf-3",
+            "plant-1:organ-leaf-4",
+            "plant-1:organ-leaf-5",
+            "plant-1:organ-leaf-6",
+            "plant-1:organ-leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-2",
+          "branchIds": [
+            "plant-2:petiole-1",
+            "plant-2:petiole-2",
+            "plant-2:petiole-3",
+            "plant-2:petiole-4",
+            "plant-2:petiole-5",
+            "plant-2:petiole-6",
+            "plant-2:petiole-7",
+            "plant-2:stem"
+          ],
+          "organIds": [
+            "plant-2:leaf-1",
+            "plant-2:leaf-2",
+            "plant-2:leaf-3",
+            "plant-2:leaf-4",
+            "plant-2:leaf-5",
+            "plant-2:leaf-6",
+            "plant-2:leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-3",
+          "branchIds": [
+            "plant-3:pinna-1",
+            "plant-3:pinna-2",
+            "plant-3:pinna-3",
+            "plant-3:pinna-4",
+            "plant-3:pinna-5",
+            "plant-3:pinna-6",
+            "plant-3:pinna-7",
+            "plant-3:pinna-8",
+            "plant-3:rachis"
+          ],
+          "organIds": [
+            "plant-3:pinna-blade-1",
+            "plant-3:pinna-blade-2",
+            "plant-3:pinna-blade-3",
+            "plant-3:pinna-blade-4",
+            "plant-3:pinna-blade-5",
+            "plant-3:pinna-blade-6",
+            "plant-3:pinna-blade-7",
+            "plant-3:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-4",
+          "branchIds": [
+            "plant-4:bloom-1",
+            "plant-4:bloom-2",
+            "plant-4:bud-1",
+            "plant-4:lateral-a",
+            "plant-4:lateral-b",
+            "plant-4:lateral-c",
+            "plant-4:leaf-1",
+            "plant-4:leaf-2",
+            "plant-4:leaf-3",
+            "plant-4:leaf-4",
+            "plant-4:leaf-5",
+            "plant-4:leaf-6",
+            "plant-4:leaf-7",
+            "plant-4:trunk",
+            "plant-4:twig-a"
+          ],
+          "organIds": [
+            "plant-4:organ-bloom-1",
+            "plant-4:organ-bloom-2",
+            "plant-4:organ-bud-1",
+            "plant-4:organ-leaf-1",
+            "plant-4:organ-leaf-2",
+            "plant-4:organ-leaf-3",
+            "plant-4:organ-leaf-4",
+            "plant-4:organ-leaf-5",
+            "plant-4:organ-leaf-6",
+            "plant-4:organ-leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-5",
+          "branchIds": [
+            "plant-5:petiole-1",
+            "plant-5:petiole-2",
+            "plant-5:petiole-3",
+            "plant-5:petiole-4",
+            "plant-5:petiole-5",
+            "plant-5:petiole-6",
+            "plant-5:petiole-7",
+            "plant-5:stem"
+          ],
+          "organIds": [
+            "plant-5:leaf-1",
+            "plant-5:leaf-2",
+            "plant-5:leaf-3",
+            "plant-5:leaf-4",
+            "plant-5:leaf-5",
+            "plant-5:leaf-6",
+            "plant-5:leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-6",
+          "branchIds": [
+            "plant-6:pinna-1",
+            "plant-6:pinna-2",
+            "plant-6:pinna-3",
+            "plant-6:pinna-4",
+            "plant-6:pinna-5",
+            "plant-6:pinna-6",
+            "plant-6:pinna-7",
+            "plant-6:pinna-8",
+            "plant-6:rachis"
+          ],
+          "organIds": [
+            "plant-6:pinna-blade-1",
+            "plant-6:pinna-blade-2",
+            "plant-6:pinna-blade-3",
+            "plant-6:pinna-blade-4",
+            "plant-6:pinna-blade-5",
+            "plant-6:pinna-blade-6",
+            "plant-6:pinna-blade-7",
+            "plant-6:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "references-plus-fern-frond",
+      "seed": 8278,
+      "count": 6,
+      "view": "above",
+      "counts": {
+        "calls": 615,
+        "triangles": 85054
+      },
+      "timing": null,
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:bloom-1",
+            "plant-1:bloom-2",
+            "plant-1:bud-1",
+            "plant-1:lateral-a",
+            "plant-1:lateral-b",
+            "plant-1:lateral-c",
+            "plant-1:leaf-1",
+            "plant-1:leaf-2",
+            "plant-1:leaf-3",
+            "plant-1:leaf-4",
+            "plant-1:leaf-5",
+            "plant-1:leaf-6",
+            "plant-1:leaf-7",
+            "plant-1:trunk",
+            "plant-1:twig-a"
+          ],
+          "organIds": [
+            "plant-1:organ-bloom-1",
+            "plant-1:organ-bloom-2",
+            "plant-1:organ-bud-1",
+            "plant-1:organ-leaf-1",
+            "plant-1:organ-leaf-2",
+            "plant-1:organ-leaf-3",
+            "plant-1:organ-leaf-4",
+            "plant-1:organ-leaf-5",
+            "plant-1:organ-leaf-6",
+            "plant-1:organ-leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-2",
+          "branchIds": [
+            "plant-2:petiole-1",
+            "plant-2:petiole-2",
+            "plant-2:petiole-3",
+            "plant-2:petiole-4",
+            "plant-2:petiole-5",
+            "plant-2:petiole-6",
+            "plant-2:petiole-7",
+            "plant-2:stem"
+          ],
+          "organIds": [
+            "plant-2:leaf-1",
+            "plant-2:leaf-2",
+            "plant-2:leaf-3",
+            "plant-2:leaf-4",
+            "plant-2:leaf-5",
+            "plant-2:leaf-6",
+            "plant-2:leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-3",
+          "branchIds": [
+            "plant-3:pinna-1",
+            "plant-3:pinna-2",
+            "plant-3:pinna-3",
+            "plant-3:pinna-4",
+            "plant-3:pinna-5",
+            "plant-3:pinna-6",
+            "plant-3:pinna-7",
+            "plant-3:pinna-8",
+            "plant-3:rachis"
+          ],
+          "organIds": [
+            "plant-3:pinna-blade-1",
+            "plant-3:pinna-blade-2",
+            "plant-3:pinna-blade-3",
+            "plant-3:pinna-blade-4",
+            "plant-3:pinna-blade-5",
+            "plant-3:pinna-blade-6",
+            "plant-3:pinna-blade-7",
+            "plant-3:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-4",
+          "branchIds": [
+            "plant-4:bloom-1",
+            "plant-4:bloom-2",
+            "plant-4:bud-1",
+            "plant-4:lateral-a",
+            "plant-4:lateral-b",
+            "plant-4:lateral-c",
+            "plant-4:leaf-1",
+            "plant-4:leaf-2",
+            "plant-4:leaf-3",
+            "plant-4:leaf-4",
+            "plant-4:leaf-5",
+            "plant-4:leaf-6",
+            "plant-4:leaf-7",
+            "plant-4:trunk",
+            "plant-4:twig-a"
+          ],
+          "organIds": [
+            "plant-4:organ-bloom-1",
+            "plant-4:organ-bloom-2",
+            "plant-4:organ-bud-1",
+            "plant-4:organ-leaf-1",
+            "plant-4:organ-leaf-2",
+            "plant-4:organ-leaf-3",
+            "plant-4:organ-leaf-4",
+            "plant-4:organ-leaf-5",
+            "plant-4:organ-leaf-6",
+            "plant-4:organ-leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-5",
+          "branchIds": [
+            "plant-5:petiole-1",
+            "plant-5:petiole-2",
+            "plant-5:petiole-3",
+            "plant-5:petiole-4",
+            "plant-5:petiole-5",
+            "plant-5:petiole-6",
+            "plant-5:petiole-7",
+            "plant-5:stem"
+          ],
+          "organIds": [
+            "plant-5:leaf-1",
+            "plant-5:leaf-2",
+            "plant-5:leaf-3",
+            "plant-5:leaf-4",
+            "plant-5:leaf-5",
+            "plant-5:leaf-6",
+            "plant-5:leaf-7"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-6",
+          "branchIds": [
+            "plant-6:pinna-1",
+            "plant-6:pinna-2",
+            "plant-6:pinna-3",
+            "plant-6:pinna-4",
+            "plant-6:pinna-5",
+            "plant-6:pinna-6",
+            "plant-6:pinna-7",
+            "plant-6:pinna-8",
+            "plant-6:rachis"
+          ],
+          "organIds": [
+            "plant-6:pinna-blade-1",
+            "plant-6:pinna-blade-2",
+            "plant-6:pinna-blade-3",
+            "plant-6:pinna-blade-4",
+            "plant-6:pinna-blade-5",
+            "plant-6:pinna-blade-6",
+            "plant-6:pinna-blade-7",
+            "plant-6:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 12,
+      "view": "front",
+      "counts": {
+        "calls": 1015,
+        "triangles": 137902
+      },
+      "timing": {
+        "frames": 40,
+        "meanMs": 16.62250000000349,
+        "medianMs": 16.700000000000728,
+        "maxMs": 16.80000000000291,
+        "minMs": 14.900000000139698
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      },
+      "inventory": [
+        {
+          "scope": "committed",
+          "plantId": "plant-1",
+          "branchIds": [
+            "plant-1:pinna-1",
+            "plant-1:pinna-2",
+            "plant-1:pinna-3",
+            "plant-1:pinna-4",
+            "plant-1:pinna-5",
+            "plant-1:pinna-6",
+            "plant-1:pinna-7",
+            "plant-1:pinna-8",
+            "plant-1:rachis"
+          ],
+          "organIds": [
+            "plant-1:pinna-blade-1",
+            "plant-1:pinna-blade-2",
+            "plant-1:pinna-blade-3",
+            "plant-1:pinna-blade-4",
+            "plant-1:pinna-blade-5",
+            "plant-1:pinna-blade-6",
+            "plant-1:pinna-blade-7",
+            "plant-1:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-10",
+          "branchIds": [
+            "plant-10:pinna-1",
+            "plant-10:pinna-2",
+            "plant-10:pinna-3",
+            "plant-10:pinna-4",
+            "plant-10:pinna-5",
+            "plant-10:pinna-6",
+            "plant-10:pinna-7",
+            "plant-10:pinna-8",
+            "plant-10:rachis"
+          ],
+          "organIds": [
+            "plant-10:pinna-blade-1",
+            "plant-10:pinna-blade-2",
+            "plant-10:pinna-blade-3",
+            "plant-10:pinna-blade-4",
+            "plant-10:pinna-blade-5",
+            "plant-10:pinna-blade-6",
+            "plant-10:pinna-blade-7",
+            "plant-10:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-11",
+          "branchIds": [
+            "plant-11:pinna-1",
+            "plant-11:pinna-2",
+            "plant-11:pinna-3",
+            "plant-11:pinna-4",
+            "plant-11:pinna-5",
+            "plant-11:pinna-6",
+            "plant-11:pinna-7",
+            "plant-11:pinna-8",
+            "plant-11:rachis"
+          ],
+          "organIds": [
+            "plant-11:pinna-blade-1",
+            "plant-11:pinna-blade-2",
+            "plant-11:pinna-blade-3",
+            "plant-11:pinna-blade-4",
+            "plant-11:pinna-blade-5",
+            "plant-11:pinna-blade-6",
+            "plant-11:pinna-blade-7",
+            "plant-11:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-12",
+          "branchIds": [
+            "plant-12:pinna-1",
+            "plant-12:pinna-2",
+            "plant-12:pinna-3",
+            "plant-12:pinna-4",
+            "plant-12:pinna-5",
+            "plant-12:pinna-6",
+            "plant-12:pinna-7",
+            "plant-12:pinna-8",
+            "plant-12:rachis"
+          ],
+          "organIds": [
+            "plant-12:pinna-blade-1",
+            "plant-12:pinna-blade-2",
+            "plant-12:pinna-blade-3",
+            "plant-12:pinna-blade-4",
+            "plant-12:pinna-blade-5",
+            "plant-12:pinna-blade-6",
+            "plant-12:pinna-blade-7",
+            "plant-12:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-2",
+          "branchIds": [
+            "plant-2:pinna-1",
+            "plant-2:pinna-2",
+            "plant-2:pinna-3",
+            "plant-2:pinna-4",
+            "plant-2:pinna-5",
+            "plant-2:pinna-6",
+            "plant-2:pinna-7",
+            "plant-2:pinna-8",
+            "plant-2:rachis"
+          ],
+          "organIds": [
+            "plant-2:pinna-blade-1",
+            "plant-2:pinna-blade-2",
+            "plant-2:pinna-blade-3",
+            "plant-2:pinna-blade-4",
+            "plant-2:pinna-blade-5",
+            "plant-2:pinna-blade-6",
+            "plant-2:pinna-blade-7",
+            "plant-2:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-3",
+          "branchIds": [
+            "plant-3:pinna-1",
+            "plant-3:pinna-2",
+            "plant-3:pinna-3",
+            "plant-3:pinna-4",
+            "plant-3:pinna-5",
+            "plant-3:pinna-6",
+            "plant-3:pinna-7",
+            "plant-3:pinna-8",
+            "plant-3:rachis"
+          ],
+          "organIds": [
+            "plant-3:pinna-blade-1",
+            "plant-3:pinna-blade-2",
+            "plant-3:pinna-blade-3",
+            "plant-3:pinna-blade-4",
+            "plant-3:pinna-blade-5",
+            "plant-3:pinna-blade-6",
+            "plant-3:pinna-blade-7",
+            "plant-3:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-4",
+          "branchIds": [
+            "plant-4:pinna-1",
+            "plant-4:pinna-2",
+            "plant-4:pinna-3",
+            "plant-4:pinna-4",
+            "plant-4:pinna-5",
+            "plant-4:pinna-6",
+            "plant-4:pinna-7",
+            "plant-4:pinna-8",
+            "plant-4:rachis"
+          ],
+          "organIds": [
+            "plant-4:pinna-blade-1",
+            "plant-4:pinna-blade-2",
+            "plant-4:pinna-blade-3",
+            "plant-4:pinna-blade-4",
+            "plant-4:pinna-blade-5",
+            "plant-4:pinna-blade-6",
+            "plant-4:pinna-blade-7",
+            "plant-4:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-5",
+          "branchIds": [
+            "plant-5:pinna-1",
+            "plant-5:pinna-2",
+            "plant-5:pinna-3",
+            "plant-5:pinna-4",
+            "plant-5:pinna-5",
+            "plant-5:pinna-6",
+            "plant-5:pinna-7",
+            "plant-5:pinna-8",
+            "plant-5:rachis"
+          ],
+          "organIds": [
+            "plant-5:pinna-blade-1",
+            "plant-5:pinna-blade-2",
+            "plant-5:pinna-blade-3",
+            "plant-5:pinna-blade-4",
+            "plant-5:pinna-blade-5",
+            "plant-5:pinna-blade-6",
+            "plant-5:pinna-blade-7",
+            "plant-5:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-6",
+          "branchIds": [
+            "plant-6:pinna-1",
+            "plant-6:pinna-2",
+            "plant-6:pinna-3",
+            "plant-6:pinna-4",
+            "plant-6:pinna-5",
+            "plant-6:pinna-6",
+            "plant-6:pinna-7",
+            "plant-6:pinna-8",
+            "plant-6:rachis"
+          ],
+          "organIds": [
+            "plant-6:pinna-blade-1",
+            "plant-6:pinna-blade-2",
+            "plant-6:pinna-blade-3",
+            "plant-6:pinna-blade-4",
+            "plant-6:pinna-blade-5",
+            "plant-6:pinna-blade-6",
+            "plant-6:pinna-blade-7",
+            "plant-6:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-7",
+          "branchIds": [
+            "plant-7:pinna-1",
+            "plant-7:pinna-2",
+            "plant-7:pinna-3",
+            "plant-7:pinna-4",
+            "plant-7:pinna-5",
+            "plant-7:pinna-6",
+            "plant-7:pinna-7",
+            "plant-7:pinna-8",
+            "plant-7:rachis"
+          ],
+          "organIds": [
+            "plant-7:pinna-blade-1",
+            "plant-7:pinna-blade-2",
+            "plant-7:pinna-blade-3",
+            "plant-7:pinna-blade-4",
+            "plant-7:pinna-blade-5",
+            "plant-7:pinna-blade-6",
+            "plant-7:pinna-blade-7",
+            "plant-7:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-8",
+          "branchIds": [
+            "plant-8:pinna-1",
+            "plant-8:pinna-2",
+            "plant-8:pinna-3",
+            "plant-8:pinna-4",
+            "plant-8:pinna-5",
+            "plant-8:pinna-6",
+            "plant-8:pinna-7",
+            "plant-8:pinna-8",
+            "plant-8:rachis"
+          ],
+          "organIds": [
+            "plant-8:pinna-blade-1",
+            "plant-8:pinna-blade-2",
+            "plant-8:pinna-blade-3",
+            "plant-8:pinna-blade-4",
+            "plant-8:pinna-blade-5",
+            "plant-8:pinna-blade-6",
+            "plant-8:pinna-blade-7",
+            "plant-8:pinna-blade-8"
+          ]
+        },
+        {
+          "scope": "committed",
+          "plantId": "plant-9",
+          "branchIds": [
+            "plant-9:pinna-1",
+            "plant-9:pinna-2",
+            "plant-9:pinna-3",
+            "plant-9:pinna-4",
+            "plant-9:pinna-5",
+            "plant-9:pinna-6",
+            "plant-9:pinna-7",
+            "plant-9:pinna-8",
+            "plant-9:rachis"
+          ],
+          "organIds": [
+            "plant-9:pinna-blade-1",
+            "plant-9:pinna-blade-2",
+            "plant-9:pinna-blade-3",
+            "plant-9:pinna-blade-4",
+            "plant-9:pinna-blade-5",
+            "plant-9:pinna-blade-6",
+            "plant-9:pinna-blade-7",
+            "plant-9:pinna-blade-8"
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "fern-study-garden",
+      "seed": "8278-9255-10232-11209",
+      "count": 4,
+      "view": "front",
+      "counts": {
+        "calls": 305,
+        "triangles": 41138
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 118.203125
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      }
+    },
+    {
+      "fixture": "fern-study-garden",
+      "seed": "8278-9255-10232-11209",
+      "count": 4,
+      "view": "three-quarter",
+      "counts": {
+        "calls": 305,
+        "triangles": 41138
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 118.203125
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      }
+    },
+    {
+      "fixture": "fern-study-garden",
+      "seed": "8278-9255-10232-11209",
+      "count": 4,
+      "view": "above",
+      "counts": {
+        "calls": 305,
+        "triangles": 41138
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 800,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 118.203125
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      }
+    }
+  ],
+  "exercise": [
+    {
+      "step": "loaded",
+      "state": {
+        "ready": true,
+        "posture": "arrange",
+        "tool": "shape",
+        "cameraMode": "orbit",
+        "view": "front",
+        "bendVariant": "fixed",
+        "transaction": null,
+        "selectedPlantId": null,
+        "selectedBranchId": null,
+        "successfulSeatOrdinal": 1,
+        "cameraHash": "f3827392",
+        "canonicalHash": "32a97877"
+      }
+    },
+    {
+      "step": "shape",
+      "gestureResult": [
+        {
+          "step": "aim-pinna",
+          "branchId": "plant-1:pinna-3",
+          "point": {
+            "x": 633.8983834923918,
+            "y": 415.5733159403206
+          },
+          "beforeHash": "32a97877",
+          "acquired": {
+            "operation": "aim",
+            "pointerId": 11,
+            "plantId": "plant-1",
+            "branchId": "plant-1:pinna-3",
+            "materialDistance": 0.06769782774149471,
+            "acquisitionHash": "32a97877"
+          },
+          "afterHash": "68ebfe8a",
+          "afterTransaction": null
+        },
+        {
+          "step": "select-rachis",
+          "branchId": "plant-1:rachis",
+          "point": {
+            "x": 627.2600351353141,
+            "y": 396.9575252512246
+          },
+          "beforeHash": "68ebfe8a",
+          "acquired": {
+            "operation": "aim",
+            "pointerId": 12,
+            "plantId": "plant-1",
+            "branchId": "plant-1:rachis",
+            "materialDistance": 2.0625528123117753,
+            "acquisitionHash": "68ebfe8a"
+          },
+          "afterHash": "81ce5819",
+          "afterTransaction": null
+        },
+        {
+          "step": "bend-or-aim-rachis",
+          "branchId": "plant-1:rachis",
+          "point": {
+            "x": 635.4450413093153,
+            "y": 396.3731697553592
+          },
+          "beforeHash": "81ce5819",
+          "acquired": {
+            "operation": "bend",
+            "pointerId": 13,
+            "plantId": "plant-1",
+            "branchId": "plant-1:rachis",
+            "materialDistance": 2.025121830733773,
+            "acquisitionHash": "81ce5819"
+          },
+          "afterHash": "2927113a",
+          "afterTransaction": null
+        }
+      ]
+    },
+    {
+      "step": "cancel-aim",
+      "cancelResult": {
+        "before": "2927113a",
+        "during": {
+          "operation": "aim",
+          "pointerId": 21,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-6",
+          "materialDistance": 0.06193602313481079,
+          "acquisitionHash": "2927113a"
+        },
+        "duringHash": "2927113a",
+        "afterHash": "2927113a",
+        "afterTransaction": null
+      }
+    },
+    {
+      "step": "prune-pinna",
+      "pruneResult": {
+        "beforeHash": "2927113a",
+        "previewTransaction": {
+          "operation": "prune",
+          "pointerId": 31,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.062378615474558044,
+          "acquisitionHash": "2927113a"
+        },
+        "cancelledHash": "2927113a",
+        "committedHash": "30a5ab0b",
+        "bladeActive": false,
+        "organCount": 8,
+        "branchCount": 9,
+        "beforeOrgans": 8
+      }
+    },
+    {
+      "step": "reload",
+      "hashBeforeReload": "30a5ab0b",
+      "hashAfterReload": "30a5ab0b",
+      "reloadedBlade": {
+        "plants": 1,
+        "ordinal": 1,
+        "bladeActive": false,
+        "generator": "fern-frond-v1"
+      }
+    },
+    {
+      "step": "garden",
+      "garden": {
+        "beforeKeep": "30a5ab0b",
+        "viewed": "30a5ab0b",
+        "copied": "30a5ab0b",
+        "choiceHidden": false,
+        "title": "Fern frond study\n9/23/2026 · 1 cutting",
+        "keptTitle": "Fern frond study",
+        "keptPlants": 1,
+        "keptGenerator": "fern-frond-v1",
+        "keptBladeActive": false,
+        "workingHash": "30a5ab0b"
+      }
+    },
+    {
+      "step": "picker-portrait",
+      "pickerPortrait": {
+        "scrollHeight": 495,
+        "clientHeight": 286,
+        "fernInDom": true
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 390,
+          "height": 844
+        },
+        "drawingBuffer": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 390,
+          "height": 844
+        },
+        "visualViewport": {
+          "width": 390,
+          "height": 844,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 374,
+          "height": 179.78125
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      }
+    },
+    {
+      "step": "picker-landscape",
+      "pickerLandscape": {
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "fernInDom": true
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 844,
+          "height": 360
+        },
+        "drawingBuffer": {
+          "width": 844,
+          "height": 360
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 844,
+          "height": 360
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 360,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 828,
+          "height": 119.234375
+        },
+        "rendererPixelRatioCapNote": "Living Line caps renderer pixel ratio at 1.8. This capture does not read the Three renderer object."
+      }
+    }
+  ]
+}

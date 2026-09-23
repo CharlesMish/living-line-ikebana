@@ -1,0 +1,428 @@
+{
+  "label": "Google Chrome headless, ANGLE SwiftShader, Linux. Not a physical phone.",
+  "captures": [
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 107.09999999997672,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "0d768a64",
+      "cameraHash": "f3827392"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 1,
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 70.10000000009313,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "0d768a64",
+      "cameraHash": "3873951b"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 1,
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 100.59999999997672,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "0d768a64",
+      "cameraHash": "fb0ff9ba"
+    },
+    {
+      "fixture": "references-plus-berry-twig",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 108.69999999995343,
+        "calls": 631,
+        "triangles": 80962
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "8ac91406",
+      "cameraHash": "f3827392"
+    },
+    {
+      "fixture": "references-plus-berry-twig",
+      "seed": 8278,
+      "count": 6,
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 119.40000000002328,
+        "calls": 631,
+        "triangles": 80962
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "8ac91406",
+      "cameraHash": "3873951b"
+    },
+    {
+      "fixture": "references-plus-berry-twig",
+      "seed": 8278,
+      "count": 6,
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 147.5,
+        "calls": 631,
+        "triangles": 80962
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "8ac91406",
+      "cameraHash": "fb0ff9ba"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 12,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 121.19999999995343,
+        "calls": 1099,
+        "triangles": 112218
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "8aeff027",
+      "cameraHash": "f3827392"
+    },
+    {
+      "fixture": "reference-pair",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 116.90000000002328,
+        "calls": 667,
+        "triangles": 91678
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        },
+        "materials": {
+          "hidden": true,
+          "clientHeight": 0,
+          "scrollHeight": 0,
+          "width": 0
+        },
+        "webgl": "webgl2"
+      },
+      "canonicalHash": "1bdb37be",
+      "cameraHash": "f3827392"
+    }
+  ],
+  "idleAfterCount1": {
+    "frames": 19,
+    "glCalls": 0,
+    "medianMs": 16.699999999999818,
+    "maxMs": 16.800000000000182
+  },
+  "materialsMenu": {
+    "hidden": false,
+    "clientHeight": 286,
+    "scrollHeight": 495,
+    "width": 215
+  },
+  "pruneCancel": {
+    "target": {
+      "role": "branch",
+      "plantId": "plant-1",
+      "branchId": "plant-1:cluster-2",
+      "materialDistance": 0.4212860269411469,
+      "x": 640.9892280638161,
+      "y": 327.93021587409874,
+      "region": "middle-right"
+    },
+    "beforeHash": "0d768a64",
+    "afterHash": "0d768a64",
+    "autosaveWrites": 0
+  },
+  "pruneCommit": {
+    "beforeHash": "0d768a64",
+    "afterHash": "cd6cd9c2",
+    "ordinal": 1,
+    "inactiveBerries": [
+      "plant-1:berry-2-2",
+      "plant-1:berry-2-3"
+    ]
+  },
+  "aimCancel": {
+    "beforeHash": "cd6cd9c2",
+    "afterHash": "cd6cd9c2"
+  },
+  "aimOrBend": {
+    "beforeHash": "cd6cd9c2",
+    "afterHash": "cf606432"
+  },
+  "garden": {
+    "viewing": true,
+    "afterCopyHash": "0d768a64",
+    "ordinal": 1,
+    "keptTitle": "Berry twig seed 8278"
+  },
+  "narrow390": {
+    "cssViewport": {
+      "width": 390,
+      "height": 844
+    },
+    "drawingBuffer": {
+      "width": 390,
+      "height": 844
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 390,
+      "height": 844
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "topChrome": {
+      "width": 374,
+      "height": 179.78125
+    },
+    "materials": {
+      "hidden": false,
+      "clientHeight": 286,
+      "scrollHeight": 495,
+      "width": 230
+    },
+    "webgl": "webgl2"
+  },
+  "shortLandscape": {
+    "cssViewport": {
+      "width": 844,
+      "height": 390
+    },
+    "drawingBuffer": {
+      "width": 844,
+      "height": 390
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 844,
+      "height": 390
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "topChrome": {
+      "width": 828,
+      "height": 119.234375
+    },
+    "materials": {
+      "hidden": true,
+      "clientHeight": 0,
+      "scrollHeight": 0,
+      "width": 0
+    },
+    "webgl": "webgl2"
+  }
+}

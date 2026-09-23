@@ -27,3 +27,15 @@ export const FOLIAGE_FAN_RESPONSE = Object.freeze({ stem: 0.47, arm: 0.36, stalk
 export const BLOSSOM_SPRAY_RESPONSE = Object.freeze({ stem: 0.48, lateral: 0.41, stalk: 0.18 });
 /** Supporting stem close to the single flower. The neck is rest geometry, not a softer solver. */
 export const NODDING_FLOWER_RESPONSE = Object.freeze({ stem: 0.48, stalk: 0.18 });
+/**
+ * Woody twig. The main line sits between flowering wood (0.72) and bare wood
+ * (0.86). A cluster lateral can be aimed and bent. Berry stems use the shared
+ * stalk value and are not bend handles. Copied once.
+ */
+export const BERRY_TWIG_RESPONSE = Object.freeze({ wood: 0.78, cluster: 0.52, stem: 0.18 });
+/**
+ * Fine rachis. More yielding than the foliage-fan stem (0.47) and stiffer than
+ * the leafy ribbon (0.39). Stalks match the shared stalk value. Copied once.
+ * Pinna stalks are petioles, so the shared solver bends the rachis only.
+ */
+export const FERN_FROND_RESPONSE = Object.freeze({ rachis: 0.43, stalk: 0.18 });

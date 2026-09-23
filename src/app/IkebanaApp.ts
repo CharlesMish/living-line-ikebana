@@ -889,7 +889,7 @@ export class IkebanaApp {
       this.ui.setCraftCue(cutCue(graph, plan, false));
     } else {
       this.studio.setCutPreview(null);
-      this.ui.setCraftCue(shapeCue(branch, operation));
+      this.ui.setCraftCue(shapeCue(branch, operation, false, graph));
     }
   }
 
@@ -1581,7 +1581,7 @@ export class IkebanaApp {
       const graph = presentation.document.plants.get(active.plantId);
       this.ui.setCraftCue(graph ? cutCue(graph, active.plan, true) : null, true);
     } else if (active && ["aim", "bend", "base"].includes(active.kind) && selectedBranch) {
-      this.ui.setCraftCue(shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true), true);
+      this.ui.setCraftCue(shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true, selectedGraph ?? undefined), true);
     } else {
       this.ui.setCraftCue(null);
     }

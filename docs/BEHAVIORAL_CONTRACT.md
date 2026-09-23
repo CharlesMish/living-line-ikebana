@@ -6,7 +6,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 1. Canonical identity and determinism
 
-- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1`, `leafy-shoot-v1`, `bare-branch-v1`, `single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`, `foliage-fan-v1`, `blossom-spray-v1`, and `nodding-flower-v1`; material choice never changes the global successful-seat ordinal.
+- The current graph uses `schemaVersion: 1`. Registered generators are `one-branch-v1`, `leafy-shoot-v1`, `bare-branch-v1`, `single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`, `foliage-fan-v1`, `blossom-spray-v1`, `nodding-flower-v1`, `berry-twig-v1`, and `fern-frond-v1`; material choice never changes the global successful-seat ordinal.
 - Successful seat ordinal `N`, starting at 1, reserves `plant-N` with seed `(7301 + N * 977) >>> 0`. Thus `plant-1` is seed `8278` and `plant-2` is seed `9255`.
 - A cancelled or invalid insertion does not advance `N`.
 - The pending ghost is the complete reserved graph, including branch continuations, petioles, pedicels, leaves, buds, and blooms. A valid release commits that graph at the exact valid previewed translation. It does not regenerate it.
@@ -19,7 +19,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 2. Graph and material invariants
 
-Each branch persistently owns its ID, kind, parent attachment, points, rest lengths, active length, radius, stiffness, reference normal, and active state. Each organ persistently owns its ID, kind, supporting branch, material distance, spin, scale, and active state.
+Each branch persistently owns its ID, kind, parent attachment, points, rest lengths, active length, radius, stiffness, reference normal, and active state. Each organ persistently owns its ID, kind, supporting branch, material distance, spin, scale, and active state. Organ kinds are `leaf`, `bloom`, `bud`, and `berry`. A berry is one fruit on one supporting branch. `berry` is another allowed kind value, not a new field, and it does not change `schemaVersion`.
 
 - `points.length === restLengths.length + 1`.
 - Every rest length is finite, positive, and matches its shaped segment length within shared tolerance.

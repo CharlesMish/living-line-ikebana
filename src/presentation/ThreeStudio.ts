@@ -6,7 +6,7 @@ import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/a
 import { sampleMaterialFrame } from "../core/frames.ts";
 import type { Vec3 } from "../core/math.ts";
 import type { Branch, CutPlan, Organ, PlantGraph } from "../core/types.ts";
-import { bloomSurfaceProfile, botanicalSeed, createBellGeometry, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
+import { bloomSurfaceProfile, botanicalSeed, createBellGeometry, createBerryGeometry, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
 import {
   disposeObject,
   splitBranchAtMaterialDistance,
@@ -649,6 +649,17 @@ export class ThreeStudio {
         group.add(anthers);
       }
       hitRadius = bloom.hitRadius;
+    } else if (organ.kind === "berry") {
+      const berry = appearance.berry;
+      if (!berry) throw new Error(`Missing berry appearance: ${graph.generatorVersion}`);
+      const fruit = new THREE.Mesh(
+        createBerryGeometry(seed, berry.radius),
+        bodyMaterial(berry.color, berry.roughness, true),
+      );
+      fruit.position.y = berry.centerY;
+      fruit.castShadow = !pending;
+      group.add(fruit);
+      hitRadius = berry.hitRadius;
     } else {
       const bud = new THREE.Mesh(
         new THREE.SphereGeometry(0.16, 13, 9),
@@ -668,6 +679,8 @@ export class ThreeStudio {
     if (organ.kind === "leaf") hit.position.y = appearance.leaf.hitCenterY;
     else if (organ.kind === "bloom" && appearance.bloom.hitCenterY) {
       hit.position.y = appearance.bloom.hitCenterY;
+    } else if (organ.kind === "berry" && appearance.berry) {
+      hit.position.y = appearance.berry.centerY;
     }
     hit.userData = {
       plantId: graph.id,

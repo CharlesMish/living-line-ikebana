@@ -1,0 +1,1475 @@
+{
+  "sha": "f666db8c1b9e46fc9daef05dba09a895844f8e86",
+  "physicalPhone": "not run",
+  "shots": [
+    {
+      "name": "materials-portrait-390x844-open",
+      "file": "docs/development/reports/phase1-materials/materials-portrait-390x844-open.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 390x844\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nMaterials open, top of list. Selection has not inserted.\nphysical phone: not run"
+    },
+    {
+      "name": "materials-portrait-390x844-scrolled-nodding",
+      "file": "docs/development/reports/phase1-materials/materials-portrait-390x844-scrolled-nodding.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 390x844\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nScrolled to nodding-flower, the last catalog row.\nphysical phone: not run"
+    },
+    {
+      "name": "materials-portrait-390x844-nodding-selected",
+      "file": "docs/development/reports/phase1-materials/materials-portrait-390x844-nodding-selected.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 390x844\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nNodding flower selected. Bowl still empty.\nphysical phone: not run"
+    },
+    {
+      "name": "materials-landscape-844x360-open",
+      "file": "docs/development/reports/phase1-materials/materials-landscape-844x360-open.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 844x360\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nShort landscape. Materials open.\nphysical phone: not run"
+    },
+    {
+      "name": "materials-landscape-844x360-scrolled-nodding",
+      "file": "docs/development/reports/phase1-materials/materials-landscape-844x360-scrolled-nodding.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 844x360\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nScrolled to the last material in a short landscape window.\nphysical phone: not run"
+    },
+    {
+      "name": "materials-landscape-844x360-leafy-selected",
+      "file": "docs/development/reports/phase1-materials/materials-landscape-844x360-leafy-selected.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 844x360\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nLeafy shoot selected. Nothing was inserted.\nphysical phone: not run"
+    },
+    {
+      "name": "materials-1280x800-scrolled-nodding",
+      "file": "docs/development/reports/phase1-materials/materials-1280x800-scrolled-nodding.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nWide viewport, list scrolled to nodding-flower.\nphysical phone: not run"
+    },
+    {
+      "name": "insert-preview-over-pins",
+      "file": "docs/development/reports/phase1-materials/insert-preview-over-pins.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player  seed pending-8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nInsertion preview over the pins. Not yet released.\nphysical phone: not run"
+    },
+    {
+      "name": "insert-cancelled",
+      "file": "docs/development/reports/phase1-materials/insert-cancelled.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player-empty  seed none\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nInvalid release. Bowl empty. Ordinal unchanged.\nphysical phone: not run"
+    },
+    {
+      "name": "insert-committed-front",
+      "file": "docs/development/reports/phase1-materials/insert-committed-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nCommitted insert. Front.\nphysical phone: not run"
+    },
+    {
+      "name": "aim-preview",
+      "file": "docs/development/reports/phase1-materials/aim-preview.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nAim preview held. Not released.\nphysical phone: not run"
+    },
+    {
+      "name": "aim-cancelled",
+      "file": "docs/development/reports/phase1-materials/aim-cancelled.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nEscape cancelled the aim. Graph unchanged.\nphysical phone: not run"
+    },
+    {
+      "name": "aim-committed",
+      "file": "docs/development/reports/phase1-materials/aim-committed.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nAim released. Stock lengths unchanged.\nphysical phone: not run"
+    },
+    {
+      "name": "bend-preview",
+      "file": "docs/development/reports/phase1-materials/bend-preview.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nBend preview held.\nphysical phone: not run"
+    },
+    {
+      "name": "bend-cancelled",
+      "file": "docs/development/reports/phase1-materials/bend-cancelled.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nEscape cancelled the bend.\nphysical phone: not run"
+    },
+    {
+      "name": "bend-committed",
+      "file": "docs/development/reports/phase1-materials/bend-committed.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nBend released. Stock lengths unchanged.\nphysical phone: not run"
+    },
+    {
+      "name": "player-reload-front",
+      "file": "docs/development/reports/phase1-materials/player-reload-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nReloaded without fresh=1. Committed aim and bend remain.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-intact-front",
+      "file": "docs/development/reports/phase1-materials/fan-intact-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nIntact foliage fan. Front. Workbench fixture.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-intact-three-quarter",
+      "file": "docs/development/reports/phase1-materials/fan-intact-three-quarter.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nIntact foliage fan. Three-quarter.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-preview-front",
+      "file": "docs/development/reports/phase1-materials/fan-preview-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nPrune hover on opening arm at 643,442. Preview only.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-preview-cancelled-front",
+      "file": "docs/development/reports/phase1-materials/fan-preview-cancelled-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nPointer left the arm. Preview cleared. Graph unchanged.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-preview-again-front",
+      "file": "docs/development/reports/phase1-materials/fan-preview-again-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nSecond prune hover on the same opening-arm point.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-preview-three-quarter",
+      "file": "docs/development/reports/phase1-materials/fan-preview-three-quarter.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nThree-quarter hover on the opening arm midpoint. This station is farther along the arm than the front basal cut.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-preview-cancelled-three-quarter",
+      "file": "docs/development/reports/phase1-materials/fan-preview-cancelled-three-quarter.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nThree-quarter preview cleared. Graph unchanged.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-acquired-preview-front",
+      "file": "docs/development/reports/phase1-materials/fan-acquired-preview-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nPointer held on the opening arm. Release will commit this cut.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-committed-front",
+      "file": "docs/development/reports/phase1-materials/fan-committed-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nCommitted opening-arm cut. Front.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-committed-three-quarter",
+      "file": "docs/development/reports/phase1-materials/fan-committed-three-quarter.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nCommitted opening-arm cut. Three-quarter.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-reload-front",
+      "file": "docs/development/reports/phase1-materials/fan-reload-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nReloaded workbench save. Opening-arm cut remains.\nphysical phone: not run"
+    },
+    {
+      "name": "fan-reload-three-quarter",
+      "file": "docs/development/reports/phase1-materials/fan-reload-three-quarter.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile foliage-fan  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nReloaded workbench save. Three-quarter.\nphysical phone: not run"
+    },
+    {
+      "name": "profile-round4-candidates-count6-front",
+      "file": "docs/development/reports/phase1-materials/profile-round4-candidates-count6-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile round4-candidates  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nCount 6. Two of foliage fan, blossom spray, and nodding flower.\nphysical phone: not run"
+    },
+    {
+      "name": "profile-round4-palette-count12-front",
+      "file": "docs/development/reports/phase1-materials/profile-round4-palette-count12-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile round4-palette  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nCount 12. Two flowering, two leafy, and one of each other material, in cycle order.\nphysical phone: not run"
+    },
+    {
+      "name": "profile-reference-pair-count2-front",
+      "file": "docs/development/reports/phase1-materials/profile-reference-pair-count2-front.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile reference-pair  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nreference-pair remains flowering branch then leafy shoot.\nphysical phone: not run"
+    },
+    {
+      "name": "workbench-garden-keep",
+      "file": "docs/development/reports/phase1-materials/workbench-garden-keep.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile reference-pair  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nGarden keep from the workbench. Player storage is a different key.\nphysical phone: not run"
+    },
+    {
+      "name": "player-bowl-after-workbench",
+      "file": "docs/development/reports/phase1-materials/player-bowl-after-workbench.png",
+      "label": "SHA f666db8c1b9e46fc9daef05dba09a895844f8e86\nprofile player flowering-branch  seed 8278\nviewport 1280x800\nbrowser Headless Chrome 148.0.7778.96  SwiftShader\nBack on the player studio. Workbench Garden did not replace this bowl.\nphysical phone: not run"
+    }
+  ],
+  "checks": [
+    {
+      "name": "webgl",
+      "ok": true,
+      "detail": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": true,
+        "renderer": "WebKit WebGL",
+        "inner": {
+          "width": 1280,
+          "height": 800
+        },
+        "canvas": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 800,
+          "bufferWidth": 1280,
+          "bufferHeight": 800
+        },
+        "dpr": 1
+      }
+    },
+    {
+      "name": "portrait catalog order",
+      "ok": true,
+      "detail": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "reed",
+        "flower-volume",
+        "arching-trailer",
+        "foliage-fan",
+        "blossom-spray",
+        "nodding-flower"
+      ]
+    },
+    {
+      "name": "portrait panel scrolls",
+      "ok": true,
+      "detail": {
+        "scrollHeight": 451,
+        "clientHeight": 286
+      }
+    },
+    {
+      "name": "portrait last material reachable",
+      "ok": true,
+      "detail": {
+        "choices": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed",
+          "flower-volume",
+          "arching-trailer",
+          "foliage-fan",
+          "blossom-spray",
+          "nodding-flower"
+        ],
+        "hidden": false,
+        "scrollHeight": 451,
+        "clientHeight": 286,
+        "scrollTop": 165,
+        "lastInView": true,
+        "source": "flowering-branch",
+        "sourceName": "Flowering branch"
+      }
+    },
+    {
+      "name": "portrait select does not insert",
+      "ok": true,
+      "detail": {
+        "source": "nodding-flower",
+        "plants": 0,
+        "ordinal": 0,
+        "hashChanged": false
+      }
+    },
+    {
+      "name": "landscape catalog order",
+      "ok": true,
+      "detail": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "reed",
+        "flower-volume",
+        "arching-trailer",
+        "foliage-fan",
+        "blossom-spray",
+        "nodding-flower"
+      ]
+    },
+    {
+      "name": "landscape panel scrolls",
+      "ok": true,
+      "detail": {
+        "scrollHeight": 451,
+        "clientHeight": 190
+      }
+    },
+    {
+      "name": "landscape last material reachable",
+      "ok": true,
+      "detail": {
+        "choices": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch",
+          "single-flower",
+          "reed",
+          "flower-volume",
+          "arching-trailer",
+          "foliage-fan",
+          "blossom-spray",
+          "nodding-flower"
+        ],
+        "hidden": false,
+        "scrollHeight": 451,
+        "clientHeight": 190,
+        "scrollTop": 261,
+        "lastInView": true,
+        "source": "nodding-flower",
+        "sourceName": "Nodding flower"
+      }
+    },
+    {
+      "name": "landscape select does not insert",
+      "ok": true,
+      "detail": "leafy-shoot"
+    },
+    {
+      "name": "insert preview can reach the pins",
+      "ok": true,
+      "detail": {
+        "x": 600,
+        "y": 520,
+        "status": "Over the pins."
+      }
+    },
+    {
+      "name": "invalid insert commits nothing",
+      "ok": true,
+      "detail": {
+        "ordinal": 0,
+        "plants": []
+      }
+    },
+    {
+      "name": "valid insert seats plant-1",
+      "ok": true,
+      "detail": {
+        "ordinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "one-branch-v1",
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": [
+              {
+                "id": "plant-1:bloom-1",
+                "kind": "pedicel",
+                "activeLength": 0.45999999999999985,
+                "rest": 0.45999999999999985
+              },
+              {
+                "id": "plant-1:bloom-2",
+                "kind": "pedicel",
+                "activeLength": 0.4599999999999999,
+                "rest": 0.4599999999999999
+              },
+              {
+                "id": "plant-1:bud-1",
+                "kind": "pedicel",
+                "activeLength": 0.4599999999999999,
+                "rest": 0.4599999999999999
+              },
+              {
+                "id": "plant-1:lateral-a",
+                "kind": "lateral",
+                "activeLength": 2.35,
+                "rest": 2.35
+              },
+              {
+                "id": "plant-1:lateral-b",
+                "kind": "lateral",
+                "activeLength": 2.1999999999999993,
+                "rest": 2.1999999999999993
+              },
+              {
+                "id": "plant-1:lateral-c",
+                "kind": "twig",
+                "activeLength": 1.4200000000000006,
+                "rest": 1.4200000000000006
+              },
+              {
+                "id": "plant-1:leaf-1",
+                "kind": "petiole",
+                "activeLength": 0.34000000000000014,
+                "rest": 0.34000000000000014
+              },
+              {
+                "id": "plant-1:leaf-2",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000001,
+                "rest": 0.3400000000000001
+              },
+              {
+                "id": "plant-1:leaf-3",
+                "kind": "petiole",
+                "activeLength": 0.33999999999999997,
+                "rest": 0.33999999999999997
+              },
+              {
+                "id": "plant-1:leaf-4",
+                "kind": "petiole",
+                "activeLength": 0.3399999999999999,
+                "rest": 0.3399999999999999
+              },
+              {
+                "id": "plant-1:leaf-5",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000003,
+                "rest": 0.3400000000000003
+              },
+              {
+                "id": "plant-1:leaf-6",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000007,
+                "rest": 0.3400000000000007
+              },
+              {
+                "id": "plant-1:leaf-7",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000003,
+                "rest": 0.3400000000000003
+              },
+              {
+                "id": "plant-1:trunk",
+                "kind": "trunk",
+                "activeLength": 6.149999999999999,
+                "rest": 6.149999999999999
+              },
+              {
+                "id": "plant-1:twig-a",
+                "kind": "twig",
+                "activeLength": 1.2,
+                "rest": 1.2
+              }
+            ],
+            "inactiveBranchIds": [],
+            "activeOrgans": [
+              "plant-1:organ-bloom-1",
+              "plant-1:organ-bloom-2",
+              "plant-1:organ-bud-1",
+              "plant-1:organ-leaf-1",
+              "plant-1:organ-leaf-2",
+              "plant-1:organ-leaf-3",
+              "plant-1:organ-leaf-4",
+              "plant-1:organ-leaf-5",
+              "plant-1:organ-leaf-6",
+              "plant-1:organ-leaf-7"
+            ],
+            "inactiveOrgans": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "screen target for aim",
+      "ok": true,
+      "detail": {
+        "role": "branch",
+        "plantId": "plant-1",
+        "branchId": "plant-1:trunk",
+        "materialDistance": 3.3824999999999994,
+        "x": 555.8023939040557,
+        "y": 314.61971114003234,
+        "region": "middle-left"
+      }
+    },
+    {
+      "name": "aim acquires",
+      "ok": true,
+      "detail": {
+        "operation": "aim",
+        "pointerId": 7,
+        "plantId": "plant-1",
+        "branchId": "plant-1:trunk",
+        "materialDistance": 2.9298124072189213,
+        "acquisitionHash": "4eb402ab"
+      }
+    },
+    {
+      "name": "aim cancel restores",
+      "ok": true,
+      "detail": {
+        "hash": "4eb402ab",
+        "before": "4eb402ab"
+      }
+    },
+    {
+      "name": "aim commit preserves stock",
+      "ok": true,
+      "detail": {
+        "hashChanged": true
+      }
+    },
+    {
+      "name": "bend bead is hoverable",
+      "ok": true,
+      "detail": {
+        "x": 627.5453421055297,
+        "y": 311.7728795106313,
+        "hidden": false,
+        "title": "Bend main stem",
+        "detail": "Drag here to curve the line."
+      }
+    },
+    {
+      "name": "bend acquires",
+      "ok": true,
+      "detail": {
+        "operation": "bend",
+        "pointerId": 7,
+        "plantId": "plant-1",
+        "branchId": "plant-1:trunk",
+        "materialDistance": 3.3209999999999993,
+        "acquisitionHash": "cb120728"
+      }
+    },
+    {
+      "name": "bend cancel restores",
+      "ok": true,
+      "detail": "cb120728"
+    },
+    {
+      "name": "bend commit preserves stock",
+      "ok": true,
+      "detail": {
+        "hashChanged": true
+      }
+    },
+    {
+      "name": "player reload keeps the committed bowl",
+      "ok": true,
+      "detail": {
+        "hash": "11861f14",
+        "expected": "11861f14"
+      }
+    },
+    {
+      "name": "workbench does not rewrite the player bowl",
+      "ok": true,
+      "detail": {
+        "same": true
+      }
+    },
+    {
+      "name": "foliage-fan fixture",
+      "ok": true,
+      "detail": {
+        "ordinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "organs": 8,
+            "activeBranches": [
+              {
+                "id": "plant-1:arm-answering",
+                "kind": "lateral",
+                "activeLength": 1.4173935179831463,
+                "rest": 1.4173935179831463
+              },
+              {
+                "id": "plant-1:arm-crown",
+                "kind": "lateral",
+                "activeLength": 1.0562990065850322,
+                "rest": 1.0562990065850322
+              },
+              {
+                "id": "plant-1:arm-opening",
+                "kind": "lateral",
+                "activeLength": 1.627900784239173,
+                "rest": 1.627900784239173
+              },
+              {
+                "id": "plant-1:petiole-answering-1",
+                "kind": "petiole",
+                "activeLength": 0.21264878485351815,
+                "rest": 0.21264878485351815
+              },
+              {
+                "id": "plant-1:petiole-answering-2",
+                "kind": "petiole",
+                "activeLength": 0.23659705501049744,
+                "rest": 0.23659705501049744
+              },
+              {
+                "id": "plant-1:petiole-answering-3",
+                "kind": "petiole",
+                "activeLength": 0.21966774669010178,
+                "rest": 0.21966774669010178
+              },
+              {
+                "id": "plant-1:petiole-crown-1",
+                "kind": "petiole",
+                "activeLength": 0.20377873560879378,
+                "rest": 0.20377873560879378
+              },
+              {
+                "id": "plant-1:petiole-crown-2",
+                "kind": "petiole",
+                "activeLength": 0.21851008094381547,
+                "rest": 0.21851008094381547
+              },
+              {
+                "id": "plant-1:petiole-opening-1",
+                "kind": "petiole",
+                "activeLength": 0.2047339999489484,
+                "rest": 0.2047339999489484
+              },
+              {
+                "id": "plant-1:petiole-opening-2",
+                "kind": "petiole",
+                "activeLength": 0.24156829673796887,
+                "rest": 0.24156829673796887
+              },
+              {
+                "id": "plant-1:petiole-opening-3",
+                "kind": "petiole",
+                "activeLength": 0.20525011869613058,
+                "rest": 0.20525011869613058
+              },
+              {
+                "id": "plant-1:stem",
+                "kind": "trunk",
+                "activeLength": 2.6202256124699494,
+                "rest": 2.6202256124699494
+              }
+            ],
+            "inactiveBranchIds": [],
+            "activeOrgans": [
+              "plant-1:leaf-answering-1",
+              "plant-1:leaf-answering-2",
+              "plant-1:leaf-answering-3",
+              "plant-1:leaf-crown-1",
+              "plant-1:leaf-crown-2",
+              "plant-1:leaf-opening-1",
+              "plant-1:leaf-opening-2",
+              "plant-1:leaf-opening-3"
+            ],
+            "inactiveOrgans": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "opening arm has a screen target",
+      "ok": true,
+      "detail": {
+        "role": "branch",
+        "plantId": "plant-1",
+        "branchId": "plant-1:arm-opening",
+        "materialDistance": 0.8953454313315452,
+        "x": 666.0765471612274,
+        "y": 424.51061277434565,
+        "region": "middle-right"
+      }
+    },
+    {
+      "name": "front midpoint of the opening arm is not the arm cut",
+      "ok": true,
+      "detail": {
+        "hidden": false,
+        "title": "Cut leaf stem",
+        "detail": "Tip + 1 leaf · drag to choose the cut"
+      }
+    },
+    {
+      "name": "front midpoint acquires the leaf stalk, not the arm",
+      "ok": true,
+      "detail": {
+        "x": 666.0765471612274,
+        "y": 424.51061277434565,
+        "branchId": "plant-1:petiole-opening-1",
+        "operation": "prune",
+        "materialDistance": 0.2047339999489484,
+        "cue": {
+          "hidden": false,
+          "title": "Cut leaf stem",
+          "detail": "Tip + 1 leaf · release to cut"
+        },
+        "cancelled": true
+      }
+    },
+    {
+      "name": "ordinary pointer can acquire the opening arm",
+      "ok": true,
+      "detail": {
+        "x": 643.0765471612274,
+        "y": 441.51061277434565,
+        "branchId": "plant-1:arm-opening",
+        "operation": "prune",
+        "materialDistance": 0.3304225360977643,
+        "cue": {
+          "hidden": false,
+          "title": "Cut branch",
+          "detail": "Tip + 3 attached stems, 3 leaves · release to cut"
+        },
+        "cancelled": true
+      }
+    },
+    {
+      "name": "front arm preview names the branch and three leaves",
+      "ok": true,
+      "detail": {
+        "hidden": false,
+        "title": "Cut branch",
+        "detail": "Tip + 3 attached stems, 3 leaves · drag to choose the cut"
+      }
+    },
+    {
+      "name": "leaving the arm clears the preview",
+      "ok": true,
+      "detail": {
+        "hidden": true,
+        "title": "Cut branch",
+        "detail": "Tip + 3 attached stems, 3 leaves · drag to choose the cut"
+      }
+    },
+    {
+      "name": "second front preview matches",
+      "ok": true,
+      "detail": {
+        "hidden": false,
+        "title": "Cut branch",
+        "detail": "Tip + 3 attached stems, 3 leaves · drag to choose the cut"
+      }
+    },
+    {
+      "name": "three-quarter pointer can preview the opening arm",
+      "ok": true,
+      "detail": {
+        "x": 684.5910242510969,
+        "y": 414.5898984919943,
+        "branchId": "plant-1:arm-opening",
+        "operation": "prune",
+        "materialDistance": 0.8953022783225786,
+        "cue": {
+          "hidden": false,
+          "title": "Cut branch",
+          "detail": "Tip + 1 attached stem, 1 leaf · release to cut"
+        },
+        "cancelled": true
+      }
+    },
+    {
+      "name": "three-quarter preview is still the arm",
+      "ok": true,
+      "detail": {
+        "hidden": false,
+        "title": "Cut branch",
+        "detail": "Tip + 1 attached stem, 1 leaf · drag to choose the cut"
+      }
+    },
+    {
+      "name": "three-quarter preview cancel restores the fan",
+      "ok": true,
+      "detail": "0c41197f"
+    },
+    {
+      "name": "pointerdown acquires the opening arm",
+      "ok": true,
+      "detail": {
+        "transaction": {
+          "operation": "prune",
+          "pointerId": 7,
+          "plantId": "plant-1",
+          "branchId": "plant-1:arm-opening",
+          "materialDistance": 0.3304225360977643,
+          "acquisitionHash": "0c41197f"
+        },
+        "cue": {
+          "hidden": false,
+          "title": "Cut branch",
+          "detail": "Tip + 3 attached stems, 3 leaves · release to cut"
+        }
+      }
+    },
+    {
+      "name": "committed arm cut keeps history and the other arms",
+      "ok": true,
+      "detail": {
+        "ordinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "organs": 8,
+            "activeBranches": [
+              {
+                "id": "plant-1:arm-answering",
+                "kind": "lateral",
+                "activeLength": 1.4173935179831463,
+                "rest": 1.4173935179831463
+              },
+              {
+                "id": "plant-1:arm-crown",
+                "kind": "lateral",
+                "activeLength": 1.0562990065850322,
+                "rest": 1.0562990065850322
+              },
+              {
+                "id": "plant-1:arm-opening",
+                "kind": "lateral",
+                "activeLength": 0.3304225360977643,
+                "rest": 0.3304225360977643
+              },
+              {
+                "id": "plant-1:petiole-answering-1",
+                "kind": "petiole",
+                "activeLength": 0.21264878485351815,
+                "rest": 0.21264878485351815
+              },
+              {
+                "id": "plant-1:petiole-answering-2",
+                "kind": "petiole",
+                "activeLength": 0.23659705501049744,
+                "rest": 0.23659705501049744
+              },
+              {
+                "id": "plant-1:petiole-answering-3",
+                "kind": "petiole",
+                "activeLength": 0.21966774669010178,
+                "rest": 0.21966774669010178
+              },
+              {
+                "id": "plant-1:petiole-crown-1",
+                "kind": "petiole",
+                "activeLength": 0.20377873560879378,
+                "rest": 0.20377873560879378
+              },
+              {
+                "id": "plant-1:petiole-crown-2",
+                "kind": "petiole",
+                "activeLength": 0.21851008094381547,
+                "rest": 0.21851008094381547
+              },
+              {
+                "id": "plant-1:stem",
+                "kind": "trunk",
+                "activeLength": 2.6202256124699494,
+                "rest": 2.6202256124699494
+              }
+            ],
+            "inactiveBranchIds": [
+              "plant-1:petiole-opening-1",
+              "plant-1:petiole-opening-2",
+              "plant-1:petiole-opening-3"
+            ],
+            "activeOrgans": [
+              "plant-1:leaf-answering-1",
+              "plant-1:leaf-answering-2",
+              "plant-1:leaf-answering-3",
+              "plant-1:leaf-crown-1",
+              "plant-1:leaf-crown-2"
+            ],
+            "inactiveOrgans": [
+              "plant-1:leaf-opening-1",
+              "plant-1:leaf-opening-2",
+              "plant-1:leaf-opening-3"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "fan reload keeps the committed arm cut",
+      "ok": true,
+      "detail": {
+        "hash": "30456fe0",
+        "expected": "30456fe0"
+      }
+    },
+    {
+      "name": "mixed is not a separate picker row",
+      "ok": true,
+      "detail": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "reed",
+        "flower-volume",
+        "arching-trailer",
+        "foliage-fan",
+        "blossom-spray",
+        "nodding-flower",
+        "reference-pair",
+        "references-plus-bare",
+        "references-plus-single-flower",
+        "all-four",
+        "references-plus-reed",
+        "references-plus-flower-volume",
+        "references-plus-arching-trailer",
+        "round3-three",
+        "round3-palette",
+        "references-plus-foliage-fan",
+        "references-plus-blossom-spray",
+        "blossom-compare",
+        "references-plus-nodding-flower",
+        "round4-candidates",
+        "round4-palette",
+        "all-registered-materials"
+      ]
+    },
+    {
+      "name": "named round profiles are listed",
+      "ok": true
+    },
+    {
+      "name": "profile reference-pair x2",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1"
+      ]
+    },
+    {
+      "name": "profile reference-pair x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "one-branch-v1",
+        "leafy-shoot-v1"
+      ]
+    },
+    {
+      "name": "profile all-four x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "bare-branch-v1",
+        "single-flower-v1",
+        "one-branch-v1",
+        "leafy-shoot-v1"
+      ]
+    },
+    {
+      "name": "profile round3-three x6",
+      "ok": true,
+      "detail": [
+        "reed-v1",
+        "flower-volume-v1",
+        "arching-trailer-v1",
+        "reed-v1",
+        "flower-volume-v1",
+        "arching-trailer-v1"
+      ]
+    },
+    {
+      "name": "profile round3-palette x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "bare-branch-v1",
+        "single-flower-v1",
+        "reed-v1",
+        "flower-volume-v1"
+      ]
+    },
+    {
+      "name": "profile round4-candidates x6",
+      "ok": true,
+      "detail": [
+        "foliage-fan-v1",
+        "blossom-spray-v1",
+        "nodding-flower-v1",
+        "foliage-fan-v1",
+        "blossom-spray-v1",
+        "nodding-flower-v1"
+      ]
+    },
+    {
+      "name": "profile round4-palette x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "bare-branch-v1",
+        "single-flower-v1",
+        "reed-v1",
+        "flower-volume-v1"
+      ]
+    },
+    {
+      "name": "profile round4-palette x12",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "bare-branch-v1",
+        "single-flower-v1",
+        "reed-v1",
+        "flower-volume-v1",
+        "arching-trailer-v1",
+        "foliage-fan-v1",
+        "blossom-spray-v1",
+        "nodding-flower-v1",
+        "one-branch-v1",
+        "leafy-shoot-v1"
+      ]
+    },
+    {
+      "name": "profile references-plus-foliage-fan x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "foliage-fan-v1",
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "foliage-fan-v1"
+      ]
+    },
+    {
+      "name": "profile blossom-compare x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "flower-volume-v1",
+        "blossom-spray-v1",
+        "one-branch-v1",
+        "flower-volume-v1",
+        "blossom-spray-v1"
+      ]
+    },
+    {
+      "name": "profile references-plus-nodding-flower x6",
+      "ok": true,
+      "detail": [
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "nodding-flower-v1",
+        "one-branch-v1",
+        "leafy-shoot-v1",
+        "nodding-flower-v1"
+      ]
+    },
+    {
+      "name": "garden keep stays in the workbench namespace",
+      "ok": true,
+      "detail": {
+        "playerUnchanged": true,
+        "playerGardenUnchanged": true,
+        "workbenchGarden": true
+      }
+    },
+    {
+      "name": "returning to the player studio keeps the player bowl",
+      "ok": true,
+      "detail": {
+        "ordinal": 1,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "one-branch-v1",
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": [
+              {
+                "id": "plant-1:bloom-1",
+                "kind": "pedicel",
+                "activeLength": 0.45999999999999985,
+                "rest": 0.45999999999999985
+              },
+              {
+                "id": "plant-1:bloom-2",
+                "kind": "pedicel",
+                "activeLength": 0.4599999999999999,
+                "rest": 0.4599999999999999
+              },
+              {
+                "id": "plant-1:bud-1",
+                "kind": "pedicel",
+                "activeLength": 0.4599999999999999,
+                "rest": 0.4599999999999999
+              },
+              {
+                "id": "plant-1:lateral-a",
+                "kind": "lateral",
+                "activeLength": 2.35,
+                "rest": 2.35
+              },
+              {
+                "id": "plant-1:lateral-b",
+                "kind": "lateral",
+                "activeLength": 2.1999999999999993,
+                "rest": 2.1999999999999993
+              },
+              {
+                "id": "plant-1:lateral-c",
+                "kind": "twig",
+                "activeLength": 1.4200000000000006,
+                "rest": 1.4200000000000006
+              },
+              {
+                "id": "plant-1:leaf-1",
+                "kind": "petiole",
+                "activeLength": 0.34000000000000014,
+                "rest": 0.34000000000000014
+              },
+              {
+                "id": "plant-1:leaf-2",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000001,
+                "rest": 0.3400000000000001
+              },
+              {
+                "id": "plant-1:leaf-3",
+                "kind": "petiole",
+                "activeLength": 0.33999999999999997,
+                "rest": 0.33999999999999997
+              },
+              {
+                "id": "plant-1:leaf-4",
+                "kind": "petiole",
+                "activeLength": 0.3399999999999999,
+                "rest": 0.3399999999999999
+              },
+              {
+                "id": "plant-1:leaf-5",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000003,
+                "rest": 0.3400000000000003
+              },
+              {
+                "id": "plant-1:leaf-6",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000007,
+                "rest": 0.3400000000000007
+              },
+              {
+                "id": "plant-1:leaf-7",
+                "kind": "petiole",
+                "activeLength": 0.3400000000000003,
+                "rest": 0.3400000000000003
+              },
+              {
+                "id": "plant-1:trunk",
+                "kind": "trunk",
+                "activeLength": 6.149999999999999,
+                "rest": 6.149999999999999
+              },
+              {
+                "id": "plant-1:twig-a",
+                "kind": "twig",
+                "activeLength": 1.2,
+                "rest": 1.2
+              }
+            ],
+            "inactiveBranchIds": [],
+            "activeOrgans": [
+              "plant-1:organ-bloom-1",
+              "plant-1:organ-bloom-2",
+              "plant-1:organ-bud-1",
+              "plant-1:organ-leaf-1",
+              "plant-1:organ-leaf-2",
+              "plant-1:organ-leaf-3",
+              "plant-1:organ-leaf-4",
+              "plant-1:organ-leaf-5",
+              "plant-1:organ-leaf-6",
+              "plant-1:organ-leaf-7"
+            ],
+            "inactiveOrgans": []
+          }
+        ]
+      }
+    }
+  ],
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/148.0.7778.96",
+    "revision": "@8625e066febc721e015ea99842da12901eb7ed73",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "jsVersion": "14.8.178.14"
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": true,
+    "renderer": "WebKit WebGL",
+    "inner": {
+      "width": 1280,
+      "height": 800
+    },
+    "canvas": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 800,
+      "bufferWidth": 1280,
+      "bufferHeight": 800
+    },
+    "dpr": 1
+  },
+  "openingArmMidpointFront": {
+    "role": "branch",
+    "plantId": "plant-1",
+    "branchId": "plant-1:arm-opening",
+    "materialDistance": 0.8953454313315452,
+    "x": 666.0765471612274,
+    "y": 424.51061277434565,
+    "region": "middle-right",
+    "cue": {
+      "hidden": false,
+      "title": "Cut leaf stem",
+      "detail": "Tip + 1 leaf · drag to choose the cut"
+    }
+  },
+  "armAcquisition": {
+    "midpoint": {
+      "x": 666.0765471612274,
+      "y": 424.51061277434565,
+      "branchId": "plant-1:petiole-opening-1",
+      "operation": "prune",
+      "materialDistance": 0.2047339999489484,
+      "cue": {
+        "hidden": false,
+        "title": "Cut leaf stem",
+        "detail": "Tip + 1 leaf · release to cut"
+      },
+      "cancelled": true
+    },
+    "probes": [
+      {
+        "x": 643.0765471612274,
+        "y": 441.51061277434565,
+        "branchId": "plant-1:arm-opening",
+        "operation": "prune",
+        "materialDistance": 0.3304225360977643,
+        "cue": {
+          "hidden": false,
+          "title": "Cut branch",
+          "detail": "Tip + 3 attached stems, 3 leaves · release to cut"
+        },
+        "cancelled": true
+      }
+    ],
+    "threeQuarter": {
+      "x": 684.5910242510969,
+      "y": 414.5898984919943,
+      "branchId": "plant-1:arm-opening",
+      "operation": "prune",
+      "materialDistance": 0.8953022783225786,
+      "cue": {
+        "hidden": false,
+        "title": "Cut branch",
+        "detail": "Tip + 1 attached stem, 1 leaf · release to cut"
+      },
+      "cancelled": true
+    }
+  },
+  "fanCommitted": {
+    "ordinal": 1,
+    "plants": [
+      {
+        "id": "plant-1",
+        "seed": 8278,
+        "generatorVersion": "foliage-fan-v1",
+        "branches": 12,
+        "organs": 8,
+        "activeBranches": [
+          {
+            "id": "plant-1:arm-answering",
+            "kind": "lateral",
+            "activeLength": 1.4173935179831463,
+            "rest": 1.4173935179831463
+          },
+          {
+            "id": "plant-1:arm-crown",
+            "kind": "lateral",
+            "activeLength": 1.0562990065850322,
+            "rest": 1.0562990065850322
+          },
+          {
+            "id": "plant-1:arm-opening",
+            "kind": "lateral",
+            "activeLength": 0.3304225360977643,
+            "rest": 0.3304225360977643
+          },
+          {
+            "id": "plant-1:petiole-answering-1",
+            "kind": "petiole",
+            "activeLength": 0.21264878485351815,
+            "rest": 0.21264878485351815
+          },
+          {
+            "id": "plant-1:petiole-answering-2",
+            "kind": "petiole",
+            "activeLength": 0.23659705501049744,
+            "rest": 0.23659705501049744
+          },
+          {
+            "id": "plant-1:petiole-answering-3",
+            "kind": "petiole",
+            "activeLength": 0.21966774669010178,
+            "rest": 0.21966774669010178
+          },
+          {
+            "id": "plant-1:petiole-crown-1",
+            "kind": "petiole",
+            "activeLength": 0.20377873560879378,
+            "rest": 0.20377873560879378
+          },
+          {
+            "id": "plant-1:petiole-crown-2",
+            "kind": "petiole",
+            "activeLength": 0.21851008094381547,
+            "rest": 0.21851008094381547
+          },
+          {
+            "id": "plant-1:stem",
+            "kind": "trunk",
+            "activeLength": 2.6202256124699494,
+            "rest": 2.6202256124699494
+          }
+        ],
+        "inactiveBranchIds": [
+          "plant-1:petiole-opening-1",
+          "plant-1:petiole-opening-2",
+          "plant-1:petiole-opening-3"
+        ],
+        "activeOrgans": [
+          "plant-1:leaf-answering-1",
+          "plant-1:leaf-answering-2",
+          "plant-1:leaf-answering-3",
+          "plant-1:leaf-crown-1",
+          "plant-1:leaf-crown-2"
+        ],
+        "inactiveOrgans": [
+          "plant-1:leaf-opening-1",
+          "plant-1:leaf-opening-2",
+          "plant-1:leaf-opening-3"
+        ]
+      }
+    ]
+  },
+  "workbenchPicker": [
+    {
+      "id": "flowering-branch",
+      "disabled": false,
+      "label": "flowering branch"
+    },
+    {
+      "id": "leafy-shoot",
+      "disabled": false,
+      "label": "leafy shoot"
+    },
+    {
+      "id": "bare-branch",
+      "disabled": false,
+      "label": "bare branch"
+    },
+    {
+      "id": "single-flower",
+      "disabled": false,
+      "label": "single flower"
+    },
+    {
+      "id": "reed",
+      "disabled": false,
+      "label": "reed"
+    },
+    {
+      "id": "flower-volume",
+      "disabled": false,
+      "label": "flower volume"
+    },
+    {
+      "id": "arching-trailer",
+      "disabled": false,
+      "label": "arching trailer"
+    },
+    {
+      "id": "foliage-fan",
+      "disabled": false,
+      "label": "foliage fan"
+    },
+    {
+      "id": "blossom-spray",
+      "disabled": false,
+      "label": "blossom spray"
+    },
+    {
+      "id": "nodding-flower",
+      "disabled": false,
+      "label": "nodding flower"
+    },
+    {
+      "id": "reference-pair",
+      "disabled": false,
+      "label": "Reference pair (flowering + leafy)"
+    },
+    {
+      "id": "references-plus-bare",
+      "disabled": false,
+      "label": "References plus bare-branch"
+    },
+    {
+      "id": "references-plus-single-flower",
+      "disabled": false,
+      "label": "References plus single-flower"
+    },
+    {
+      "id": "all-four",
+      "disabled": false,
+      "label": "All four (flowering → leafy → bare → single-flower)"
+    },
+    {
+      "id": "references-plus-reed",
+      "disabled": false,
+      "label": "References plus reed"
+    },
+    {
+      "id": "references-plus-flower-volume",
+      "disabled": false,
+      "label": "References plus flower volume"
+    },
+    {
+      "id": "references-plus-arching-trailer",
+      "disabled": false,
+      "label": "References plus arching trailer"
+    },
+    {
+      "id": "round3-three",
+      "disabled": false,
+      "label": "Round 3 three (reed → flower volume → arching trailer)"
+    },
+    {
+      "id": "round3-palette",
+      "disabled": false,
+      "label": "Round 3 palette (established four, then reed → flower volume → arching trailer)"
+    },
+    {
+      "id": "references-plus-foliage-fan",
+      "disabled": false,
+      "label": "References plus foliage fan"
+    },
+    {
+      "id": "references-plus-blossom-spray",
+      "disabled": false,
+      "label": "References plus blossom spray"
+    },
+    {
+      "id": "blossom-compare",
+      "disabled": false,
+      "label": "Blossom compare (flowering branch → flower volume → blossom spray)"
+    },
+    {
+      "id": "references-plus-nodding-flower",
+      "disabled": false,
+      "label": "References plus nodding flower"
+    },
+    {
+      "id": "round4-candidates",
+      "disabled": false,
+      "label": "Round 4 candidates (foliage fan → blossom spray → nodding flower)"
+    },
+    {
+      "id": "round4-palette",
+      "disabled": false,
+      "label": "Round 4 palette (established seven, then foliage fan → blossom spray → nodding flower)"
+    },
+    {
+      "id": "all-registered-materials",
+      "disabled": false,
+      "label": "All registered materials (dynamic)"
+    }
+  ],
+  "failed": 0
+}

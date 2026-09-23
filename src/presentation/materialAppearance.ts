@@ -1,5 +1,5 @@
 import type { BranchKind } from "../core/types.ts";
-import type { BloomForm, LeafForm } from "./botanicalGeometry.ts";
+import type { BloomForm, FanLeafDraw, LeafForm } from "./botanicalGeometry.ts";
 
 /** Rebuildable appearance keyed by the durable generator version, never topology
  * heuristics (a trunk may be green). No construction or bend settings live here.
@@ -10,11 +10,21 @@ export interface MaterialAppearance {
   readonly leaf: Readonly<{
     form: LeafForm; color: number; veinColor: number; roughness: number;
     hitRadius: number; hitCenterY: number;
+    /**
+     * Foliage-fan only. Omitted means the shared elliptic blade.
+     * `spray` and `separated` are presentation draws; they do not change the graph.
+     */
+    profile?: FanLeafDraw;
   }>;
   readonly bloom: Readonly<{
     form: BloomForm; color: number; roughness: number; hitRadius: number;
     /** Offset along the organ's local supporting tangent. Existing forms stay at 0. */
     hitCenterY?: number;
+    /**
+     * Tufted blooms only. Breaks exact eight-fold repetition in the instance
+     * matrices. Omitted blooms stay evenly spaced. Does not change the graph.
+     */
+    tuftScatter?: Readonly<{ azimuth: number; scale: number; tilt: number }>;
   }>;
   /** Present only for a generator that emits berry organs. One sphere per organ. */
   readonly berry?: Readonly<{
@@ -78,7 +88,11 @@ const flowerVolume: MaterialAppearance = Object.freeze({
   stemRoughness: 0.72,
   leaf: Object.freeze({ form: "elliptic", color: 0x3d5a42, veinColor: 0x7d8f58,
     roughness: 0.7, ...ellipticLeafHit }),
-  bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
+  bloom: Object.freeze({
+    form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56,
+    // Small scatter so an orbit does not strobe a perfect gear. The head stays dense.
+    tuftScatter: Object.freeze({ azimuth: 0.08, scale: 0.04, tilt: 0.035 }),
+  }),
 });
 const blossomSpray: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x7d9a55, lateral: 0x8aab62,
@@ -88,7 +102,11 @@ const blossomSpray: MaterialAppearance = Object.freeze({
   leaf: flowering.leaf,
   // Existing tufted surface and the flower-volume acquisition envelope.
   // Separation is topological. This does not add a smaller proxy or a new mesh.
-  bloom: Object.freeze({ form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56 }),
+  bloom: Object.freeze({
+    form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56,
+    // Wider than the flower-volume head so separated accents are not one stamp.
+    tuftScatter: Object.freeze({ azimuth: 0.22, scale: 0.09, tilt: 0.08 }),
+  }),
 });
 const noddingFlower: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x516846, lateral: 0x516846,
@@ -108,7 +126,8 @@ const berryTwig: MaterialAppearance = Object.freeze({
   leaf: flowering.leaf,
   bloom: flowering.bloom,
   berry: Object.freeze({
-    color: 0x8a2e45, roughness: 0.4, radius: 0.07, hitRadius: 0.145, centerY: 0.055,
+    // Lighter than the wood, still a small round accent. Radius stays inside hitRadius.
+    color: 0xa63e56, roughness: 0.3, radius: 0.078, hitRadius: 0.145, centerY: 0.055,
   }),
 });
 const archingTrailer: MaterialAppearance = Object.freeze({
@@ -135,8 +154,10 @@ const foliageFan: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x7c9a34, lateral: 0x739332,
     twig: 0x86a44a, pedicel: 0x86a44a, petiole: 0x6f8c3c }),
   stemRoughness: 0.64,
-  leaf: Object.freeze({ form: "elliptic", color: 0x5a8a3c, veinColor: 0x9aaf62,
-    roughness: 0.6, ...ellipticLeafHit }),
+  // Deeper than the yellow-green stem so each blade stays readable. `spray` is the
+  // accepted outline; `separated` and `shared` stay selectable and use this color.
+  leaf: Object.freeze({ form: "elliptic", profile: "spray" as const, color: 0x3e6b38, veinColor: 0xd5e6a6,
+    roughness: 0.74, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({

@@ -8,15 +8,22 @@ import * as THREE from "three";
  * - Preserve the organ Group's material frame, spin, scale and hit proxy.
  * - Leaf: use the geometry directly, without the old sphere scale/y offset.
  *   `elliptic` and `lanceolate` stay the creased blade. `pinnate` is a costa
- *   plus three pairs of separate pinnules, used by `fern-frond-v1`.
+ *   plus separate pinnules, used by `fern-frond-v1`.
+ *   Foliage polish is presentation-only. `pinnate` draw `tapered` is the
+ *   accepted frond; `baseline` keeps the earlier comb and `quilled` is the
+ *   four-pair alternative. `foliage-fan-v1` may pass fan profile `spray`
+ *   (accepted), `separated`, or `shared` (the original elliptic). Other
+ *   materials stay on `shared`. Query `pinnate` and `fanLeaf` select a draw
+ *   for comparison. Neither changes a canonical graph.
  * - Petal: use directly, without the old sphere scale/radial offset; retain each
  *   petal's rotation.z = index * 2 PI / petalCount. Salt the seed by petal index.
  *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
  *   five-petal dish whose local +Z follows the supporting material frame.
  *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
- *   `bell` is one shell whose mouth continues local +Y, the supporting tangent.
- *   One bloom remains one organ; tufted petals may share a mesh inside that organ.
- *   A berry is a separate organ kind: one low-poly sphere, not a petal form.
+ *   Instance scatter, when the appearance asks for it, varies only the rebuildable
+ *   petal matrices. `bell` is one shell whose mouth continues local +Y. A short
+ *   sleeve of that same shell sits behind the attachment so the neck reads as
+ *   continuous; it is not a second organ. A berry is one sphere, not a petal.
  * - Cupped, open-face, and tufted surfaces face local +Z. The bell opens along
  *   local +Y so a downward neck presents the mouth. All require a DoubleSide
  *   material. Color values
@@ -116,6 +123,19 @@ function bladeSurface(
 export type LeafForm = "elliptic" | "lanceolate" | "pinnate";
 export type BloomForm = "cupped" | "open-face" | "tufted" | "bell";
 
+/** Parallel pinna draws. `baseline` is the comb this polish started from. */
+export type PinnateDraw = "baseline" | "tapered" | "quilled";
+/** Parallel elliptic draws for foliage-fan only. `shared` is every other elliptic leaf. */
+export type FanLeafDraw = "shared" | "spray" | "separated";
+
+export interface LeafDrawOptions {
+  readonly pinnate?: PinnateDraw;
+  readonly fanLeaf?: FanLeafDraw;
+}
+
+/** Shipped frond draw when the caller does not pass an override. */
+export const ACCEPTED_PINNATE_DRAW: PinnateDraw = "tapered";
+
 /** Rebuildable bloom parts. Cupped and open-face numbers match the prior path. */
 export interface BloomSurfaceProfile {
   readonly petalCount: number;
@@ -186,18 +206,54 @@ function leafSample(
 }
 
 /**
- * Divided pinna: a costa with four pairs of separate pinnules. Local Y is the
- * pinna midrib. The gaps are missing triangles, not a texture. One organ, one
- * mesh. Elliptic and lanceolate blades are unchanged.
+ * Divided pinna. Local Y is the pinna midrib. The gaps are missing triangles,
+ * not a texture. One organ, one mesh. Elliptic and lanceolate blades are unchanged.
+ * `baseline` is the original three-pair comb. `tapered` and `quilled` keep that
+ * envelope and only change the leaflet draw.
  */
 const PINNATE_LENGTH = 1.12;
 const PINNATE_COSTA_HALF = 0.016;
+
+interface PinnuleLobe {
+  readonly t: number;
+  readonly reach: number;
+  readonly span: number;
+  readonly lean: number;
+}
+
+const TAPERED_LOBES: readonly PinnuleLobe[] = [
+  { t: 0.17, reach: 0.26, span: 0.07, lean: 0.14 },
+  { t: 0.5, reach: 0.48, span: 0.064, lean: 0.2 },
+  { t: 0.78, reach: 0.18, span: 0.03, lean: 0.38 },
+];
+
+const QUILLED_LOBES: readonly PinnuleLobe[] = [
+  { t: 0.15, reach: 0.26, span: 0.042, lean: 0.26 },
+  { t: 0.36, reach: 0.36, span: 0.048, lean: 0.2 },
+  { t: 0.56, reach: 0.32, span: 0.042, lean: 0.22 },
+  { t: 0.77, reach: 0.18, span: 0.03, lean: 0.34 },
+];
 
 function pinnateCostaZ(t: number): number {
   return 0.04 * t - 0.06 * t * t;
 }
 
-function createPinnatePinnaGeometry(seed = 0): THREE.BufferGeometry {
+function polishedCostaFrame(t: number, seed: number) {
+  const clamped = Math.min(1, Math.max(0, t));
+  // A tip hook, not a mid-pinna bow: the notch test watches local X near the middle.
+  const hook = (variation(seed, 4) - 0.5) * 0.07;
+  const x = hook * clamped * clamped;
+  const y = PINNATE_LENGTH * clamped;
+  const wave = variation(seed, 5) * TAU;
+  const z = 0.03 * clamped - 0.055 * clamped * clamped
+    + 0.018 * Math.sin(clamped * Math.PI * 1.5 + wave);
+  const dx = hook * 2 * clamped;
+  const dy = PINNATE_LENGTH;
+  const length = Math.hypot(dx, dy) || 1;
+  return { x, y, z, tx: dx / length, ty: dy / length };
+}
+
+function createPinnatePinnaBaseline(seed = 0): THREE.BufferGeometry {
   const positions: number[] = [];
   const colors: number[] = [];
   const uvs: number[] = [];
@@ -300,7 +356,130 @@ function createPinnatePinnaGeometry(seed = 0): THREE.BufferGeometry {
   return geometry;
 }
 
-function createPinnateCostaGeometry(seed = 0): THREE.BufferGeometry {
+function createPolishedPinna(seed: number, lobes: readonly PinnuleLobe[], curl: number, vary: number): THREE.BufferGeometry {
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+  const add = (
+    x: number,
+    y: number,
+    z: number,
+    rgb: readonly [number, number, number],
+    u: number,
+    v: number,
+  ) => {
+    const index = positions.length / 3;
+    positions.push(x, y, z);
+    colors.push(rgb[0], rgb[1], rgb[2]);
+    uvs.push(u, v);
+    return index;
+  };
+
+  const costaRows = 12;
+  const costaIds: number[] = [];
+  for (let row = 0; row <= costaRows; row += 1) {
+    const t = row / costaRows;
+    const frame = polishedCostaFrame(t, seed);
+    const half = PINNATE_COSTA_HALF * (1.05 - 0.55 * t);
+    const tone = 0.62 + 0.16 * t;
+    const px = frame.ty;
+    const py = -frame.tx;
+    costaIds.push(
+      add(frame.x - px * half, frame.y - py * half, frame.z, [tone * 0.78, tone * 0.95, tone * 0.7], 0.48, t),
+      add(frame.x + px * half, frame.y + py * half, frame.z + 0.0015, [tone * 0.78, tone * 0.95, tone * 0.7], 0.52, t),
+    );
+  }
+  for (let row = 0; row < costaRows; row += 1) {
+    const a = costaIds[row * 2]!;
+    const b = costaIds[row * 2 + 1]!;
+    const c = costaIds[(row + 1) * 2]!;
+    const d = costaIds[(row + 1) * 2 + 1]!;
+    indices.push(a, c, b, b, c, d);
+  }
+
+  const alongSteps = 6;
+  const acrossSteps = 4;
+  for (let lobe = 0; lobe < lobes.length; lobe += 1) {
+    const spec = lobes[lobe]!;
+    for (const side of [-1, 1] as const) {
+      const channel = 20 + lobe * 4 + (side > 0 ? 1 : 0);
+      const reachScale = 1 + (variation(seed, channel) - 0.5) * vary;
+      const lean = spec.lean + (variation(seed, channel + 1) - 0.5) * vary * 0.45;
+      const lift = (variation(seed, channel + 2) - 0.5) * 0.012;
+      const stagger = side * (variation(seed, channel + 3) - 0.5) * vary * 0.08;
+      const frame = polishedCostaFrame(spec.t + stagger, seed);
+      const px = side * frame.ty;
+      const py = side * -frame.tx;
+      const cosine = Math.cos(lean);
+      const sine = Math.sin(lean);
+      const axisX = px * cosine + frame.tx * sine;
+      const axisY = py * cosine + frame.ty * sine;
+      const wingX = px * -sine + frame.tx * cosine;
+      const wingY = py * -sine + frame.ty * cosine;
+      const ids: number[][] = [];
+      for (let step = 0; step <= alongSteps; step += 1) {
+        const u = step / alongSteps;
+        const row: number[] = [];
+        const belly = Math.sin(Math.PI * u);
+        const neck = u < 0.14 ? u / 0.14 : 1;
+        const point = Math.pow(Math.max(0, belly), 0.7) * (1 - 0.42 * u);
+        const span = spec.span * point * neck;
+        for (let across = 0; across <= acrossSteps; across += 1) {
+          const v = across / acrossSteps;
+          const signed = v * 2 - 1;
+          const along = u * spec.reach * reachScale;
+          const wing = signed * span;
+          const x = frame.x + axisX * along + wingX * wing;
+          const y = frame.y + axisY * along + wingY * wing;
+          const z = frame.z
+            + curl * (0.02 * u * u * belly - 0.028 * u * u)
+            + lift
+            + signed * 0.008 * u * curl;
+          const light = 0.7 + 0.2 * u + 0.08 * belly - 0.1 * Math.abs(signed);
+          row.push(add(
+            x,
+            y,
+            z,
+            [Math.min(1, light * 0.84), Math.min(1, light * 1.04), light * 0.76],
+            0.5 + side * u * 0.5,
+            Math.min(1, Math.max(0, y / PINNATE_LENGTH)),
+          ));
+        }
+        ids.push(row);
+      }
+      for (let step = 0; step < alongSteps; step += 1) {
+        for (let across = 0; across < acrossSteps; across += 1) {
+          const a = ids[step]![across]!;
+          const b = ids[step]![across + 1]!;
+          const c = ids[step + 1]![across]!;
+          const d = ids[step + 1]![across + 1]!;
+          if (side > 0) indices.push(a, b, c, b, d, c);
+          else indices.push(a, c, b, b, c, d);
+        }
+      }
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.name = "living-line/pinnate-pinna";
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function createPinnatePinnaGeometry(seed = 0, draw: PinnateDraw = ACCEPTED_PINNATE_DRAW): THREE.BufferGeometry {
+  if (draw === "baseline") return createPinnatePinnaBaseline(seed);
+  if (draw === "quilled") return createPolishedPinna(seed, QUILLED_LOBES, 1.35, 0.1);
+  return createPolishedPinna(seed, TAPERED_LOBES, 0.85, 0.24);
+}
+
+function createPinnateCostaBaseline(seed = 0): THREE.BufferGeometry {
   return bladeSurface("living-line/pinnate-costa", (t, across) => {
     const y = PINNATE_LENGTH * (0.02 + t * 0.96);
     const width = 0.0032 * Math.sin(Math.PI * t);
@@ -312,22 +491,85 @@ function createPinnateCostaGeometry(seed = 0): THREE.BufferGeometry {
   }, 12, 2);
 }
 
+function createPinnateCostaGeometry(seed = 0, draw: PinnateDraw = ACCEPTED_PINNATE_DRAW): THREE.BufferGeometry {
+  if (draw === "baseline") return createPinnateCostaBaseline(seed);
+  return bladeSurface("living-line/pinnate-costa", (t, across) => {
+    const along = 0.02 + t * 0.96;
+    const frame = polishedCostaFrame(along, seed);
+    const width = 0.0034 * Math.sin(Math.PI * t) * (1.2 - 0.7 * along);
+    const px = frame.ty;
+    const py = -frame.tx;
+    return {
+      position: [frame.x + px * across * width, frame.y + py * across * width, frame.z + 0.003],
+      color: [0.8, 0.93, 0.68],
+    };
+  }, 12, 2);
+}
+
+function fanLeafSample(
+  seed: number,
+  t: number,
+  across: number,
+  profile: Exclude<FanLeafDraw, "shared">,
+): SurfaceSample {
+  const envelope = Math.sin(Math.PI * t);
+  const spray = profile === "spray";
+  const lean = (variation(seed, 0) - 0.5) * (spray ? 0.04 : 0.06);
+  const uneven = (variation(seed, 1) - 0.5) * (spray ? 0.16 : 0.22);
+  const wave = variation(seed, 2) * TAU;
+  const width = (spray ? 0.21 : 0.172) * Math.pow(Math.max(0, envelope), spray ? 0.92 : 1.08)
+    * (1 + across * uneven) * (1 - (spray ? 0.3 : 0.4) * Math.max(0, t - 0.4));
+  const x = width * across + lean * envelope;
+  const y = -0.115 + 0.724 * t;
+  const twist = (variation(seed, 3) - 0.5) * (spray ? 0.045 : 0.09);
+  const z = (spray ? 0.044 : 0.036) * envelope
+    - (spray ? 0.058 : 0.072) * Math.abs(across) * envelope
+    - 0.018 * t * t * t
+    + twist * t * across
+    + 0.0035 * Math.sin(t * Math.PI * 3 + wave) * Math.pow(Math.abs(across), 2) * envelope;
+  const ridge = Math.pow(1 - Math.abs(across), 5);
+  const edge = Math.pow(Math.abs(across), 2.2);
+  const value = 0.72 + ridge * 0.24 - edge * 0.12 + t * 0.035;
+  return {
+    position: [x, y, z],
+    color: [value * 0.9, Math.min(1, value * 1.06), value * 0.8],
+  };
+}
+
+function resolvedPinnate(draw?: LeafDrawOptions): PinnateDraw {
+  return draw?.pinnate ?? ACCEPTED_PINNATE_DRAW;
+}
+
+function resolvedFanLeaf(form: LeafForm, draw?: LeafDrawOptions): FanLeafDraw {
+  if (form !== "elliptic") return "shared";
+  return draw?.fanLeaf ?? "shared";
+}
+
 /** 119 vertices, 208 triangles for elliptic and lanceolate. Local Y follows the leaf's long axis.
  * A pinnate pinna is a separate costa-and-pinnule mesh and does not reuse those counts.
+ * Fan profiles reuse the elliptic grid so foliage-fan draw cost stays on the same mesh.
  */
-export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic"): THREE.BufferGeometry {
-  if (form === "pinnate") return createPinnatePinnaGeometry(seed);
-  return bladeSurface("living-line/creased-leaf", (t, u) => leafSample(seed, t, u, form));
+export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
+  if (form === "pinnate") return createPinnatePinnaGeometry(seed, resolvedPinnate(draw));
+  const profile = resolvedFanLeaf(form, draw);
+  if (profile === "shared") {
+    return bladeSurface("living-line/creased-leaf", (t, u) => leafSample(seed, t, u, form));
+  }
+  return bladeSurface("living-line/creased-leaf", (t, u) => fanLeafSample(seed, t, u, profile));
 }
 
 /**
  * Raised midrib as one tiny tapered ribbon; opt in when close-up reading needs
  * it. At its widest it is 0.0056 units, so it remains a vein rather than a stripe.
  */
-export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic"): THREE.BufferGeometry {
-  if (form === "pinnate") return createPinnateCostaGeometry(seed);
+export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
+  if (form === "pinnate") return createPinnateCostaGeometry(seed, resolvedPinnate(draw));
+  const profile = resolvedFanLeaf(form, draw);
   return bladeSurface("living-line/leaf-midrib", (t, across) => {
-    const sample = leafSample(seed, 0.025 + t * 0.94, 0, form);
+    const along = 0.025 + t * 0.94;
+    const sample = profile === "shared"
+      ? leafSample(seed, along, 0, form)
+      : fanLeafSample(seed, along, 0, profile);
     const width = 0.0028 * Math.sin(Math.PI * t) * (1 - t * 0.55);
     return {
       position: [sample.position[0] + across * width, sample.position[1], sample.position[2] + 0.0016],
@@ -416,7 +658,29 @@ export function createTuftedPetalGeometry(seed = 0): THREE.BufferGeometry {
       position: [x, y, z],
       color: [Math.min(1, value * 1.05), value * (0.8 + 0.1 * t), value * (0.9 + 0.05 * t)],
     };
-  }, 10, 6);
+  }, 10, 8);
+}
+
+export interface TuftScatter {
+  readonly azimuth: number;
+  readonly scale: number;
+  readonly tilt: number;
+}
+
+/** Even spacing when scatter is omitted. Scatter stays inside one organ. */
+export function tuftInstancePose(
+  seed: number,
+  index: number,
+  count: number,
+  scatter?: TuftScatter,
+): { azimuth: number; tilt: number; scale: number } {
+  const base = (index / count) * TAU;
+  if (!scatter) return { azimuth: base, tilt: 0, scale: 1 };
+  return {
+    azimuth: base + (variation(seed, 20 + index) - 0.5) * 2 * scatter.azimuth,
+    tilt: (variation(seed, 40 + index) - 0.5) * 2 * scatter.tilt,
+    scale: 1 + (variation(seed, 60 + index) - 0.5) * 2 * scatter.scale,
+  };
 }
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
@@ -430,9 +694,14 @@ export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): 
 
 /**
  * One bell shell. Local +Y continues the supporting tangent, so the mouth
- * follows the neck instead of opening perpendicular to it. The back sits at
- * the attachment. Existing cupped, open-face, and tufted petals are untouched.
+ * follows the neck instead of opening perpendicular to it. The first rings
+ * are a short sleeve behind the attachment, still this same shell, so the
+ * pedicel end is covered. Existing cupped, open-face, and tufted petals are
+ * untouched.
  */
+const BELL_SLEEVE = 0.14;
+const BELL_SLEEVE_BACK = -0.052;
+
 export function createBellGeometry(seed = 0): THREE.BufferGeometry {
   const rings = 14;
   const columns = 32;
@@ -447,10 +716,18 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
   };
   const profile = (t: number, theta: number) => {
     const lobe = Math.cos(theta * 5 + phase);
-    const swell = Math.sin(Math.min(1, t * 0.98) * Math.PI * 0.5);
-    const flare = t > 0.72 ? Math.sin(((t - 0.72) / 0.28) * Math.PI) * 0.07 : 0;
-    const radius = (0.034 + 0.36 * swell + flare) * (1 + 0.045 * lobe * t * t);
-    const y = t * 0.6 + 0.012 * lobe * t * t;
+    if (t <= BELL_SLEEVE) {
+      const u = t / BELL_SLEEVE;
+      return {
+        radius: 0.017 + (0.034 - 0.017) * u * u,
+        y: BELL_SLEEVE_BACK * (1 - u),
+      };
+    }
+    const body = (t - BELL_SLEEVE) / (1 - BELL_SLEEVE);
+    const swell = Math.sin(Math.min(1, body * 0.98) * Math.PI * 0.5);
+    const flare = body > 0.72 ? Math.sin(((body - 0.72) / 0.28) * Math.PI) * 0.07 : 0;
+    const radius = (0.034 + 0.36 * swell + flare) * (1 + 0.045 * lobe * body * body);
+    const y = body * 0.6 + 0.012 * lobe * body * body;
     return { radius, y };
   };
 
@@ -467,7 +744,8 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
       const sine = Math.sin(theta);
       const shade = 0.42 + 0.58 * Math.pow(t, 0.85);
       outer[ring][column] = push(cosine * radius, y, sine * radius, shade);
-      const innerRadius = Math.max(0.01, radius - 0.018);
+      const wall = t <= BELL_SLEEVE ? 0.005 : 0.018;
+      const innerRadius = Math.max(0.006, radius - wall);
       inner[ring][column] = push(cosine * innerRadius, y + 0.004, sine * innerRadius, shade * 0.62);
     }
   }
@@ -486,7 +764,7 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
     const next = (column + 1) % columns;
     quad(outer[rings][column], outer[rings][next], inner[rings][next], inner[rings][column]);
   }
-  const back = push(0, 0, 0, 0.36);
+  const back = push(0, BELL_SLEEVE_BACK, 0, 0.36);
   for (let column = 0; column < columns; column += 1) {
     const next = (column + 1) % columns;
     indices.push(back, outer[0][next], outer[0][column]);
@@ -504,11 +782,12 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
 }
 
 /**
- * One fruit. Local +Y continues the supporting tangent. An 8×6 sphere is 96
- * triangles. Cupped, open-face, tufted, and bell surfaces are untouched.
+ * One fruit. Local +Y continues the supporting tangent. A 12×8 sphere is 168
+ * triangles, rounder than the previous 8×6 faceting. Cupped, open-face,
+ * tufted, and bell surfaces are untouched.
  */
-export function createBerryGeometry(seed = 0, radius = 0.07): THREE.BufferGeometry {
-  const geometry = new THREE.SphereGeometry(radius, 8, 6);
+export function createBerryGeometry(seed = 0, radius = 0.078): THREE.BufferGeometry {
+  const geometry = new THREE.SphereGeometry(radius, 12, 8);
   geometry.name = "living-line/berry";
   const positions = geometry.getAttribute("position");
   const squash = 0.9 + variation(seed, 8) * 0.08;
@@ -516,10 +795,11 @@ export function createBerryGeometry(seed = 0, radius = 0.07): THREE.BufferGeomet
   for (let index = 0; index < positions.count; index += 1) {
     const y = positions.getY(index) * squash;
     positions.setY(index, y);
-    const cheek = 0.42 + 0.5 * ((y / radius) * 0.5 + 0.5);
-    colors[index * 3] = Math.min(1, cheek * 1.05);
-    colors[index * 3 + 1] = cheek * 0.62;
-    colors[index * 3 + 2] = cheek * 0.7;
+    const pole = (y / (radius * squash)) * 0.5 + 0.5;
+    const cheek = 0.62 + 0.38 * Math.pow(Math.max(0, Math.min(1, pole)), 0.8);
+    colors[index * 3] = Math.min(1, cheek * 1.06);
+    colors[index * 3 + 1] = cheek * 0.52;
+    colors[index * 3 + 2] = cheek * 0.6;
   }
   geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geometry.computeVertexNormals();

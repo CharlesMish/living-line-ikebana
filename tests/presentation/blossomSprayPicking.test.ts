@@ -3,6 +3,8 @@ import test from "node:test";
 import * as THREE from "three";
 import { createBlossomSpray, createFlowerVolume, createFloweringBranch, previewPrune, applyPrune } from "../../src/core/index.ts";
 import type { PlantGraph } from "../../src/core/types.ts";
+import { tuftInstancePose } from "../../src/presentation/botanicalGeometry.ts";
+import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
 import { ThreeStudio, STUDIO_VERTICAL_FOV } from "../../src/presentation/ThreeStudio.ts";
 import { disposeObject } from "../../src/presentation/geometry.ts";
 
@@ -117,6 +119,57 @@ test("phone-front presses acquire each blossom on its own stalk, including insta
           child instanceof THREE.InstancedMesh && child.geometry.name === "living-line/tufted-petal");
         assert.ok(tuft instanceof THREE.InstancedMesh);
         assert.equal(tuft.count, 8);
+      }
+    } finally { dispose(); }
+  }
+});
+
+test("tuft scatter is wider on separated blossoms and stays inside the shared hit sphere", () => {
+  const blossom = getMaterialAppearance("blossom-spray-v1").bloom;
+  const volume = getMaterialAppearance("flower-volume-v1").bloom;
+  assert.equal(blossom.hitRadius, volume.hitRadius);
+  assert.equal(blossom.hitRadius, 0.56);
+  const deviation = (scatter: NonNullable<typeof blossom.tuftScatter>) => {
+    let peak = 0;
+    for (let index = 0; index < 8; index += 1) {
+      const pose = tuftInstancePose(8278, index, 8, scatter);
+      const even = (index / 8) * Math.PI * 2;
+      peak = Math.max(peak, Math.abs(Math.atan2(Math.sin(pose.azimuth - even), Math.cos(pose.azimuth - even))));
+      assert.ok(Math.abs(pose.scale - 1) <= scatter.scale + 1e-6);
+      assert.ok(Math.abs(pose.tilt) <= scatter.tilt + 1e-6);
+    }
+    return peak;
+  };
+  const blossomDeviation = deviation(blossom.tuftScatter!);
+  const volumeDeviation = deviation(volume.tuftScatter!);
+  assert.ok(blossomDeviation > volumeDeviation);
+  assert.ok(volumeDeviation > 0.01, "the packed head is not a perfect gear");
+  assert.ok(blossomDeviation < 0.3, "scatter stays a tuft, not a loose ring");
+
+  const graph = createBlossomSpray("plant-1", 8278, BASE);
+  const volumeGraph = createFlowerVolume("plant-1", 8278, BASE);
+  for (const sample of [graph, volumeGraph]) {
+    const { plant, dispose } = fixture(sample);
+    try {
+      const appearance = getMaterialAppearance(sample.generatorVersion);
+      for (const organ of sample.organs.values()) {
+        if (organ.kind !== "bloom") continue;
+        const visual = plant.organs.get(organ.id);
+        const tuft = [...visual.group.children].find((child: THREE.Object3D) =>
+          child instanceof THREE.InstancedMesh && child.geometry.name === "living-line/tufted-petal") as THREE.InstancedMesh;
+        const positions = tuft.geometry.getAttribute("position");
+        const matrix = new THREE.Matrix4();
+        const vertex = new THREE.Vector3();
+        for (let instance = 0; instance < tuft.count; instance += 1) {
+          tuft.getMatrixAt(instance, matrix);
+          for (let index = 0; index < positions.count; index += 1) {
+            vertex.fromBufferAttribute(positions, index).applyMatrix4(matrix);
+            assert.ok(
+              vertex.length() <= appearance.bloom.hitRadius,
+              `${organ.id} petal leaves the hit sphere`,
+            );
+          }
+        }
       }
     } finally { dispose(); }
   }

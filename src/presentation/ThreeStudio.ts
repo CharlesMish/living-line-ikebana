@@ -6,7 +6,7 @@ import { bendStationAtFraction, legalBendStation, sampleBranch } from "../core/a
 import { sampleMaterialFrame } from "../core/frames.ts";
 import type { Vec3 } from "../core/math.ts";
 import type { Branch, CutPlan, Organ, PlantGraph } from "../core/types.ts";
-import { bloomSurfaceProfile, botanicalSeed, createBellGeometry, createBerryGeometry, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry } from "./botanicalGeometry.ts";
+import { bloomSurfaceProfile, botanicalSeed, createBellGeometry, createBerryGeometry, createBloomPetalGeometry, createCalyxGeometry, createLeafGeometry, createLeafVeinGeometry, tuftInstancePose, type FanLeafDraw, type LeafDrawOptions, type PinnateDraw } from "./botanicalGeometry.ts";
 import {
   disposeObject,
   splitBranchAtMaterialDistance,
@@ -125,6 +125,10 @@ export interface ThreeStudioOptions {
   maxPixelRatio?: number;
   debugHitTargets?: boolean;
   onViewChange?: (view: StudioView) => void;
+  /** Comparison override. Absent uses the accepted pinnate draw. */
+  pinnateDraw?: PinnateDraw;
+  /** Comparison override for foliage-fan leaves. Absent uses the appearance profile. */
+  fanLeafDraw?: FanLeafDraw;
 }
 
 type BranchVisual = {
@@ -240,7 +244,7 @@ export class ThreeStudio {
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange">;
+    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw">;
 
   private pendingPlant: PlantVisual | null = null;
   private pendingValidity: boolean | null = null;
@@ -265,6 +269,8 @@ export class ThreeStudio {
       maxPixelRatio: options.maxPixelRatio ?? 1.8,
       debugHitTargets: options.debugHitTargets ?? false,
       onViewChange: options.onViewChange,
+      pinnateDraw: options.pinnateDraw,
+      fanLeafDraw: options.fanLeafDraw,
     };
     this.canvas.style.touchAction = "none";
 
@@ -572,12 +578,18 @@ export class ThreeStudio {
 
     let hitRadius: number;
     if (organ.kind === "leaf") {
+      const draw: LeafDrawOptions = {
+        pinnate: this.options.pinnateDraw,
+        fanLeaf: graph.generatorVersion === "foliage-fan-v1"
+          ? (this.options.fanLeafDraw ?? appearance.leaf.profile)
+          : undefined,
+      };
       const leaf = new THREE.Mesh(
-        createLeafGeometry(seed, appearance.leaf.form),
+        createLeafGeometry(seed, appearance.leaf.form, draw),
         bodyMaterial(appearance.leaf.color, appearance.leaf.roughness, true),
       );
       leaf.castShadow = !pending;
-      const vein = new THREE.Mesh(createLeafVeinGeometry(seed, appearance.leaf.form), bodyMaterial(appearance.leaf.veinColor, 0.8, true));
+      const vein = new THREE.Mesh(createLeafVeinGeometry(seed, appearance.leaf.form, draw), bodyMaterial(appearance.leaf.veinColor, 0.8, true));
       group.add(leaf, vein);
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
@@ -600,12 +612,17 @@ export class ThreeStudio {
           );
           const petalMatrix = new THREE.Matrix4();
           const petalQuaternion = new THREE.Quaternion();
+          const tiltQuaternion = new THREE.Quaternion();
           for (let index = 0; index < profile.petalCount; index += 1) {
-            petalQuaternion.setFromAxisAngle(
-              new THREE.Vector3(0, 0, 1),
-              (index / profile.petalCount) * Math.PI * 2,
+            const pose = tuftInstancePose(seed, index, profile.petalCount, bloom.tuftScatter);
+            petalQuaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), pose.azimuth);
+            tiltQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pose.tilt);
+            petalQuaternion.multiply(tiltQuaternion);
+            petalMatrix.compose(
+              new THREE.Vector3(),
+              petalQuaternion,
+              new THREE.Vector3(pose.scale, pose.scale, pose.scale),
             );
-            petalMatrix.compose(new THREE.Vector3(), petalQuaternion, new THREE.Vector3(1, 1, 1));
             petals.setMatrixAt(index, petalMatrix);
           }
           petals.instanceMatrix.needsUpdate = true;

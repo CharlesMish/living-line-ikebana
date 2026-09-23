@@ -3,7 +3,7 @@ import test from "node:test";
 import * as THREE from "three";
 import { createFloweringBranch, aimBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
-import { botanicalSeed, createBellGeometry, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry, createTuftedPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
+import { botanicalSeed, createBellGeometry, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry, createTuftedPetalGeometry, tuftInstancePose } from "../../src/presentation/botanicalGeometry.ts";
 import { disposeObject, splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
 import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
 
@@ -432,6 +432,8 @@ test("bell volume opens along the supporting tangent and keeps the other bloom f
   const positions = bell.getAttribute("position");
   const normals = bell.getAttribute("normal");
   let maxY = 0;
+  let minY = Infinity;
+  let sleeveRadius = 0;
   let maxRadius = 0;
   let outward = 0;
   let outwardSamples = 0;
@@ -441,6 +443,8 @@ test("bell volume opens along the supporting tangent and keeps the other bloom f
     const y = positions.getY(index);
     const z = positions.getZ(index);
     maxY = Math.max(maxY, y);
+    minY = Math.min(minY, y);
+    if (y < -0.04) sleeveRadius = Math.max(sleeveRadius, Math.hypot(x, z));
     maxRadius = Math.max(maxRadius, Math.hypot(x, z));
     if (index < shellVertices && index % 2 === 0 && Math.hypot(x, z) > 0.12) {
       const radial = Math.hypot(x, z);
@@ -456,6 +460,8 @@ test("bell volume opens along the supporting tangent and keeps the other bloom f
     openX = Math.max(openX, Math.abs(openPositions.getX(index)));
   }
   assert.ok(maxY > 0.55, "the bell must have a substantial axial depth");
+  assert.ok(minY < -0.04, "the bell sleeve sits behind the graph attachment");
+  assert.ok(sleeveRadius > 0.012 && sleeveRadius < 0.03, `sleeve radius ${sleeveRadius} stays near the pedicel`);
   assert.ok(maxRadius > 0.28, "the bell mouth must have a readable radius");
   assert.ok(maxY / maxRadius > 1.2, "the bell must be deeper than it is wide");
   assert.ok(openZ / openX < 0.2, "the existing open face stays a shallow dish");

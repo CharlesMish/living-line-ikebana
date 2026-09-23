@@ -12,8 +12,11 @@ import * as THREE from "three";
  *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
  *   five-petal dish whose local +Z follows the supporting material frame.
  *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
+ *   `bell` is one shell whose mouth continues local +Y, the supporting tangent.
  *   One bloom remains one organ; tufted petals may share a mesh inside that organ.
- * - All surfaces face local +Z and require a DoubleSide material. Color values
+ * - Cupped, open-face, and tufted surfaces face local +Z. The bell opens along
+ *   local +Y so a downward neck presents the mouth. All require a DoubleSide
+ *   material. Color values
  *   are restrained linear RGB multipliers; enable material.vertexColors.
  * - Calyx and leaf veins are optional subordinate detail, using their own green
  *   material. Keep those materials in bodyMaterials for prune/ghost opacity.
@@ -108,7 +111,7 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate";
-export type BloomForm = "cupped" | "open-face" | "tufted";
+export type BloomForm = "cupped" | "open-face" | "tufted" | "bell";
 
 /** Rebuildable bloom parts. Cupped and open-face numbers match the prior path. */
 export interface BloomSurfaceProfile {
@@ -124,6 +127,9 @@ export interface BloomSurfaceProfile {
 }
 
 export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
+  if (form === "bell") {
+    throw new Error("bell is one volume along the supporting tangent, not a radial petal profile");
+  }
   if (form === "open-face") {
     return {
       petalCount: 5, centerRadius: 0.11, centerScaleZ: 0.36, centerZ: 0.042, centerColor: 0xc49a58,
@@ -275,9 +281,87 @@ export function createTuftedPetalGeometry(seed = 0): THREE.BufferGeometry {
 }
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
+  if (form === "bell") {
+    throw new Error("bell is one volume along the supporting tangent, not a radial petal");
+  }
   if (form === "open-face") return createOpenFacePetalGeometry(seed);
   if (form === "tufted") return createTuftedPetalGeometry(seed);
   return createPetalGeometry(seed);
+}
+
+/**
+ * One bell shell. Local +Y continues the supporting tangent, so the mouth
+ * follows the neck instead of opening perpendicular to it. The back sits at
+ * the attachment. Existing cupped, open-face, and tufted petals are untouched.
+ */
+export function createBellGeometry(seed = 0): THREE.BufferGeometry {
+  const rings = 14;
+  const columns = 32;
+  const phase = variation(seed, 11) * TAU;
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+  const push = (x: number, y: number, z: number, shade: number) => {
+    positions.push(x, y, z);
+    colors.push(shade * 0.9, shade * 0.95, Math.min(1, shade * 1.04));
+    return positions.length / 3 - 1;
+  };
+  const profile = (t: number, theta: number) => {
+    const lobe = Math.cos(theta * 5 + phase);
+    const swell = Math.sin(Math.min(1, t * 0.98) * Math.PI * 0.5);
+    const flare = t > 0.72 ? Math.sin(((t - 0.72) / 0.28) * Math.PI) * 0.07 : 0;
+    const radius = (0.034 + 0.36 * swell + flare) * (1 + 0.045 * lobe * t * t);
+    const y = t * 0.6 + 0.012 * lobe * t * t;
+    return { radius, y };
+  };
+
+  const outer: number[][] = [];
+  const inner: number[][] = [];
+  for (let ring = 0; ring <= rings; ring += 1) {
+    const t = ring / rings;
+    outer[ring] = [];
+    inner[ring] = [];
+    for (let column = 0; column < columns; column += 1) {
+      const theta = (column / columns) * TAU;
+      const { radius, y } = profile(t, theta);
+      const cosine = Math.cos(theta);
+      const sine = Math.sin(theta);
+      const shade = 0.42 + 0.58 * Math.pow(t, 0.85);
+      outer[ring][column] = push(cosine * radius, y, sine * radius, shade);
+      const innerRadius = Math.max(0.01, radius - 0.018);
+      inner[ring][column] = push(cosine * innerRadius, y + 0.004, sine * innerRadius, shade * 0.62);
+    }
+  }
+
+  const quad = (a: number, b: number, c: number, d: number) => {
+    indices.push(a, b, c, a, c, d);
+  };
+  for (let ring = 0; ring < rings; ring += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const next = (column + 1) % columns;
+      quad(outer[ring][column], outer[ring + 1][column], outer[ring + 1][next], outer[ring][next]);
+      quad(inner[ring][column], inner[ring][next], inner[ring + 1][next], inner[ring + 1][column]);
+    }
+  }
+  for (let column = 0; column < columns; column += 1) {
+    const next = (column + 1) % columns;
+    quad(outer[rings][column], outer[rings][next], inner[rings][next], inner[rings][column]);
+  }
+  const back = push(0, 0, 0, 0.36);
+  for (let column = 0; column < columns; column += 1) {
+    const next = (column + 1) % columns;
+    indices.push(back, outer[0][next], outer[0][column]);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.name = "living-line/bell";
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
 }
 
 /** Small pointed green sepals behind the bloom; one geometry for one draw call. */

@@ -1,0 +1,286 @@
+{
+  "captures": [
+    {
+      "fixture": "nodding-flower",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 29,
+        "triangles": 12302
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 713,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        }
+      }
+    },
+    {
+      "fixture": "nodding-flower",
+      "seed": 8278,
+      "count": 1,
+      "view": "three-quarter",
+      "counts": {
+        "calls": 29,
+        "triangles": 12302
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 713,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        }
+      }
+    },
+    {
+      "fixture": "nodding-flower",
+      "seed": 8278,
+      "count": 1,
+      "view": "above",
+      "counts": {
+        "calls": 29,
+        "triangles": 12302
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 713,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        }
+      }
+    },
+    {
+      "fixture": "single-flower",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "calls": 39,
+        "triangles": 13126
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 713,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        }
+      }
+    },
+    {
+      "fixture": "reference-pair",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "calls": 667,
+        "triangles": 91678
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 713,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        }
+      }
+    },
+    {
+      "fixture": "nodding-flower",
+      "seed": 8278,
+      "count": 12,
+      "view": "front",
+      "counts": {
+        "calls": 271,
+        "triangles": 84814
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 713
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 713
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 713
+        },
+        "visualViewport": {
+          "width": 1280,
+          "height": 713,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 832,
+          "height": 119.234375
+        }
+      }
+    },
+    {
+      "fixture": "nodding-flower",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "viewport": "390x844",
+      "counts": {
+        "calls": 29,
+        "triangles": 12302
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 390,
+          "height": 844
+        },
+        "drawingBuffer": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 390,
+          "height": 844
+        },
+        "visualViewport": {
+          "width": 390,
+          "height": 844,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 374,
+          "height": 179.78125
+        }
+      }
+    },
+    {
+      "fixture": "nodding-flower",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "viewport": "800x420",
+      "counts": {
+        "calls": 29,
+        "triangles": 12302
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 800,
+          "height": 420
+        },
+        "drawingBuffer": {
+          "width": 800,
+          "height": 420
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 800,
+          "height": 420
+        },
+        "visualViewport": {
+          "width": 800,
+          "height": 420,
+          "scale": 1
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "topChrome": {
+          "width": 784,
+          "height": 119.234375
+        }
+      }
+    }
+  ]
+}

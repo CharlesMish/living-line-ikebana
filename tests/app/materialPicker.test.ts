@@ -14,7 +14,7 @@ test("insertion bindings stay on one source card; palette choices cannot insert"
   const choiceIds = [...html.matchAll(/data-material-choice="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(choiceIds, [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower",
-    "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray",
+    "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower",
   ]);
 
   const optionsBlock = html.slice(html.indexOf('id="material-options"'), html.indexOf("</nav>", html.indexOf('id="material-options"')));
@@ -28,4 +28,5 @@ test("insertion bindings stay on one source card; palette choices cannot insert"
   assert.match(optionsBlock, /Arching trailer/);
   assert.match(optionsBlock, /Foliage fan/);
   assert.match(optionsBlock, /Blossom spray/);
+  assert.match(optionsBlock, /Nodding flower/);
 });

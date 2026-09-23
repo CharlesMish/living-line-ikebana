@@ -25,3 +25,5 @@ export const FOLIAGE_FAN_RESPONSE = Object.freeze({ stem: 0.47, arm: 0.36, stalk
  * side branches (0.50–0.52). Stalks match the shared stalk value. Copied once.
  */
 export const BLOSSOM_SPRAY_RESPONSE = Object.freeze({ stem: 0.48, lateral: 0.41, stalk: 0.18 });
+/** Supporting stem close to the single flower. The neck is rest geometry, not a softer solver. */
+export const NODDING_FLOWER_RESPONSE = Object.freeze({ stem: 0.48, stalk: 0.18 });

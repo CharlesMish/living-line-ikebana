@@ -3,7 +3,7 @@ import test from "node:test";
 import * as THREE from "three";
 import { createFloweringBranch, aimBranch, bendBranch, pruneBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
-import { botanicalSeed, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry, createTuftedPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
+import { botanicalSeed, createBellGeometry, createLeafGeometry, createOpenFacePetalGeometry, createPetalGeometry, createTuftedPetalGeometry } from "../../src/presentation/botanicalGeometry.ts";
 import { disposeObject, splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
 import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
 
@@ -93,7 +93,7 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -161,6 +161,11 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   assert.notEqual(stemColors[8], stemColors[5], "blossom spray must not inherit the flower-volume stem");
   assert.notEqual(stemColors[8], stemColors[6], "blossom spray must not inherit the arching trailer");
   assert.notEqual(stemColors[8], stemColors[7], "blossom spray must not inherit the foliage fan");
+  assert.notEqual(stemColors[9], stemColors[3], "nodding flower must not inherit the single-flower stem");
+  assert.notEqual(stemColors[9], stemColors[5], "nodding flower must not inherit the flower-volume stem");
+  assert.notEqual(stemColors[9], stemColors[0], "nodding flower must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[9], stemColors[7], "nodding flower must not inherit the foliage fan");
+  assert.notEqual(stemColors[9], stemColors[8], "nodding flower must not inherit the blossom spray");
 });
 
 test("every material's leaf and bloom acquisition proxies contain their visible surfaces", async () => {
@@ -215,7 +220,7 @@ test("every material's leaf and bloom acquisition proxies contain their visible 
       }
     }
   }
-  assert.deepEqual([...forms].sort(), ["bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate"]);
+  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate"]);
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {
@@ -410,4 +415,42 @@ test("production organ groups ignore camera changes and follow stem aim and bend
   );
 
   disposeObject(visual.group);
+});
+
+test("bell volume opens along the supporting tangent and keeps the other bloom forms", () => {
+  const bell = createBellGeometry(8278);
+  const open = createOpenFacePetalGeometry(3);
+  const positions = bell.getAttribute("position");
+  const normals = bell.getAttribute("normal");
+  let maxY = 0;
+  let maxRadius = 0;
+  let outward = 0;
+  let outwardSamples = 0;
+  const shellVertices = 15 * 32 * 2;
+  for (let index = 0; index < positions.count; index += 1) {
+    const x = positions.getX(index);
+    const y = positions.getY(index);
+    const z = positions.getZ(index);
+    maxY = Math.max(maxY, y);
+    maxRadius = Math.max(maxRadius, Math.hypot(x, z));
+    if (index < shellVertices && index % 2 === 0 && Math.hypot(x, z) > 0.12) {
+      const radial = Math.hypot(x, z);
+      outward += normals.getX(index) * (x / radial) + normals.getZ(index) * (z / radial);
+      outwardSamples += 1;
+    }
+  }
+  const openPositions = open.getAttribute("position");
+  let openZ = 0;
+  let openX = 0;
+  for (let index = 0; index < openPositions.count; index += 1) {
+    openZ = Math.max(openZ, Math.abs(openPositions.getZ(index)));
+    openX = Math.max(openX, Math.abs(openPositions.getX(index)));
+  }
+  assert.ok(maxY > 0.55, "the bell must have a substantial axial depth");
+  assert.ok(maxRadius > 0.28, "the bell mouth must have a readable radius");
+  assert.ok(maxY / maxRadius > 1.2, "the bell must be deeper than it is wide");
+  assert.ok(openZ / openX < 0.2, "the existing open face stays a shallow dish");
+  assert.ok(outward / outwardSamples > 0.2, `bell walls face outward from the mouth axis (${outward / outwardSamples})`);
+  bell.dispose();
+  open.dispose();
 });

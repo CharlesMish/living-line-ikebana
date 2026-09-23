@@ -19,3 +19,4 @@ export * from "./flowerVolume.ts";
 export * from "./archingTrailer.ts";
 export * from "./foliageFan.ts";
 export * from "./blossomSpray.ts";
+export * from "./noddingFlower.ts";

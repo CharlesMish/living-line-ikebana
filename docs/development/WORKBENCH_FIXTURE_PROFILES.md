@@ -20,6 +20,7 @@ the live catalog was a comparison-tooling flaw, not a persistence failure.
 | `references-plus-arching-trailer` | stable | flowering → leafy → `arching-trailer` | Round 3 integration |
 | `round3-three` | stable | `reed` → `flower-volume` → `arching-trailer` | Round 3 integration |
 | `round3-palette` | stable | the four above, then reed → flower-volume → arching-trailer | Round 3 integration; **not** `all-four` |
+| `references-plus-nodding-flower` | stable | flowering → leafy → `nodding-flower` | Round 4 Lane C; does not change the rows above |
 | `all-registered-materials` | **dynamic** | live `getMaterialDefinitions()` order | yes; **not** a comparison baseline |
 | `mixed` | alias | same as `reference-pair` | yes; keep only for the old picker |
 

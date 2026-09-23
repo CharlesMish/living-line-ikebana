@@ -17,3 +17,5 @@ export const REED_RESPONSE = Object.freeze({ culm: 0.56 });
 export const FLOWER_VOLUME_RESPONSE = Object.freeze({ stem: 0.55, group: 0.2, stalk: 0.18 });
 /** Supple cane: more yielding than flowering wood (0.72), less ribbon-like than the leafy stem (0.39). */
 export const ARCHING_TRAILER_RESPONSE = Object.freeze({ cane: 0.5, stalk: 0.18 });
+/** Supporting stem close to the single flower. The neck is rest geometry, not a softer solver. */
+export const NODDING_FLOWER_RESPONSE = Object.freeze({ stem: 0.48, stalk: 0.18 });

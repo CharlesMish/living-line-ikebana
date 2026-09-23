@@ -43,6 +43,7 @@ test("named fixture profiles keep explicit ordered material lists", () => {
   assert.deepEqual(byId["round3-palette"]?.materialIds, [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
   ]);
+  assert.deepEqual(byId["references-plus-nodding-flower"]?.materialIds, ["flowering-branch", "leafy-shoot", "nodding-flower"]);
   assert.equal(byId["all-registered-materials"]?.materialIds, "catalog");
   assert.equal(byId["all-registered-materials"]?.kind, "dynamic");
   assert.equal(resolveWorkbenchFixture(MIXED_FIXTURE_ALIAS).profileId, "reference-pair");
@@ -126,7 +127,7 @@ test("candidate profiles stay listed and disabled until their materials are in t
   for (const id of [
     "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
-    "round3-three", "round3-palette",
+    "round3-three", "round3-palette", "references-plus-nodding-flower",
   ] as const) {
     const resolved = resolveWorkbenchFixture(id, catalog);
     assert.ok(resolved.missingMaterialIds.length > 0, `${id} should be gated without candidates`);
@@ -153,10 +154,10 @@ test("candidate profiles stay listed and disabled until their materials are in t
 test("this integration catalog makes named candidate profiles available to the picker", () => {
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
-    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "nodding-flower",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
-    "round3-three", "round3-palette", "all-registered-materials",
+    "round3-three", "round3-palette", "references-plus-nodding-flower", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);
   assert.ok(options.every((option) => option.available));

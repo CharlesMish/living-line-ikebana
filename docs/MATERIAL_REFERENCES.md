@@ -5,7 +5,7 @@ Keep the flowering and leafy references together when proposing another material
 The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1`,
 `single-flower-v1`, `reed-v1`, `flower-volume-v1`, and `arching-trailer-v1` are
 additive. Catalog order is flowering → leafy → bare-branch → single-flower →
-reed → flower-volume → arching-trailer.
+reed → flower-volume → arching-trailer, with provisional `nodding-flower` appended.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -129,3 +129,12 @@ after radii. An edge seat is a different event. The cane passes over the lip
 and the free end overhangs past the rim. A downward bend can penetrate the
 water, and a saturated bend can go through the basin floor. Overhang and
 penetration stay separate. No collision response was added.
+
+## Provisional Round 4 candidate
+
+`nodding-flower` / `nodding-flower-v1` is appended after the arching trailer.
+Frozen profiles `reference-pair`, `all-four`, `round3-three`, and `round3-palette`
+do not list it. It is one supporting stem, one leaf, and one pedicel neck whose
+rest curve ends downward. The bell surface opens along that neck. Aim, bend,
+and prune stay on the shared laws. This note does not change the Round 3
+cuttings above.

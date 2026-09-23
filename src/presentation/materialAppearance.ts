@@ -13,6 +13,8 @@ export interface MaterialAppearance {
   }>;
   readonly bloom: Readonly<{
     form: BloomForm; color: number; roughness: number; hitRadius: number;
+    /** Offset along the organ's local supporting tangent. Existing forms stay at 0. */
+    hitCenterY?: number;
   }>;
 }
 
@@ -69,6 +71,16 @@ const flowerVolume: MaterialAppearance = Object.freeze({
     roughness: 0.7, ...ellipticLeafHit }),
   bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
 });
+const noddingFlower: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x516846, lateral: 0x516846,
+    twig: 0x5d7450, pedicel: 0x6a8458, petiole: 0x5d7450 }),
+  stemRoughness: 0.7,
+  leaf: Object.freeze({ form: "elliptic", color: 0x3e5c44, veinColor: 0x7d945c,
+    roughness: 0.7, ...ellipticLeafHit }),
+  bloom: Object.freeze({
+    form: "bell", color: 0x7d94b8, roughness: 0.56, hitRadius: 0.66, hitCenterY: 0.32,
+  }),
+});
 const archingTrailer: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x3d6d62, lateral: 0x3d6d62,
     twig: 0x4d7c6a, pedicel: 0x5a8460, petiole: 0x4f7a58 }),
@@ -85,6 +97,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "reed-v1": reed,
   "flower-volume-v1": flowerVolume,
   "arching-trailer-v1": archingTrailer,
+  "nodding-flower-v1": noddingFlower,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

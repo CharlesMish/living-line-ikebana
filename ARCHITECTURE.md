@@ -26,7 +26,8 @@ construction helpers. `generator.ts` preserves the flowering fixture;
 `leafyShoot.ts` adds a separately versioned structure. `bareBranch.ts` and
 `singleFlower.ts` are additive Round 2 candidates. Round 3 adds `reed.ts`
 (one culm), `flowerVolume.ts` (a prunable head), and `archingTrailer.ts`
-(an authored arch on the shared single-station solver). Generators consume authored
+(an authored arch on the shared single-station solver). Round 4 appends provisional
+`noddingFlower.ts` (one authored neck and bell). Generators consume authored
 response values from `materialResponse.ts` once, persisting `stiffness` in each
 branch. The shared solver still owns all bending.
 

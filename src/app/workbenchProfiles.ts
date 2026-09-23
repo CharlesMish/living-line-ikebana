@@ -26,6 +26,7 @@ export const REED_MATERIAL_ID = "reed";
 export const FLOWER_VOLUME_MATERIAL_ID = "flower-volume";
 export const ARCHING_TRAILER_MATERIAL_ID = "arching-trailer";
 export const FOLIAGE_FAN_MATERIAL_ID = "foliage-fan";
+export const BLOSSOM_SPRAY_MATERIAL_ID = "blossom-spray";
 
 export const REFERENCE_MATERIAL_IDS = [
   FLOWERING_BRANCH_MATERIAL_ID,
@@ -46,6 +47,7 @@ export type WorkbenchFixtureProfileId =
   | "round3-three"
   | "round3-palette"
   | "references-plus-foliage-fan"
+  | "blossom-compare"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -143,6 +145,13 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
     kind: "stable",
     materialIds: [...REFERENCE_MATERIAL_IDS, FOLIAGE_FAN_MATERIAL_ID],
     notes: "Provisional Round 4 comparison. Flowering → leafy → foliage-fan. Does not change reference-pair, mixed, all-four, round3-three, or round3-palette.",
+  }),
+  Object.freeze({
+    id: "blossom-compare",
+    label: "Blossom compare (flowering branch → flower volume → blossom spray)",
+    kind: "stable",
+    materialIds: [FLOWERING_BRANCH_MATERIAL_ID, FLOWER_VOLUME_MATERIAL_ID, BLOSSOM_SPRAY_MATERIAL_ID],
+    notes: "Flowering branch, packed flower volume, and blossom spray. Does not change reference-pair, all-four, round3-three, or round3-palette.",
   }),
   Object.freeze({
     id: "all-registered-materials",

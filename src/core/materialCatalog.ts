@@ -1,4 +1,5 @@
 import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
+import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
@@ -83,6 +84,11 @@ const foliageFanV1: GeneratorDefinition = Object.freeze({
   generate: createFoliageFan,
 });
 
+const blossomSprayV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: BLOSSOM_SPRAY_VERSION,
+  generate: createBlossomSpray,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -95,12 +101,14 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   flowerVolumeV1,
   archingTrailerV1,
   foliageFanV1,
+  blossomSprayV1,
 ]);
 
 /**
- * Established catalog, then the provisional foliage fan. The first seven IDs
- * stay in their previous order. Named profiles `reference-pair`, `all-four`,
- * `round3-three`, and `round3-palette` do not read this list.
+ * Established catalog, then the Round 4 foliage fan and blossom spray in lane
+ * order. The first seven IDs stay in their previous order. Named profiles
+ * `reference-pair`, `all-four`, `round3-three`, and `round3-palette` do not
+ * read this list.
  */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
@@ -111,6 +119,7 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flower-volume", generator: flowerVolumeV1 }),
   Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV1 }),
   Object.freeze({ materialId: "foliage-fan", generator: foliageFanV1 }),
+  Object.freeze({ materialId: "blossom-spray", generator: blossomSprayV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

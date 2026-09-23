@@ -93,7 +93,7 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   const { prepareMaterialInsertion } = await import("../../src/core/index.ts");
   const studio = Object.assign(Object.create(ThreeStudio.prototype), { options: { debugHitTargets: false } });
   const stemColors = [];
-  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan"]) {
+  for (const material of ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray"]) {
     const prepared = prepareMaterialInsertion(material, 2, { x: 0, y: 0.55, z: 0 });
     assert.ok(prepared.ok);
     const graph = prepared.graph;
@@ -154,6 +154,13 @@ test("registered material appearances rebuild consistently and leafy hit proxies
   assert.notEqual(stemColors[7], stemColors[6], "foliage fan must not inherit the arching trailer");
   assert.notEqual(stemColors[7], stemColors[4], "foliage fan must not inherit the reed");
   assert.notEqual(stemColors[7], stemColors[0], "foliage fan must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[8], stemColors[0], "blossom spray must not inherit woody trunk appearance");
+  assert.notEqual(stemColors[8], stemColors[1], "blossom spray must not inherit the leafy stem");
+  assert.notEqual(stemColors[8], stemColors[3], "blossom spray must not inherit the single-flower stem");
+  assert.notEqual(stemColors[8], stemColors[4], "blossom spray must not inherit the reed");
+  assert.notEqual(stemColors[8], stemColors[5], "blossom spray must not inherit the flower-volume stem");
+  assert.notEqual(stemColors[8], stemColors[6], "blossom spray must not inherit the arching trailer");
+  assert.notEqual(stemColors[8], stemColors[7], "blossom spray must not inherit the foliage fan");
 });
 
 test("every material's leaf and bloom acquisition proxies contain their visible surfaces", async () => {

@@ -20,6 +20,7 @@ the live catalog was a comparison-tooling flaw, not a persistence failure.
 | `references-plus-arching-trailer` | stable | flowering → leafy → `arching-trailer` | Round 3 integration |
 | `round3-three` | stable | `reed` → `flower-volume` → `arching-trailer` | Round 3 integration |
 | `round3-palette` | stable | the four above, then reed → flower-volume → arching-trailer | Round 3 integration; **not** `all-four` |
+| `blossom-compare` | stable | flowering branch → flower volume → `blossom-spray` | Round 4 lane B comparison; does not change the rows above |
 | `all-registered-materials` | **dynamic** | live `getMaterialDefinitions()` order | yes; **not** a comparison baseline |
 | `mixed` | alias | same as `reference-pair` | yes; keep only for the old picker |
 
@@ -58,6 +59,9 @@ equal fill.
 - `round3-three` × 12 = 4 of each
 - `round3-palette` × 6 omits `arching-trailer` (one each of the first six)
 - `round3-palette` × 12 = 2 of the first five and 1 each of flower-volume and arching-trailer
+- `blossom-compare` × 6 = 2 flowering branch, 2 flower volume, 2 blossom spray
+- `blossom-compare` × 12 = 4 of each
+- `all-registered-materials` × 6 still cycles the first six catalog entries and omits `arching-trailer` and `blossom-spray`
 
 Single material IDs `reed`, `flower-volume`, and `arching-trailer` still load `count`
 copies of that one cutting. They are not substitutes for the named profiles above.

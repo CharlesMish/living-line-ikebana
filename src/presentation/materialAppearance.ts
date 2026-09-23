@@ -69,6 +69,16 @@ const flowerVolume: MaterialAppearance = Object.freeze({
     roughness: 0.7, ...ellipticLeafHit }),
   bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
 });
+const blossomSpray: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x7d9a55, lateral: 0x8aab62,
+    twig: 0x8aab62, pedicel: 0x96b56e, petiole: 0x8aab62 }),
+  stemRoughness: 0.66,
+  // No leaves are generated. The record still requires a leaf slot.
+  leaf: flowering.leaf,
+  // Existing tufted surface and the flower-volume acquisition envelope.
+  // Separation is topological. This does not add a smaller proxy or a new mesh.
+  bloom: Object.freeze({ form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56 }),
+});
 const archingTrailer: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x3d6d62, lateral: 0x3d6d62,
     twig: 0x4d7c6a, pedicel: 0x5a8460, petiole: 0x4f7a58 }),
@@ -94,6 +104,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "flower-volume-v1": flowerVolume,
   "arching-trailer-v1": archingTrailer,
   "foliage-fan-v1": foliageFan,
+  "blossom-spray-v1": blossomSpray,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

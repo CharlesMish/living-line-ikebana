@@ -10,9 +10,9 @@ pauses are historical, not the current dispatch. The next proposed work is in
 This is a working extension contract, pending phone and composition review.
 Keep the flowering and leafy references together when proposing another material.
 The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1`,
-`single-flower-v1`, `reed-v1`, `flower-volume-v1`, and `arching-trailer-v1` are
-additive. Catalog order is flowering → leafy → bare-branch → single-flower →
-reed → flower-volume → arching-trailer.
+`single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`,
+`foliage-fan-v1`, and `blossom-spray-v1` are additive. Catalog order is flowering → leafy → bare-branch → single-flower →
+reed → flower-volume → arching-trailer → foliage-fan → blossom-spray.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -129,24 +129,27 @@ deactivates that bloom and leaves the other groups unchanged. That cut is a
 graph fact. The current renderer draws one instanced mesh per bloom; a group
 cut does not require a separate draw call.
 
-## Provisional Round 4 candidate
+## Provisional Round 4 candidates
 
-`foliage-fan-v1` / `foliage-fan` is appended after the seven established
-materials. It does not change their generators, fixtures, or the order above.
-`reference-pair`, `mixed`, `all-four`, `round3-three`, and `round3-palette`
-do not list it. `references-plus-foliage-fan` is a provisional comparison
-profile (flowering → leafy → foliage-fan) so the spray can be played beside
-the leafy shoot. The integrator decides the final Round 4 profile set.
+`foliage-fan-v1` / `foliage-fan` and `blossom-spray-v1` / `blossom-spray` are
+appended after the seven established materials, in that order. They do not
+change those generators, fixtures, or the order above. `reference-pair`,
+`mixed`, `all-four`, `round3-three`, and `round3-palette` do not list them.
+`references-plus-foliage-fan` is flowering → leafy → foliage-fan.
+`blossom-compare` is flowering branch → flower volume → blossom spray.
 
 | Cutting | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
 | Foliage fan / `foliage-fan-v1` | One stem, three lateral arms, eight small leaves on those arms. A basal span stays below the first arm | Yellow-green stock `0x7c9a34`; existing elliptic leaves, smaller than the leafy shoot's blades | Stem `0.47`, arms `0.36`, stalks `0.18`, copied once. Shared solver |
+| Blossom spray / `blossom-spray-v1` | Thin green stem and two or three laterals. Four to six small flowers, each a pedicel and one bloom on a lateral, with open space between them | Existing tufted bloom, pale `0xf6d0d8`. Stem `0x7d9a55`, roughness `0.66`. Same tuft hit radius `0.56` as flower volume | Stem `0.48`, laterals `0.41`, stalks `0.18`. Copied once. Shared solver |
 
-Cutting the opening arm deactivates that arm's leaf stalks and leaves and
-leaves the answering and crown arms unchanged. That cut is a graph fact. It
-does not add a draw call. The leaves stay separate organs on the existing
-elliptic surface. This is a group of leaves, not a deformable broad blade,
-and it is not a named species.
+Cutting the foliage fan's opening arm deactivates that arm's leaf stalks and
+leaves and leaves the answering and crown arms unchanged. A blossom-spray
+flower-stalk cut removes that one bloom. A lateral cut removes that group's
+descendant stalks and blooms and leaves the stem and the other groups. Those
+cuts are graph facts. They do not add a draw call. The fan's leaves stay
+separate organs on the existing elliptic surface. This is a group of leaves,
+not a deformable broad blade, and it is not a named species.
 
 The trailer’s centered rest pose crosses the open water and stays clear of the
 ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance

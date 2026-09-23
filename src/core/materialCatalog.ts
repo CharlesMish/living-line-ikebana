@@ -1,4 +1,5 @@
 import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
+import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
@@ -77,6 +78,11 @@ const archingTrailerV1: GeneratorDefinition = Object.freeze({
   generate: createArchingTrailer,
 });
 
+const foliageFanV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: FOLIAGE_FAN_VERSION,
+  generate: createFoliageFan,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -88,12 +94,13 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   reedV1,
   flowerVolumeV1,
   archingTrailerV1,
+  foliageFanV1,
 ]);
 
 /**
- * Final Round 3 catalog. The first four IDs stay in Round 2 order. Reed,
- * flower volume, and the arching trailer are appended in lane order. Named
- * profiles `reference-pair` and `all-four` do not read this list.
+ * Established catalog, then the provisional foliage fan. The first seven IDs
+ * stay in their previous order. Named profiles `reference-pair`, `all-four`,
+ * `round3-three`, and `round3-palette` do not read this list.
  */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
@@ -103,6 +110,7 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "reed", generator: reedV1 }),
   Object.freeze({ materialId: "flower-volume", generator: flowerVolumeV1 }),
   Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV1 }),
+  Object.freeze({ materialId: "foliage-fan", generator: foliageFanV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

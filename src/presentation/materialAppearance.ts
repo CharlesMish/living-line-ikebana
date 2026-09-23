@@ -77,6 +77,14 @@ const archingTrailer: MaterialAppearance = Object.freeze({
     roughness: 0.66, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
+const foliageFan: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x7c9a34, lateral: 0x739332,
+    twig: 0x86a44a, pedicel: 0x86a44a, petiole: 0x6f8c3c }),
+  stemRoughness: 0.64,
+  leaf: Object.freeze({ form: "elliptic", color: 0x5a8a3c, veinColor: 0x9aaf62,
+    roughness: 0.6, ...ellipticLeafHit }),
+  bloom: flowering.bloom,
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
@@ -85,6 +93,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "reed-v1": reed,
   "flower-volume-v1": flowerVolume,
   "arching-trailer-v1": archingTrailer,
+  "foliage-fan-v1": foliageFan,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

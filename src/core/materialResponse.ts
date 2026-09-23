@@ -17,3 +17,5 @@ export const REED_RESPONSE = Object.freeze({ culm: 0.56 });
 export const FLOWER_VOLUME_RESPONSE = Object.freeze({ stem: 0.55, group: 0.2, stalk: 0.18 });
 /** Supple cane: more yielding than flowering wood (0.72), less ribbon-like than the leafy stem (0.39). */
 export const ARCHING_TRAILER_RESPONSE = Object.freeze({ cane: 0.5, stalk: 0.18 });
+/** Spray stem holds a fan better than the leafy ribbon (0.39) and yields more than a reed (0.56). Arms open more readily than the stem. */
+export const FOLIAGE_FAN_RESPONSE = Object.freeze({ stem: 0.47, arm: 0.36, stalk: 0.18 });

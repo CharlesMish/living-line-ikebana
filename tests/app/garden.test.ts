@@ -77,8 +77,9 @@ test("invalid graphs, ordinals, cameras and thumbnails cannot enter the Garden",
 test("workbench fixtures are reproducible, valid and registered for every reference/seed/count", () => {
   for (const material of [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "foliage-fan",
     "mixed", "reference-pair", "all-four", "references-plus-reed", "references-plus-flower-volume",
-    "references-plus-arching-trailer", "round3-three", "round3-palette",
+    "references-plus-arching-trailer", "round3-three", "round3-palette", "references-plus-foliage-fan",
   ]) for (const seed of WORKBENCH_SEEDS) for (const count of [1, 2, 6, 12]) {
     const first = createWorkbenchFixture(material, seed, count);
     assert.deepEqual(first, createWorkbenchFixture(material, seed, count));

@@ -129,6 +129,25 @@ deactivates that bloom and leaves the other groups unchanged. That cut is a
 graph fact. The current renderer draws one instanced mesh per bloom; a group
 cut does not require a separate draw call.
 
+## Provisional Round 4 candidate
+
+`foliage-fan-v1` / `foliage-fan` is appended after the seven established
+materials. It does not change their generators, fixtures, or the order above.
+`reference-pair`, `mixed`, `all-four`, `round3-three`, and `round3-palette`
+do not list it. `references-plus-foliage-fan` is a provisional comparison
+profile (flowering → leafy → foliage-fan) so the spray can be played beside
+the leafy shoot. The integrator decides the final Round 4 profile set.
+
+| Cutting | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Foliage fan / `foliage-fan-v1` | One stem, three lateral arms, eight small leaves on those arms. A basal span stays below the first arm | Yellow-green stock `0x7c9a34`; existing elliptic leaves, smaller than the leafy shoot's blades | Stem `0.47`, arms `0.36`, stalks `0.18`, copied once. Shared solver |
+
+Cutting the opening arm deactivates that arm's leaf stalks and leaves and
+leaves the answering and crown arms unchanged. That cut is a graph fact. It
+does not add a draw call. The leaves stay separate organs on the existing
+elliptic surface. This is a group of leaves, not a deformable broad blade,
+and it is not a named species.
+
 The trailer’s centered rest pose crosses the open water and stays clear of the
 ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance
 after radii. An edge seat is a different event. The cane passes over the lip

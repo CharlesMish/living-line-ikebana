@@ -1,0 +1,41 @@
+{
+  "browser": "Headless Chrome 148.0.0.0",
+  "os": "Linux",
+  "gl": "SwiftShader via --use-angle=swiftshader",
+  "phone": "not run",
+  "deviceScaleFactor": 1,
+  "arrangementViewport": {
+    "cssViewport": { "width": 1280, "height": 800, "source": "canvas-client-rect" },
+    "browserWindow": { "width": 1280, "height": 800, "source": "window-inner" },
+    "drawingBuffer": { "width": 1280, "height": 800 },
+    "pixelRatio": { "device": 1, "renderer": 1, "rendererCap": 1.8 }
+  },
+  "sameConditionsNote": "Resource counts below are one render each, not FPS. Same head, seed 8278, Front, and the viewport above.",
+  "renderer": {
+    "foliage-fan-count1": { "calls": 75, "triangles": 14578, "geometries": 55, "textures": 2, "programs": 9, "branchVisuals": 12, "organVisuals": 8 },
+    "leafy-shoot-count1": { "calls": 59, "triangles": 13150, "geometries": 44, "textures": 2, "programs": 9, "branchVisuals": 8, "organVisuals": 7 },
+    "references-plus-foliage-fan-count6": { "calls": 447, "triangles": 60058, "geometries": 327, "textures": 2, "programs": 13, "branchVisuals": 70, "organVisuals": 50 },
+    "reference-pair-count6": { "calls": 463, "triangles": 65078, "geometries": 343, "textures": 2, "programs": 13, "branchVisuals": 69, "organVisuals": 51 },
+    "foliage-fan-count12": { "calls": 823, "triangles": 92546, "geometries": 583, "textures": 2, "programs": 11, "branchVisuals": 144, "organVisuals": 96 }
+  },
+  "craft": {
+    "aimStem": "pass — acquired plant-1:stem, canonical graph changed, later bend kept that stem's rest lengths",
+    "bendBead": "pass — default bead on the stem, shape changed, rest lengths unchanged",
+    "prunePreviewCancel": "pass — Escape during an opening-arm preview left the canonical hash unchanged",
+    "committedPruneReload": "pass for one leaf stalk. A drag that started on the opening arm and moved toward the stem acquired petiole-opening-1, removed that one leaf, and the reload without fresh=1 restored the same hash. The full-arm gap is the garden study and the unit test, not this pointer drag.",
+    "leafStem": "pass — projected petiole points and nearby offsets reported Aim leaf stem. Acquired plant-1:petiole-answering-1 at material distance about 0.117. This is the supporting stalk, which is where an organ hit routes.",
+    "garden": "pass — Keep, View hash matched the kept bowl, Make a working copy changed the copy, viewing the kept card again restored the original hash."
+  },
+  "picker": {
+    "portrait390x844": { "scrollHeight": 363, "clientHeight": 286, "namesIncludeFoliageFan": true },
+    "landscape844x360": { "scrollHeight": 363, "clientHeight": 190, "namesIncludeFoliageFan": true, "note": "The open list is shorter than its content. The last row needs a scroll. Tray CSS was not changed." }
+  },
+  "studyView": {
+    "import": "Imported 1 arrangement.",
+    "plants": [
+      { "id": "plant-1", "generatorVersion": "leafy-shoot-v1", "seed": 8278 },
+      { "id": "plant-2", "generatorVersion": "foliage-fan-v1", "seed": 9255, "openingActiveLength": 1.6802027266472574, "activeOpeningLeaves": 3 },
+      { "id": "plant-3", "generatorVersion": "foliage-fan-v1", "seed": 10232, "openingActiveLength": 0.18, "activeOpeningLeaves": 0 }
+    ]
+  }
+}

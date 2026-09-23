@@ -14,6 +14,7 @@ import * as THREE from "three";
  *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
  *   `bell` is one shell whose mouth continues local +Y, the supporting tangent.
  *   One bloom remains one organ; tufted petals may share a mesh inside that organ.
+ *   A berry is a separate organ kind: one low-poly sphere, not a petal form.
  * - Cupped, open-face, and tufted surfaces face local +Z. The bell opens along
  *   local +Y so a downward neck presents the mouth. All require a DoubleSide
  *   material. Color values
@@ -360,6 +361,30 @@ export function createBellGeometry(seed = 0): THREE.BufferGeometry {
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+/**
+ * One fruit. Local +Y continues the supporting tangent. An 8×6 sphere is 96
+ * triangles. Cupped, open-face, tufted, and bell surfaces are untouched.
+ */
+export function createBerryGeometry(seed = 0, radius = 0.07): THREE.BufferGeometry {
+  const geometry = new THREE.SphereGeometry(radius, 8, 6);
+  geometry.name = "living-line/berry";
+  const positions = geometry.getAttribute("position");
+  const squash = 0.9 + variation(seed, 8) * 0.08;
+  const colors = new Float32Array(positions.count * 3);
+  for (let index = 0; index < positions.count; index += 1) {
+    const y = positions.getY(index) * squash;
+    positions.setY(index, y);
+    const cheek = 0.42 + 0.5 * ((y / radius) * 0.5 + 0.5);
+    colors[index * 3] = Math.min(1, cheek * 1.05);
+    colors[index * 3 + 1] = cheek * 0.62;
+    colors[index * 3 + 2] = cheek * 0.7;
+  }
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.computeVertexNormals();
   geometry.computeBoundingSphere();
   return geometry;
 }

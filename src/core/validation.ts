@@ -10,7 +10,7 @@ const issue = (issues: ValidationIssue[], path: string, message: string): void =
 export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): ValidationIssue[] => {
   const issues: ValidationIssue[] = [];
   const branchKinds = new Set(["trunk", "lateral", "twig", "petiole", "pedicel"]);
-  const organKinds = new Set(["leaf", "bloom", "bud"]);
+  const organKinds = new Set(["leaf", "bloom", "bud", "berry"]);
   if (graph.schemaVersion !== 1) issue(issues, "schemaVersion", "must be 1");
   if (!isSupportedGeneratorVersion(graph.generatorVersion)) {
     issue(issues, "generatorVersion", "must be a supported generator version");

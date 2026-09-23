@@ -1,0 +1,103 @@
+{
+  "materialId": "berry-twig",
+  "generatorVersion": "berry-twig-v1",
+  "base": {
+    "x": 0,
+    "y": 0.55,
+    "z": 0
+  },
+  "seeds": {
+    "8278": {
+      "id": "plant-1",
+      "seed": 8278,
+      "branches": 13,
+      "organs": 9,
+      "clusters": [
+        "plant-1:cluster-1",
+        "plant-1:cluster-2",
+        "plant-1:cluster-3"
+      ],
+      "berries": [
+        "plant-1:berry-1-1",
+        "plant-1:berry-1-2",
+        "plant-1:berry-1-3",
+        "plant-1:berry-2-1",
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3",
+        "plant-1:berry-3-1",
+        "plant-1:berry-3-2",
+        "plant-1:berry-3-3"
+      ],
+      "woodStiffness": 0.78,
+      "woodRadius": 0.052,
+      "woodLength": 4.695782709047197
+    },
+    "9255": {
+      "id": "plant-1",
+      "seed": 9255,
+      "branches": 14,
+      "organs": 10,
+      "clusters": [
+        "plant-1:cluster-1",
+        "plant-1:cluster-2",
+        "plant-1:cluster-3"
+      ],
+      "berries": [
+        "plant-1:berry-1-1",
+        "plant-1:berry-1-2",
+        "plant-1:berry-1-3",
+        "plant-1:berry-2-1",
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3",
+        "plant-1:berry-2-4",
+        "plant-1:berry-3-1",
+        "plant-1:berry-3-2",
+        "plant-1:berry-3-3"
+      ],
+      "woodStiffness": 0.78,
+      "woodRadius": 0.052,
+      "woodLength": 4.746104412376881
+    },
+    "10232": {
+      "id": "plant-1",
+      "seed": 10232,
+      "branches": 13,
+      "organs": 9,
+      "clusters": [
+        "plant-1:cluster-1",
+        "plant-1:cluster-2",
+        "plant-1:cluster-3"
+      ],
+      "berries": [
+        "plant-1:berry-1-1",
+        "plant-1:berry-1-2",
+        "plant-1:berry-1-3",
+        "plant-1:berry-2-1",
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3",
+        "plant-1:berry-3-1",
+        "plant-1:berry-3-2",
+        "plant-1:berry-3-3"
+      ],
+      "woodStiffness": 0.78,
+      "woodRadius": 0.052,
+      "woodLength": 4.609990732967853
+    }
+  },
+  "prunedSeed8278": {
+    "opened": "plant-1:cluster-2",
+    "activeBerries": [
+      "plant-1:berry-1-1",
+      "plant-1:berry-1-2",
+      "plant-1:berry-1-3",
+      "plant-1:berry-3-1",
+      "plant-1:berry-3-2",
+      "plant-1:berry-3-3"
+    ],
+    "inactiveBerries": [
+      "plant-1:berry-2-1",
+      "plant-1:berry-2-2",
+      "plant-1:berry-2-3"
+    ]
+  }
+}

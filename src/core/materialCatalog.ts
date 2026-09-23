@@ -2,6 +2,7 @@ import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.
 import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
 import { createNoddingFlower, NODDING_FLOWER_VERSION } from "./noddingFlower.ts";
+import { createBerryTwig, BERRY_TWIG_VERSION } from "./berryTwig.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
@@ -95,6 +96,11 @@ const noddingFlowerV1: GeneratorDefinition = Object.freeze({
   generate: createNoddingFlower,
 });
 
+const berryTwigV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: BERRY_TWIG_VERSION,
+  generate: createBerryTwig,
+});
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -109,13 +115,15 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   foliageFanV1,
   blossomSprayV1,
   noddingFlowerV1,
+  berryTwigV1,
 ]);
 
 /**
- * Established catalog, then the accepted Round 4 cuttings in lane order.
- * The first seven IDs stay in their previous order. Named profiles
- * `reference-pair`, `all-four`, `round3-three`, and `round3-palette` do not
- * read this list. `round4-palette` is an explicit copy of this order.
+ * Established catalog, then the accepted Round 4 cuttings in lane order,
+ * then the Phase 2 berry-twig candidate. The first seven IDs stay in their
+ * previous order. Named profiles `reference-pair`, `all-four`, `round3-three`,
+ * `round3-palette`, `round4-candidates`, and `round4-palette` do not read
+ * this list.
  */
 const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flowering-branch", generator: oneBranchV1 }),
@@ -128,6 +136,7 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "foliage-fan", generator: foliageFanV1 }),
   Object.freeze({ materialId: "blossom-spray", generator: blossomSprayV1 }),
   Object.freeze({ materialId: "nodding-flower", generator: noddingFlowerV1 }),
+  Object.freeze({ materialId: "berry-twig", generator: berryTwigV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

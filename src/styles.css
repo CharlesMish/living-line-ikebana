@@ -635,6 +635,10 @@ button:focus-visible {
   fill: #9c655f;
 }
 
+.cutting-berry {
+  fill: #8a2e45;
+}
+
 .material-copy {
   position: relative;
   z-index: 1;

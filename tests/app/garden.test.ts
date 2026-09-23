@@ -83,6 +83,7 @@ test("workbench fixtures are reproducible, valid and registered for every refere
     "references-plus-foliage-fan", "references-plus-blossom-spray", "blossom-compare",
     "references-plus-nodding-flower", "round4-candidates", "round4-palette",
     "references-plus-berry-twig", "references-plus-fern-frond",
+    "round5-candidates", "round5-palette",
   ]) for (const seed of WORKBENCH_SEEDS) for (const count of [1, 2, 6, 12]) {
     const first = createWorkbenchFixture(material, seed, count);
     assert.deepEqual(first, createWorkbenchFixture(material, seed, count));

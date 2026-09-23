@@ -168,6 +168,8 @@ above. `reference-pair`, `mixed`, `all-four`, `round3-three`, `round3-palette`,
 `round4-candidates`, and `round4-palette` do not list them.
 `references-plus-berry-twig` is flowering → leafy → berry twig.
 `references-plus-fern-frond` is flowering → leafy → fern-frond.
+`round5-candidates` is berry twig → fern frond.
+`round5-palette` is the Round 4 ten, then those two. It is not `round4-palette`.
 `all-registered-materials` is still the only dynamic cycle; a count of 6 still
 stops at flower volume and omits both Phase 2 cuttings.
 

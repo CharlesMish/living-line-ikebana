@@ -28,6 +28,8 @@ the live catalog was a comparison-tooling flaw, not a persistence failure.
 | `round4-palette` | stable | the seven established materials, then foliage-fan → blossom-spray → nodding-flower | Round 4; **not** `round3-palette` and **not** the live catalog |
 | `references-plus-berry-twig` | stable | flowering → leafy → `berry-twig` | Phase 2; does not change the rows above |
 | `references-plus-fern-frond` | stable | flowering → leafy → `fern-frond` | Phase 2; does not change the rows above |
+| `round5-candidates` | stable | `berry-twig` → `fern-frond` | Phase 2 integration; lane order; does not change the rows above |
+| `round5-palette` | stable | the Round 4 ten, then berry-twig → fern-frond | Phase 2 integration; **not** `round4-palette` and **not** the live catalog |
 | `all-registered-materials` | **dynamic** | live `getMaterialDefinitions()` order | yes; **not** a comparison baseline |
 | `mixed` | alias | same as `reference-pair` | yes; keep only for the old picker |
 
@@ -75,6 +77,9 @@ equal fill.
 - `references-plus-berry-twig` × 6 = 2 flowering, 2 leafy, 2 berry twig
 - `references-plus-berry-twig` × 12 = 4 of each
 - `references-plus-fern-frond` × 6 = 2 flowering, 2 leafy, 2 fern-frond. × 12 = 4 of each
+- `round5-candidates` × 6 = 3 berry twig, 3 fern frond. × 12 = 6 of each
+- `round5-palette` × 6 is the first six materials and omits `arching-trailer`, the three Round 4 cuttings, `berry-twig`, and `fern-frond`
+- `round5-palette` × 12 = one of each of the twelve
 - `all-registered-materials` × 6 still cycles the first six catalog entries and omits `arching-trailer`, the three Round 4 cuttings, `berry-twig`, and `fern-frond`
 
 Single material IDs `reed`, `flower-volume`, and `arching-trailer` still load `count`

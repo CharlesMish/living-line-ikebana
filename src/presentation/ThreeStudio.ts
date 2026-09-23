@@ -34,6 +34,12 @@ export interface ShapeAffordanceState {
   transactionActive: boolean;
   /** Exact frozen arc station for the touch-located variant while acquired. */
   touchCueDistance?: number | null;
+  /**
+   * Omitted: production bead at 54% of the active rest arc.
+   * A number places the single bead at that already chosen distance.
+   * Null hides the bead.
+   */
+  beadStationDistance?: number | null;
   showSelection?: boolean;
 }
 
@@ -993,7 +999,12 @@ export class ThreeStudio {
         this.baseHandle.group.visible = true;
       }
       if (this.shapeAffordances.bendVariant === "bead") {
-        this.fixedBendDistance = bendStationAtFraction(selected.branch, 0.54);
+        const requested = this.shapeAffordances.beadStationDistance;
+        this.fixedBendDistance = requested === undefined
+          ? bendStationAtFraction(selected.branch, 0.54)
+          : requested === null
+            ? null
+            : legalBendStation(selected.branch, requested);
         if (this.fixedBendDistance != null) {
           const sample = sampleBranch(selected.branch, this.fixedBendDistance);
           this.bendHandle.group.position.copy(toThree(sample.position));

@@ -69,6 +69,17 @@
             <button type="button" data-testid="tool-prune" data-tool="prune" aria-pressed="false">Prune</button>
           </div>
 
+          <div id="bend-stations" class="bend-stations" data-testid="bend-stations" hidden>
+            <div class="segmented bend-station-control" role="group" aria-label="Bend position on the selected branch">
+              <button type="button" data-bend-station="lower" data-testid="bend-station-lower" aria-pressed="false">Lower</button>
+              <button type="button" data-bend-station="middle" data-testid="bend-station-middle" aria-pressed="false">Middle</button>
+              <button type="button" data-bend-station="upper" data-testid="bend-station-upper" aria-pressed="false">Upper</button>
+            </div>
+          </div>
+          <p id="bend-stations-exclusion" class="bend-stations-note" data-testid="bend-stations-exclusion" hidden>
+            Bend stations stay off while touch bend is active.
+          </p>
+
           <div class="material-dock">
             <button
               id="selected-cutting"

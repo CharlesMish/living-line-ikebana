@@ -101,6 +101,8 @@ the two acquisition hypotheses under **Testing tools**. They share the same mate
 
 Use `?bend=touch` to open directly in the touch-located variant. Omitting the parameter uses the fixed-point default; `?bend=fixed` currently falls back to that same default.
 
+`?experiment=bend-stations` is a separate opt-in. It shows one bead and a Lower / Middle / Upper choice on the selected branch. It does not change the solver. If `bend=touch` is also set, bend stations stay off and the touch variant runs alone. Sessions with bend stations active are not recorded as fixed-bead study observations.
+
 ## Architecture
 
 - `src/core/` — deterministic renderer-free botanical graph and edit laws.

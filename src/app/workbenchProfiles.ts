@@ -29,6 +29,7 @@ export const FOLIAGE_FAN_MATERIAL_ID = "foliage-fan";
 export const BLOSSOM_SPRAY_MATERIAL_ID = "blossom-spray";
 export const NODDING_FLOWER_MATERIAL_ID = "nodding-flower";
 export const BERRY_TWIG_MATERIAL_ID = "berry-twig";
+export const FERN_FROND_MATERIAL_ID = "fern-frond";
 
 export const REFERENCE_MATERIAL_IDS = [
   FLOWERING_BRANCH_MATERIAL_ID,
@@ -55,6 +56,7 @@ export type WorkbenchFixtureProfileId =
   | "round4-candidates"
   | "round4-palette"
   | "references-plus-berry-twig"
+  | "references-plus-fern-frond"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -205,6 +207,13 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
     kind: "stable",
     materialIds: [...REFERENCE_MATERIAL_IDS, BERRY_TWIG_MATERIAL_ID],
     notes: "Flowering → leafy → berry-twig. Does not change reference-pair, mixed, all-four, round3-three, round3-palette, round4-candidates, or round4-palette.",
+  }),
+  Object.freeze({
+    id: "references-plus-fern-frond",
+    label: "References plus fern frond",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, FERN_FROND_MATERIAL_ID],
+    notes: "Flowering → leafy → fern-frond. Does not change reference-pair, mixed, all-four, round3-three, round3-palette, round4-candidates, or round4-palette.",
   }),
   Object.freeze({
     id: "all-registered-materials",

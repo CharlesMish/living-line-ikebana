@@ -7,6 +7,7 @@ Presentation only. Behavioral contract: preserved. No generator, golden, stock l
 | | |
 | --- | --- |
 | Product base | `2aef05424d751cda2137f3749b2d71e7fdf0c6d1` (main, confirmed at start) |
+| Evidence commit | `f869a1919b5599897073340e79e5ce2e3d3e7ea6` |
 | Branch | `cursor/polish-lane-a-foliage-af43` |
 | Run | https://cursor.com/agents/bc-6a00d98f-2dbe-5263-b458-ed092459af43 |
 

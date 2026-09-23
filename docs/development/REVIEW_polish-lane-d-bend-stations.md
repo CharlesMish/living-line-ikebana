@@ -8,7 +8,8 @@ Separate shaping study. This lane re-applies PR #36 onto current main. It stays 
 - Original behavior commit: `e7dea13c4037c022b45ffdcf67d6cdea778a4877` on baseline `59e42e6554b05ff2fc415514370430716e9e8515` (PR #33)
 - Reapplied commits on this branch: `0603600` (behavior) and `48c58da` (original review SHA line)
 - This lane's branch: `cursor/polish-lane-d-bend-stations-b600`
-- Exact tip SHA: the pull-request head on `cursor/polish-lane-d-bend-stations-b600`. The verify-green content commit is recorded in the evidence table after it is created; the head that contains this file is the lane tip.
+- Content commit: `211334ce897434d522eaa2927f5f466a3b47a75b` (exercise, fixture, and this review, with verify already green on that tree)
+- Exact tip SHA: the head of `cursor/polish-lane-d-bend-stations-b600` after the commit that records the content SHA above. That head is the draft pull request head and is copied in the pull request body.
 - Contract: preserved. Default acquisition stays the 54% bead. The flag does not revise the solver, gain, caps, stiffness, rest lengths, frame transport, transactions, persistence, `one-branch-v1`, or `?bend=touch`.
 - Assessment: **limited**
 - Physical phone: **not run**

@@ -1,0 +1,465 @@
+{
+  "tip": "e579a4ef5a03612c9c3181351c0ab8bcf12ca821",
+  "reviewer": "independent",
+  "label": "Fresh headless Chrome on this tip. Not a phone. Not the parent-lane stills.",
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "materialsBeforeScroll": {
+    "choices": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower",
+      "reed",
+      "flower-volume",
+      "arching-trailer",
+      "foliage-fan",
+      "blossom-spray",
+      "nodding-flower",
+      "berry-twig",
+      "fern-frond"
+    ],
+    "names": [
+      "Flowering branch",
+      "Leafy shoot",
+      "Bare branch",
+      "Single flower",
+      "Reed",
+      "Flower volume",
+      "Arching trailer",
+      "Foliage fan",
+      "Blossom spray",
+      "Nodding flower",
+      "Berry twig",
+      "Fern frond"
+    ],
+    "clientHeight": 286,
+    "scrollHeight": 539,
+    "berryVisible": false,
+    "fernVisible": false,
+    "plants": 0,
+    "ordinal": 0,
+    "selected": "flowering-branch"
+  },
+  "materialsAfterScroll": {
+    "scrollTop": 253,
+    "berryFullyVisible": true,
+    "fernFullyVisible": true,
+    "lastTwo": [
+      "berry-twig",
+      "fern-frond"
+    ]
+  },
+  "selectNotInsert": {
+    "beforePlants": 0,
+    "beforeOrdinal": 0,
+    "afterBerry": {
+      "selected": "berry-twig",
+      "source": "berry-twig",
+      "plants": 0,
+      "ordinal": 0,
+      "hash": "41418c67"
+    },
+    "afterFern": {
+      "selected": "fern-frond",
+      "source": "fern-frond",
+      "plants": 0,
+      "ordinal": 0,
+      "hash": "41418c67",
+      "pressed": "true"
+    }
+  },
+  "berryCancel": {
+    "point": {
+      "role": "branch",
+      "plantId": "plant-1",
+      "branchId": "plant-1:cluster-2",
+      "materialDistance": 0.5232997153734325,
+      "x": 631.9923200057219,
+      "y": 361.8594811373226,
+      "region": "middle-left"
+    },
+    "beforeHash": "8f9e8328",
+    "duringHash": "8f9e8328",
+    "cue": "Cut branch\nTip + 4 attached stems, 4 berries · release to cut",
+    "afterHash": "8f9e8328",
+    "afterTransaction": null
+  },
+  "berryKeep": {
+    "cue": "Cut branch\nTip + 3 attached stems, 3 berries · release to cut",
+    "screenTargetDistance": 0.5232997153734325,
+    "acquiredDistance": 0.5234207003105935,
+    "after": {
+      "hash": "177b8582",
+      "ordinal": 1,
+      "plants": 1,
+      "branchCount": 14,
+      "active": [
+        "plant-1:berry-1-1",
+        "plant-1:berry-1-2",
+        "plant-1:berry-1-3",
+        "plant-1:berry-2-1",
+        "plant-1:berry-3-1",
+        "plant-1:berry-3-2",
+        "plant-1:berry-3-3"
+      ],
+      "inactive": [
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3",
+        "plant-1:berry-2-4"
+      ],
+      "cluster2ActiveLength": 0.5234207003105935,
+      "cluster1Active": true
+    }
+  },
+  "berryClear": {
+    "samples": [
+      {
+        "step": 0,
+        "x": 631.9923200057219,
+        "y": 361.8594811373226,
+        "cue": "Cut branch\nTip + 3 attached stems, 3 berries · release to cut"
+      },
+      {
+        "step": 1,
+        "x": 639.9910951203628,
+        "y": 361.7194930471097,
+        "cue": "Cut branch\nTip + 3 attached stems, 3 berries · release to cut"
+      },
+      {
+        "step": 2,
+        "x": 647.9898702350038,
+        "y": 361.5795049568968,
+        "cue": "Cut branch\nTip + 4 attached stems, 4 berries · release to cut"
+      }
+    ],
+    "chosen": {
+      "x": 647.9898702350038,
+      "y": 361.5795049568968,
+      "cue": "Cut branch\nTip + 4 attached stems, 4 berries · release to cut"
+    },
+    "after": {
+      "hash": "549ddd66",
+      "ordinal": 1,
+      "plants": 1,
+      "branchCount": 14,
+      "active": [
+        "plant-1:berry-1-1",
+        "plant-1:berry-1-2",
+        "plant-1:berry-1-3",
+        "plant-1:berry-3-1",
+        "plant-1:berry-3-2",
+        "plant-1:berry-3-3"
+      ],
+      "inactive": [
+        "plant-1:berry-2-1",
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3",
+        "plant-1:berry-2-4"
+      ],
+      "cluster2ActiveLength": 0.3057815908066493,
+      "cluster1Active": true
+    }
+  },
+  "fernPinnaCancel": {
+    "beforeHash": "32a97877",
+    "cue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+    "afterHash": "32a97877",
+    "transaction": null
+  },
+  "fernPinna": {
+    "cue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+    "screenTargetDistance": 0.06238550262979697,
+    "after": {
+      "hash": "4d0a39b1",
+      "ordinal": 1,
+      "organCount": 8,
+      "branchCount": 9,
+      "active": [
+        "plant-1:pinna-blade-1",
+        "plant-1:pinna-blade-3",
+        "plant-1:pinna-blade-4",
+        "plant-1:pinna-blade-5",
+        "plant-1:pinna-blade-6",
+        "plant-1:pinna-blade-7",
+        "plant-1:pinna-blade-8"
+      ],
+      "inactive": [
+        "plant-1:pinna-blade-2"
+      ]
+    }
+  },
+  "fernReload": {
+    "hash": "4d0a39b1",
+    "ordinal": 1,
+    "organCount": 8,
+    "branchCount": 9,
+    "active": [
+      "plant-1:pinna-blade-1",
+      "plant-1:pinna-blade-3",
+      "plant-1:pinna-blade-4",
+      "plant-1:pinna-blade-5",
+      "plant-1:pinna-blade-6",
+      "plant-1:pinna-blade-7",
+      "plant-1:pinna-blade-8"
+    ],
+    "inactive": [
+      "plant-1:pinna-blade-2"
+    ],
+    "hashBeforeReload": "4d0a39b1"
+  },
+  "fernRachis": {
+    "screenTargetDistance": 2.0301839959034695,
+    "samples": [
+      {
+        "step": -12,
+        "y": 327.0798817502452,
+        "cue": "Cut main stem\nTip + 1 attached stem, 1 leaf · release to cut"
+      },
+      {
+        "step": -11,
+        "y": 333.0798817502452,
+        "cue": "Cut main stem\nTip + 1 attached stem, 1 leaf · release to cut"
+      },
+      {
+        "step": -10,
+        "y": 339.0798817502452,
+        "cue": "Cut main stem\nTip + 1 attached stem, 1 leaf · release to cut"
+      },
+      {
+        "step": -9,
+        "y": 345.0798817502452,
+        "cue": "Cut main stem\nTip + 2 attached stems, 2 leaves · release to cut"
+      },
+      {
+        "step": -8,
+        "y": 351.0798817502452,
+        "cue": "Cut main stem\nTip + 2 attached stems, 2 leaves · release to cut"
+      },
+      {
+        "step": -7,
+        "y": 357.0798817502452,
+        "cue": "Cut main stem\nTip + 2 attached stems, 2 leaves · release to cut"
+      },
+      {
+        "step": -6,
+        "y": 363.0798817502452,
+        "cue": "Cut main stem\nTip + 3 attached stems, 3 leaves · release to cut"
+      },
+      {
+        "step": -5,
+        "y": 369.0798817502452,
+        "cue": "Cut main stem\nTip + 3 attached stems, 3 leaves · release to cut"
+      },
+      {
+        "step": -4,
+        "y": 375.0798817502452,
+        "cue": "Cut main stem\nTip + 3 attached stems, 3 leaves · release to cut"
+      },
+      {
+        "step": -3,
+        "y": 381.0798817502452,
+        "cue": "Cut main stem\nTip + 4 attached stems, 4 leaves · release to cut"
+      }
+    ],
+    "chosen": {
+      "y": 381.0798817502452,
+      "cue": "Cut main stem\nTip + 4 attached stems, 4 leaves · release to cut"
+    },
+    "after": {
+      "hash": "993d8870",
+      "ordinal": 1,
+      "organCount": 8,
+      "branchCount": 9,
+      "active": [
+        "plant-1:pinna-blade-1",
+        "plant-1:pinna-blade-2",
+        "plant-1:pinna-blade-3",
+        "plant-1:pinna-blade-4"
+      ],
+      "inactive": [
+        "plant-1:pinna-blade-5",
+        "plant-1:pinna-blade-6",
+        "plant-1:pinna-blade-7",
+        "plant-1:pinna-blade-8"
+      ]
+    }
+  },
+  "garden": {
+    "beforeHash": "af70bac6",
+    "viewing": true,
+    "viewedHash": "af70bac6",
+    "afterCopy": {
+      "hash": "af70bac6",
+      "ordinal": 2,
+      "generators": [
+        "berry-twig-v1",
+        "fern-frond-v1"
+      ]
+    }
+  },
+  "import": true,
+  "importResult": {
+    "message": "Imported 2 arrangements.",
+    "cards": [
+      "Open arrangement Clusters kept, one pinna cut 9/23/2026 · 3 cuttings Compare Remove",
+      "Open arrangement One cluster cleared, upper frond cut 9/23/2026 · 4 cuttings Compare Remove",
+      "Berry twig and fern frond 9/23/2026 · 2 cuttings Compare Remove"
+    ]
+  },
+  "arrangementKept": {
+    "hash": "99283ff9",
+    "ordinal": 3,
+    "viewing": true,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generator": "one-branch-v1",
+        "seed": 8278,
+        "inactive": []
+      },
+      {
+        "id": "plant-2",
+        "generator": "berry-twig-v1",
+        "seed": 9255,
+        "inactive": []
+      },
+      {
+        "id": "plant-3",
+        "generator": "fern-frond-v1",
+        "seed": 10232,
+        "inactive": [
+          "plant-3:pinna-blade-2"
+        ]
+      }
+    ]
+  },
+  "arrangementOpened": {
+    "hash": "d7353afa",
+    "ordinal": 4,
+    "viewing": true,
+    "plants": [
+      {
+        "id": "plant-1",
+        "generator": "leafy-shoot-v1",
+        "seed": 8278,
+        "inactive": []
+      },
+      {
+        "id": "plant-2",
+        "generator": "berry-twig-v1",
+        "seed": 9255,
+        "inactive": [
+          "plant-2:berry-2-1",
+          "plant-2:berry-2-2",
+          "plant-2:berry-2-3",
+          "plant-2:berry-2-4"
+        ]
+      },
+      {
+        "id": "plant-3",
+        "generator": "fern-frond-v1",
+        "seed": 10232,
+        "inactive": [
+          "plant-3:pinna-blade-5",
+          "plant-3:pinna-blade-6",
+          "plant-3:pinna-blade-7",
+          "plant-3:pinna-blade-8"
+        ]
+      },
+      {
+        "id": "plant-4",
+        "generator": "foliage-fan-v1",
+        "seed": 11209,
+        "inactive": []
+      }
+    ]
+  },
+  "draw": {
+    "berry-twig-x1": {
+      "counts": {
+        "calls": 95,
+        "triangles": 14338
+      },
+      "hash": "0d768a64"
+    },
+    "fern-frond-x1": {
+      "counts": {
+        "calls": 91,
+        "triangles": 16726
+      },
+      "hash": "32a97877"
+    },
+    "round5-palette-x12": {
+      "counts": {
+        "calls": 777,
+        "triangles": 110010
+      },
+      "hash": "6fd84a83"
+    },
+    "reference-pair-x6": {
+      "counts": {
+        "calls": 667,
+        "triangles": 91678
+      },
+      "hash": "1bdb37be"
+    }
+  },
+  "intact": {
+    "berryIntact": {
+      "hash": "8f9e8328",
+      "ordinal": 1,
+      "plants": 1,
+      "branchCount": 14,
+      "active": [
+        "plant-1:berry-1-1",
+        "plant-1:berry-1-2",
+        "plant-1:berry-1-3",
+        "plant-1:berry-2-1",
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3",
+        "plant-1:berry-2-4",
+        "plant-1:berry-3-1",
+        "plant-1:berry-3-2",
+        "plant-1:berry-3-3"
+      ],
+      "inactive": [],
+      "cluster2ActiveLength": 0.9514540279516952,
+      "cluster1Active": true
+    },
+    "fernIntact": {
+      "hash": "32a97877",
+      "ordinal": 1,
+      "organCount": 8,
+      "branchCount": 9,
+      "active": [
+        "plant-1:pinna-blade-1",
+        "plant-1:pinna-blade-2",
+        "plant-1:pinna-blade-3",
+        "plant-1:pinna-blade-4",
+        "plant-1:pinna-blade-5",
+        "plant-1:pinna-blade-6",
+        "plant-1:pinna-blade-7",
+        "plant-1:pinna-blade-8"
+      ],
+      "inactive": []
+    }
+  }
+}

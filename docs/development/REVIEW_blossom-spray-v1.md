@@ -1,7 +1,7 @@
 # Candidate review
 
 - Candidate / role: Lane B — blossom spray / Round 4
-- Baseline SHA / head SHA / branch: `59e42e6554b05ff2fc415514370430716e9e8515` (merged PR #33) / this branch tip / `cursor/blossom-spray-v1-2d36`
+- Baseline SHA / head SHA / branch: runtime baseline `59e42e6554b05ff2fc415514370430716e9e8515` (merged PR #33). Current `main` also has documentation-only PR #34 (`c002c8fe9c6b2372aa1ad59310379a47ec87b079`); this branch merges that note so the draft applies cleanly. Code was written from the pinned runtime baseline. Head is this branch tip on `cursor/blossom-spray-v1-2d36`.
 - Author / independent reviewer: Lane B. Requested model was Grok 4.7 with high thinking (`reasoning_effort: high`). The runtime identified itself as Grok 4.7, a language model trained by SpaceXAI. No thinking-budget or `reasoning_effort` field was exposed in this runtime, so that budget cannot be confirmed from the session. No other model was substituted. Independent review has not been run.
 - New compositional choice: A thin green stem with two or three laterals, and four to six small flowers spaced along those laterals. Each flower is one pedicel and one existing tufted bloom. The rhythm is a line of separated accents, beside the woody flowering branch and apart from the packed flower-volume head.
 - Main weakness: The blooms reuse the flower-volume tuft, so a single flower still reads as that floret. The distinction is spacing, pale color, and the green laterals, not a new petal. Six tufts also cost more triangles than one flowering branch. A basal group cut leaves a very short lateral stub. Physical phone: not run.
@@ -28,7 +28,7 @@ Preview does not mutate the source graph. Inactive records remain. The same stal
   - `src/core/blossomSpray.ts`, `materialResponse.ts`, `materialCatalog.ts`, `index.ts` — additive generator, appended after the arching trailer
   - `materialAppearance.ts` — version appearance only
   - `index.html` — one Materials choice and one template, `data-material-choice` / `data-testid="material-choice-blossom-spray"`. The source card stays `[data-material-id="flowering-branch"]` until the player selects another cutting. Tray CSS is unchanged.
-  - `src/app/workbenchProfiles.ts` — new stable profile `blossom-compare` (flowering branch → flower volume → blossom spray). Count 6 is two of each; count 12 is four of each.
+  - `src/app/workbenchProfiles.ts` — new stable profile `blossom-compare` (flowering branch → flower volume → blossom spray). Count 6 is two of each; count 12 is four of each. It is not named `references-plus-blossom-spray`: that existing pattern is flowering branch, leafy shoot, then the candidate, and this bowl has to include flower volume.
   - Focused tests, `fixtures/plant-1-blossom-spray-v1.json`, this review, `docs/development/reports/blossom-spray-v1/`
   - Contract, architecture, material-reference, and workbench-profile notes, because the registered generator list and the comparison profile are now part of the documented surface
   - Tests that name the live catalog order, the dynamic `all-registered-materials` sequence, or the stem-color census, because those lists are defined as the live catalog
@@ -39,7 +39,7 @@ Preview does not mutate the source graph. Inactive records remain. The same stal
 
 | Check | Result (pass / fail / not run) | Reproduction or artifact |
 | --- | --- | --- |
-| npm ci + npm run verify | pass | Baseline SHA `59e42e6554b05ff2fc415514370430716e9e8515`: `npm ci` then `npm run verify`, 182 tests, 0 failures, typecheck, Vite build, standalone validation. Tip `npm run verify` on this branch: typecheck, 190 tests, 0 failures, Vite build, distribution valid (5 files; standalone self-contained). The tip run used the tree installed by that baseline `npm ci`. |
+| npm ci + npm run verify | pass | Baseline SHA `59e42e6554b05ff2fc415514370430716e9e8515`: `npm ci` then `npm run verify`, 182 tests, 0 failures, typecheck, Vite build, standalone validation. Tip `npm run verify` after the candidate and the docs-only main merge: typecheck, 190 tests, 0 failures, Vite build, distribution valid (5 files; standalone self-contained). The tip run used the tree installed by that baseline `npm ci`. |
 | Existing golden fixtures unchanged | pass | Seven prior generators and their fixtures are not regenerated. Catalog order keeps them and appends `blossom-spray`. `tests/core/blossomSpray.test.ts` checks the frozen profile ids. |
 | Seeds 8278 / 9255 / 10232 | pass | `tests/core/blossomSpray.test.ts` and `docs/development/reports/blossom-spray-v1/identity.json`. Nearest bloom gaps 1.5076 / 1.2943 / 1.5259. Flower-volume head spans on the same seeds are 0.5559 / 0.5705 / 0.5435. Spray height spans 3.1454 / 2.4262 / 3.1524. A scan of seeds 0–399 stayed at 2–3 groups and 4–6 flowers; the smallest nearest gap was about 1.28. Canonical hashes: seed 8278 `3483806f`, seed 9255 `5250a9a7`, seed 10232 `38deec1e`. Fixture `fixtures/plant-1-blossom-spray-v1.json` is ordinal 1. |
 | Aim / bend preserve stock and attachments | pass | Unit test: aiming `plant-1:stalk-1-1` and bending `plant-1:group-1` keep rest lengths and do not move the stem or the other laterals. Pedicels are not bend targets. |

@@ -1,7 +1,7 @@
 # Candidate review
 
 - Candidate / role: Round 4 Lane C — nodding flower / material candidate
-- Baseline SHA / head SHA / branch: `59e42e6554b05ff2fc415514370430716e9e8515` (merged PR #33) / see the draft PR head / `cursor/nodding-flower-v1-0b86`
+- Baseline SHA / head SHA / branch: runtime baseline `59e42e6554b05ff2fc415514370430716e9e8515` (merged PR #33). The branch also contains docs-only `c002c8fe9c6b2372aa1ad59310379a47ec87b079` (PR #34) so the draft sits on current main. Head is the draft PR tip. Branch `cursor/nodding-flower-v1-0b86`.
 - Author / independent reviewer: Lane C. Requested model was Grok 4.7 with high thinking. The run record exposes `originalModelName: grok-4.7`. This agent is Grok 4.7. No thinking-budget or `reasoning_effort` field was exposed on the run record or in the agent interface. Independent review has not been run.
 - New compositional choice: One bell that already hangs down and outward on a curved neck, above a short graspable stem and a single leaf. The mouth opens along the neck, so Front and three-quarter can look into the cup beside upright material.
 - Main weakness: The neck is a pedicel, so it is not a bend handle. Aim turns the whole curve rigidly. The player cannot reshape the neck locally. Physical phone: not run.
@@ -52,7 +52,7 @@ Stills, same canonical cameras. Left is the substituted single flower. Right is 
 
 | Check | Result (pass / fail / not run) | Reproduction or artifact |
 | --- | --- | --- |
-| npm ci + npm run verify | pass | Baseline before the change: 182 tests, zero failures, at `59e42e6554b05ff2fc415514370430716e9e8515`. Candidate: typecheck, 191 tests, zero failures, production build, standalone validation |
+| npm ci + npm run verify | pass | Baseline before the change: 182 tests, zero failures, at `59e42e6554b05ff2fc415514370430716e9e8515`. Candidate, re-run after merging docs-only main (`c002c8f`): typecheck, 191 tests, zero failures, production build, standalone validation |
 | Existing golden fixtures unchanged | pass | `tests/core/noddingFlower.test.ts` compares flowering and leafy fixtures and `reference-pair` / `all-four` |
 | Seeds 8278 / 9255 / 10232 | pass | Same test. Front stills `nodding-front.png`, `nodding-seed9255-front.png`, `nodding-seed10232-front.png` |
 | Aim / bend preserve stock and attachments | pass | Stem bend and neck aim keep rest lengths, spin, and scale. Neck `legalBendStation` stays null |

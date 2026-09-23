@@ -1,6 +1,7 @@
 # Material references and extension contract
 
-**Current status after PR #33:** all seven materials listed below are on main.
+**Current status after PR #33:** the seven materials listed below are on main.
+This candidate branch appends provisional `nodding-flower`; that eighth cutting is not part of those seven.
 The former flower Aim dead zone and visible-surface acquisition gaps are fixed;
 see [the correction report](development/FLOWER_AIM_POLISH.md). The two original
 references remain the comparison pair. Sections describing earlier prototype

@@ -1,5 +1,9 @@
 # Grok Bot — directed material expansion
 
+**Historical first dispatch.** For the next round after the seven-material
+palette and PR #33, use [GROK_BOT_ROUND4.md](GROK_BOT_ROUND4.md). Do not repeat
+the bare-branch/single-flower assignments below.
+
 Copy the prompt below to the orchestrating bot. Supply the exact baseline commit
 from the Garden/workbench handoff. If this PR is not merged, use its branch and
 commit, not an older `main`. Verify the supplied SHA exists before starting agents.

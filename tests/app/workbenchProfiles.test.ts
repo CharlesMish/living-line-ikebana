@@ -350,7 +350,7 @@ test("round 5 profiles name the two accepted cuttings and leave round 4 membersh
   assert.equal(describeFixture(round3Palette).plantsInIdentityOrder.some((plant) =>
     plant.generatorVersion === "berry-twig-v1" || plant.generatorVersion === "fern-frond-v1"), false);
 
-  const candidates = createWorkbenchFixture("round5-candidates", 8278, 6, { remember: false });
+  const candidates = createWorkbenchFixture("round5-candidates", 8278, 6);
   assert.deepEqual(getLastWorkbenchFixtureLoad()?.materialSequence, ["berry-twig", "fern-frond"]);
   assert.deepEqual(getLastWorkbenchFixtureLoad()?.composition.countsByMaterialId, {
     "berry-twig": 3, "fern-frond": 3,
@@ -369,7 +369,7 @@ test("round 5 profiles name the two accepted cuttings and leave round 4 membersh
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume",
   ]);
   assert.match(paletteSix.warnings.join(" "), /omits arching-trailer, foliage-fan, blossom-spray, nodding-flower, berry-twig, fern-frond/);
-  const palette = createWorkbenchFixture("round5-palette", 8278, 12, { remember: false });
+  const palette = createWorkbenchFixture("round5-palette", 8278, 12);
   assert.deepEqual(getLastWorkbenchFixtureLoad()?.composition.countsByMaterialId, {
     "flowering-branch": 1, "leafy-shoot": 1, "bare-branch": 1, "single-flower": 1,
     reed: 1, "flower-volume": 1, "arching-trailer": 1,

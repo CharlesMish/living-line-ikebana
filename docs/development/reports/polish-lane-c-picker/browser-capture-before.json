@@ -1,0 +1,1034 @@
+{
+  "phase": "before",
+  "viewports": {
+    "1280x800": {
+      "inner": {
+        "width": 1280,
+        "height": 800,
+        "dpr": 1
+      },
+      "opened": {
+        "hidden": false,
+        "clientHeight": 286,
+        "scrollHeight": 539,
+        "scrollTop": 0,
+        "clientWidth": 215,
+        "offsetWidth": 232,
+        "scrollbarPx": 17,
+        "overflowY": "auto",
+        "touchAction": "pan-y",
+        "overscrollBehavior": "contain",
+        "maxHeight": "288px",
+        "frameClass": null,
+        "moreBelowHidden": null,
+        "moreAboveHidden": null,
+        "choices": [
+          {
+            "id": "flowering-branch",
+            "name": "Flowering branch",
+            "pressed": "true",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "leafy-shoot",
+            "name": "Leafy shoot",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "bare-branch",
+            "name": "Bare branch",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "single-flower",
+            "name": "Single flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "reed",
+            "name": "Reed",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "flower-volume",
+            "name": "Flower volume",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "arching-trailer",
+            "name": "Arching trailer",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 0.373
+          },
+          {
+            "id": "foliage-fan",
+            "name": "Foliage fan",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "blossom-spray",
+            "name": "Blossom spray",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "nodding-flower",
+            "name": "Nodding flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "berry-twig",
+            "name": "Berry twig",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "fern-frond",
+            "name": "Fern frond",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          }
+        ]
+      },
+      "scrolled": {
+        "hidden": false,
+        "clientHeight": 286,
+        "scrollHeight": 539,
+        "scrollTop": 253,
+        "clientWidth": 215,
+        "offsetWidth": 232,
+        "scrollbarPx": 17,
+        "overflowY": "auto",
+        "touchAction": "pan-y",
+        "overscrollBehavior": "contain",
+        "maxHeight": "288px",
+        "frameClass": null,
+        "moreBelowHidden": null,
+        "moreAboveHidden": null,
+        "choices": [
+          {
+            "id": "flowering-branch",
+            "name": "Flowering branch",
+            "pressed": "true",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "leafy-shoot",
+            "name": "Leafy shoot",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "bare-branch",
+            "name": "Bare branch",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "single-flower",
+            "name": "Single flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "reed",
+            "name": "Reed",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "flower-volume",
+            "name": "Flower volume",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 0.377
+          },
+          {
+            "id": "arching-trailer",
+            "name": "Arching trailer",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "foliage-fan",
+            "name": "Foliage fan",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "blossom-spray",
+            "name": "Blossom spray",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "nodding-flower",
+            "name": "Nodding flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "berry-twig",
+            "name": "Berry twig",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "fern-frond",
+            "name": "Fern frond",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          }
+        ]
+      }
+    },
+    "390x844": {
+      "inner": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1
+      },
+      "opened": {
+        "hidden": false,
+        "clientHeight": 286,
+        "scrollHeight": 539,
+        "scrollTop": 0,
+        "clientWidth": 230,
+        "offsetWidth": 232,
+        "scrollbarPx": 2,
+        "overflowY": "auto",
+        "touchAction": "pan-y",
+        "overscrollBehavior": "contain",
+        "maxHeight": "288px",
+        "frameClass": null,
+        "moreBelowHidden": null,
+        "moreAboveHidden": null,
+        "choices": [
+          {
+            "id": "flowering-branch",
+            "name": "Flowering branch",
+            "pressed": "true",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "leafy-shoot",
+            "name": "Leafy shoot",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "bare-branch",
+            "name": "Bare branch",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "single-flower",
+            "name": "Single flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "reed",
+            "name": "Reed",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "flower-volume",
+            "name": "Flower volume",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "arching-trailer",
+            "name": "Arching trailer",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 0.373
+          },
+          {
+            "id": "foliage-fan",
+            "name": "Foliage fan",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "blossom-spray",
+            "name": "Blossom spray",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "nodding-flower",
+            "name": "Nodding flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "berry-twig",
+            "name": "Berry twig",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "fern-frond",
+            "name": "Fern frond",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          }
+        ]
+      },
+      "scrolled": {
+        "hidden": false,
+        "clientHeight": 286,
+        "scrollHeight": 539,
+        "scrollTop": 253,
+        "clientWidth": 230,
+        "offsetWidth": 232,
+        "scrollbarPx": 2,
+        "overflowY": "auto",
+        "touchAction": "pan-y",
+        "overscrollBehavior": "contain",
+        "maxHeight": "288px",
+        "frameClass": null,
+        "moreBelowHidden": null,
+        "moreAboveHidden": null,
+        "choices": [
+          {
+            "id": "flowering-branch",
+            "name": "Flowering branch",
+            "pressed": "true",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "leafy-shoot",
+            "name": "Leafy shoot",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "bare-branch",
+            "name": "Bare branch",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "single-flower",
+            "name": "Single flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "reed",
+            "name": "Reed",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "flower-volume",
+            "name": "Flower volume",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 0.377
+          },
+          {
+            "id": "arching-trailer",
+            "name": "Arching trailer",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "foliage-fan",
+            "name": "Foliage fan",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "blossom-spray",
+            "name": "Blossom spray",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "nodding-flower",
+            "name": "Nodding flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "berry-twig",
+            "name": "Berry twig",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "fern-frond",
+            "name": "Fern frond",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          }
+        ]
+      }
+    },
+    "844x360": {
+      "inner": {
+        "width": 844,
+        "height": 360,
+        "dpr": 1
+      },
+      "opened": {
+        "hidden": false,
+        "clientHeight": 190,
+        "scrollHeight": 539,
+        "scrollTop": 0,
+        "clientWidth": 215,
+        "offsetWidth": 232,
+        "scrollbarPx": 17,
+        "overflowY": "auto",
+        "touchAction": "pan-y",
+        "overscrollBehavior": "contain",
+        "maxHeight": "192px",
+        "frameClass": null,
+        "moreBelowHidden": null,
+        "moreAboveHidden": null,
+        "choices": [
+          {
+            "id": "flowering-branch",
+            "name": "Flowering branch",
+            "pressed": "true",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "leafy-shoot",
+            "name": "Leafy shoot",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "bare-branch",
+            "name": "Bare branch",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "single-flower",
+            "name": "Single flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "reed",
+            "name": "Reed",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 0.191
+          },
+          {
+            "id": "flower-volume",
+            "name": "Flower volume",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "arching-trailer",
+            "name": "Arching trailer",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "foliage-fan",
+            "name": "Foliage fan",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "blossom-spray",
+            "name": "Blossom spray",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "nodding-flower",
+            "name": "Nodding flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "berry-twig",
+            "name": "Berry twig",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          },
+          {
+            "id": "fern-frond",
+            "name": "Fern frond",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": true,
+            "entirelyAbove": false,
+            "visibleRatio": 0
+          }
+        ]
+      },
+      "scrolled": {
+        "hidden": false,
+        "clientHeight": 190,
+        "scrollHeight": 539,
+        "scrollTop": 349,
+        "clientWidth": 215,
+        "offsetWidth": 232,
+        "scrollbarPx": 17,
+        "overflowY": "auto",
+        "touchAction": "pan-y",
+        "overscrollBehavior": "contain",
+        "maxHeight": "192px",
+        "frameClass": null,
+        "moreBelowHidden": null,
+        "moreAboveHidden": null,
+        "choices": [
+          {
+            "id": "flowering-branch",
+            "name": "Flowering branch",
+            "pressed": "true",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "leafy-shoot",
+            "name": "Leafy shoot",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "bare-branch",
+            "name": "Bare branch",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "single-flower",
+            "name": "Single flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "reed",
+            "name": "Reed",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "flower-volume",
+            "name": "Flower volume",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "arching-trailer",
+            "name": "Arching trailer",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": true,
+            "visibleRatio": 0
+          },
+          {
+            "id": "foliage-fan",
+            "name": "Foliage fan",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": false,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 0.195
+          },
+          {
+            "id": "blossom-spray",
+            "name": "Blossom spray",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "nodding-flower",
+            "name": "Nodding flower",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "berry-twig",
+            "name": "Berry twig",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          },
+          {
+            "id": "fern-frond",
+            "name": "Fern frond",
+            "pressed": "false",
+            "disabled": false,
+            "fullyVisible": true,
+            "entirelyBelow": false,
+            "entirelyAbove": false,
+            "visibleRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "interactions": {
+    "selectFern": {
+      "beforeSelect": {
+        "ready": true,
+        "posture": "arrange",
+        "tool": "shape",
+        "cameraMode": "orbit",
+        "view": "front",
+        "bendVariant": "fixed",
+        "transaction": null,
+        "selectedPlantId": null,
+        "selectedBranchId": null,
+        "successfulSeatOrdinal": 0,
+        "cameraHash": "f3827392",
+        "canonicalHash": "41418c67"
+      },
+      "afterSelect": {
+        "state": {
+          "ready": true,
+          "posture": "arrange",
+          "tool": "shape",
+          "cameraMode": "orbit",
+          "view": "front",
+          "bendVariant": "fixed",
+          "transaction": null,
+          "selectedPlantId": null,
+          "selectedBranchId": null,
+          "successfulSeatOrdinal": 0,
+          "cameraHash": "f3827392",
+          "canonicalHash": "41418c67"
+        },
+        "sourceMaterialId": "fern-frond",
+        "sourceLabel": "Fern frond",
+        "sourceText": "Drag fern frond to the kenzan",
+        "menuHidden": true,
+        "menuExpanded": "false",
+        "pressed": "true",
+        "plantCount": 0
+      }
+    },
+    "elementAtCue": {
+      "below": "material-choice-arching-trailer",
+      "above": "material-choice-flowering-branch"
+    },
+    "reopenAtScrollZero": {
+      "fern": {
+        "id": "fern-frond",
+        "name": "Fern frond",
+        "pressed": "true",
+        "disabled": false,
+        "fullyVisible": false,
+        "entirelyBelow": true,
+        "entirelyAbove": false,
+        "visibleRatio": 0
+      },
+      "flowering": {
+        "id": "flowering-branch",
+        "name": "Flowering branch",
+        "pressed": "false",
+        "disabled": false,
+        "fullyVisible": true,
+        "entirelyBelow": false,
+        "entirelyAbove": false,
+        "visibleRatio": 1
+      },
+      "scrollTop": 0,
+      "moreBelowHidden": null,
+      "moreAboveHidden": null
+    },
+    "escape": {
+      "menuHidden": true,
+      "expanded": "false",
+      "active": "materials-toggle",
+      "ordinal": 0,
+      "plants": 0,
+      "activeBefore": "selected-cutting"
+    },
+    "keyboardReach": {
+      "seen": [
+        {
+          "id": "flowering-branch",
+          "scrollTop": 0,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "leafy-shoot",
+          "scrollTop": 0,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "bare-branch",
+          "scrollTop": 0,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "single-flower",
+          "scrollTop": 0,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "reed",
+          "scrollTop": 0,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "flower-volume",
+          "scrollTop": 0,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "arching-trailer",
+          "scrollTop": 28,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "foliage-fan",
+          "scrollTop": 72,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "blossom-spray",
+          "scrollTop": 116,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "nodding-flower",
+          "scrollTop": 160,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "berry-twig",
+          "scrollTop": 204,
+          "fullyVisible": true,
+          "active": true
+        },
+        {
+          "id": "fern-frond",
+          "scrollTop": 248,
+          "fullyVisible": true,
+          "active": true
+        }
+      ],
+      "atEnd": true,
+      "backToTop": true,
+      "max": 253
+    },
+    "focusStyle": {
+      "outline": "rgb(83, 99, 76) solid 2px",
+      "outlineOffset": "3px",
+      "active": "material-choice-reed"
+    },
+    "stepBack": {
+      "posture": "step-back",
+      "menuHidden": true,
+      "cameraHidden": false,
+      "craftHidden": "true",
+      "statePosture": "step-back",
+      "ordinal": 0
+    },
+    "arrangeAgain": {
+      "posture": "arrange",
+      "cameraHidden": true,
+      "ordinal": 0,
+      "plants": 0
+    },
+    "outsideClose": {
+      "openedHidden": false,
+      "after": true
+    }
+  }
+}

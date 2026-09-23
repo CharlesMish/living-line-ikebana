@@ -487,6 +487,16 @@ button:focus-visible {
   gap: 0.4rem;
 }
 .material-menu { position: relative; }
+.material-options-frame {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  left: auto;
+  width: max(100%, 14.5rem);
+  max-width: min(22rem, calc(100vw - 1.5rem));
+}
+.material-options-frame[hidden] { display: none; }
 .materials-toggle {
   display: flex;
   align-items: center;
@@ -516,19 +526,15 @@ button:focus-visible {
   opacity: 0.48;
 }
 .material-options {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 0.45rem);
-  right: 0;
-  left: auto;
   display: grid;
   grid-template-columns: 1fr;
-  width: max(100%, 14.5rem);
-  max-width: min(22rem, calc(100vw - 1.5rem));
+  width: 100%;
   max-height: min(18rem, 50dvh);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scroll-padding-top: 1.35rem;
+  scroll-padding-bottom: 1.85rem;
   padding: 0.35rem;
   border: 1px solid var(--line);
   border-radius: 1rem;
@@ -536,6 +542,41 @@ button:focus-visible {
   box-shadow: var(--shadow);
   touch-action: pan-y;
 }
+/* The list keeps scrolling; these edges only show that more rows exist. */
+.materials-scroll-cue {
+  position: absolute;
+  z-index: 1;
+  left: 1px;
+  right: 1px;
+  height: 1.7rem;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.materials-scroll-cue[hidden] { display: none; }
+.materials-scroll-cue-above {
+  top: 1px;
+  align-items: flex-start;
+  border-radius: 0.9rem 0.9rem 0 0;
+  background: linear-gradient(to bottom, var(--paper-solid) 12%, rgba(243, 239, 229, 0));
+}
+.materials-scroll-cue-below {
+  bottom: 1px;
+  align-items: flex-end;
+  border-radius: 0 0 0.9rem 0.9rem;
+  background: linear-gradient(to top, var(--paper-solid) 18%, rgba(243, 239, 229, 0.9) 52%, rgba(243, 239, 229, 0));
+}
+.materials-scroll-cue svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: var(--moss-dark);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.materials-scroll-cue-above svg { margin-top: 0.12rem; }
+.materials-scroll-cue-below svg { margin-bottom: 0.12rem; }
 .material-options[hidden] { display: none; }
 .material-options button {
   display: grid;
@@ -552,10 +593,13 @@ button:focus-visible {
   text-align: left;
   cursor: pointer;
 }
+.material-options button:focus-visible {
+  outline-offset: -2px;
+}
 .material-options button[aria-pressed="true"] {
   color: var(--moss-dark);
   background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 1px 7px rgba(50, 45, 32, 0.1);
+  box-shadow: inset 3px 0 0 var(--moss), 0 1px 7px rgba(50, 45, 32, 0.1);
 }
 .material-choice-name {
   font-family: ui-serif, Georgia, serif;
@@ -738,7 +782,9 @@ noscript {
   .material-dock,
   .material-card,
   .materials-toggle,
+  .material-options-frame,
   .material-options,
+  .materials-scroll-cue,
   .status-pill,
   .craft-cue,
   .experiment-panel,
@@ -751,6 +797,14 @@ noscript {
   .material-options button[aria-pressed="true"] {
     outline: 2px solid Highlight;
   }
+
+  .materials-scroll-cue-above,
+  .materials-scroll-cue-below {
+    background: Canvas;
+  }
+  .materials-scroll-cue-above { border-bottom: 1px solid CanvasText; }
+  .materials-scroll-cue-below { border-top: 1px solid CanvasText; }
+  .materials-scroll-cue svg { stroke: CanvasText; }
 }
 
 /* Garden stays in the upper chrome; its collection is a scrollable modal. */

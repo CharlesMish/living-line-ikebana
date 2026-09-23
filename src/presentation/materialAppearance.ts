@@ -99,6 +99,18 @@ const archingTrailer: MaterialAppearance = Object.freeze({
     roughness: 0.66, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
+const fernFrond: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x2c5c45, lateral: 0x347256,
+    twig: 0x3d7a5c, pedicel: 0x3d7a5c, petiole: 0x3a7054 }),
+  stemRoughness: 0.72,
+  // Pinnate blades run along local Y to about 1.12 and about ±0.48 in X.
+  // The sphere is centered on that divided surface. No bloom is generated.
+  leaf: Object.freeze({
+    form: "pinnate", color: 0x7eae62, veinColor: 0xd2e6a0,
+    roughness: 0.5, hitRadius: 0.78, hitCenterY: 0.56,
+  }),
+  bloom: flowering.bloom,
+});
 const foliageFan: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x7c9a34, lateral: 0x739332,
     twig: 0x86a44a, pedicel: 0x86a44a, petiole: 0x6f8c3c }),
@@ -118,6 +130,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "foliage-fan-v1": foliageFan,
   "blossom-spray-v1": blossomSpray,
   "nodding-flower-v1": noddingFlower,
+  "fern-frond-v1": fernFrond,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

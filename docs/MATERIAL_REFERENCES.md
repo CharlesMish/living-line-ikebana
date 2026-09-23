@@ -13,7 +13,9 @@ The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1
 `single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`,
 `foliage-fan-v1`, `blossom-spray-v1`, and `nodding-flower-v1` are additive.
 Catalog order is flowering → leafy → bare-branch → single-flower →
-reed → flower-volume → arching-trailer → foliage-fan → blossom-spray → nodding-flower.
+reed → flower-volume → arching-trailer → foliage-fan → blossom-spray → nodding-flower,
+then the Phase 2 candidate `fern-frond`. That candidate is not part of
+`round4-palette`.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -158,6 +160,25 @@ separate organs on the existing elliptic surface. The blossom spray uses the
 existing tufted bloom. The nodding flower uses one bell shell along the
 supporting tangent. Cupped, open-face, and tufted blooms keep their radial
 paths. None of these cuttings is a named species.
+
+## Phase 2 candidate
+
+`fern-frond-v1` is appended after the ten materials above. It does not change
+those generators, fixtures, or profile memberships. `reference-pair`, `mixed`,
+`all-four`, `round3-three`, `round3-palette`, `round4-candidates`, and
+`round4-palette` do not list it. `references-plus-fern-frond` is flowering →
+leafy → fern-frond. `all-registered-materials` is still the only dynamic cycle;
+a count of 6 still stops before this cutting.
+
+| Cutting | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Fern frond / `fern-frond-v1` | One 16-segment rachis and eight alternating pinna stalks. Each stalk carries one divided pinna, not a swarm of pinnules. A basal span stays below the first pinna | Rachis `0x2c5c45`, roughness `0.72`. Pinnae use a new `pinnate` surface: a costa plus three pairs of separate pinnules, color `0x7eae62`. Hit radius `0.78` centered at local Y `0.56`. No bloom is generated | Rachis `0.43`, stalks `0.18`, copied once. Stalks are petioles, so the shared solver bends the rachis only |
+
+Cutting one pinna stalk deactivates that one blade and leaves the other seven.
+Cutting the rachis between the fourth and fifth pinna deactivates the upper
+four stalks and blades and leaves the basal four unchanged. Those cuts are
+graph facts. The pinnules are triangles in one organ mesh, not extra organs
+and not a textured card. This is a generic study, not a named species.
 
 The trailer’s centered rest pose crosses the open water and stays clear of the
 ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance

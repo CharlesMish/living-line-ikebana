@@ -29,7 +29,9 @@ construction helpers. `generator.ts` preserves the flowering fixture;
 (an authored arch on the shared single-station solver). Round 4 adds
 `foliageFan.ts` (one stem, three lateral arms, and small leaves),
 `blossomSpray.ts` (a thin green line with separated flower groups), and
-`noddingFlower.ts` (one authored neck and a bell surface). Generators consume authored
+`noddingFlower.ts` (one authored neck and a bell surface). Phase 2 adds
+`fernFrond.ts` (one slender rachis and eight pinnae on a divided surface).
+Generators consume authored
 response values from `materialResponse.ts` once, persisting `stiffness` in each
 branch. The shared solver still owns all bending.
 

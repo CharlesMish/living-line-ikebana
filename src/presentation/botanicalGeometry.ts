@@ -7,6 +7,8 @@ import * as THREE from "three";
  * - Call once when creating an organ, with botanicalSeed(organ.id, graph.seed).
  * - Preserve the organ Group's material frame, spin, scale and hit proxy.
  * - Leaf: use the geometry directly, without the old sphere scale/y offset.
+ *   `elliptic` and `lanceolate` stay the creased blade. `pinnate` is a costa
+ *   plus three pairs of separate pinnules, used by `fern-frond-v1`.
  * - Petal: use directly, without the old sphere scale/radial offset; retain each
  *   petal's rotation.z = index * 2 PI / petalCount. Salt the seed by petal index.
  *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
@@ -110,7 +112,7 @@ function bladeSurface(
   return geometry;
 }
 
-export type LeafForm = "elliptic" | "lanceolate";
+export type LeafForm = "elliptic" | "lanceolate" | "pinnate";
 export type BloomForm = "cupped" | "open-face" | "tufted" | "bell";
 
 /** Rebuildable bloom parts. Cupped and open-face numbers match the prior path. */
@@ -152,7 +154,12 @@ export function bloomPetalCount(form: BloomForm): number {
   return bloomSurfaceProfile(form).petalCount;
 }
 
-function leafSample(seed: number, t: number, across: number, form: LeafForm): SurfaceSample {
+function leafSample(
+  seed: number,
+  t: number,
+  across: number,
+  form: "elliptic" | "lanceolate",
+): SurfaceSample {
   const envelope = Math.sin(Math.PI * t);
   const lean = (variation(seed, 0) - 0.5) * 0.027;
   const uneven = (variation(seed, 1) - 0.5) * 0.13;
@@ -177,8 +184,138 @@ function leafSample(seed: number, t: number, across: number, form: LeafForm): Su
   };
 }
 
-/** 119 vertices, 208 triangles. Local Y follows the leaf's long axis. */
+/**
+ * Divided pinna: a costa with four pairs of separate pinnules. Local Y is the
+ * pinna midrib. The gaps are missing triangles, not a texture. One organ, one
+ * mesh. Elliptic and lanceolate blades are unchanged.
+ */
+const PINNATE_LENGTH = 1.12;
+const PINNATE_COSTA_HALF = 0.016;
+
+function pinnateCostaZ(t: number): number {
+  return 0.04 * t - 0.06 * t * t;
+}
+
+function createPinnatePinnaGeometry(seed = 0): THREE.BufferGeometry {
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+  const add = (
+    x: number,
+    y: number,
+    z: number,
+    rgb: readonly [number, number, number],
+    u: number,
+    v: number,
+  ) => {
+    const index = positions.length / 3;
+    positions.push(x, y, z);
+    colors.push(rgb[0], rgb[1], rgb[2]);
+    uvs.push(u, v);
+    return index;
+  };
+
+  const costaRows = 12;
+  const costaIds: number[] = [];
+  for (let row = 0; row <= costaRows; row += 1) {
+    const t = row / costaRows;
+    const y = PINNATE_LENGTH * t;
+    const z = pinnateCostaZ(t);
+    const tone = 0.7 + 0.12 * t;
+    costaIds.push(
+      add(-PINNATE_COSTA_HALF, y, z, [tone * 0.86, tone * 0.98, tone * 0.78], 0.48, t),
+      add(PINNATE_COSTA_HALF, y, z + 0.0015, [tone * 0.86, tone * 0.98, tone * 0.78], 0.52, t),
+    );
+  }
+  for (let row = 0; row < costaRows; row += 1) {
+    const a = costaIds[row * 2]!;
+    const b = costaIds[row * 2 + 1]!;
+    const c = costaIds[(row + 1) * 2]!;
+    const d = costaIds[(row + 1) * 2 + 1]!;
+    indices.push(a, c, b, b, c, d);
+  }
+
+  const lobeCount = 3;
+  const alongSteps = 6;
+  const acrossSteps = 4;
+  for (let lobe = 0; lobe < lobeCount; lobe += 1) {
+    const outline = Math.sin((Math.PI * (lobe + 1)) / (lobeCount + 1));
+    const reach = 0.46 * (0.62 + 0.38 * outline);
+    const yCenter = PINNATE_LENGTH * (0.22 + lobe * 0.28);
+    const halfSpan = 0.1 * (0.78 + 0.22 * outline);
+    for (const side of [-1, 1] as const) {
+      const channel = 20 + lobe * 3 + (side > 0 ? 1 : 0);
+      const reachJitter = 1 + (variation(seed, channel) - 0.5) * 0.08;
+      const lift = (variation(seed, channel + 1) - 0.5) * 0.012;
+      const ids: number[][] = [];
+      for (let step = 0; step <= alongSteps; step += 1) {
+        const u = step / alongSteps;
+        const row: number[] = [];
+        const belly = Math.sin(Math.PI * u);
+        const attach = u < 0.08 ? u / 0.08 : 1;
+        const span = halfSpan * (0.35 + 0.65 * Math.pow(belly, 0.75)) * attach;
+        for (let across = 0; across <= acrossSteps; across += 1) {
+          const v = across / acrossSteps;
+          const signed = v * 2 - 1;
+          const x = side * (PINNATE_COSTA_HALF * 0.4 + u * reach * reachJitter);
+          const y = yCenter + signed * span;
+          const along = Math.min(1, Math.max(0, y / PINNATE_LENGTH));
+          const z = pinnateCostaZ(along) + 0.028 * u * belly - 0.04 * u * u + lift + signed * side * 0.008 * u;
+          const light = 0.78 + 0.16 * u + 0.06 * belly - 0.05 * Math.abs(signed);
+          row.push(add(
+            x,
+            y,
+            z,
+            [Math.min(1, light * 0.9), Math.min(1, light * 1.05), light * 0.84],
+            0.5 + side * u * 0.5,
+            along,
+          ));
+        }
+        ids.push(row);
+      }
+      for (let step = 0; step < alongSteps; step += 1) {
+        for (let across = 0; across < acrossSteps; across += 1) {
+          const a = ids[step]![across]!;
+          const b = ids[step]![across + 1]!;
+          const c = ids[step + 1]![across]!;
+          const d = ids[step + 1]![across + 1]!;
+          if (side > 0) indices.push(a, b, c, b, d, c);
+          else indices.push(a, c, b, b, c, d);
+        }
+      }
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.name = "living-line/pinnate-pinna";
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function createPinnateCostaGeometry(seed = 0): THREE.BufferGeometry {
+  return bladeSurface("living-line/pinnate-costa", (t, across) => {
+    const y = PINNATE_LENGTH * (0.02 + t * 0.96);
+    const width = 0.0032 * Math.sin(Math.PI * t);
+    const z = pinnateCostaZ(y / PINNATE_LENGTH) + 0.0024 + (variation(seed, 8) - 0.5) * 0.0008;
+    return {
+      position: [across * width, y, z],
+      color: [0.86, 0.95, 0.74],
+    };
+  }, 12, 2);
+}
+
+/** 119 vertices, 208 triangles for elliptic and lanceolate. Local Y follows the leaf's long axis.
+ * A pinnate pinna is a separate costa-and-pinnule mesh and does not reuse those counts.
+ */
 export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic"): THREE.BufferGeometry {
+  if (form === "pinnate") return createPinnatePinnaGeometry(seed);
   return bladeSurface("living-line/creased-leaf", (t, u) => leafSample(seed, t, u, form));
 }
 
@@ -187,6 +324,7 @@ export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic"): THREE
  * it. At its widest it is 0.0056 units, so it remains a vein rather than a stripe.
  */
 export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic"): THREE.BufferGeometry {
+  if (form === "pinnate") return createPinnateCostaGeometry(seed);
   return bladeSurface("living-line/leaf-midrib", (t, across) => {
     const sample = leafSample(seed, 0.025 + t * 0.94, 0, form);
     const width = 0.0028 * Math.sin(Math.PI * t) * (1 - t * 0.55);

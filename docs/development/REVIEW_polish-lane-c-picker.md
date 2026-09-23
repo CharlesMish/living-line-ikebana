@@ -8,6 +8,7 @@ Draft only. No merge. No deploy. Behavioral contract: preserved. This pass chang
 | --- | --- |
 | Start SHA | `2aef05424d751cda2137f3749b2d71e7fdf0c6d1` |
 | Confirmed with | `git rev-parse HEAD` before the branch |
+| Implementation | `a04a60595edc0fa8c1d5b34a005b4d39b30898df` |
 | Branch | `cursor/polish-lane-c-picker-b3bd` |
 | Baseline note | PR #46, `cursor/polish-baseline-evidence-8602` |
 
@@ -77,7 +78,20 @@ Stills and the machine log: `docs/development/reports/polish-lane-c-picker/`.
 
 ## Verify
 
-`npm ci && npm run verify` is recorded after the implementation commit on this branch. Node on the capture machine: v22.14.0. `npm ci` for the capture added 63 packages. The picker tests passed before the full verify: insertion bindings stay on one source card, and `materialListOverflow` matches the 286 / 539 edges.
+`npm ci && npm run verify` on `a04a60595edc0fa8c1d5b34a005b4d39b30898df`. Node v22.14.0. `npm ci` added 63 packages.
+
+| Check | Result |
+| --- | --- |
+| Typecheck | passed |
+| Tests | 230 passed, 0 failed, 0 skipped |
+| `dist/index.html` | 42122 bytes |
+| `dist/assets/index-BfEkgxir.css` | 21247 bytes |
+| `dist/assets/index-BcgjqvcZ.js` | 697963 bytes |
+| `dist/assets/index-BcgjqvcZ.js.map` | 3441074 bytes |
+| `dist/ikebana-web-alpha-standalone.html` | 903431 bytes |
+| `validate-dist` | 5 files, standalone self-contained |
+
+The new test is the materials-list overflow predicate. The existing picker test still requires one source card and twelve choice ids with no insertion binding on the list.
 
 ## Phone card gaps
 

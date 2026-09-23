@@ -1,0 +1,1804 @@
+{
+  "label": "Google Chrome headless, Linux. Protocol counts are drawElements/drawArrays only, vessel included. Instanced counts are separate. Not a physical phone.",
+  "origin": "http://127.0.0.1:5173",
+  "seed": 8278,
+  "specimens": [
+    {
+      "material": "flowering-branch",
+      "summary": {
+        "canonicalHash": "b81a82aa",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "one-branch-v1",
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 56.59999999997672,
+            "calls": 153,
+            "triangles": 26042,
+            "instancedCalls": 5,
+            "instancedTriangles": 5428
+          },
+          "canonicalHash": "b81a82aa",
+          "still": "docs/development/reports/polish-independent-review/flowering-branch-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 26.5,
+            "calls": 153,
+            "triangles": 26042,
+            "instancedCalls": 5,
+            "instancedTriangles": 5428
+          },
+          "canonicalHash": "b81a82aa",
+          "still": "docs/development/reports/polish-independent-review/flowering-branch-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 132.30000000001746,
+            "calls": 153,
+            "triangles": 26042,
+            "instancedCalls": 5,
+            "instancedTriangles": 5428
+          },
+          "canonicalHash": "b81a82aa",
+          "still": "docs/development/reports/polish-independent-review/flowering-branch-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "leafy-shoot",
+      "summary": {
+        "canonicalHash": "6645d73a",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "leafy-shoot-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 23.70000000001164,
+            "calls": 81,
+            "triangles": 14034,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "6645d73a",
+          "still": "docs/development/reports/polish-independent-review/leafy-shoot-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 20.5,
+            "calls": 81,
+            "triangles": 14034,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "6645d73a",
+          "still": "docs/development/reports/polish-independent-review/leafy-shoot-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 121,
+            "calls": 81,
+            "triangles": 14034,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "6645d73a",
+          "still": "docs/development/reports/polish-independent-review/leafy-shoot-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "bare-branch",
+      "summary": {
+        "canonicalHash": "eae353f1",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 74.10000000000582,
+            "calls": 27,
+            "triangles": 8766,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "eae353f1",
+          "still": "docs/development/reports/polish-independent-review/bare-branch-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 19,
+            "calls": 27,
+            "triangles": 8766,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "eae353f1",
+          "still": "docs/development/reports/polish-independent-review/bare-branch-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 24.70000000001164,
+            "calls": 27,
+            "triangles": 8766,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "eae353f1",
+          "still": "docs/development/reports/polish-independent-review/bare-branch-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "single-flower",
+      "summary": {
+        "canonicalHash": "21619d02",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "single-flower-v1",
+            "branches": 4,
+            "organs": 3,
+            "activeBranches": 4,
+            "activeOrgans": 3,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 84,
+            "calls": 51,
+            "triangles": 12166,
+            "instancedCalls": 3,
+            "instancedTriangles": 4564
+          },
+          "canonicalHash": "21619d02",
+          "still": "docs/development/reports/polish-independent-review/single-flower-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 86.10000000000582,
+            "calls": 51,
+            "triangles": 12166,
+            "instancedCalls": 3,
+            "instancedTriangles": 4564
+          },
+          "canonicalHash": "21619d02",
+          "still": "docs/development/reports/polish-independent-review/single-flower-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 117.69999999998254,
+            "calls": 51,
+            "triangles": 12166,
+            "instancedCalls": 3,
+            "instancedTriangles": 4564
+          },
+          "canonicalHash": "21619d02",
+          "still": "docs/development/reports/polish-independent-review/single-flower-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "reed",
+      "summary": {
+        "canonicalHash": "7a30da1d",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "reed-v1",
+            "branches": 1,
+            "organs": 0,
+            "activeBranches": 1,
+            "activeOrgans": 0,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 71.69999999998254,
+            "calls": 11,
+            "triangles": 6838,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "7a30da1d",
+          "still": "docs/development/reports/polish-independent-review/reed-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 81.39999999999418,
+            "calls": 11,
+            "triangles": 6838,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "7a30da1d",
+          "still": "docs/development/reports/polish-independent-review/reed-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 113.90000000002328,
+            "calls": 11,
+            "triangles": 6838,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "7a30da1d",
+          "still": "docs/development/reports/polish-independent-review/reed-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "flower-volume",
+      "summary": {
+        "canonicalHash": "5c6ba5af",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 93.79999999998836,
+            "calls": 81,
+            "triangles": 16734,
+            "instancedCalls": 21,
+            "instancedTriangles": 18100
+          },
+          "canonicalHash": "5c6ba5af",
+          "still": "docs/development/reports/polish-independent-review/flower-volume-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 97,
+            "calls": 81,
+            "triangles": 16734,
+            "instancedCalls": 21,
+            "instancedTriangles": 18100
+          },
+          "canonicalHash": "5c6ba5af",
+          "still": "docs/development/reports/polish-independent-review/flower-volume-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 131.5,
+            "calls": 81,
+            "triangles": 16734,
+            "instancedCalls": 21,
+            "instancedTriangles": 18100
+          },
+          "canonicalHash": "5c6ba5af",
+          "still": "docs/development/reports/polish-independent-review/flower-volume-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "arching-trailer",
+      "summary": {
+        "canonicalHash": "d0ebb2e1",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "arching-trailer-v1",
+            "branches": 4,
+            "organs": 3,
+            "activeBranches": 4,
+            "activeOrgans": 3,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 69.29999999998836,
+            "calls": 41,
+            "triangles": 10058,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "d0ebb2e1",
+          "still": "docs/development/reports/polish-independent-review/arching-trailer-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 84,
+            "calls": 41,
+            "triangles": 10058,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "d0ebb2e1",
+          "still": "docs/development/reports/polish-independent-review/arching-trailer-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 119.39999999999418,
+            "calls": 41,
+            "triangles": 10058,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "d0ebb2e1",
+          "still": "docs/development/reports/polish-independent-review/arching-trailer-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "foliage-fan",
+      "summary": {
+        "canonicalHash": "0c41197f",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "organs": 8,
+            "activeBranches": 12,
+            "activeOrgans": 8,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 79.19999999995343,
+            "calls": 103,
+            "triangles": 16134,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "0c41197f",
+          "still": "docs/development/reports/polish-independent-review/foliage-fan-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 86,
+            "calls": 103,
+            "triangles": 16134,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "0c41197f",
+          "still": "docs/development/reports/polish-independent-review/foliage-fan-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 121.30000000004657,
+            "calls": 103,
+            "triangles": 16134,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "0c41197f",
+          "still": "docs/development/reports/polish-independent-review/foliage-fan-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "blossom-spray",
+      "summary": {
+        "canonicalHash": "e313704c",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 10,
+            "organs": 6,
+            "activeBranches": 10,
+            "activeOrgans": 6,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 93,
+            "calls": 83,
+            "triangles": 17998,
+            "instancedCalls": 25,
+            "instancedTriangles": 20980
+          },
+          "canonicalHash": "e313704c",
+          "still": "docs/development/reports/polish-independent-review/blossom-spray-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 23.5,
+            "calls": 83,
+            "triangles": 17998,
+            "instancedCalls": 25,
+            "instancedTriangles": 20980
+          },
+          "canonicalHash": "e313704c",
+          "still": "docs/development/reports/polish-independent-review/blossom-spray-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 24.899999999965075,
+            "calls": 83,
+            "triangles": 17998,
+            "instancedCalls": 25,
+            "instancedTriangles": 20980
+          },
+          "canonicalHash": "e313704c",
+          "still": "docs/development/reports/polish-independent-review/blossom-spray-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "nodding-flower",
+      "summary": {
+        "canonicalHash": "f4ed4497",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "organs": 2,
+            "activeBranches": 3,
+            "activeOrgans": 2,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 71.60000000003492,
+            "calls": 29,
+            "triangles": 12302,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "f4ed4497",
+          "still": "docs/development/reports/polish-independent-review/nodding-flower-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 85.5,
+            "calls": 29,
+            "triangles": 12302,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "f4ed4497",
+          "still": "docs/development/reports/polish-independent-review/nodding-flower-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 120.70000000001164,
+            "calls": 29,
+            "triangles": 12302,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "f4ed4497",
+          "still": "docs/development/reports/polish-independent-review/nodding-flower-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "berry-twig",
+      "summary": {
+        "canonicalHash": "0d768a64",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 13,
+            "organs": 9,
+            "activeBranches": 13,
+            "activeOrgans": 9,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 74,
+            "calls": 95,
+            "triangles": 15922,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "0d768a64",
+          "still": "docs/development/reports/polish-independent-review/berry-twig-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 86,
+            "calls": 95,
+            "triangles": 15922,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "0d768a64",
+          "still": "docs/development/reports/polish-independent-review/berry-twig-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 119.70000000001164,
+            "calls": 95,
+            "triangles": 15922,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "0d768a64",
+          "still": "docs/development/reports/polish-independent-review/berry-twig-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "fern-frond",
+      "summary": {
+        "canonicalHash": "32a97877",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "seatOrdinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "organs": 8,
+            "activeBranches": 9,
+            "activeOrgans": 8,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 21.600000000034925,
+            "calls": 91,
+            "triangles": 16726,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "32a97877",
+          "still": "docs/development/reports/polish-independent-review/fern-frond-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 85.30000000004657,
+            "calls": 91,
+            "triangles": 16726,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "32a97877",
+          "still": "docs/development/reports/polish-independent-review/fern-frond-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 119,
+            "calls": 91,
+            "triangles": 16726,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "32a97877",
+          "still": "docs/development/reports/polish-independent-review/fern-frond-seed8278-count1-above.png"
+        }
+      }
+    }
+  ],
+  "costs": [
+    {
+      "fixture": "round5-palette",
+      "seed": 8278,
+      "count": 12,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 120.5,
+            "calls": 777,
+            "triangles": 111770,
+            "instancedCalls": 51,
+            "instancedTriangles": 37972
+          },
+          "canonicalHash": "6fd84a83",
+          "still": "docs/development/reports/polish-independent-review/round5-palette-seed8278-count12-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 24.899999999965075,
+            "calls": 777,
+            "triangles": 111770,
+            "instancedCalls": 51,
+            "instancedTriangles": 37972
+          },
+          "canonicalHash": "6fd84a83",
+          "still": null
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 359,
+            "calls": 777,
+            "triangles": 111770,
+            "instancedCalls": 51,
+            "instancedTriangles": 37972
+          },
+          "canonicalHash": "6fd84a83",
+          "still": null
+        }
+      },
+      "summary": {
+        "canonicalHash": "6fd84a83",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 12,
+        "seatOrdinal": 12,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "one-branch-v1",
+            "branches": 15,
+            "organs": 10,
+            "activeBranches": 15,
+            "activeOrgans": 10,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-10",
+            "seed": 17071,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "organs": 2,
+            "activeBranches": 3,
+            "activeOrgans": 2,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-11",
+            "seed": 18048,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 14,
+            "organs": 10,
+            "activeBranches": 14,
+            "activeOrgans": 10,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-12",
+            "seed": 19025,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "organs": 8,
+            "activeBranches": 9,
+            "activeOrgans": 8,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "leafy-shoot-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "organs": 0,
+            "activeBranches": 5,
+            "activeOrgans": 0,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-4",
+            "seed": 11209,
+            "generatorVersion": "single-flower-v1",
+            "branches": 4,
+            "organs": 3,
+            "activeBranches": 4,
+            "activeOrgans": 3,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-5",
+            "seed": 12186,
+            "generatorVersion": "reed-v1",
+            "branches": 1,
+            "organs": 0,
+            "activeBranches": 1,
+            "activeOrgans": 0,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-6",
+            "seed": 13163,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-7",
+            "seed": 14140,
+            "generatorVersion": "arching-trailer-v1",
+            "branches": 4,
+            "organs": 3,
+            "activeBranches": 4,
+            "activeOrgans": 3,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-8",
+            "seed": 15117,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "organs": 8,
+            "activeBranches": 12,
+            "activeOrgans": 8,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-9",
+            "seed": 16094,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 10,
+            "organs": 6,
+            "activeBranches": 10,
+            "activeOrgans": 6,
+            "inactiveOrganIds": []
+          }
+        ]
+      }
+    }
+  ],
+  "arrangements": [
+    {
+      "title": "Leafy fern and fan",
+      "expectedHash": "3b1e9ad9",
+      "summary": {
+        "canonicalHash": "3b1e9ad9",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 3,
+        "seatOrdinal": 3,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "leafy-shoot-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "organs": 8,
+            "activeBranches": 9,
+            "activeOrgans": 7,
+            "inactiveOrganIds": [
+              "plant-2:pinna-blade-4"
+            ]
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "organs": 8,
+            "activeBranches": 12,
+            "activeOrgans": 8,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 166.80000000004657,
+            "calls": 255,
+            "triangles": 34414,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "3b1e9ad9",
+          "still": "docs/development/reports/polish-independent-review/arrangement-a-leafy-fern-fan-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 103.40000000002328,
+            "calls": 255,
+            "triangles": 34414,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "3b1e9ad9",
+          "still": "docs/development/reports/polish-independent-review/arrangement-a-leafy-fern-fan-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 24.20000000001164,
+            "calls": 255,
+            "triangles": 34414,
+            "instancedCalls": 1,
+            "instancedTriangles": 3700
+          },
+          "canonicalHash": "3b1e9ad9",
+          "still": "docs/development/reports/polish-independent-review/arrangement-a-leafy-fern-fan-above.png"
+        }
+      }
+    },
+    {
+      "title": "Berry and flower accents",
+      "expectedHash": "1f7e3e94",
+      "summary": {
+        "canonicalHash": "1f7e3e94",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 4,
+        "seatOrdinal": 4,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 13,
+            "organs": 9,
+            "activeBranches": 13,
+            "activeOrgans": 9,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 8,
+            "organs": 5,
+            "activeBranches": 8,
+            "activeOrgans": 5,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "organs": 7,
+            "activeBranches": 8,
+            "activeOrgans": 7,
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-4",
+            "seed": 11209,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "organs": 2,
+            "activeBranches": 3,
+            "activeOrgans": 2,
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 159.90000000002328,
+            "calls": 253,
+            "triangles": 43674,
+            "instancedCalls": 41,
+            "instancedTriangles": 32500
+          },
+          "canonicalHash": "1f7e3e94",
+          "still": "docs/development/reports/polish-independent-review/arrangement-b-berry-flower-accents-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 29.099999999976717,
+            "calls": 253,
+            "triangles": 43674,
+            "instancedCalls": 41,
+            "instancedTriangles": 32500
+          },
+          "canonicalHash": "1f7e3e94",
+          "still": "docs/development/reports/polish-independent-review/arrangement-b-berry-flower-accents-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 22.20000000001164,
+            "calls": 253,
+            "triangles": 43674,
+            "instancedCalls": 41,
+            "instancedTriangles": 32500
+          },
+          "canonicalHash": "1f7e3e94",
+          "still": "docs/development/reports/polish-independent-review/arrangement-b-berry-flower-accents-above.png"
+        }
+      }
+    }
+  ],
+  "picker": {
+    "emptyHash": "41418c67",
+    "foldTop": {
+      "clientHeight": 286,
+      "scrollHeight": 539,
+      "scrollTop": 0,
+      "cuesPresent": true,
+      "aboveHidden": true,
+      "belowHidden": false,
+      "underFade": "arching-trailer",
+      "items": [
+        {
+          "id": "flowering-branch",
+          "pressed": true,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "leafy-shoot",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "bare-branch",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "single-flower",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "reed",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "flower-volume",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "arching-trailer",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0.3955965909090909
+        },
+        {
+          "id": "foliage-fan",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "blossom-spray",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "nodding-flower",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "berry-twig",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "fern-frond",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        }
+      ]
+    },
+    "selected": {
+      "menuOpen": false,
+      "selected": "fern-frond",
+      "source": "Drag fern frond to the kenzan",
+      "plantsBefore": 0,
+      "plantsAfter": 0,
+      "ordinalBefore": 0,
+      "ordinalAfter": 0,
+      "hashBefore": "41418c67",
+      "hash": "41418c67"
+    },
+    "foldReopen": {
+      "clientHeight": 286,
+      "scrollHeight": 539,
+      "scrollTop": 253,
+      "cuesPresent": true,
+      "aboveHidden": false,
+      "belowHidden": true,
+      "underFade": null,
+      "items": [
+        {
+          "id": "flowering-branch",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "leafy-shoot",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "bare-branch",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "single-flower",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "reed",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "flower-volume",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0.39985795454545453
+        },
+        {
+          "id": "arching-trailer",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "foliage-fan",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "blossom-spray",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "nodding-flower",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "berry-twig",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "fern-frond",
+          "pressed": true,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        }
+      ]
+    },
+    "foldReset": {
+      "clientHeight": 286,
+      "scrollHeight": 539,
+      "scrollTop": 0,
+      "cuesPresent": true,
+      "aboveHidden": true,
+      "belowHidden": false,
+      "underFade": "arching-trailer",
+      "items": [
+        {
+          "id": "flowering-branch",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "leafy-shoot",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "bare-branch",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "single-flower",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "reed",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "flower-volume",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "arching-trailer",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0.3955965909090909
+        },
+        {
+          "id": "foliage-fan",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "blossom-spray",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "nodding-flower",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "berry-twig",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "fern-frond",
+          "pressed": true,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        }
+      ]
+    },
+    "foldEnd": {
+      "clientHeight": 286,
+      "scrollHeight": 539,
+      "scrollTop": 253,
+      "cuesPresent": true,
+      "aboveHidden": false,
+      "belowHidden": true,
+      "underFade": null,
+      "items": [
+        {
+          "id": "flowering-branch",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "leafy-shoot",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "bare-branch",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "single-flower",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "reed",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "flower-volume",
+          "pressed": false,
+          "fullyVisible": false,
+          "visibleFraction": 0.39985795454545453
+        },
+        {
+          "id": "arching-trailer",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "foliage-fan",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "blossom-spray",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "nodding-flower",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "berry-twig",
+          "pressed": false,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "fern-frond",
+          "pressed": true,
+          "fullyVisible": true,
+          "visibleFraction": 1
+        }
+      ]
+    },
+    "afterHash": "41418c67",
+    "plants": 0,
+    "ordinal": 0
+  },
+  "smoke": [
+    {
+      "material": "fern-frond",
+      "beforeHash": "32a97877",
+      "ordinal": 1,
+      "acquired": "plant-1:rachis",
+      "aimAcquired": true,
+      "aimHash": "1d40c4fa",
+      "bendAcquired": true,
+      "bendHash": "13f16a3a",
+      "stockBefore": {
+        "activeLength": 3.75022561246995,
+        "restLength": 3.75022561246995,
+        "active": true
+      },
+      "stockAfterAim": {
+        "activeLength": 3.75022561246995,
+        "restLength": 3.75022561246995,
+        "active": true
+      },
+      "stockAfterBend": {
+        "activeLength": 3.75022561246995,
+        "restLength": 3.75022561246995,
+        "active": true
+      },
+      "previewCue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+      "previewHashUnchanged": true,
+      "previewDuringHash": "13f16a3a",
+      "previewBeforeHash": "13f16a3a",
+      "cancelHash": "13f16a3a",
+      "cancelCleared": true,
+      "cancelAddedSave": false,
+      "commitHash": "3b040b1a",
+      "inactiveOrganIds": [
+        "plant-1:pinna-blade-4"
+      ],
+      "reloadHash": "3b040b1a",
+      "reloadMatches": true,
+      "viewHash": "3b040b1a",
+      "viewMatches": true,
+      "copyHash": "3b040b1a",
+      "copyMatches": true,
+      "seatOrdinal": 1,
+      "keptError": "Kept. You can leave it here, or keep working.",
+      "stills": {
+        "aimStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-aim-front.png",
+        "bendStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-bend-front.png",
+        "previewStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-prune-preview-front.png",
+        "commitStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-prune-commit-front.png",
+        "reloadStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-reload-front.png",
+        "viewStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-garden-view-front.png",
+        "copyStill": "docs/development/reports/polish-independent-review/smoke-fern-frond-garden-copy-front.png"
+      }
+    },
+    {
+      "material": "foliage-fan",
+      "beforeHash": "0c41197f",
+      "ordinal": 1,
+      "acquired": "plant-1:stem",
+      "aimAcquired": true,
+      "aimHash": "340805b0",
+      "bendAcquired": true,
+      "bendHash": "5001d224",
+      "stockBefore": {
+        "activeLength": 2.6202256124699494,
+        "restLength": 2.6202256124699494,
+        "active": true
+      },
+      "stockAfterAim": {
+        "activeLength": 2.6202256124699494,
+        "restLength": 2.6202256124699494,
+        "active": true
+      },
+      "stockAfterBend": {
+        "activeLength": 2.6202256124699494,
+        "restLength": 2.6202256124699494,
+        "active": true
+      },
+      "previewCue": "Cut branch\nTip + 1 attached stem, 1 leaf · release to cut",
+      "previewHashUnchanged": true,
+      "previewDuringHash": "5001d224",
+      "previewBeforeHash": "5001d224",
+      "cancelHash": "5001d224",
+      "cancelCleared": true,
+      "cancelAddedSave": false,
+      "commitHash": "007233d5",
+      "inactiveOrganIds": [
+        "plant-1:leaf-opening-3"
+      ],
+      "reloadHash": "007233d5",
+      "reloadMatches": true,
+      "viewHash": "007233d5",
+      "viewMatches": true,
+      "copyHash": "007233d5",
+      "copyMatches": true,
+      "seatOrdinal": 1,
+      "keptError": "Kept. You can leave it here, or keep working.",
+      "stills": {
+        "aimStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-aim-front.png",
+        "bendStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-bend-front.png",
+        "previewStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-prune-preview-front.png",
+        "commitStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-prune-commit-front.png",
+        "reloadStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-reload-front.png",
+        "viewStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-garden-view-front.png",
+        "copyStill": "docs/development/reports/polish-independent-review/smoke-foliage-fan-garden-copy-front.png"
+      }
+    },
+    {
+      "material": "berry-twig",
+      "beforeHash": "0d768a64",
+      "ordinal": 1,
+      "acquired": "plant-1:wood",
+      "aimAcquired": true,
+      "aimHash": "7b471a45",
+      "bendAcquired": true,
+      "bendHash": "b4b1052b",
+      "stockBefore": {
+        "activeLength": 4.695782709047197,
+        "restLength": 4.695782709047197,
+        "active": true
+      },
+      "stockAfterAim": {
+        "activeLength": 4.695782709047197,
+        "restLength": 4.695782709047197,
+        "active": true
+      },
+      "stockAfterBend": {
+        "activeLength": 4.695782709047197,
+        "restLength": 4.695782709047197,
+        "active": true
+      },
+      "previewCue": "Cut branch\nTip + 2 attached stems, 2 berries · release to cut",
+      "previewHashUnchanged": true,
+      "previewDuringHash": "b4b1052b",
+      "previewBeforeHash": "b4b1052b",
+      "cancelHash": "b4b1052b",
+      "cancelCleared": true,
+      "cancelAddedSave": false,
+      "commitHash": "f87c8680",
+      "inactiveOrganIds": [
+        "plant-1:berry-2-2",
+        "plant-1:berry-2-3"
+      ],
+      "reloadHash": "f87c8680",
+      "reloadMatches": true,
+      "viewHash": "f87c8680",
+      "viewMatches": true,
+      "copyHash": "f87c8680",
+      "copyMatches": true,
+      "seatOrdinal": 1,
+      "keptError": "Kept. You can leave it here, or keep working.",
+      "stills": {
+        "aimStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-aim-front.png",
+        "bendStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-bend-front.png",
+        "previewStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-prune-preview-front.png",
+        "commitStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-prune-commit-front.png",
+        "reloadStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-reload-front.png",
+        "viewStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-garden-view-front.png",
+        "copyStill": "docs/development/reports/polish-independent-review/smoke-berry-twig-garden-copy-front.png"
+      }
+    },
+    {
+      "material": "blossom-spray",
+      "beforeHash": "e313704c",
+      "ordinal": 1,
+      "acquired": "plant-1:stem",
+      "aimAcquired": true,
+      "aimHash": "555cd6c1",
+      "bendAcquired": true,
+      "bendHash": "68b12171",
+      "stockBefore": {
+        "activeLength": 5.217786454781891,
+        "restLength": 5.217786454781891,
+        "active": true
+      },
+      "stockAfterAim": {
+        "activeLength": 5.217786454781891,
+        "restLength": 5.217786454781891,
+        "active": true
+      },
+      "stockAfterBend": {
+        "activeLength": 5.217786454781891,
+        "restLength": 5.217786454781891,
+        "active": true
+      },
+      "previewCue": "Cut branch\nTip + 1 attached stem, 1 flower · release to cut",
+      "previewHashUnchanged": true,
+      "previewDuringHash": "68b12171",
+      "previewBeforeHash": "68b12171",
+      "cancelHash": "68b12171",
+      "cancelCleared": true,
+      "cancelAddedSave": false,
+      "commitHash": "0fda66d1",
+      "inactiveOrganIds": [
+        "plant-1:bloom-2-2"
+      ],
+      "reloadHash": "0fda66d1",
+      "reloadMatches": true,
+      "viewHash": "0fda66d1",
+      "viewMatches": true,
+      "copyHash": "0fda66d1",
+      "copyMatches": true,
+      "seatOrdinal": 1,
+      "keptError": "Kept. You can leave it here, or keep working.",
+      "stills": {
+        "aimStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-aim-front.png",
+        "bendStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-bend-front.png",
+        "previewStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-prune-preview-front.png",
+        "commitStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-prune-commit-front.png",
+        "reloadStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-reload-front.png",
+        "viewStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-garden-view-front.png",
+        "copyStill": "docs/development/reports/polish-independent-review/smoke-blossom-spray-garden-copy-front.png"
+      }
+    },
+    {
+      "material": "flower-volume",
+      "beforeHash": "5c6ba5af",
+      "ordinal": 1,
+      "acquired": "plant-1:stem",
+      "aimAcquired": true,
+      "aimHash": "1b55eda1",
+      "bendAcquired": true,
+      "bendHash": "c2390df3",
+      "stockBefore": {
+        "activeLength": 4.481007809303701,
+        "restLength": 4.481007809303701,
+        "active": true
+      },
+      "stockAfterAim": {
+        "activeLength": 4.481007809303701,
+        "restLength": 4.481007809303701,
+        "active": true
+      },
+      "stockAfterBend": {
+        "activeLength": 4.481007809303701,
+        "restLength": 4.481007809303701,
+        "active": true
+      },
+      "previewCue": "Cut flower stem\nTip + 1 flower · release to cut",
+      "previewHashUnchanged": true,
+      "previewDuringHash": "c2390df3",
+      "previewBeforeHash": "c2390df3",
+      "cancelHash": "c2390df3",
+      "cancelCleared": true,
+      "cancelAddedSave": false,
+      "commitHash": "a7c68609",
+      "inactiveOrganIds": [
+        "plant-1:bloom-5"
+      ],
+      "reloadHash": "a7c68609",
+      "reloadMatches": true,
+      "viewHash": "a7c68609",
+      "viewMatches": true,
+      "copyHash": "a7c68609",
+      "copyMatches": true,
+      "seatOrdinal": 1,
+      "keptError": "Kept. You can leave it here, or keep working.",
+      "stills": {
+        "aimStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-aim-front.png",
+        "bendStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-bend-front.png",
+        "previewStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-prune-preview-front.png",
+        "commitStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-prune-commit-front.png",
+        "reloadStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-reload-front.png",
+        "viewStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-garden-view-front.png",
+        "copyStill": "docs/development/reports/polish-independent-review/smoke-flower-volume-garden-copy-front.png"
+      }
+    },
+    {
+      "material": "nodding-flower",
+      "beforeHash": "f4ed4497",
+      "ordinal": 1,
+      "acquired": "plant-1:neck",
+      "aimAcquired": true,
+      "aimHash": "66a128ee",
+      "bendAcquired": true,
+      "bendHash": "78e8213d",
+      "stockBefore": {
+        "activeLength": 2.3528913545235985,
+        "restLength": 2.3528913545235985,
+        "active": true
+      },
+      "stockAfterAim": {
+        "activeLength": 2.3528913545235985,
+        "restLength": 2.3528913545235985,
+        "active": true
+      },
+      "stockAfterBend": {
+        "activeLength": 2.3528913545235985,
+        "restLength": 2.3528913545235985,
+        "active": true
+      },
+      "previewCue": "Cut flower stem\nTip + 1 flower · release to cut",
+      "previewHashUnchanged": true,
+      "previewDuringHash": "78e8213d",
+      "previewBeforeHash": "78e8213d",
+      "cancelHash": "78e8213d",
+      "cancelCleared": true,
+      "cancelAddedSave": false,
+      "commitHash": "fd6d29db",
+      "inactiveOrganIds": [
+        "plant-1:bloom"
+      ],
+      "reloadHash": "fd6d29db",
+      "reloadMatches": true,
+      "viewHash": "fd6d29db",
+      "viewMatches": true,
+      "copyHash": "fd6d29db",
+      "copyMatches": true,
+      "seatOrdinal": 1,
+      "keptError": "Kept. You can leave it here, or keep working.",
+      "stills": {
+        "aimStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-aim-front.png",
+        "bendStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-bend-front.png",
+        "previewStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-prune-preview-front.png",
+        "commitStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-prune-commit-front.png",
+        "reloadStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-reload-front.png",
+        "viewStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-garden-view-front.png",
+        "copyStill": "docs/development/reports/polish-independent-review/smoke-nodding-flower-garden-copy-front.png"
+      }
+    }
+  ],
+  "environment": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "import": {
+    "error": "Imported 2 arrangements.",
+    "count": "2 / 24 moments kept",
+    "titles": [
+      "Berry and flower accents",
+      "Leafy fern and fan"
+    ]
+  }
+}

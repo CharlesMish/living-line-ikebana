@@ -129,6 +129,14 @@ Keep profile IDs stable even if labels change:
 - Round 3 palette (established four, then reed → flower volume → arching trailer)
 - All registered materials (dynamic — not a baseline)
 
+## Provisional Round 4 comparison
+
+`references-plus-foliage-fan` is a provisional stable profile on the foliage-fan
+candidate: flowering → leafy → foliage-fan. It is not part of `reference-pair`,
+`mixed`, `all-four`, `round3-three`, or `round3-palette`. Those IDs keep the
+orders in the frozen table above. The integrator decides whether this profile
+stays.
+
 ## Out of scope on this branch
 
 - `gardenUI.ts` tray/modal HTML

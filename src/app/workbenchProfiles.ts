@@ -25,6 +25,7 @@ export const SINGLE_FLOWER_MATERIAL_ID = "single-flower";
 export const REED_MATERIAL_ID = "reed";
 export const FLOWER_VOLUME_MATERIAL_ID = "flower-volume";
 export const ARCHING_TRAILER_MATERIAL_ID = "arching-trailer";
+export const FOLIAGE_FAN_MATERIAL_ID = "foliage-fan";
 
 export const REFERENCE_MATERIAL_IDS = [
   FLOWERING_BRANCH_MATERIAL_ID,
@@ -44,6 +45,7 @@ export type WorkbenchFixtureProfileId =
   | "references-plus-arching-trailer"
   | "round3-three"
   | "round3-palette"
+  | "references-plus-foliage-fan"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -134,6 +136,13 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
       ARCHING_TRAILER_MATERIAL_ID,
     ],
     notes: "Explicit seven-material list, not the live catalog and not all-four. Six cuttings omit the trailer. Twelve cuttings are not equal copies.",
+  }),
+  Object.freeze({
+    id: "references-plus-foliage-fan",
+    label: "References plus foliage fan (provisional)",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, FOLIAGE_FAN_MATERIAL_ID],
+    notes: "Provisional Round 4 comparison. Flowering → leafy → foliage-fan. Does not change reference-pair, mixed, all-four, round3-three, or round3-palette.",
   }),
   Object.freeze({
     id: "all-registered-materials",

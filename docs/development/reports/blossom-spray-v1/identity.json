@@ -1,0 +1,44 @@
+{
+  "base": { "x": 0, "y": 0.55, "z": 0 },
+  "seeds": [
+    {
+      "seed": 8278,
+      "groups": 3,
+      "flowers": 6,
+      "branches": 10,
+      "organs": 6,
+      "nearestBloomGap": 1.5076,
+      "farthestBloomGap": 4.2238,
+      "bloomHeightSpan": 3.1454,
+      "flowerVolumeNearest": 0.3056,
+      "flowerVolumeSpan": 0.5559,
+      "flowerVolumeHeightSpan": 0.2879
+    },
+    {
+      "seed": 9255,
+      "groups": 2,
+      "flowers": 5,
+      "branches": 8,
+      "organs": 5,
+      "nearestBloomGap": 1.2943,
+      "farthestBloomGap": 4.2862,
+      "bloomHeightSpan": 2.4262,
+      "flowerVolumeNearest": 0.3009,
+      "flowerVolumeSpan": 0.5705,
+      "flowerVolumeHeightSpan": 0.2765
+    },
+    {
+      "seed": 10232,
+      "groups": 3,
+      "flowers": 6,
+      "branches": 10,
+      "organs": 6,
+      "nearestBloomGap": 1.5259,
+      "farthestBloomGap": 4.2567,
+      "bloomHeightSpan": 3.1524,
+      "flowerVolumeNearest": 0.2984,
+      "flowerVolumeSpan": 0.5435,
+      "flowerVolumeHeightSpan": 0.3074
+    }
+  ]
+}

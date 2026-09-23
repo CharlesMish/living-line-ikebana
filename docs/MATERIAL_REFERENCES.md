@@ -1,6 +1,6 @@
 # Material references and extension contract
 
-**Current status after PR #33:** all seven materials listed below are on main.
+**Current status:** the seven materials in the tables below remain. Round 4 appends foliage fan, blossom spray, and nodding flower, in that order.
 The former flower Aim dead zone and visible-surface acquisition gaps are fixed;
 see [the correction report](development/FLOWER_AIM_POLISH.md). The two original
 references remain the comparison pair. Sections describing earlier prototype
@@ -10,9 +10,10 @@ pauses are historical, not the current dispatch. The next proposed work is in
 This is a working extension contract, pending phone and composition review.
 Keep the flowering and leafy references together when proposing another material.
 The existing behavioral contract is preserved. `leafy-shoot-v1`, `bare-branch-v1`,
-`single-flower-v1`, `reed-v1`, `flower-volume-v1`, and `arching-trailer-v1` are
-additive. Catalog order is flowering → leafy → bare-branch → single-flower →
-reed → flower-volume → arching-trailer.
+`single-flower-v1`, `reed-v1`, `flower-volume-v1`, `arching-trailer-v1`,
+`foliage-fan-v1`, `blossom-spray-v1`, and `nodding-flower-v1` are additive.
+Catalog order is flowering → leafy → bare-branch → single-flower →
+reed → flower-volume → arching-trailer → foliage-fan → blossom-spray → nodding-flower.
 
 | Reference | Structure | Appearance | Bend response |
 | --- | --- | --- | --- |
@@ -128,6 +129,35 @@ Each flower-volume group is one pedicel and one bloom. Pruning that pedicel
 deactivates that bloom and leaves the other groups unchanged. That cut is a
 graph fact. The current renderer draws one instanced mesh per bloom; a group
 cut does not require a separate draw call.
+
+## Accepted Round 4 cuttings
+
+`foliage-fan-v1`, `blossom-spray-v1`, and `nodding-flower-v1` are appended after
+the seven established materials, in that lane order. They do not change those
+generators, fixtures, or the orders above. `reference-pair`, `mixed`, `all-four`,
+`round3-three`, and `round3-palette` do not list them.
+
+`references-plus-foliage-fan`, `references-plus-blossom-spray`, and
+`references-plus-nodding-flower` are flowering → leafy → that cutting.
+`blossom-compare` is flowering branch → flower volume → blossom spray.
+`round4-candidates` is foliage-fan → blossom-spray → nodding-flower.
+`round4-palette` is the seven established materials, then those three.
+
+| Cutting | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Foliage fan / `foliage-fan-v1` | One stem, three lateral arms, eight small leaves on those arms. A basal span stays below the first arm | Yellow-green stock `0x7c9a34`; existing elliptic leaves, smaller than the leafy shoot's blades | Stem `0.47`, arms `0.36`, stalks `0.18`, copied once. Shared solver |
+| Blossom spray / `blossom-spray-v1` | Thin green stem and two or three laterals. Four to six small flowers, each a pedicel and one bloom on a lateral, with open space between them | Existing tufted bloom, pale `0xf6d0d8`. Stem `0x7d9a55`, roughness `0.66`. Same tuft hit radius `0.56` as flower volume | Stem `0.48`, laterals `0.41`, stalks `0.18`. Copied once. Shared solver |
+| Nodding flower / `nodding-flower-v1` | One supporting stem, one leaf, and one pedicel neck whose rest curve ends downward. The bell opens along that neck | Bell `0x7d94b8`, roughness `0.56`, hit radius `0.66` centered at local Y `0.32`. Stem `0x516846` | Stem `0.48`, stalk `0.18`, copied once. The neck is rest geometry. Shared solver |
+
+Cutting the foliage fan's opening arm deactivates that arm's leaf stalks and
+leaves and leaves the answering and crown arms unchanged. A blossom-spray
+flower-stalk cut removes that one bloom. A lateral cut removes that group's
+descendant stalks and blooms and leaves the stem and the other groups. Those
+cuts are graph facts. They do not add a draw call. The fan's leaves stay
+separate organs on the existing elliptic surface. The blossom spray uses the
+existing tufted bloom. The nodding flower uses one bell shell along the
+supporting tangent. Cupped, open-face, and tufted blooms keep their radial
+paths. None of these cuttings is a named species.
 
 The trailer’s centered rest pose crosses the open water and stays clear of the
 ceramic: Lane C measured 0.168 of water clearance and 0.089 of rim clearance

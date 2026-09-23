@@ -1,0 +1,7 @@
+{
+  "note": "Headless botanical mesh census from production ThreeStudio.createPlantVisual at seed 8278, base (0, 0.55, 0). A visible mesh counts as one draw. Triangle counts multiply indexed triangles by InstancedMesh instance count, including per-instance petal transforms. Hit proxies and the vessel are excluded. These are not renderer.info counts, FPS, or a phone measurement. The browser captures used SwiftShader and did not expose renderer.info.",
+  "blossomSpray": { "branches": 10, "organs": 6, "visibleDraws": 34, "triangles": 11320, "shownTuftMeshes": 6 },
+  "blossomSprayGroupRemoved": { "branches": 10, "organs": 6, "visibleDraws": 24, "triangles": 7700, "shownTuftMeshes": 4 },
+  "flowerVolume": { "branches": 8, "organs": 7, "visibleDraws": 32, "triangles": 9704, "shownTuftMeshes": 5 },
+  "floweringBranch": { "branches": 15, "organs": 10, "visibleDraws": 50, "triangles": 8524, "shownTuftMeshes": 0 }
+}

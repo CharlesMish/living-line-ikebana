@@ -25,6 +25,9 @@ export const SINGLE_FLOWER_MATERIAL_ID = "single-flower";
 export const REED_MATERIAL_ID = "reed";
 export const FLOWER_VOLUME_MATERIAL_ID = "flower-volume";
 export const ARCHING_TRAILER_MATERIAL_ID = "arching-trailer";
+export const FOLIAGE_FAN_MATERIAL_ID = "foliage-fan";
+export const BLOSSOM_SPRAY_MATERIAL_ID = "blossom-spray";
+export const NODDING_FLOWER_MATERIAL_ID = "nodding-flower";
 
 export const REFERENCE_MATERIAL_IDS = [
   FLOWERING_BRANCH_MATERIAL_ID,
@@ -44,6 +47,12 @@ export type WorkbenchFixtureProfileId =
   | "references-plus-arching-trailer"
   | "round3-three"
   | "round3-palette"
+  | "references-plus-foliage-fan"
+  | "references-plus-blossom-spray"
+  | "blossom-compare"
+  | "references-plus-nodding-flower"
+  | "round4-candidates"
+  | "round4-palette"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -134,6 +143,59 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
       ARCHING_TRAILER_MATERIAL_ID,
     ],
     notes: "Explicit seven-material list, not the live catalog and not all-four. Six cuttings omit the trailer. Twelve cuttings are not equal copies.",
+  }),
+  Object.freeze({
+    id: "references-plus-foliage-fan",
+    label: "References plus foliage fan",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, FOLIAGE_FAN_MATERIAL_ID],
+    notes: "Flowering → leafy → foliage-fan. Does not change reference-pair, mixed, all-four, round3-three, or round3-palette.",
+  }),
+  Object.freeze({
+    id: "references-plus-blossom-spray",
+    label: "References plus blossom spray",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, BLOSSOM_SPRAY_MATERIAL_ID],
+    notes: "Flowering → leafy → blossom-spray. Does not change reference-pair, mixed, all-four, round3-three, or round3-palette.",
+  }),
+  Object.freeze({
+    id: "blossom-compare",
+    label: "Blossom compare (flowering branch → flower volume → blossom spray)",
+    kind: "stable",
+    materialIds: [FLOWERING_BRANCH_MATERIAL_ID, FLOWER_VOLUME_MATERIAL_ID, BLOSSOM_SPRAY_MATERIAL_ID],
+    notes: "Flowering branch, packed flower volume, and blossom spray. Does not change reference-pair, all-four, round3-three, or round3-palette.",
+  }),
+  Object.freeze({
+    id: "references-plus-nodding-flower",
+    label: "References plus nodding flower",
+    kind: "stable",
+    materialIds: [...REFERENCE_MATERIAL_IDS, NODDING_FLOWER_MATERIAL_ID],
+    notes: "Flowering → leafy → nodding-flower. Does not change reference-pair, all-four, or the Round 3 profiles.",
+  }),
+  Object.freeze({
+    id: "round4-candidates",
+    label: "Round 4 candidates (foliage fan → blossom spray → nodding flower)",
+    kind: "stable",
+    materialIds: [FOLIAGE_FAN_MATERIAL_ID, BLOSSOM_SPRAY_MATERIAL_ID, NODDING_FLOWER_MATERIAL_ID],
+    notes: "The three accepted Round 4 cuttings only, in lane order. Six cuttings are two of each. Twelve are four of each.",
+  }),
+  Object.freeze({
+    id: "round4-palette",
+    label: "Round 4 palette (established seven, then foliage fan → blossom spray → nodding flower)",
+    kind: "stable",
+    materialIds: [
+      FLOWERING_BRANCH_MATERIAL_ID,
+      LEAFY_SHOOT_MATERIAL_ID,
+      BARE_BRANCH_MATERIAL_ID,
+      SINGLE_FLOWER_MATERIAL_ID,
+      REED_MATERIAL_ID,
+      FLOWER_VOLUME_MATERIAL_ID,
+      ARCHING_TRAILER_MATERIAL_ID,
+      FOLIAGE_FAN_MATERIAL_ID,
+      BLOSSOM_SPRAY_MATERIAL_ID,
+      NODDING_FLOWER_MATERIAL_ID,
+    ],
+    notes: "Explicit ten-material list, not the live catalog and not round3-palette. Six cuttings omit the trailer and the three Round 4 cuttings. Twelve cuttings are two flowering, two leafy, and one of each remaining material.",
   }),
   Object.freeze({
     id: "all-registered-materials",

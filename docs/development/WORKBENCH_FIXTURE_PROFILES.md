@@ -20,6 +20,12 @@ the live catalog was a comparison-tooling flaw, not a persistence failure.
 | `references-plus-arching-trailer` | stable | flowering → leafy → `arching-trailer` | Round 3 integration |
 | `round3-three` | stable | `reed` → `flower-volume` → `arching-trailer` | Round 3 integration |
 | `round3-palette` | stable | the four above, then reed → flower-volume → arching-trailer | Round 3 integration; **not** `all-four` |
+| `references-plus-foliage-fan` | stable | flowering → leafy → `foliage-fan` | Round 4; does not change the rows above |
+| `references-plus-blossom-spray` | stable | flowering → leafy → `blossom-spray` | Round 4; does not change the rows above |
+| `blossom-compare` | stable | flowering branch → flower volume → `blossom-spray` | Round 4 lane B comparison; does not change the rows above |
+| `references-plus-nodding-flower` | stable | flowering → leafy → `nodding-flower` | Round 4; does not change the rows above |
+| `round4-candidates` | stable | `foliage-fan` → `blossom-spray` → `nodding-flower` | Round 4; lane order |
+| `round4-palette` | stable | the seven established materials, then foliage-fan → blossom-spray → nodding-flower | Round 4; **not** `round3-palette` and **not** the live catalog |
 | `all-registered-materials` | **dynamic** | live `getMaterialDefinitions()` order | yes; **not** a comparison baseline |
 | `mixed` | alias | same as `reference-pair` | yes; keep only for the old picker |
 
@@ -58,6 +64,13 @@ equal fill.
 - `round3-three` × 12 = 4 of each
 - `round3-palette` × 6 omits `arching-trailer` (one each of the first six)
 - `round3-palette` × 12 = 2 of the first five and 1 each of flower-volume and arching-trailer
+- `blossom-compare` × 6 = 2 flowering branch, 2 flower volume, 2 blossom spray
+- `blossom-compare` × 12 = 4 of each
+- `round4-candidates` × 6 = 2 foliage-fan, 2 blossom-spray, 2 nodding-flower
+- `round4-candidates` × 12 = 4 of each
+- `round4-palette` × 6 omits `arching-trailer`, `foliage-fan`, `blossom-spray`, and `nodding-flower`
+- `round4-palette` × 12 = 2 flowering, 2 leafy, and 1 each of the other eight
+- `all-registered-materials` × 6 still cycles the first six catalog entries and omits `arching-trailer` and the three Round 4 cuttings
 
 Single material IDs `reed`, `flower-volume`, and `arching-trailer` still load `count`
 copies of that one cutting. They are not substitutes for the named profiles above.
@@ -127,7 +140,26 @@ Keep profile IDs stable even if labels change:
 - References plus arching trailer
 - Round 3 three (reed → flower volume → arching trailer)
 - Round 3 palette (established four, then reed → flower volume → arching trailer)
+- References plus foliage fan
+- References plus blossom spray
+- Blossom compare (flowering branch → flower volume → blossom spray)
+- References plus nodding flower
+- Round 4 candidates (foliage fan → blossom spray → nodding flower)
+- Round 4 palette (established seven, then foliage fan → blossom spray → nodding flower)
 - All registered materials (dynamic — not a baseline)
+
+## Round 4 stable profiles
+
+Accepted cuttings, in lane order: `foliage-fan`, `blossom-spray`, `nodding-flower`.
+
+`references-plus-foliage-fan`, `references-plus-blossom-spray`, and
+`references-plus-nodding-flower` each append one of those cuttings to the
+flowering and leafy references. `blossom-compare` stays as the lane B
+composition of flowering branch, flower volume, and blossom spray.
+`round4-candidates` and `round4-palette` use the orders in the frozen table.
+`reference-pair`, `mixed`, `all-four`, `round3-three`, and `round3-palette`
+keep the orders above them. `all-registered-materials` stays the only dynamic
+profile, and it stays last.
 
 ## Out of scope on this branch
 

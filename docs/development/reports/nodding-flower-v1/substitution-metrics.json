@@ -1,0 +1,41 @@
+{
+  "method": "Offline projection of production tube and organ meshes through canonical cameras. Not a WebGL or phone capture.",
+  "width": 880,
+  "height": 680,
+  "fov": 44,
+  "light": [
+    -3,
+    8,
+    7
+  ],
+  "singleFlowerRest": {
+    "mouthY": -0.1576994168479229,
+    "tangentY": 0.4319145488236007,
+    "alignment": -5.551115123125783e-17,
+    "stalkTurn": 0.04714710979358609
+  },
+  "singleFlowerSubstituted": {
+    "mouthY": -0.8263740185020997,
+    "tangentY": -0.5082430383137887,
+    "alignment": 6.10405823109339e-17,
+    "stalkTurn": 0.047147109793554125,
+    "stemTurn": 1.7649013467062284
+  },
+  "nodding": {
+    "tangent": {
+      "x": -0.08383034401695014,
+      "y": -0.5924503222730679,
+      "z": 0.8012334797426638
+    },
+    "bloomPosition": {
+      "x": -0.24430483868365577,
+      "y": 2.3392371795786064,
+      "z": 1.3473926669684757
+    },
+    "neckTurn": 1.783431078378132,
+    "neckLength": 1.4569695624505743,
+    "stemLength": 2.3528913545235985,
+    "branches": 3,
+    "organs": 2
+  }
+}

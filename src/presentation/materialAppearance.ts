@@ -13,6 +13,8 @@ export interface MaterialAppearance {
   }>;
   readonly bloom: Readonly<{
     form: BloomForm; color: number; roughness: number; hitRadius: number;
+    /** Offset along the organ's local supporting tangent. Existing forms stay at 0. */
+    hitCenterY?: number;
   }>;
 }
 
@@ -69,12 +71,40 @@ const flowerVolume: MaterialAppearance = Object.freeze({
     roughness: 0.7, ...ellipticLeafHit }),
   bloom: Object.freeze({ form: "tufted", color: 0xc45d7a, roughness: 0.58, hitRadius: 0.56 }),
 });
+const blossomSpray: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x7d9a55, lateral: 0x8aab62,
+    twig: 0x8aab62, pedicel: 0x96b56e, petiole: 0x8aab62 }),
+  stemRoughness: 0.66,
+  // No leaves are generated. The record still requires a leaf slot.
+  leaf: flowering.leaf,
+  // Existing tufted surface and the flower-volume acquisition envelope.
+  // Separation is topological. This does not add a smaller proxy or a new mesh.
+  bloom: Object.freeze({ form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56 }),
+});
+const noddingFlower: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x516846, lateral: 0x516846,
+    twig: 0x5d7450, pedicel: 0x6a8458, petiole: 0x5d7450 }),
+  stemRoughness: 0.7,
+  leaf: Object.freeze({ form: "elliptic", color: 0x3e5c44, veinColor: 0x7d945c,
+    roughness: 0.7, ...ellipticLeafHit }),
+  bloom: Object.freeze({
+    form: "bell", color: 0x7d94b8, roughness: 0.56, hitRadius: 0.66, hitCenterY: 0.32,
+  }),
+});
 const archingTrailer: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x3d6d62, lateral: 0x3d6d62,
     twig: 0x4d7c6a, pedicel: 0x5a8460, petiole: 0x4f7a58 }),
   stemRoughness: 0.58,
   leaf: Object.freeze({ form: "elliptic", color: 0x2f5c48, veinColor: 0x7f9460,
     roughness: 0.66, ...ellipticLeafHit }),
+  bloom: flowering.bloom,
+});
+const foliageFan: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x7c9a34, lateral: 0x739332,
+    twig: 0x86a44a, pedicel: 0x86a44a, petiole: 0x6f8c3c }),
+  stemRoughness: 0.64,
+  leaf: Object.freeze({ form: "elliptic", color: 0x5a8a3c, veinColor: 0x9aaf62,
+    roughness: 0.6, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
@@ -85,6 +115,9 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "reed-v1": reed,
   "flower-volume-v1": flowerVolume,
   "arching-trailer-v1": archingTrailer,
+  "foliage-fan-v1": foliageFan,
+  "blossom-spray-v1": blossomSpray,
+  "nodding-flower-v1": noddingFlower,
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

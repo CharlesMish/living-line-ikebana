@@ -43,6 +43,15 @@ test("named fixture profiles keep explicit ordered material lists", () => {
   assert.deepEqual(byId["round3-palette"]?.materialIds, [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
   ]);
+  assert.deepEqual(byId["references-plus-foliage-fan"]?.materialIds, ["flowering-branch", "leafy-shoot", "foliage-fan"]);
+  assert.deepEqual(byId["references-plus-blossom-spray"]?.materialIds, ["flowering-branch", "leafy-shoot", "blossom-spray"]);
+  assert.deepEqual(byId["blossom-compare"]?.materialIds, ["flowering-branch", "flower-volume", "blossom-spray"]);
+  assert.deepEqual(byId["references-plus-nodding-flower"]?.materialIds, ["flowering-branch", "leafy-shoot", "nodding-flower"]);
+  assert.deepEqual(byId["round4-candidates"]?.materialIds, ["foliage-fan", "blossom-spray", "nodding-flower"]);
+  assert.deepEqual(byId["round4-palette"]?.materialIds, [
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "foliage-fan", "blossom-spray", "nodding-flower",
+  ]);
   assert.equal(byId["all-registered-materials"]?.materialIds, "catalog");
   assert.equal(byId["all-registered-materials"]?.kind, "dynamic");
   assert.equal(resolveWorkbenchFixture(MIXED_FIXTURE_ALIAS).profileId, "reference-pair");
@@ -99,6 +108,9 @@ test("adding an unrelated registered material cannot change reference-pair graph
   assert.equal(dynamicSequence[4]?.materialId, "reed");
   assert.equal(dynamicSequence[5]?.materialId, "flower-volume");
   assert.equal(dynamicSequence[6]?.materialId, "arching-trailer");
+  assert.equal(dynamicSequence[7]?.materialId, "foliage-fan");
+  assert.equal(dynamicSequence[8]?.materialId, "blossom-spray");
+  assert.equal(dynamicSequence[9]?.materialId, "nodding-flower");
   assert.equal(dynamicSequence.at(-1)?.materialId, "unrelated-candidate");
   assert.notEqual(pairSequence[4]?.materialId, dynamicSequence[4]?.materialId);
 });
@@ -127,6 +139,8 @@ test("candidate profiles stay listed and disabled until their materials are in t
     "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
     "round3-three", "round3-palette",
+    "references-plus-foliage-fan", "references-plus-blossom-spray", "blossom-compare",
+    "references-plus-nodding-flower", "round4-candidates", "round4-palette",
   ] as const) {
     const resolved = resolveWorkbenchFixture(id, catalog);
     assert.ok(resolved.missingMaterialIds.length > 0, `${id} should be gated without candidates`);
@@ -154,9 +168,12 @@ test("this integration catalog makes named candidate profiles available to the p
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "foliage-fan", "blossom-spray", "nodding-flower",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
-    "round3-three", "round3-palette", "all-registered-materials",
+    "round3-three", "round3-palette",
+    "references-plus-foliage-fan", "references-plus-blossom-spray", "blossom-compare",
+    "references-plus-nodding-flower", "round4-candidates", "round4-palette", "all-registered-materials",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);
   assert.ok(options.every((option) => option.available));
@@ -260,6 +277,55 @@ test("round 3 profiles are explicit and do not rewrite reference-pair or all-fou
     assert.deepEqual(cutting.plants.find((plant) => plant.id === "plant-2"), pairBefore.plants.find((plant) => plant.id === "plant-2"));
     assert.notDeepEqual(cutting.plants.find((plant) => plant.id === "plant-3"), pairBefore.plants.find((plant) => plant.id === "plant-3"));
   }
+});
+
+test("round 4 profiles are explicit and leave the earlier profiles unchanged", () => {
+  const pairBefore = createWorkbenchFixture("reference-pair", 8278, 6, { remember: false });
+  const round3Before = createWorkbenchFixture("round3-palette", 8278, 6, { remember: false });
+  const candidates = createWorkbenchFixture("round4-candidates", 8278, 6);
+  const candidateLoad = getLastWorkbenchFixtureLoad();
+  assert.deepEqual(candidateLoad?.materialSequence, ["foliage-fan", "blossom-spray", "nodding-flower"]);
+  assert.deepEqual(candidateLoad?.composition.countsByMaterialId, {
+    "foliage-fan": 2, "blossom-spray": 2, "nodding-flower": 2,
+  });
+  assert.equal(candidateLoad?.composition.balancedEqualCopies, true);
+  assert.deepEqual(describeFixture(candidates).plantsInIdentityOrder.map((plant) => plant.generatorVersion), [
+    "foliage-fan-v1", "blossom-spray-v1", "nodding-flower-v1",
+    "foliage-fan-v1", "blossom-spray-v1", "nodding-flower-v1",
+  ]);
+  const candidateTwelve = describeMaterialSequenceComposition(
+    ["foliage-fan", "blossom-spray", "nodding-flower"],
+    12,
+  );
+  assert.deepEqual(candidateTwelve.countsByMaterialId, {
+    "foliage-fan": 4, "blossom-spray": 4, "nodding-flower": 4,
+  });
+
+  const paletteSix = describeMaterialSequenceComposition([
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "foliage-fan", "blossom-spray", "nodding-flower",
+  ], 6);
+  assert.deepEqual(paletteSix.assignedMaterialIds, [
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume",
+  ]);
+  assert.match(paletteSix.warnings.join(" "), /omits arching-trailer, foliage-fan, blossom-spray, nodding-flower/);
+  const paletteTwelve = describeMaterialSequenceComposition([
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
+    "foliage-fan", "blossom-spray", "nodding-flower",
+  ], 12);
+  assert.deepEqual(paletteTwelve.countsByMaterialId, {
+    "flowering-branch": 2, "leafy-shoot": 2, "bare-branch": 1, "single-flower": 1,
+    reed: 1, "flower-volume": 1, "arching-trailer": 1,
+    "foliage-fan": 1, "blossom-spray": 1, "nodding-flower": 1,
+  });
+  assert.equal(paletteTwelve.balancedEqualCopies, false);
+
+  const plusBlossom = createWorkbenchFixture("references-plus-blossom-spray", 8278, 6);
+  assert.deepEqual(getLastWorkbenchFixtureLoad()?.materialSequence, ["flowering-branch", "leafy-shoot", "blossom-spray"]);
+  assert.deepEqual(plusBlossom.plants.find((plant) => plant.id === "plant-1"), pairBefore.plants.find((plant) => plant.id === "plant-1"));
+  assert.deepEqual(plusBlossom.plants.find((plant) => plant.id === "plant-2"), pairBefore.plants.find((plant) => plant.id === "plant-2"));
+  assert.deepEqual(createWorkbenchFixture("reference-pair", 8278, 6, { remember: false }), pairBefore);
+  assert.deepEqual(createWorkbenchFixture("round3-palette", 8278, 6, { remember: false }), round3Before);
 });
 
 test("single-material fixtures stay registered-only and remember explicit construction", () => {

@@ -212,6 +212,47 @@
                   </svg>
                   <span class="material-choice-name">Arching trailer</span>
                 </button>
+                <button type="button" data-material-choice="foliage-fan" data-testid="material-choice-foliage-fan" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M150 66 C148 50 146 40 150 32" />
+                    <path class="cutting-twig" d="M148 44 C112 38 74 30 28 22" />
+                    <path class="cutting-twig" d="M152 42 C190 36 230 30 278 22" />
+                    <path class="cutting-twig" d="M150 34 C154 22 158 14 164 6" />
+                    <g class="cutting-leaf">
+                      <ellipse cx="46" cy="20" rx="14" ry="5" transform="rotate(-16 46 20)" />
+                      <ellipse cx="88" cy="32" rx="12" ry="5" transform="rotate(-6 88 32)" />
+                      <ellipse cx="124" cy="40" rx="11" ry="4" transform="rotate(14 124 40)" />
+                      <ellipse cx="186" cy="38" rx="11" ry="4" transform="rotate(-12 186 38)" />
+                      <ellipse cx="224" cy="28" rx="12" ry="5" transform="rotate(8 224 28)" />
+                      <ellipse cx="262" cy="18" rx="14" ry="5" transform="rotate(18 262 18)" />
+                      <ellipse cx="142" cy="16" rx="10" ry="4" transform="rotate(-28 142 16)" />
+                      <ellipse cx="176" cy="12" rx="10" ry="4" transform="rotate(22 176 12)" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Foliage fan</span>
+                </button>
+                <button type="button" data-material-choice="blossom-spray" data-testid="material-choice-blossom-spray" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M24 66 C78 60 128 46 176 32 C214 22 246 14 274 8" />
+                    <path class="cutting-twig" d="M102 52 C88 42 70 36 52 34" />
+                    <path class="cutting-twig" d="M164 36 C176 26 194 20 212 18" />
+                    <path class="cutting-twig" d="M230 16 C240 8 254 4 268 4" />
+                    <g class="cutting-bloom" transform="translate(48 32)"><circle cx="0" cy="0" r="5" /><circle class="cutting-bloom-center" cx="0" cy="0" r="2" /></g>
+                    <g class="cutting-bloom" transform="translate(70 44)"><circle cx="0" cy="0" r="4" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.6" /></g>
+                    <g class="cutting-bloom" transform="translate(196 16)"><circle cx="0" cy="0" r="4.5" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.8" /></g>
+                    <g class="cutting-bloom" transform="translate(216 26)"><circle cx="0" cy="0" r="4" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.6" /></g>
+                    <g class="cutting-bloom" transform="translate(270 4)"><circle cx="0" cy="0" r="4.5" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.8" /></g>
+                  </svg>
+                  <span class="material-choice-name">Blossom spray</span>
+                </button>
+                <button type="button" data-material-choice="nodding-flower" data-testid="material-choice-nodding-flower" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M36 64 C48 40 58 24 78 16 C108 4 132 14 148 36 C162 54 184 62 206 56" />
+                    <ellipse class="cutting-leaf" cx="92" cy="22" rx="14" ry="5" transform="rotate(-28 92 22)" />
+                    <path class="cutting-bloom" d="M198 48 C204 66 228 70 240 54 C230 44 212 42 202 48" />
+                  </svg>
+                  <span class="material-choice-name">Nodding flower</span>
+                </button>
               </nav>
             </div>
           </div>
@@ -329,6 +370,59 @@
               </svg>
               <span class="material-copy">
                 <span class="material-name">Arching trailer</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-foliage-fan" data-material-label="foliage fan">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M150 66 C148 50 146 40 150 32" />
+                <path class="cutting-twig" d="M148 44 C112 38 74 30 28 22" />
+                <path class="cutting-twig" d="M152 42 C190 36 230 30 278 22" />
+                <path class="cutting-twig" d="M150 34 C154 22 158 14 164 6" />
+                <g class="cutting-leaf">
+                  <ellipse cx="46" cy="20" rx="14" ry="5" transform="rotate(-16 46 20)" />
+                  <ellipse cx="88" cy="32" rx="12" ry="5" transform="rotate(-6 88 32)" />
+                  <ellipse cx="124" cy="40" rx="11" ry="4" transform="rotate(14 124 40)" />
+                  <ellipse cx="186" cy="38" rx="11" ry="4" transform="rotate(-12 186 38)" />
+                  <ellipse cx="224" cy="28" rx="12" ry="5" transform="rotate(8 224 28)" />
+                  <ellipse cx="262" cy="18" rx="14" ry="5" transform="rotate(18 262 18)" />
+                  <ellipse cx="142" cy="16" rx="10" ry="4" transform="rotate(-28 142 16)" />
+                  <ellipse cx="176" cy="12" rx="10" ry="4" transform="rotate(22 176 12)" />
+                </g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Foliage fan</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-blossom-spray" data-material-label="blossom spray">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M24 66 C78 60 128 46 176 32 C214 22 246 14 274 8" />
+                <path class="cutting-twig" d="M102 52 C88 42 70 36 52 34" />
+                <path class="cutting-twig" d="M164 36 C176 26 194 20 212 18" />
+                <path class="cutting-twig" d="M230 16 C240 8 254 4 268 4" />
+                <g class="cutting-bloom" transform="translate(48 32)"><circle cx="0" cy="0" r="5" /><circle class="cutting-bloom-center" cx="0" cy="0" r="2" /></g>
+                <g class="cutting-bloom" transform="translate(70 44)"><circle cx="0" cy="0" r="4" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.6" /></g>
+                <g class="cutting-bloom" transform="translate(196 16)"><circle cx="0" cy="0" r="4.5" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.8" /></g>
+                <g class="cutting-bloom" transform="translate(216 26)"><circle cx="0" cy="0" r="4" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.6" /></g>
+                <g class="cutting-bloom" transform="translate(270 4)"><circle cx="0" cy="0" r="4.5" /><circle class="cutting-bloom-center" cx="0" cy="0" r="1.8" /></g>
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Blossom spray</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-nodding-flower" data-material-label="nodding flower">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M36 64 C48 40 58 24 78 16 C108 4 132 14 148 36 C162 54 184 62 206 56" />
+                <ellipse class="cutting-leaf" cx="92" cy="22" rx="14" ry="5" transform="rotate(-28 92 22)" />
+                <path class="cutting-bloom" d="M198 48 C204 66 228 70 240 54 C230 44 212 42 202 48" />
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Nodding flower</span>
                 <span class="material-verb">drag to the pins</span>
               </span>
               <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>

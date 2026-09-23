@@ -311,3 +311,52 @@ test("cancelled arching-trailer insertion consumes no ordinal and writes no save
   assert.equal(seated.branches.get("plant-1:trail").stiffness, 0.5);
   assert.deepEqual(validatePlantGraph(seated), []);
 });
+
+test("cancelled foliage-fan insertion consumes no ordinal and writes no save", () => {
+  const saves = [];
+  const coordinator = new TransactionCoordinator(createDomainAdapters(), {
+    plants: new Map(), camera: canonicalCameraPose("front"),
+    selectedPlantId: null, successfulPlantOrdinal: 0,
+  }, { onAutosave: event => saves.push(event) });
+  const prepared = prepareMaterialInsertionForApp("foliage-fan", 0);
+  assert.ok(prepared.ok);
+  assert.equal(prepared.graph.generatorVersion, "foliage-fan-v1");
+  assert.equal(prepared.graph.branches.size, 12);
+  assert.equal(prepared.graph.organs.size, 8);
+  coordinator.beginInsert("cancel-fan", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.pointerCancel("cancel-fan");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
+  assert.equal(coordinator.getDocumentSnapshot().plants.size, 0);
+  assert.equal(saves.length, 0);
+  coordinator.beginInsert("seat-fan", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.release("seat-fan");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+  assert.equal(saves.length, 1);
+  const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
+  assert.equal(seated.generatorVersion, "foliage-fan-v1");
+  assert.equal(seated.branches.get("plant-1:stem").stiffness, 0.47);
+  assert.deepEqual(validatePlantGraph(seated), []);
+});
+
+test("cancelled nodding-flower insertion consumes no ordinal and writes no save", () => {
+  const saves = [];
+  const coordinator = new TransactionCoordinator(createDomainAdapters(), {
+    plants: new Map(), camera: canonicalCameraPose("front"),
+    selectedPlantId: null, successfulPlantOrdinal: 0,
+  }, { onAutosave: event => saves.push(event) });
+  const prepared = prepareMaterialInsertionForApp("nodding-flower", 0);
+  assert.ok(prepared.ok);
+  assert.equal(prepared.graph.generatorVersion, "nodding-flower-v1");
+  coordinator.beginInsert("cancel-nod", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.pointerCancel("cancel-nod");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
+  assert.equal(coordinator.getDocumentSnapshot().plants.size, 0);
+  assert.equal(saves.length, 0);
+  coordinator.beginInsert("seat-nod", reservationFrom(prepared), {}, { base: BASE, valid: true });
+  coordinator.release("seat-nod");
+  assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
+  assert.equal(saves.length, 1);
+  const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
+  assert.equal(seated.generatorVersion, "nodding-flower-v1");
+  assert.deepEqual(validatePlantGraph(seated), []);
+});

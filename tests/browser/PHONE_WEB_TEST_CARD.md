@@ -19,6 +19,7 @@ Record:
 
 - build identifier / commit:
 - URL and bend variant (fixed default with no parameter, or `?bend=touch`):
+- Do not score `?experiment=bend-stations` as a fixed-bead trial. That flag is a separate opt-in. Combined with `bend=touch`, bend stations stay off. A phone check of station clarity against stem crowding is not this card's fixed-versus-touch protocol.
 - iPhone model, iOS version, and Safari version:
 - viewport size before and after browser chrome moves:
 - fresh session or restored local specimen:
@@ -377,6 +378,9 @@ interface IkebanaTestBridgeV1 {
     tool: "shape" | "prune";
     view: "front" | "three-quarter" | "above" | "orbit";
     bendVariant: "fixed" | "touch";
+    /** Present with the bend-stations experiment. Not a fixed-versus-touch arm. */
+    bendStations?: "off" | "on" | "excluded";
+    bendStation?: "lower" | "middle" | "upper" | null;
     transaction: null | {
       operation: "insert" | "aim" | "bend" | "base" | "prune" | "camera";
       pointerId: number;

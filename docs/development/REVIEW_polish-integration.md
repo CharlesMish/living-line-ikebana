@@ -8,11 +8,11 @@ Presentation only. Behavioral contract: preserved. No generator version, golden,
 | --- | --- |
 | Start | `2aef05424d751cda2137f3749b2d71e7fdf0c6d1` (`git rev-parse HEAD` before the branch) |
 | Product integration | `7ddb8ac07d4773d51b36df385877286fd7a6f530` |
-| Evidence and this report | `EVIDENCE_SHA` |
+| Evidence and report | `db64b72e418d994fef40c04181087e5f87e6cddd` |
 | Branch | `cursor/product-polish-foliage-flowers-picker-69f4` |
 | Pull request | https://github.com/CharlesMish/living-line-ikebana/pull/51 |
 
-`EVIDENCE_SHA` is the commit that adds the matched stills and this report. The branch tip is that commit, or the one-line child that only fills this hash in. `git rev-parse HEAD^` or `git rev-parse HEAD` on the PR branch is the check. Parent lane branches were not rewritten.
+`db64b72e418d994fef40c04181087e5f87e6cddd` is the commit that adds the matched stills and this report, except this identification of its own hash. The branch tip is the next commit. That commit only writes this paragraph. `git rev-parse HEAD^` on the tip equals `db64b72e418d994fef40c04181087e5f87e6cddd`. `git rev-parse HEAD` is the tip an independent reviewer should cite. Parent lane branches were not rewritten.
 
 ## Model
 

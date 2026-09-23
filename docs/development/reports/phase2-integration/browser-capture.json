@@ -1,0 +1,898 @@
+{
+  "label": "Google Chrome headless, Linux. Draw counts include the vessel. Not a physical phone.",
+  "captures": [
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 75,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "0d768a64",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/berry-twig-seed8278-count1-front.png"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 1,
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 94.09999999997672,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "0d768a64",
+      "cameraHash": "3873951b",
+      "still": "docs/development/reports/phase2-integration/berry-twig-seed8278-count1-three-quarter.png"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 1,
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 137.29999999993015,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "0d768a64",
+      "cameraHash": "fb0ff9ba",
+      "still": "docs/development/reports/phase2-integration/berry-twig-seed8278-count1-above.png"
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 87.5,
+        "calls": 91,
+        "triangles": 16726
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "32a97877",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/fern-frond-seed8278-count1-front.png"
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 94.29999999993015,
+        "calls": 91,
+        "triangles": 16726
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "32a97877",
+      "cameraHash": "3873951b",
+      "still": "docs/development/reports/phase2-integration/fern-frond-seed8278-count1-three-quarter.png"
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 1,
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 128.79999999993015,
+        "calls": 91,
+        "triangles": 16726
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "32a97877",
+      "cameraHash": "fb0ff9ba",
+      "still": "docs/development/reports/phase2-integration/fern-frond-seed8278-count1-above.png"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 9255,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 22.599999999976717,
+        "calls": 103,
+        "triangles": 15022
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "8f9e8328",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/berry-twig-seed9255-count1-front.png"
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 9255,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 26.099999999976717,
+        "calls": 91,
+        "triangles": 16726
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "d2874760",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/fern-frond-seed9255-count1-front.png"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 10232,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 25.699999999953434,
+        "calls": 95,
+        "triangles": 14338
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "885be1da",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/berry-twig-seed10232-count1-front.png"
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 10232,
+      "count": 1,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 84.90000000002328,
+        "calls": 91,
+        "triangles": 16726
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "57e8e200",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/fern-frond-seed10232-count1-front.png"
+    },
+    {
+      "fixture": "round5-candidates",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 125,
+        "calls": 531,
+        "triangles": 65326
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "410aad96",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/round5-candidates-seed8278-count6-front.png"
+    },
+    {
+      "fixture": "round5-candidates",
+      "seed": 8278,
+      "count": 6,
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 136.40000000002328,
+        "calls": 531,
+        "triangles": 65326
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "410aad96",
+      "cameraHash": "3873951b",
+      "still": "docs/development/reports/phase2-integration/round5-candidates-seed8278-count6-three-quarter.png"
+    },
+    {
+      "fixture": "round5-candidates",
+      "seed": 8278,
+      "count": 6,
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 24.399999999906868,
+        "calls": 531,
+        "triangles": 65326
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "410aad96",
+      "cameraHash": "fb0ff9ba",
+      "still": "docs/development/reports/phase2-integration/round5-candidates-seed8278-count6-above.png"
+    },
+    {
+      "fixture": "references-plus-berry-twig",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 26.199999999953434,
+        "calls": 631,
+        "triangles": 80962
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "8ac91406",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/references-plus-berry-twig-seed8278-count6-front.png"
+    },
+    {
+      "fixture": "references-plus-fern-frond",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 28.599999999976717,
+        "calls": 615,
+        "triangles": 85054
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "947cf810",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/references-plus-fern-frond-seed8278-count6-front.png"
+    },
+    {
+      "fixture": "round5-palette",
+      "seed": 8278,
+      "count": 12,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 34.199999999953434,
+        "calls": 777,
+        "triangles": 110010
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "6fd84a83",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/round5-palette-seed8278-count12-front.png"
+    },
+    {
+      "fixture": "berry-twig",
+      "seed": 8278,
+      "count": 12,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 38.79999999993015,
+        "calls": 1099,
+        "triangles": 112218
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "8aeff027",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/berry-twig-seed8278-count12-front.png"
+    },
+    {
+      "fixture": "fern-frond",
+      "seed": 8278,
+      "count": 12,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 179.39999999990687,
+        "calls": 1015,
+        "triangles": 137902
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "a7fa9652",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/fern-frond-seed8278-count12-front.png"
+    },
+    {
+      "fixture": "reference-pair",
+      "seed": 8278,
+      "count": 6,
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 19.899999999906868,
+        "calls": 667,
+        "triangles": 91678
+      },
+      "environment": {
+        "cssViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "drawingBuffer": {
+          "width": 1280,
+          "height": 800
+        },
+        "devicePixelRatio": 1,
+        "browserWindow": {
+          "width": 1280,
+          "height": 800
+        },
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+        "webgl": "webgl2",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)"
+      },
+      "canonicalHash": "1bdb37be",
+      "cameraHash": "f3827392",
+      "still": "docs/development/reports/phase2-integration/reference-pair-seed8278-count6-front.png"
+    },
+    {
+      "fixture": "phase2-clusters-kept-pinna-cut",
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 24.099999999976717,
+        "calls": 327,
+        "triangles": 45310
+      },
+      "still": "docs/development/reports/phase2-integration/arrangement-kept-front.png",
+      "canonicalHash": "99283ff9"
+    },
+    {
+      "fixture": "phase2-clusters-kept-pinna-cut",
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 123.30000000004657,
+        "calls": 327,
+        "triangles": 45310
+      },
+      "still": "docs/development/reports/phase2-integration/arrangement-kept-three-quarter.png",
+      "canonicalHash": "99283ff9"
+    },
+    {
+      "fixture": "phase2-clusters-kept-pinna-cut",
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 158.69999999995343,
+        "calls": 327,
+        "triangles": 45310
+      },
+      "still": "docs/development/reports/phase2-integration/arrangement-kept-above.png",
+      "canonicalHash": "99283ff9"
+    },
+    {
+      "fixture": "phase2-cluster-cleared-rachis-cut",
+      "view": "front",
+      "counts": {
+        "renderElapsedMs": 105.20000000006985,
+        "calls": 285,
+        "triangles": 36358
+      },
+      "still": "docs/development/reports/phase2-integration/arrangement-opened-front.png",
+      "canonicalHash": "d7353afa"
+    },
+    {
+      "fixture": "phase2-cluster-cleared-rachis-cut",
+      "view": "three-quarter",
+      "counts": {
+        "renderElapsedMs": 22.400000000023283,
+        "calls": 285,
+        "triangles": 36358
+      },
+      "still": "docs/development/reports/phase2-integration/arrangement-opened-three-quarter.png",
+      "canonicalHash": "d7353afa"
+    },
+    {
+      "fixture": "phase2-cluster-cleared-rachis-cut",
+      "view": "above",
+      "counts": {
+        "renderElapsedMs": 22.899999999906868,
+        "calls": 285,
+        "triangles": 36358
+      },
+      "still": "docs/development/reports/phase2-integration/arrangement-opened-above.png",
+      "canonicalHash": "d7353afa"
+    }
+  ],
+  "exercises": [
+    {
+      "step": "berry-prune",
+      "berryCancel": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:cluster-2",
+          "materialDistance": 0.4212860269411469,
+          "x": 641.1099333114346,
+          "y": 367.94414123321036,
+          "region": "middle-right"
+        },
+        "beforeHash": "0d768a64",
+        "duringHash": "0d768a64",
+        "during": {
+          "operation": "prune",
+          "pointerId": 41,
+          "plantId": "plant-1",
+          "branchId": "plant-1:cluster-2",
+          "materialDistance": 0.42113124014572567,
+          "acquisitionHash": "0d768a64"
+        },
+        "cue": "Cut branch\nTip + 3 attached stems, 3 berries · release to cut",
+        "afterHash": "0d768a64",
+        "afterTransaction": null
+      },
+      "berryCut": {
+        "beforeHash": "0d768a64",
+        "afterHash": "86481fb8",
+        "ordinal": 1,
+        "inactiveBerries": [
+          "plant-1:berry-2-2",
+          "plant-1:berry-2-3"
+        ],
+        "activeBerries": [
+          "plant-1:berry-1-1",
+          "plant-1:berry-1-2",
+          "plant-1:berry-1-3",
+          "plant-1:berry-2-1",
+          "plant-1:berry-3-1",
+          "plant-1:berry-3-2",
+          "plant-1:berry-3-3"
+        ],
+        "branchCount": 13
+      }
+    },
+    {
+      "step": "berry-aim",
+      "berryAimCancel": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:wood",
+          "materialDistance": 2.582680489975959,
+          "x": 660.4184916602323,
+          "y": 362.8116902603784,
+          "region": "middle-right"
+        },
+        "beforeHash": "86481fb8",
+        "duringHash": "86481fb8",
+        "during": {
+          "operation": "bend",
+          "pointerId": 51,
+          "plantId": "plant-1",
+          "branchId": "plant-1:cluster-2",
+          "materialDistance": 0.22741086967869187,
+          "acquisitionHash": "86481fb8"
+        },
+        "cue": "Bend branch\nA broad curve · release to keep it.",
+        "afterHash": "86481fb8",
+        "afterTransaction": null
+      },
+      "berryAim": {
+        "beforeHash": "86481fb8",
+        "afterHash": "6cca6689",
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Bend branchA broad curve · release to keep it.\n      "
+      }
+    },
+    {
+      "step": "fern-pinna-prune-reload",
+      "fernCancel": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.06238550262979697,
+          "x": 628.4951268772447,
+          "y": 437.54955422003377,
+          "region": "middle-left"
+        },
+        "beforeHash": "32a97877",
+        "duringHash": "32a97877",
+        "during": {
+          "operation": "prune",
+          "pointerId": 61,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.06237964303890675,
+          "acquisitionHash": "32a97877"
+        },
+        "cue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+        "afterHash": "32a97877",
+        "afterTransaction": null
+      },
+      "fernPinna": {
+        "beforeHash": "32a97877",
+        "afterHash": "4d0a39b1",
+        "bladeActive": false,
+        "activeBlades": 7,
+        "organCount": 8,
+        "branchCount": 9
+      },
+      "hashBeforeReload": "4d0a39b1",
+      "hashAfterReload": "4d0a39b1",
+      "reloaded": {
+        "plants": 1,
+        "ordinal": 1,
+        "generator": "fern-frond-v1",
+        "bladeActive": false
+      }
+    },
+    {
+      "step": "fern-rachis-prune",
+      "fernRachis": {
+        "beforeHash": "4d0a39b1",
+        "cue": "Cut main stem\nTip + 4 attached stems, 4 leaves · release to cut",
+        "afterHash": "0508d965",
+        "activeBlades": [
+          "plant-1:pinna-blade-1",
+          "plant-1:pinna-blade-3",
+          "plant-1:pinna-blade-4"
+        ],
+        "inactiveBlades": [
+          "plant-1:pinna-blade-2",
+          "plant-1:pinna-blade-5",
+          "plant-1:pinna-blade-6",
+          "plant-1:pinna-blade-7",
+          "plant-1:pinna-blade-8"
+        ]
+      }
+    },
+    {
+      "step": "fern-aim",
+      "fernAimCancel": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:rachis",
+          "materialDistance": 2.0626240868584724,
+          "x": 627.2600351353141,
+          "y": 396.9575252512246,
+          "region": "middle-left"
+        },
+        "beforeHash": "32a97877",
+        "duringHash": "32a97877",
+        "during": {
+          "operation": "aim",
+          "pointerId": 71,
+          "plantId": "plant-1",
+          "branchId": "plant-1:rachis",
+          "materialDistance": 2.0625528123117753,
+          "acquisitionHash": "32a97877"
+        },
+        "cue": "Aim main stem\nThis continuation moves together.",
+        "afterHash": "32a97877",
+        "afterTransaction": null
+      },
+      "fernBend": {
+        "beforeHash": "32a97877",
+        "afterHash": "c47f3bbc",
+        "cue": "\n        \n          \n          \n          \n          \n        \n        Bend main stemA broad curve · release to keep it.\n      "
+      }
+    },
+    {
+      "step": "garden",
+      "beforeHash": "af70bac6",
+      "viewing": true,
+      "afterCopyHash": "af70bac6",
+      "ordinal": 2
+    }
+  ],
+  "materialsMenu": {
+    "choices": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower",
+      "reed",
+      "flower-volume",
+      "arching-trailer",
+      "foliage-fan",
+      "blossom-spray",
+      "nodding-flower",
+      "berry-twig",
+      "fern-frond"
+    ],
+    "clientHeight": 286,
+    "scrollHeight": 539
+  }
+}

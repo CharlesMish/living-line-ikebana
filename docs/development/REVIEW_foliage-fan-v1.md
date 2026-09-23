@@ -1,7 +1,7 @@
 # Candidate review
 
 - Candidate / role: Round 4 Lane A — foliage fan
-- Baseline SHA / head SHA / branch: `59e42e6554b05ff2fc415514370430716e9e8515` / code `c215ce17ad8e1f90e573e0309ed193d43806766e`; evidence and this review land on the following commit of `cursor/foliage-fan-v1-4f49` / `cursor/foliage-fan-v1-4f49`
+- Baseline SHA / head SHA / branch: `59e42e6554b05ff2fc415514370430716e9e8515` / evidence `454c9f41b01762b23de43e6dbdd8971d7bb47ef1` (this note is its child; the draft PR records `git rev-parse HEAD`) / `cursor/foliage-fan-v1-4f49`
 - Author / independent reviewer: Lane A. Agent-service model: `grok-4.7` (`originalModelName`). No thinking-budget or `reasoning_effort` field was exposed. Independent review has not been run.
 - New compositional choice: A shorter green spray than the leafy shoot. One stem, three lateral arms, and eight small elliptic leaves. The leaves together make a broad spread. The player can cut one arm and keep the other two, or bend and aim the stem so the whole spread sits beside a taller line.
 - Main weakness: Aim has no axial roll, so the generator keeps the fan's facing inside a limited yaw. A headless pointer drag that started on the opening arm acquired a leaf stalk instead of cutting the whole arm. The full gap is in the unit test and the Garden study, not in that drag.
@@ -33,7 +33,7 @@ Baseline verification at `59e42e6`: `npm ci && npm run verify`, 182 tests, 0 fai
 
 | Check | Result (pass / fail / not run) | Reproduction or artifact |
 | --- | --- | --- |
-| npm ci + npm run verify | pass on the code tip | 191 tests, 0 failed, at `c215ce17ad8e1f90e573e0309ed193d43806766e`. Typecheck, test, build, and dist validation. The evidence commit adds this review, reports, and screenshots only. |
+| npm ci + npm run verify | pass | 191 tests, 0 failed, re-run on evidence commit `454c9f41b01762b23de43e6dbdd8971d7bb47ef1` (typecheck, test, build, dist validation). The same 191 passed on code commit `c215ce17ad8e1f90e573e0309ed193d43806766e`. Baseline at `59e42e6` was 182. |
 | Existing golden fixtures unchanged | pass | Flowering and leafy fixtures still match in `tests/core/foliageFan.test.ts` |
 | Seeds 8278 / 9255 / 10232 | pass | Same test. Golden `fixtures/plant-1-foliage-fan-v1.json` is ordinal 1 / seed 8278 |
 | Aim / bend preserve stock and attachments | pass | Unit test at the three seeds. Headless Chrome also aimed the stem and bent the default bead; stem rest lengths stayed put |

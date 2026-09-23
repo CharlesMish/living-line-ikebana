@@ -1,0 +1,115 @@
+{
+  "note": "Headless Chrome, seed 8278, count 1, Front, dialogs closed. Graph hash must stay on the count-1 specimen.",
+  "rows": [
+    {
+      "material": "fern-frond",
+      "query": "(absent)",
+      "file": "fern-pinnate-default.png",
+      "hash": "32a97877",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "fern-frond",
+      "query": "&pinnate=baseline",
+      "file": "fern-pinnate-baseline.png",
+      "hash": "32a97877",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "fern-frond",
+      "query": "&pinnate=tapered",
+      "file": "fern-pinnate-tapered.png",
+      "hash": "32a97877",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "fern-frond",
+      "query": "&pinnate=quilled",
+      "file": "fern-pinnate-quilled.png",
+      "hash": "32a97877",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "fern-frond",
+      "query": "&pinnate=not-a-draw",
+      "file": "fern-pinnate-unknown.png",
+      "hash": "32a97877",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "foliage-fan",
+      "query": "(absent)",
+      "file": "fan-fanLeaf-default.png",
+      "hash": "0c41197f",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "foliage-fan",
+      "query": "&fanLeaf=shared",
+      "file": "fan-fanLeaf-shared.png",
+      "hash": "0c41197f",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "foliage-fan",
+      "query": "&fanLeaf=spray",
+      "file": "fan-fanLeaf-spray.png",
+      "hash": "0c41197f",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "foliage-fan",
+      "query": "&fanLeaf=separated",
+      "file": "fan-fanLeaf-separated.png",
+      "hash": "0c41197f",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "foliage-fan",
+      "query": "&fanLeaf=not-a-draw",
+      "file": "fan-fanLeaf-unknown.png",
+      "hash": "0c41197f",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    },
+    {
+      "material": "leafy-shoot",
+      "query": "&pinnate=quilled&fanLeaf=separated",
+      "file": "leafy-query-ignored.png",
+      "hash": "6645d73a",
+      "plants": 1,
+      "ordinal": 1,
+      "dialogs": 0,
+      "view": "front"
+    }
+  ]
+}

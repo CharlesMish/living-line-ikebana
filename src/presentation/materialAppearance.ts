@@ -1,5 +1,5 @@
 import type { BranchKind } from "../core/types.ts";
-import type { BloomForm, LeafForm } from "./botanicalGeometry.ts";
+import type { BloomForm, FanLeafDraw, LeafForm } from "./botanicalGeometry.ts";
 
 /** Rebuildable appearance keyed by the durable generator version, never topology
  * heuristics (a trunk may be green). No construction or bend settings live here.
@@ -10,6 +10,11 @@ export interface MaterialAppearance {
   readonly leaf: Readonly<{
     form: LeafForm; color: number; veinColor: number; roughness: number;
     hitRadius: number; hitCenterY: number;
+    /**
+     * Foliage-fan only. Omitted means the shared elliptic blade.
+     * `spray` and `separated` are presentation draws; they do not change the graph.
+     */
+    profile?: FanLeafDraw;
   }>;
   readonly bloom: Readonly<{
     form: BloomForm; color: number; roughness: number; hitRadius: number;
@@ -135,8 +140,10 @@ const foliageFan: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x7c9a34, lateral: 0x739332,
     twig: 0x86a44a, pedicel: 0x86a44a, petiole: 0x6f8c3c }),
   stemRoughness: 0.64,
-  leaf: Object.freeze({ form: "elliptic", color: 0x5a8a3c, veinColor: 0x9aaf62,
-    roughness: 0.6, ...ellipticLeafHit }),
+  // Deeper than the yellow-green stem so each blade stays readable. `spray` is the
+  // accepted outline; `separated` and `shared` stay selectable and use this color.
+  leaf: Object.freeze({ form: "elliptic", profile: "spray" as const, color: 0x3e6b38, veinColor: 0xd5e6a6,
+    roughness: 0.74, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({

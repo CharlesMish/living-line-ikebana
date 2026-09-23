@@ -1,0 +1,89 @@
+{
+  "label": "variant-arrangement-separated",
+  "query": "pinnate=tapered&fanLeaf=separated",
+  "app": "http://127.0.0.1:5173/?workbench=1&fresh=1&test=1&pinnate=tapered&fanLeaf=separated",
+  "specimens": [
+    {
+      "material": "foliage-fan",
+      "seed": 8278,
+      "count": 1,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 145.19999999995343,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-lane-a-foliage/variant-arrangement-separated/foliage-fan-seed8278-count1-front.png"
+        }
+      }
+    }
+  ],
+  "arrangement": {
+    "title": "Leafy fern and fan",
+    "views": {
+      "front": {
+        "counts": {
+          "renderElapsedMs": 191,
+          "calls": 255,
+          "triangles": 34414
+        },
+        "canonicalHash": "3b1e9ad9",
+        "cameraHash": "f3827392",
+        "still": "docs/development/reports/polish-lane-a-foliage/variant-arrangement-separated/arrangement-a-leafy-fern-fan-front.png"
+      }
+    },
+    "summary": {
+      "canonicalHash": "3b1e9ad9",
+      "cameraHash": "f3827392",
+      "ordinal": 3,
+      "view": "front",
+      "tool": "shape",
+      "plants": [
+        {
+          "id": "plant-1",
+          "seed": 8278,
+          "generatorVersion": "leafy-shoot-v1",
+          "activeOrgans": 7,
+          "inactiveOrganIds": []
+        },
+        {
+          "id": "plant-2",
+          "seed": 9255,
+          "generatorVersion": "fern-frond-v1",
+          "activeOrgans": 7,
+          "inactiveOrganIds": [
+            "plant-2:pinna-blade-4"
+          ]
+        },
+        {
+          "id": "plant-3",
+          "seed": 10232,
+          "generatorVersion": "foliage-fan-v1",
+          "activeOrgans": 8,
+          "inactiveOrganIds": []
+        }
+      ]
+    }
+  },
+  "environment": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+  }
+}

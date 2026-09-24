@@ -1,0 +1,30 @@
+{
+ "hash": "ff247b15",
+ "aim": {
+  "operation": "aim",
+  "pointerId": 1,
+  "plantId": "plant-4",
+  "branchId": "plant-4:rachis",
+  "materialDistance": 2.1147086321043087,
+  "acquisitionHash": "ff247b15"
+ },
+ "pruneTrail": {
+  "operation": "prune",
+  "pointerId": 1,
+  "plantId": "plant-2",
+  "branchId": "plant-2:trail",
+  "materialDistance": 1.666770503392214,
+  "acquisitionHash": "ff247b15"
+ },
+ "insert": {
+  "operation": "insert",
+  "pointerId": 1,
+  "plantId": "plant-6",
+  "acquisitionHash": "ff247b15"
+ },
+ "afterCancels": {
+  "hash": "ff247b15",
+  "ordinal": 5,
+  "writes": 0
+ }
+}

@@ -1,3 +1,4 @@
+import { createFernFrondV2, FERN_FROND_V2_VERSION } from "../../src/core/index.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
@@ -78,20 +79,21 @@ function visualSize(graph: PlantGraph) {
   return box.getSize(new THREE.Vector3());
 }
 
-test("fern-frond catalog entry is additive and matches the golden fixture at seed 8278", () => {
+test("fern-frond catalog uses v2 and the v1 golden remains reproducible", () => {
   const material = getMaterialDefinition("fern-frond");
   assert.ok(material);
   assert.equal(material.materialId, "fern-frond");
-  assert.equal(material.generator.generatorVersion, FERN_FROND_VERSION);
-  assert.equal(material.generator.generate, createFernFrond);
+  assert.equal(material.generator.generatorVersion, FERN_FROND_V2_VERSION);
+  assert.equal(material.generator.generate, createFernFrondV2);
 
   const prepared = prepareMaterialInsertion("fern-frond", 1, BASE);
   assert.equal(prepared.ok, true);
   if (!prepared.ok) return;
-  assert.deepEqual(JSON.parse(serializePlantGraph(prepared.graph)), fixture);
-  assert.equal(prepared.graph.generatorVersion, "fern-frond-v1");
-  assert.equal(prepared.graph.branches.size, 9);
-  assert.equal(prepared.graph.organs.size, 8);
+  assert.deepEqual(JSON.parse(serializePlantGraph(createFernFrond("plant-1", 8278, BASE))), fixture);
+  assert.equal(prepared.graph.generatorVersion, FERN_FROND_V2_VERSION);
+  assert.equal(prepared.graph.generatorVersion, "fern-frond-v2");
+  assert.equal(prepared.graph.branches.size, 11);
+  assert.equal(prepared.graph.organs.size, 10);
   assert.equal("materialId" in prepared.graph, false);
   assert.doesNotMatch(serializePlantGraph(prepared.graph), /"materialId"/);
   assert.equal(prepared.graph.branches.get("plant-1:rachis")!.stiffness, FERN_FROND_RESPONSE.rachis);

@@ -1,3 +1,4 @@
+import { createNoddingFlowerV2, NODDING_FLOWER_V2_VERSION } from "../../src/core/index.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
 import fixture from "../../fixtures/plant-1-nodding-flower-v1.json";
@@ -9,7 +10,8 @@ import { GardenStore, GARDEN_KEY, type GardenEntry } from "../../src/app/garden.
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import {
   aimBranch, applyPrune, bendBranch, createFloweringBranch, createLeafyShoot,
-  createNoddingFlower, createSingleFlower, deserializePlantGraph, getMaterialDefinition,
+  createNoddingFlower,
+  deserializePlantGraph, createSingleFlower, deserializePlantGraph, getMaterialDefinition,
   legalBendStation, NODDING_FLOWER_VERSION, prepareMaterialInsertion, previewPrune,
   sampleBranch, sampleMaterialFrame, serializePlantGraph, toCanonicalPlantGraph,
   validatePlantGraph, add, clamp, dot, normalize, scale, subtract, vec3,
@@ -53,8 +55,8 @@ test("nodding-flower catalog entry is additive and leaves the reference fixtures
   const material = getMaterialDefinition("nodding-flower");
   assert.ok(material);
   assert.equal(material.materialId, "nodding-flower");
-  assert.equal(material.generator.generatorVersion, NODDING_FLOWER_VERSION);
-  assert.equal(material.generator.generate, createNoddingFlower);
+  assert.equal(material.generator.generatorVersion, NODDING_FLOWER_V2_VERSION);
+  assert.equal(material.generator.generate, createNoddingFlowerV2);
 
   const flowering = toCanonicalPlantGraph(createFloweringBranch("plant-1", 8278, BASE));
   assert.equal(flowering.generatorVersion, floweringFixture.generatorVersion);
@@ -122,7 +124,8 @@ test("nodding-flower-v1 is deterministic, valid, and fixture-identical at seed 8
   assert.ok(prepared.ok);
   if (!prepared.ok) return;
   assert.equal(prepared.seed, 8278);
-  assert.deepEqual(JSON.parse(serializePlantGraph(prepared.graph)), fixture);
+  assert.deepEqual(JSON.parse(serializePlantGraph(createNoddingFlower("plant-1", 8278, BASE))), fixture);
+  assert.equal(prepared.graph.generatorVersion, NODDING_FLOWER_V2_VERSION);
   assert.equal("materialId" in prepared.graph, false);
 });
 
@@ -251,7 +254,7 @@ test("a kept nodding bowl survives an edited working copy", () => {
   };
   garden.keep(entry);
   const working = createWorkbenchFixture("nodding-flower", 8278, 1, { remember: false });
-  const graph = createNoddingFlower(working.plants[0].id, working.plants[0].seed, BASE);
+  const graph = deserializePlantGraph(working.plants[0]);
   const neck = graph.branches.get(`${graph.id}:neck`)!;
   const pruned = applyPrune(graph, previewPrune(graph, neck.id, neck.activeLength * 0.4));
   working.plants[0] = toCanonicalPlantGraph(pruned);

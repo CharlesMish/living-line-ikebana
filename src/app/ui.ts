@@ -1,3 +1,4 @@
+import type { BendStationId, BendStationsMode } from "./bendStations.ts";
 import type { CraftCue } from "./craftCues.ts";
 
 export type Posture = "arrange" | "step-back";
@@ -17,6 +18,10 @@ export interface UIState {
   materialMenuOpen: boolean;
   selectedMaterialId: string;
   bendVariant: BendVariant;
+  bendStationsMode: BendStationsMode;
+  /** Distinct station ids worth offering. Fewer than two hides the selector. */
+  bendStationChoices: readonly BendStationId[];
+  bendStationSelected: BendStationId | null;
   experimentPanelOpen: boolean;
   trayEnabled: boolean;
   trayDragging: boolean;
@@ -35,6 +40,7 @@ export type UICommand =
   | { kind: "set-material-menu"; open: boolean }
   | { kind: "select-material"; materialId: string }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
+  | { kind: "set-bend-station"; station: BendStationId }
   | { kind: "set-experiment-panel"; open: boolean }
   | {
       kind: "begin-material-drag";
@@ -95,6 +101,9 @@ const DEFAULT_STATE: UIState = {
   materialMenuOpen: false,
   selectedMaterialId: "flowering-branch",
   bendVariant: "fixed-bead",
+  bendStationsMode: "off",
+  bendStationChoices: [],
+  bendStationSelected: null,
   experimentPanelOpen: false,
   trayEnabled: true,
   trayDragging: false,
@@ -131,6 +140,13 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const cueTitle = requireElement<HTMLElement>(craftCue, "[data-cue-title]");
   const cueDetail = requireElement<HTMLElement>(craftCue, "[data-cue-detail]");
   const bendGuide = requireElement<HTMLElement>(root, "[data-guide-bend]");
+  const bendStations = requireElement<HTMLElement>(root, "#bend-stations");
+  const bendStationControl = requireElement<HTMLElement>(root, ".bend-station-control");
+  const bendStationButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-bend-station]")];
+  if (bendStationButtons.length !== 3) {
+    throw new Error("UI shell is missing required element: [data-bend-station]");
+  }
+  const bendStationsExclusion = requireElement<HTMLElement>(root, "#bend-stations-exclusion");
   const craftChrome = requireElement<HTMLElement>(root, "#craft-chrome");
   const cameraChrome = requireElement<HTMLElement>(root, "#camera-chrome");
   const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
@@ -246,9 +262,24 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   function render(): void {
     viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
     viewOptions.hidden = !currentState.viewMenuOpen;
+    const stationChoices = currentState.bendStationsMode === "on" ? currentState.bendStationChoices : [];
+    const showStations = stationChoices.length >= 2;
     bendGuide.textContent = currentState.bendVariant === "fixed-bead"
-      ? "Drag the pale point into a broad curve. The stem keeps its length."
+      ? showStations
+        ? "Choose Lower, Middle, or Upper, then drag the pale point. The stem keeps its length."
+        : "Drag the pale point into a broad curve. The stem keeps its length."
       : "Drag the middle of a selected branch into a broad curve. The stem keeps its length.";
+    bendStations.hidden = !showStations;
+    bendStationControl.style.gridTemplateColumns = `repeat(${Math.max(stationChoices.length, 1)}, minmax(0, 1fr))`;
+    for (const button of bendStationButtons) {
+      const id = button.dataset.bendStation;
+      const available = showStations && stationChoices.includes(id as BendStationId);
+      button.hidden = !available;
+      button.disabled = !available;
+      button.setAttribute("aria-pressed", String(available && id === currentState.bendStationSelected));
+    }
+    bendStationsExclusion.hidden = currentState.bendStationsMode !== "excluded";
+    root.dataset.bendStations = currentState.bendStationsMode;
     root.dataset.posture = currentState.posture;
     root.dataset.tool = currentState.tool;
     root.dataset.cameraMode = currentState.cameraMode;
@@ -350,6 +381,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   if (showTestingTools) commandClick<HTMLButtonElement>("[data-bend-variant]", (button) => ({
     kind: "set-bend-variant",
     bendVariant: button.dataset.bendVariant as BendVariant,
+  }));
+
+  commandClick<HTMLButtonElement>("[data-bend-station]", (button) => ({
+    kind: "set-bend-station",
+    station: button.dataset.bendStation as BendStationId,
   }));
 
   viewToggle.addEventListener("click", (event) => {

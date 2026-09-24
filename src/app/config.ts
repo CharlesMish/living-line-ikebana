@@ -1,4 +1,5 @@
 import type { FanLeafDraw, PinnateDraw } from "../presentation/botanicalGeometry.ts";
+import { bendStationsMode, type BendStationsMode } from "./bendStations.ts";
 
 export type BendVariant = "bead" | "touch";
 
@@ -12,6 +13,8 @@ function drawParam<T extends string>(url: URL, key: string, allowed: readonly T[
 
 export type ExperimentConfig = {
   bendVariant: BendVariant;
+  bendStationsRequested: boolean;
+  bendStationsMode: BendStationsMode;
   debug: boolean;
   workbench: boolean;
   /** Starts a clean specimen/arrangement session. Never touches study telemetry. */
@@ -33,8 +36,12 @@ export type ExperimentConfig = {
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
   const bend = url.searchParams.get("bend");
+  const bendVariant = bend === "touch" ? "touch" : "bead";
+  const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
   return {
-    bendVariant: bend === "touch" ? "touch" : "bead",
+    bendVariant,
+    bendStationsRequested,
+    bendStationsMode: bendStationsMode(bendStationsRequested, bendVariant),
     debug: url.searchParams.get("debug") === "1",
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",

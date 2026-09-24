@@ -702,16 +702,25 @@ export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): 
 const BELL_SLEEVE = 0.14;
 const BELL_SLEEVE_BACK = -0.052;
 
-export function createBellGeometry(seed = 0): THREE.BufferGeometry {
+export function createBellGeometry(seed = 0, palette?: { petal: number; collar: number }): THREE.BufferGeometry {
   const rings = 14;
   const columns = 32;
   const phase = variation(seed, 11) * TAU;
   const positions: number[] = [];
   const colors: number[] = [];
   const indices: number[] = [];
+  const petalColor = palette ? new THREE.Color(palette.petal) : null;
+  const collarColor = palette ? new THREE.Color(palette.collar) : null;
   const push = (x: number, y: number, z: number, shade: number) => {
     positions.push(x, y, z);
-    colors.push(shade * 0.9, shade * 0.95, Math.min(1, shade * 1.04));
+    if (petalColor && collarColor) {
+      const t = Math.max(0, Math.min(1, (y - 0.01) / 0.09));
+      const tint = collarColor.clone().lerp(petalColor, t * t * (3 - 2 * t));
+      const light = Math.max(0.65, shade);
+      colors.push(tint.r * light, tint.g * light, tint.b * light);
+    } else {
+      colors.push(shade * 0.9, shade * 0.95, Math.min(1, shade * 1.04));
+    }
     return positions.length / 3 - 1;
   };
   const profile = (t: number, theta: number) => {

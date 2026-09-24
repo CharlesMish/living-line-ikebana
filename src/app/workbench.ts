@@ -1,6 +1,7 @@
 import {
   assertValidPlantGraph,
   getMaterialDefinitions,
+  getGeneratorDefinition,
   toCanonicalPlantGraph,
   type MaterialDefinition,
 } from "../core/index.ts";
@@ -12,6 +13,7 @@ import {
   isWorkbenchCount,
   planWorkbenchCuttings,
   resolveWorkbenchFixture,
+  workbenchGeneratorVersion,
   type ResolvedWorkbenchFixture,
   type WorkbenchCuttingPlan,
   type WorkbenchSequenceComposition,
@@ -120,8 +122,11 @@ export function createWorkbenchFixture(
   const construction = planned.map((cutting) => {
     const material = catalog.find((item) => item.materialId === cutting.materialId);
     if (!material) throw new Error(`Unknown fixture material: ${cutting.materialId}.`);
-    const graph = material.generator.generate(cutting.plantId, cutting.seed, cutting.base);
-    if (graph.generatorVersion !== material.generator.generatorVersion) throw new Error("Fixture generator version mismatch.");
+    const pinnedVersion = workbenchGeneratorVersion(fixtureId, cutting.materialId);
+    const generator = pinnedVersion ? getGeneratorDefinition(pinnedVersion) : material.generator;
+    if (!generator) throw new Error(`Unregistered fixture generator: ${pinnedVersion}.`);
+    const graph = generator.generate(cutting.plantId, cutting.seed, cutting.base);
+    if (graph.generatorVersion !== generator.generatorVersion) throw new Error("Fixture generator version mismatch.");
     assertValidPlantGraph(graph);
     return { cutting: { ...cutting, generatorVersion: graph.generatorVersion }, graph: toCanonicalPlantGraph(graph) };
   });

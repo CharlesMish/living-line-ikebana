@@ -186,7 +186,7 @@ test("this integration catalog makes named candidate profiles available to the p
     "references-plus-foliage-fan", "references-plus-blossom-spray", "blossom-compare",
     "references-plus-nodding-flower", "round4-candidates", "round4-palette",
     "references-plus-berry-twig", "references-plus-fern-frond",
-    "round5-candidates", "round5-palette", "all-registered-materials",
+    "round5-candidates", "round5-palette", "all-registered-materials", "botanical-refinements",
   ]);
   assert.equal(options.some((option) => option.id === "mixed"), false);
   assert.ok(options.every((option) => option.available));

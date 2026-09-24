@@ -2,6 +2,9 @@ import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.
 import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
 import { createFernFrond, FERN_FROND_VERSION } from "./fernFrond.ts";
+import { createFernFrondV2, FERN_FROND_V2_VERSION } from "./fernFrondV2.ts";
+import { createBlossomSprayV2, BLOSSOM_SPRAY_V2_VERSION } from "./blossomSprayV2.ts";
+import { createNoddingFlowerV2, NODDING_FLOWER_V2_VERSION } from "./noddingFlowerV2.ts";
 import { createNoddingFlower, NODDING_FLOWER_VERSION } from "./noddingFlower.ts";
 import { createBerryTwig, BERRY_TWIG_VERSION } from "./berryTwig.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
@@ -107,6 +110,10 @@ const fernFrondV1: GeneratorDefinition = Object.freeze({
   generate: createFernFrond,
 });
 
+const fernFrondV2: GeneratorDefinition = Object.freeze({ generatorVersion: FERN_FROND_V2_VERSION, generate: createFernFrondV2 });
+const blossomSprayV2: GeneratorDefinition = Object.freeze({ generatorVersion: BLOSSOM_SPRAY_V2_VERSION, generate: createBlossomSprayV2 });
+const noddingFlowerV2: GeneratorDefinition = Object.freeze({ generatorVersion: NODDING_FLOWER_V2_VERSION, generate: createNoddingFlowerV2 });
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -123,6 +130,9 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   noddingFlowerV1,
   berryTwigV1,
   fernFrondV1,
+  fernFrondV2,
+  blossomSprayV2,
+  noddingFlowerV2,
 ]);
 
 /**
@@ -142,10 +152,10 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "flower-volume", generator: flowerVolumeV1 }),
   Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV1 }),
   Object.freeze({ materialId: "foliage-fan", generator: foliageFanV1 }),
-  Object.freeze({ materialId: "blossom-spray", generator: blossomSprayV1 }),
-  Object.freeze({ materialId: "nodding-flower", generator: noddingFlowerV1 }),
+  Object.freeze({ materialId: "blossom-spray", generator: blossomSprayV2 }),
+  Object.freeze({ materialId: "nodding-flower", generator: noddingFlowerV2 }),
   Object.freeze({ materialId: "berry-twig", generator: berryTwigV1 }),
-  Object.freeze({ materialId: "fern-frond", generator: fernFrondV1 }),
+  Object.freeze({ materialId: "fern-frond", generator: fernFrondV2 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

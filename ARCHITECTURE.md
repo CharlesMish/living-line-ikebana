@@ -36,6 +36,16 @@ on a divided surface). Generators consume authored
 response values from `materialResponse.ts` once, persisting `stiffness` in each
 branch. The shared solver still owns all bending.
 
+The botanical refinement adds `fernFrondV2.ts`, `blossomSprayV2.ts`, and
+`noddingFlowerV2.ts`. Their existing tray IDs select v2 for new stock; v1
+constructors and saved graphs remain supported. The fern tapers ten staggered
+pinnae along a curved rachis. Spray laterals rise in gentle arcs. Nodding v2
+separates its shapeable upper stem from its rigid terminal flower stalk.
+`workbenchProfiles.ts` freezes generator versions for historical profiles;
+`botanical-refinements` is the explicit v2 study and singles use the live catalog.
+The optional `app/bendStations.ts` controller chooses one rest-arc station and
+never changes the core solver, saved schema, or default shaping mode.
+
 `materialCatalog.ts` registers durable generators and transient tray IDs.
 `presentation/materialAppearance.ts` selects appearance by generator version;
 `botanicalGeometry.ts` makes identity-seeded organ surfaces. Appearance never

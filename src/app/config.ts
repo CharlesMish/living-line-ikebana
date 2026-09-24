@@ -1,4 +1,14 @@
+import type { FanLeafDraw, PinnateDraw } from "../presentation/botanicalGeometry.ts";
+
 export type BendVariant = "bead" | "touch";
+
+const PINNATE_DRAWS = ["baseline", "tapered", "quilled"] as const;
+const FAN_LEAF_DRAWS = ["shared", "spray", "separated"] as const;
+
+function drawParam<T extends string>(url: URL, key: string, allowed: readonly T[]): T | undefined {
+  const value = url.searchParams.get(key);
+  return value && (allowed as readonly string[]).includes(value) ? value as T : undefined;
+}
 
 export type ExperimentConfig = {
   bendVariant: BendVariant;
@@ -6,6 +16,12 @@ export type ExperimentConfig = {
   workbench: boolean;
   /** Starts a clean specimen/arrangement session. Never touches study telemetry. */
   fresh: boolean;
+  /**
+   * Presentation comparison switches. Absent means the accepted draw.
+   * They never change a canonical graph, ordinal, or saved arrangement.
+   */
+  pinnateDraw?: PinnateDraw;
+  fanLeafDraw?: FanLeafDraw;
   /**
    * Explicitly wipes accumulated acquisition telemetry (see
    * `docs/BEHAVIORAL_CONTRACT.md` §8). Deliberately a separate flag from
@@ -23,6 +39,8 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
+    pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
+    fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
   };
 }
 

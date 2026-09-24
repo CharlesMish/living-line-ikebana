@@ -213,8 +213,11 @@ test("berry-twig-v1 puts small berry clusters on a woody line and freezes the se
   assert.doesNotMatch(serializePlantGraph(prepared.graph), /"materialId"/);
   const appearance = getMaterialAppearance(BERRY_TWIG_VERSION);
   assert.equal(appearance.branchColors.trunk, 0x6a4532);
-  assert.equal(appearance.berry?.color, 0x8a2e45);
-  assert.equal(appearance.berry?.radius, 0.07);
+  assert.equal(appearance.berry?.color, 0xa63e56);
+  assert.equal(appearance.berry?.radius, 0.078);
+  assert.equal(appearance.berry?.hitRadius, 0.145);
+  assert.equal(appearance.berry?.centerY, 0.055);
+  assert.ok(appearance.berry!.radius < appearance.berry!.hitRadius);
   assert.notEqual(appearance.bloom.form, "tufted");
   assert.equal(appearance.bloom, getMaterialAppearance("one-branch-v1").bloom);
   assert.notEqual(appearance.branchColors.trunk, getMaterialAppearance("bare-branch-v1").branchColors.trunk);

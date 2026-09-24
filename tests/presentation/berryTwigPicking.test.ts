@@ -95,6 +95,13 @@ test("phone-sized hits land on the berry organ and its own stem", () => {
       assert.equal(hit?.organId, organ.id, `${organ.id} seed ${seed}`);
       assert.equal(hit?.branchId, organ.branchId, `${organ.id} seed ${seed}`);
       assert.equal(hit?.screenDistancePx, 0, `${organ.id} seed ${seed} surface`);
+      const positions = fruit.geometry.getAttribute("position");
+      let reach = 0;
+      for (let index = 0; index < positions.count; index += 1) {
+        reach = Math.max(reach, Math.hypot(positions.getX(index), positions.getY(index), positions.getZ(index)));
+      }
+      assert.ok(reach <= 0.145, `${organ.id} surface reach ${reach} stays inside the unchanged hit radius`);
+      assert.equal(fruit.position.y, visual.hit.position.y);
     }
     dispose();
   }
@@ -124,7 +131,7 @@ test("a removed cluster hides its berries without adding a mesh", () => {
   assert.ok(intact.triangles < spray.triangles, `berry triangles ${intact.triangles} should stay under a six-tuft spray ${spray.triangles}`);
   assert.deepEqual(
     { intactDraws: intact.visibleDraws, intactTriangles: intact.triangles, prunedDraws: after.visibleDraws, prunedTriangles: after.triangles },
-    { intactDraws: 22, intactTriangles: 2200, prunedDraws: 16, prunedTriangles: 1620 },
+    { intactDraws: 22, intactTriangles: 2992, prunedDraws: 16, prunedTriangles: 2148 },
   );
   let stressDraws = 0;
   let stressTriangles = 0;
@@ -135,5 +142,6 @@ test("a removed cluster hides its berries without adding a mesh", () => {
     stressTriangles += sample.triangles;
   }
   assert.equal(stressDraws, 273);
-  assert.equal(stressTriangles, 27060);
+  // 12×8 fruit replaces the 8×6 sphere: +88 triangles per shown berry, draws unchanged.
+  assert.equal(stressTriangles, 37004);
 });

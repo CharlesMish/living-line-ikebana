@@ -70,6 +70,22 @@ export interface CreateUIBindingsOptions {
   search?: string;
 }
 
+/** Whether a scrollport still has rows past either edge. Subpixel remainder is not another row. */
+export function materialListOverflow(
+  scrollTop: number,
+  clientHeight: number,
+  scrollHeight: number,
+): { above: boolean; below: boolean } {
+  const epsilon = 1;
+  if (![scrollTop, clientHeight, scrollHeight].every((value) => Number.isFinite(value))) {
+    return { above: false, below: false };
+  }
+  return {
+    above: scrollTop > epsilon,
+    below: scrollHeight - clientHeight - scrollTop > epsilon,
+  };
+}
+
 const DEFAULT_STATE: UIState = {
   posture: "arrange",
   tool: "shape",
@@ -122,7 +138,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const viewOptions = requireElement<HTMLElement>(root, "#view-options");
   const materialMenu = requireElement<HTMLElement>(root, ".material-menu");
   const materialsToggle = requireElement<HTMLButtonElement>(root, "#materials-toggle");
+  const materialOptionsFrame = requireElement<HTMLElement>(root, ".material-options-frame");
   const materialOptions = requireElement<HTMLElement>(root, "#material-options");
+  const materialsMoreAbove = requireElement<HTMLElement>(root, "[data-testid='materials-more-above']");
+  const materialsMoreBelow = requireElement<HTMLElement>(root, "[data-testid='materials-more-below']");
   const sourceCard = requireElement<HTMLButtonElement>(root, "#selected-cutting");
   if (!sourceCard.dataset.materialId) {
     throw new Error("UI shell is missing required element: [data-material-id]");
@@ -189,6 +208,41 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     }
   }
 
+  let materialMenuWasOpen = false;
+
+  function syncMaterialScrollCues(): void {
+    if (materialOptions.hidden || materialOptions.clientHeight === 0) {
+      materialsMoreAbove.hidden = true;
+      materialsMoreBelow.hidden = true;
+      return;
+    }
+    const overflow = materialListOverflow(
+      materialOptions.scrollTop,
+      materialOptions.clientHeight,
+      materialOptions.scrollHeight,
+    );
+    materialsMoreAbove.hidden = !overflow.above;
+    materialsMoreBelow.hidden = !overflow.below;
+  }
+
+  function revealPressedMaterialChoice(): void {
+    const pressed = paletteChoices.find((choice) => choice.getAttribute("aria-pressed") === "true");
+    if (!pressed || materialOptions.clientHeight === 0) return;
+    const panelRect = materialOptions.getBoundingClientRect();
+    const borderTop = Number.parseFloat(getComputedStyle(materialOptions).borderTopWidth) || 0;
+    const viewTop = panelRect.top + borderTop;
+    const viewBottom = viewTop + materialOptions.clientHeight;
+    const box = pressed.getBoundingClientRect();
+    const inset = 28;
+    if (box.bottom > viewBottom - inset) {
+      materialOptions.scrollTop += box.bottom - (viewBottom - inset);
+    } else if (materialOptions.scrollTop > 1 && box.top < viewTop + inset) {
+      materialOptions.scrollTop -= (viewTop + inset) - box.top;
+    }
+    const last = paletteChoices[paletteChoices.length - 1];
+    if (pressed === last) materialOptions.scrollTop = materialOptions.scrollHeight;
+  }
+
   function render(): void {
     viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
     viewOptions.hidden = !currentState.viewMenuOpen;
@@ -212,7 +266,20 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     experimentPanel.hidden = !currentState.experimentPanelOpen;
     experimentToggle.setAttribute("aria-expanded", String(currentState.experimentPanelOpen));
     materialsToggle.setAttribute("aria-expanded", String(currentState.materialMenuOpen));
+    const openingMaterialMenu = currentState.materialMenuOpen && !materialMenuWasOpen;
+    materialOptionsFrame.hidden = !currentState.materialMenuOpen;
     materialOptions.hidden = !currentState.materialMenuOpen;
+    if (!currentState.materialMenuOpen) {
+      materialsMoreAbove.hidden = true;
+      materialsMoreBelow.hidden = true;
+    } else if (openingMaterialMenu) {
+      requestAnimationFrame(() => {
+        if (!currentState.materialMenuOpen) return;
+        revealPressedMaterialChoice();
+        syncMaterialScrollCues();
+      });
+    }
+    materialMenuWasOpen = currentState.materialMenuOpen;
     materialsToggle.disabled = !currentState.trayEnabled;
     for (const choice of paletteChoices) {
       choice.disabled = !currentState.trayEnabled;
@@ -292,6 +359,14 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   materialsToggle.addEventListener("click", (event) => {
     emit({ kind: "set-material-menu", open: !currentState.materialMenuOpen }, event);
   }, listenerOptions);
+
+  materialOptions.addEventListener("scroll", () => {
+    syncMaterialScrollCues();
+  }, listenerOptions);
+  const materialScrollCueObserver = new ResizeObserver(() => {
+    syncMaterialScrollCues();
+  });
+  materialScrollCueObserver.observe(materialOptions);
 
   // Dismissal never consumes a scene press or turns it into a UI command.
   root.ownerDocument.addEventListener("pointerdown", (event) => {
@@ -466,6 +541,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       if (text !== null) telemetryExportText.select();
     },
     destroy() {
+      materialScrollCueObserver.disconnect();
       controller.abort();
       listeners.clear();
     },

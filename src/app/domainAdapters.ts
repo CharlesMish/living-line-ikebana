@@ -31,7 +31,7 @@ export interface StudioInputMap extends OperationInputMap {
 
 export interface StudioContextMap extends OperationContextMap {
   insert: Record<string, never>;
-  aim: Record<string, never>;
+  aim: { readonly surfaceGrip?: Readonly<Vec3> };
   bend: Record<string, never>;
   base: Record<string, never>;
   prune: Record<string, never>;
@@ -58,7 +58,7 @@ export function createDomainAdapters(): TransactionAdapters<
     aim(graph, spec, input) {
       const branch = graph.branches.get(spec.branchId);
       if (!branch) return clonePlantGraph(graph);
-      const grabbed = sampleBranch(branch, spec.grabbedMaterialDistance).position;
+      const grabbed = spec.context.surfaceGrip ?? sampleBranch(branch, spec.grabbedMaterialDistance).position;
       return aimBranch(graph, spec.branchId, grabbed, input.target);
     },
     bend(graph, spec, input) {

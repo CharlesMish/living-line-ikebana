@@ -45,12 +45,13 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 
 - Aim rotates the acquired active continuation and its active descendants rigidly around the selected branch root.
 - It preserves all rest lengths, attachments, stock length, identity, and inactive history.
-- The trunk target has a default vertical floor of `root.y + 0.08`. Degenerate start or target directions produce no change.
+- The seated trunk exit stays upward: its first-segment unit tangent has a minimum vertical component of `min(acquiredExit.y, clamp(0.08 / activeLength, 0, 1))`. If an Aim would cross that limit, its rigid rotation stops at the limit. The descending end of an arch is not itself clamped to insertion height; this is not a water/ceramic collision solver. Existing lower poses never jump on acquisition. Degenerate start or target directions produce no change.
+- A visible organ surface supplies the frozen world-space grip for Aim; the supporting branch root remains the pivot. Graph attachment distance still determines pruning and identity. A near-miss proxy without a surface intersection retains attachment-based Aim. Surface grip is transient acquisition context, never saved botanical state.
 - Direction degeneracy uses the shared numerical geometry tolerance (`1e-6`
   units), not a minimum stalk or drag length. The September 22 correction
   removes the former `sqrt(0.02)`-unit dead zone, which froze short stalk grabs
   and reset valid previews when the target crossed near their root. Aim is
-  still a rigid rotation from the acquisition snapshot, without axial roll.
+  still a rigid rotation from the acquisition snapshot, with no separate axial-roll operation.
 
 ### Bend
 

@@ -93,6 +93,8 @@ export interface HitCandidate {
   screenDistancePx: number;
   rayDepth: number;
   stableId: string;
+  /** Visible surface grip for Aim only; pruning still uses materialDistance. */
+  aimPoint?: Vec3;
 }
 
 export type RankedHitCandidate = Pick<
@@ -1400,7 +1402,7 @@ export class ThreeStudio {
         // The enlarged proxy admits near misses. A press on the actual blade or
         // petals has zero distance to projected material, even when its graph
         // attachment lies behind a stem. Keep that attachment as the acquired
-        // aim/prune station; surface geometry affects arbitration only.
+        // graph/prune station; Aim can also freeze the actual surface grip.
         // Projection helpers also use this raycaster, so restore the pointer ray.
         this.raycaster.ray.copy(acquisitionRay);
         const surfaces = visual.group.visible
@@ -1421,6 +1423,7 @@ export class ThreeStudio {
           organId: organ.id,
           materialDistance: organ.distance,
           worldPoint: position,
+          aimPoint: surface ? toVec3(surface.point) : undefined,
           screenDistancePx: surface ? 0 : Math.hypot(projected.clientX - clientX, projected.clientY - clientY),
           rayDepth: surface ? surface.distance : pointerDepth,
           stableId,

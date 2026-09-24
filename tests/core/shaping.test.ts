@@ -43,11 +43,11 @@ test("root aim enforces the anti-inversion floor", () => {
   const grabbed = sampleBranch(trunk, 4).position;
   const after = aimBranch(before, trunk.id, grabbed, { x: 2, y: -20, z: 1 });
   const direction = {
-    x: after.branches.get(trunk.id).points[12].x - trunk.points[0].x,
-    y: after.branches.get(trunk.id).points[12].y - trunk.points[0].y,
-    z: after.branches.get(trunk.id).points[12].z - trunk.points[0].z,
+    x: after.branches.get(trunk.id).points[1].x - trunk.points[0].x,
+    y: after.branches.get(trunk.id).points[1].y - trunk.points[0].y,
+    z: after.branches.get(trunk.id).points[1].z - trunk.points[0].z,
   };
-  assert.ok(direction.y > 0, "root continuation remains on the permitted side of the insertion floor");
+  assert.ok(direction.y > 0, "seated exit remains on the permitted side of the insertion floor");
   assertAttachmentCoincidence(after);
 });
 

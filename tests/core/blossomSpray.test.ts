@@ -1,3 +1,4 @@
+import { createBlossomSprayV2, BLOSSOM_SPRAY_V2_VERSION } from "../../src/core/index.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
 import fixture from "../../fixtures/plant-1-blossom-spray-v1.json";
@@ -62,8 +63,8 @@ test("blossom-spray catalog entry is additive and leaves frozen profiles and gol
   const material = getMaterialDefinition("blossom-spray");
   assert.ok(material);
   assert.equal(material.materialId, "blossom-spray");
-  assert.equal(material.generator.generatorVersion, BLOSSOM_SPRAY_VERSION);
-  assert.equal(material.generator.generate, createBlossomSpray);
+  assert.equal(material.generator.generatorVersion, BLOSSOM_SPRAY_V2_VERSION);
+  assert.equal(material.generator.generate, createBlossomSprayV2);
 
   const flowering = toCanonicalPlantGraph(createFloweringBranch("plant-1", 8278, BASE));
   assert.equal(flowering.branches.length, floweringFixture.branches.length);
@@ -169,7 +170,8 @@ test("blossom-spray-v1 spaces four to six flowers on two or three laterals and m
   assert.equal(prepared.ok, true);
   if (!prepared.ok) return;
   assert.equal(prepared.seed, 8278);
-  assert.deepEqual(JSON.parse(serializePlantGraph(prepared.graph)), fixture);
+  assert.deepEqual(JSON.parse(serializePlantGraph(createBlossomSpray("plant-1", 8278, BASE))), fixture);
+  assert.equal(prepared.graph.generatorVersion, BLOSSOM_SPRAY_V2_VERSION);
   assert.equal("materialId" in prepared.graph, false);
   assert.doesNotMatch(serializePlantGraph(prepared.graph), /"materialId"/);
   const appearance = getMaterialAppearance(BLOSSOM_SPRAY_VERSION);
@@ -192,7 +194,7 @@ test("blossom-spray-v1 spaces four to six flowers on two or three laterals and m
     assert.equal(seated.ok, true);
     if (!seated.ok) return;
     assert.deepEqual(validatePlantGraph(seated.graph), []);
-    assert.equal(seated.graph.generatorVersion, BLOSSOM_SPRAY_VERSION);
+    assert.equal(seated.graph.generatorVersion, BLOSSOM_SPRAY_V2_VERSION);
   }
   const third = prepareMaterialInsertion("blossom-spray", 3, BASE);
   assert.equal(third.ok, true);
@@ -384,7 +386,7 @@ test("cancelled blossom-spray insertion and prune write nothing; a committed gro
   const loaded = app.loadInitialDocument();
   assert.equal(loaded.successfulPlantOrdinal, 1);
   const reloaded = [...loaded.plants.values()][0]!;
-  assert.equal(reloaded.generatorVersion, BLOSSOM_SPRAY_VERSION);
+  assert.equal(reloaded.generatorVersion, BLOSSOM_SPRAY_V2_VERSION);
   assert.equal(reloaded.organs.get("plant-1:bloom-2-1")!.active, false);
   assert.equal(reloaded.organs.get("plant-1:bloom-1-1")!.active, true);
   assert.equal(reloaded.branches.get("plant-1:group-1")!.active, true);

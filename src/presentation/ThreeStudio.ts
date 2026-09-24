@@ -34,6 +34,12 @@ export interface ShapeAffordanceState {
   transactionActive: boolean;
   /** Exact frozen arc station for the touch-located variant while acquired. */
   touchCueDistance?: number | null;
+  /**
+   * Omitted: production bead at 54% of the active rest arc.
+   * A number places the single bead at that already chosen distance.
+   * Null hides the bead.
+   */
+  beadStationDistance?: number | null;
   showSelection?: boolean;
 }
 
@@ -594,11 +600,13 @@ export class ThreeStudio {
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
       const bloom = appearance.bloom;
-      const petalMaterial = bodyMaterial(bloom.color, bloom.roughness, true);
+      const bellPalette = bloom.form === "bell" && bloom.collarColor !== undefined
+        ? { petal: bloom.color, collar: bloom.collarColor } : undefined;
+      const petalMaterial = bodyMaterial(bellPalette ? 0xffffff : bloom.color, bloom.roughness, true);
       if (bloom.form === "bell") {
         // One shell. Its mouth follows local +Y, the supporting tangent.
         // Cupped, open-face, and tufted blooms keep the radial path below.
-        const bell = new THREE.Mesh(createBellGeometry(seed), petalMaterial);
+        const bell = new THREE.Mesh(createBellGeometry(seed, bellPalette), petalMaterial);
         bell.castShadow = !pending;
         group.add(bell);
       } else {
@@ -1034,7 +1042,12 @@ export class ThreeStudio {
         this.baseHandle.group.visible = true;
       }
       if (this.shapeAffordances.bendVariant === "bead") {
-        this.fixedBendDistance = bendStationAtFraction(selected.branch, 0.54);
+        const requested = this.shapeAffordances.beadStationDistance;
+        this.fixedBendDistance = requested === undefined
+          ? bendStationAtFraction(selected.branch, 0.54)
+          : requested === null
+            ? null
+            : legalBendStation(selected.branch, requested);
         if (this.fixedBendDistance != null) {
           const sample = sampleBranch(selected.branch, this.fixedBendDistance);
           this.bendHandle.group.position.copy(toThree(sample.position));

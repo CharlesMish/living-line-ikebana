@@ -20,6 +20,8 @@ export interface MaterialAppearance {
     form: BloomForm; color: number; roughness: number; hitRadius: number;
     /** Offset along the organ's local supporting tangent. Existing forms stay at 0. */
     hitCenterY?: number;
+    /** Green bell attachment blending into the corolla; appearance only. */
+    collarColor?: number;
     /**
      * Tufted blooms only. Breaks exact eight-fold repetition in the instance
      * matrices. Omitted blooms stay evenly spaced. Does not change the graph.
@@ -173,6 +175,12 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "nodding-flower-v1": noddingFlower,
   "berry-twig-v1": berryTwig,
   "fern-frond-v1": fernFrond,
+  "fern-frond-v2": fernFrond,
+  "blossom-spray-v2": blossomSpray,
+  "nodding-flower-v2": Object.freeze({
+    ...noddingFlower,
+    bloom: Object.freeze({ ...noddingFlower.bloom, color: 0x9aaac6, collarColor: 0x5d7450 }),
+  }),
 });
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];

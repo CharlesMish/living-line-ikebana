@@ -59,6 +59,7 @@ export type WorkbenchFixtureProfileId =
   | "references-plus-fern-frond"
   | "round5-candidates"
   | "round5-palette"
+  | "botanical-refinements"
   | "all-registered-materials";
 
 export interface WorkbenchFixtureProfile {
@@ -71,6 +72,8 @@ export interface WorkbenchFixtureProfile {
    */
   readonly materialIds: readonly string[] | "catalog";
   readonly notes: string;
+  /** Explicit durable versions for a new stable study. Older profiles use v1. */
+  readonly generatorVersions?: Readonly<Record<string, string>>;
 }
 
 export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Object.freeze([
@@ -251,7 +254,24 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
     materialIds: "catalog",
     notes: "Not a stable comparison scene. Cycles whatever the live catalog returns. Label reports as dynamic.",
   }),
+  Object.freeze({
+    id: "botanical-refinements",
+    label: "Botanical refinements (fern → blossom → nodding)",
+    kind: "stable",
+    materialIds: [FERN_FROND_MATERIAL_ID, BLOSSOM_SPRAY_MATERIAL_ID, NODDING_FLOWER_MATERIAL_ID],
+    generatorVersions: Object.freeze({ "fern-frond": "fern-frond-v2", "blossom-spray": "blossom-spray-v2", "nodding-flower": "nodding-flower-v2" }),
+    notes: "The three revised structures. Historical Round 3–5 profiles retain their original generator versions.",
+  }),
 ]);
+
+/** Stable profiles freeze versions as well as order. Singles/dynamic use the
+ * current catalog. Do not silently regenerate an older comparison with v2. */
+export function workbenchGeneratorVersion(fixtureId: string, materialId: string): string | null {
+  const profile = getWorkbenchFixtureProfile(fixtureId);
+  if (!profile || profile.kind === "dynamic") return null;
+  return profile.generatorVersions?.[materialId]
+    ?? (materialId === FLOWERING_BRANCH_MATERIAL_ID ? "one-branch-v1" : `${materialId}-v1`);
+}
 
 export function getWorkbenchFixtureProfile(id: string): WorkbenchFixtureProfile | null {
   const canonical = id === MIXED_FIXTURE_ALIAS ? "reference-pair" : id;

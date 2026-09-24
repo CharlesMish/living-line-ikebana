@@ -346,7 +346,7 @@ test("cancelled nodding-flower insertion consumes no ordinal and writes no save"
   }, { onAutosave: event => saves.push(event) });
   const prepared = prepareMaterialInsertionForApp("nodding-flower", 0);
   assert.ok(prepared.ok);
-  assert.equal(prepared.graph.generatorVersion, "nodding-flower-v1");
+  assert.equal(prepared.graph.generatorVersion, "nodding-flower-v2");
   coordinator.beginInsert("cancel-nod", reservationFrom(prepared), {}, { base: BASE, valid: true });
   coordinator.pointerCancel("cancel-nod");
   assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
@@ -357,7 +357,7 @@ test("cancelled nodding-flower insertion consumes no ordinal and writes no save"
   assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
   assert.equal(saves.length, 1);
   const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
-  assert.equal(seated.generatorVersion, "nodding-flower-v1");
+  assert.equal(seated.generatorVersion, "nodding-flower-v2");
   assert.deepEqual(validatePlantGraph(seated), []);
 });
 
@@ -369,9 +369,9 @@ test("cancelled fern-frond insertion consumes no ordinal and writes no save", ()
   }, { onAutosave: event => saves.push(event) });
   const prepared = prepareMaterialInsertionForApp("fern-frond", 0);
   assert.ok(prepared.ok);
-  assert.equal(prepared.graph.generatorVersion, "fern-frond-v1");
-  assert.equal(prepared.graph.branches.size, 9);
-  assert.equal(prepared.graph.organs.size, 8);
+  assert.equal(prepared.graph.generatorVersion, "fern-frond-v2");
+  assert.equal(prepared.graph.branches.size, 11);
+  assert.equal(prepared.graph.organs.size, 10);
   coordinator.beginInsert("cancel-fern", reservationFrom(prepared), {}, { base: BASE, valid: true });
   coordinator.pointerCancel("cancel-fern");
   assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
@@ -382,7 +382,7 @@ test("cancelled fern-frond insertion consumes no ordinal and writes no save", ()
   assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
   assert.equal(saves.length, 1);
   const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
-  assert.equal(seated.generatorVersion, "fern-frond-v1");
+  assert.equal(seated.generatorVersion, "fern-frond-v2");
   assert.equal(seated.branches.get("plant-1:rachis").stiffness, 0.43);
   assert.deepEqual(validatePlantGraph(seated), []);
 });

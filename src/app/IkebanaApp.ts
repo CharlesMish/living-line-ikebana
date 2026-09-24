@@ -951,7 +951,11 @@ export class IkebanaApp {
     const graph = this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId);
     const branch = graph?.branches.get(candidate.branchId);
     if (!graph || !branch?.active) return;
-    const grabbedPoint = sampleBranch(branch, candidate.materialDistance).position;
+    // A petal press should turn around the supporting stalk from the part the
+    // player actually touched, not from its often tiny hidden attachment lever.
+    const surfaceGrip = candidate.kind === "organ" && candidate.aimPoint
+      ? Object.freeze({ ...candidate.aimPoint }) : undefined;
+    const grabbedPoint = surfaceGrip ?? sampleBranch(branch, candidate.materialDistance).position;
     const plane = this.studio.cameraFacingPlaneThrough(grabbedPoint);
     const startPlaneHit = this.studio.intersectClientPlane(event.clientX, event.clientY, plane) ?? grabbedPoint;
     const gesture: AimGesture = {
@@ -972,7 +976,7 @@ export class IkebanaApp {
         plantId: graph.id,
         branchId: branch.id,
         grabbedMaterialDistance: candidate.materialDistance,
-        context: {},
+        context: Object.freeze({ surfaceGrip }),
       },
       { target: grabbedPoint },
     );

@@ -36,6 +36,7 @@ const firstTangent = (branch: Branch): Vec3 =>
     : { x: 0, y: 1, z: 0 };
 
 export interface AimOptions {
+  /** Minimum rise per active stock length at the seated exit, not the tip. */
   rootAimFloor?: number;
   minimumDirectionSquared?: number;
 }
@@ -57,8 +58,6 @@ export const aimBranch = (
 
   const anchor = selected.points[0];
   const target = cloneVec3(requestedTarget);
-  const rootFloor = options.rootAimFloor ?? 0.08;
-  if (selected.kind === "trunk") target.y = Math.max(anchor.y + rootFloor, target.y);
   const startDirection = subtract(grabbedPoint, anchor);
   const targetDirection = subtract(target, anchor);
   // This guards only undefined directions, not a material-size-dependent
@@ -66,8 +65,31 @@ export const aimBranch = (
   const minimumSquared = options.minimumDirectionSquared ?? GEOMETRY_EPSILON * GEOMETRY_EPSILON;
   if (lengthSquared(startDirection) < minimumSquared || lengthSquared(targetDirection) < minimumSquared) return graph;
 
-  const rotation = quaternionBetween(startDirection, targetDirection, selected.referenceNormal);
+  let rotation = quaternionBetween(startDirection, targetDirection, selected.referenceNormal);
   if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return graph;
+  if (selected.kind === "trunk") {
+    // An arch can descend while its seated exit still points upward. Clamping
+    // the grabbed tip's height made that legitimate motion stick, and could
+    // even move an already lowered tip on pointer-down with no drag at all.
+    const exit = firstTangent(selected);
+    const minimumY = Math.min(exit.y, clamp(
+      (options.rootAimFloor ?? 0.08) / Math.max(selected.activeLength, GEOMETRY_EPSILON), 0, 1,
+    ));
+    if (rotateVector(exit, rotation).y < minimumY) {
+      const axis = normalize({ x: rotation.x, y: rotation.y, z: rotation.z });
+      const angle = 2 * Math.acos(clamp(rotation.w, -1, 1));
+      let lower = 0;
+      let upper = angle;
+      // Keep the rigid rotation on the permitted side of the insertion plane.
+      // The acquisition pose is always legal, including imported lower poses.
+      for (let iteration = 0; iteration < 48; iteration += 1) {
+        const middle = (lower + upper) * 0.5;
+        if (rotateVector(exit, quaternionFromAxisAngle(axis, middle)).y >= minimumY) lower = middle;
+        else upper = middle;
+      }
+      rotation = quaternionFromAxisAngle(axis, lower);
+    }
+  }
   const affected = descendantIds(snapshot, branchId);
   affected.add(branchId);
   for (const id of affected) {

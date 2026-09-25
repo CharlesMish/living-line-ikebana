@@ -1707,7 +1707,13 @@ export class ThreeStudio {
       plantId: string;
       branchIds: string[];
       organIds: string[];
+      /** Visible derived waterline marks; presentation only. */
+      waterlineMarks: number;
     }> = [];
+    const visibleMarks = (key: string) => {
+      const group = this.waterline?.marks.get(key);
+      return group?.visible ? group.children.filter((mark) => mark.visible).length : 0;
+    };
     for (const plant of this.plants.values()) {
       inventory.push({
         scope: "committed",
@@ -1720,6 +1726,7 @@ export class ThreeStudio {
           .filter((organ) => organ.active && plant.organs.has(organ.id))
           .map((organ) => organ.id)
           .sort(),
+        waterlineMarks: visibleMarks(`plant:${plant.graph.id}`),
       });
     }
     if (this.pendingPlant) {
@@ -1734,6 +1741,7 @@ export class ThreeStudio {
           .filter((organ) => organ.active && this.pendingPlant!.organs.has(organ.id))
           .map((organ) => organ.id)
           .sort(),
+        waterlineMarks: visibleMarks(`pending:${this.pendingPlant.graph.id}`),
       });
     }
     return inventory.sort((left, right) =>

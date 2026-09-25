@@ -397,6 +397,7 @@ interface IkebanaTestBridgeV1 {
     plantId: string;
     branchIds: string[];
     organIds: string[];
+    waterlineMarks: number; // visible derived waterline marks, presentation only
   }[];
   getScreenTargets(): {
     role: string;

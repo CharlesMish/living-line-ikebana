@@ -58,7 +58,7 @@ test("a line that dips back into the water gets a second, submerging mark", () =
   branch.points = branch.points.map((point, index) =>
     index >= last - 1 ? { x: point.x * 0.2, y: 0.5, z: point.z * 0.2 } : point);
   const crossings = waterlineCrossings(dipped);
-  assert.deepEqual(crossings.map((crossing) => crossing.emerging), [true, false]);
+  assert.deepEqual(crossings.map((crossing) => crossing.kind), ["emerging", "submerging"]);
 });
 
 test("crossings outside the basin, on inactive records, or exactly on a vertex are not doubled", () => {
@@ -118,4 +118,69 @@ test("a prune preview hides the submerging mark on the doomed tip and restores i
   studio.setCutPreview(null);
   assert.deepEqual(group.children.map((mark) => mark.visible), [true, true]);
   dispose();
+});
+
+/** A reed whose root centerline heights are replaced, keeping x/z; presentation-only probe. */
+function reedWithHeights(heights: number[]) {
+  const graph = clonePlantGraph(createReed("plant-1", 8278, BASE));
+  const root = graph.branches.get(graph.rootBranchId)!;
+  assert.ok(root.points.length >= heights.length);
+  root.points = root.points.slice(0, heights.length).map((point, index) => ({ ...point, y: heights[index] }));
+  root.restLengths = root.restLengths.slice(0, heights.length - 1);
+  return { graph, root };
+}
+
+const LOW = WATER_Y - 0.05;
+const HIGH = WATER_Y + 0.05;
+const kinds = (graph: ReturnType<typeof reedWithHeights>["graph"]) => waterlineCrossings(graph).map((c) => c.kind);
+
+test("an exact-vertex touch from below or from above is one touch mark, not a crossing pair", () => {
+  const below = reedWithHeights([LOW, LOW, WATER_Y, LOW, LOW]);
+  const fromBelow = waterlineCrossings(below.graph);
+  assert.deepEqual(fromBelow.map((c) => c.kind), ["touch"]);
+  assert.equal(fromBelow[0].point.x, below.root.points[2].x);
+  assert.equal(fromBelow[0].point.z, below.root.points[2].z);
+  assert.ok(Math.abs(fromBelow[0].distance - below.root.restLengths.slice(0, 2).reduce((a, b) => a + b, 0)) < 1e-12);
+
+  // Seated root below water, rising, grazing the surface from above, rising again.
+  assert.deepEqual(kinds(reedWithHeights([LOW, HIGH, WATER_Y, HIGH, HIGH]).graph), ["emerging", "touch"]);
+});
+
+test("passing through the surface exactly at a vertex is one crossing in either direction", () => {
+  assert.deepEqual(kinds(reedWithHeights([LOW, LOW, WATER_Y, HIGH, HIGH]).graph), ["emerging"]);
+  assert.deepEqual(kinds(reedWithHeights([LOW, HIGH, HIGH, WATER_Y, LOW]).graph), ["emerging", "submerging"]);
+});
+
+test("a segment lying on the surface is one mark at its material midpoint", () => {
+  const through = reedWithHeights([LOW, WATER_Y, WATER_Y, HIGH, HIGH]);
+  const [crossing, ...rest] = waterlineCrossings(through.graph);
+  assert.equal(rest.length, 0);
+  assert.equal(crossing.kind, "emerging");
+  const [l0, l1] = through.root.restLengths;
+  assert.ok(Math.abs(crossing.distance - (l0 + l1 / 2)) < 1e-12);
+
+  assert.deepEqual(kinds(reedWithHeights([LOW, WATER_Y, WATER_Y, WATER_Y, LOW]).graph), ["touch"]);
+  assert.deepEqual(kinds(reedWithHeights([HIGH, WATER_Y, WATER_Y, HIGH]).graph), ["touch"],
+    "a root starting above water is not seated; its surface run is still one touch");
+});
+
+test("a tip ending on the surface is a touch, and a root starting on it takes the side it leads into", () => {
+  assert.deepEqual(kinds(reedWithHeights([LOW, HIGH, HIGH, WATER_Y]).graph), ["emerging", "touch"]);
+  assert.deepEqual(kinds(reedWithHeights([WATER_Y, HIGH, HIGH]).graph), ["emerging"]);
+  assert.deepEqual(kinds(reedWithHeights([WATER_Y, WATER_Y, WATER_Y]).graph), ["touch"]);
+});
+
+test("distinct crossings and separate stems keep their own marks", () => {
+  // Two genuine crossings far apart on one branch.
+  assert.deepEqual(kinds(reedWithHeights([LOW, HIGH, HIGH, LOW, LOW]).graph), ["emerging", "submerging"]);
+  // Each of two seated plants at the same kenzan spot owns one mark.
+  const first = createReed("plant-1", 8278, BASE);
+  const second = createReed("plant-2", 9255, BASE);
+  const marks = [...waterlineCrossings(first), ...waterlineCrossings(second)];
+  assert.equal(marks.length, 2);
+  // A child branch whose first point sits on the surface is covered by its parent's contact.
+  const flowering = clonePlantGraph(createFloweringBranch("plant-1", 8278, BASE));
+  const child = [...flowering.branches.values()].find((branch) => branch.parentId !== null)!;
+  child.points = child.points.map((point, index) => (index === 0 ? { ...point, y: WATER_Y } : { ...point, y: WATER_Y + 0.1 * index }));
+  assert.equal(waterlineCrossings(flowering).filter((c) => c.branchId === child.id).length, 0);
 });

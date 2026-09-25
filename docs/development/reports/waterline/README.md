@@ -1,24 +1,27 @@
 # Waterline: seat the line in water
 
 Baseline: `main` at `785016bb3bfea44a659579fdb1437f42492af350` (PR #54 merged),
-unchanged when this branch was cut. Presentation-only experiment. It **preserves**
+unchanged when this branch was cut. First review head: `e2111bd`. The final head
+SHA is recorded in PR #55. Presentation-only experiment. It **preserves**
 the behavioral contract: no generator, graph field, solver, hit arbitration,
 transaction, camera pose, orbit limit or persistence change.
 
 ## Hypothesis
 
-In moribana, a lot of the looking happens where stems leave the water. In the
-baseline, that spot is the pin frog. The kenzan's top (0.55) stood above the
-water (0.46), its tall, sparse metallic pins (0.25 high on a 0.16 grid) were the
-darkest and highest-contrast thing in the bowl, and every stem started on top of
-it. Thin dark stems, especially the arching trailer, disappeared into it. The key
-light (-5, 10, 7) threw each stem's shadow 4–5 units back and to the right, onto
-the floor outside the bowl, where it formed a second full-size silhouette.
+This is a presentation choice made for readability. It is not a claim that an
+exposed kenzan is wrong ikebana: practice and photography vary, and a visible
+pin frog is a legitimate choice. In this renderer, though, the kenzan's top
+(0.55) sat above the water (0.46). Its tall, sparse metallic pins (0.25 high on
+a 0.16 grid) were the darkest and highest-contrast thing in the bowl, and every
+stem started on top of it. Thin dark stems, especially the arching trailer, lost
+contrast there. The key light (-5, 10, 7) threw each stem's shadow 4–5 units
+back and to the right, onto the floor outside the bowl, where it formed a second
+full-size silhouette.
 
 If each stem visibly **emerges from the water**, with its shadow landing **on**
 that water, then the water shape, each line's point of origin, and its depth
-among overlapping stems all become easier to read. The kenzan stays visible as a
-quiet seating field instead of a focal object.
+among overlapping stems should all be easier to read. The kenzan stays visible as
+a quiet seating field.
 
 ## What changed (all in `src/presentation/`)
 
@@ -32,13 +35,29 @@ quiet seating field instead of a focal object.
   stays deep teal. The cost is one dot product per water fragment: no textures,
   render targets or reflection pass.
 - **Waterline marks** (`waterline.ts`): a pale meniscus and a faint dark ripple
-  wherever an active branch centerline crosses the water inside the basin.
-  They're elliptical along the stem's lean. They are derived from the current
-  graph or live preview on every sync, never feed back, and use shared geometry.
-  They follow Aim, Bend and Slide the base live. A trailer end that dips into
-  the water gets a second (submerging) mark. A prune preview hides marks on doomed
-  material, including the doomed tip of the cut branch. The pending insertion
-  ghost shows its mark only while valid.
+  at each contact between an active branch centerline and the water, inside the
+  basin. They're elliptical along the stem's lean. They are derived from the
+  current graph or live preview on every sync, never feed back, and use shared
+  geometry. They follow Aim, Bend and Slide the base live. A prune preview hides
+  marks on doomed material, including the doomed tip of the cut branch. The
+  pending insertion ghost shows its mark only while valid.
+- **Contact rules** (one mark per contact). Each centerline point is classed as
+  below, on (within 1e-9) or above the surface:
+  - **Emerging / submerging**: the line passes between below and above, either
+    inside a segment or through a run of on-surface points. A trailer end that
+    dips back in gets its own submerging mark.
+  - **Touch**: a run bounded by the same side on both ends (a tangent contact),
+    or a tip ending on the surface. It gets exactly one mark.
+  - **Where the mark goes**: a run of on-surface points (a single vertex, or
+    segments lying on the surface) gives one mark at its material midpoint,
+    never one per segment.
+  - **Branch starts**: a child branch whose first point is on the surface is
+    covered by its parent's contact. A root starting on the surface takes the
+    kind of the side it leads into.
+  - Separate stems and genuinely distinct crossings keep their own marks. This
+    fixes Astra's reproduced case, below → exactly `WATER_Y` → below, which
+    previously produced an emerging and a submerging mark at the same point and
+    material distance.
 - **Quiet kenzan**: a matte near-black body, and short, fine, denser pins (0.11
   grid) that end just under the surface.
 - **Lighting**: a steeper key (-3.2, 12.5, 4.4) with a tighter shadow frustum
@@ -85,6 +104,17 @@ instances, so the denser field adds no net triangles. The shadow map is still
 1024². The water now samples the shadow map and runs the Fresnel term. **No
 phone frame time was measured.**
 
+### Validation on the finished branch
+
+- `npm ci` and `npm run verify`: 278 tests (267 existing + 11 waterline tests),
+  typecheck, build and standalone validation.
+- The optional browser smoke test `tests/browser/automated-smoke.mjs` passes
+  17/17 in Chromium against `dist/`. WebKit isn't installed in this environment.
+- The matched images were re-rendered after the contact fix. They are pixel
+  identical in the scene, as expected, because the evidence arrangement has no
+  exact surface contacts.
+- No physical-phone testing.
+
 ## Compromises and open questions
 
 - Water at grazing angles is lighter and less saturated than baseline teal. It
@@ -100,11 +130,34 @@ phone frame time was measured.**
   into air gets no mark, which is correct, but nothing detects ceramic collision
   either (unchanged).
 
-## Not reproduced
+## Garden View and Compare
 
-Intermittently invisible bud support: fresh `one-branch-v1` (seed 8278) rendered
-its bud pedicel in Front, ¾ and Above close-ups on both builds. Not fixed, not
-claimed.
+Checked in headless Chromium at 1280×800 on the branch head. The Garden had two
+seeded entries (A: trailer dipping, B: nodding flower), and the working bowl was
+the evidence arrangement. `09-garden-view-b.png`, `10-garden-compare.png` and `garden-log.json` are in this folder.
+
+| Step | Visible waterline marks per plant | Canonical hash |
+| --- | --- | --- |
+| Working bowl | 1, 2 (dipping trailer), 1, 1, 1 | `ff247b15` |
+| View A | 1, 2, 1, 1, 1 | `8a8133df` |
+| Camera drag in A; a press in A stays a camera gesture (viewing is Step Back only) | unchanged | `8a8133df` |
+| Switch to B | 1 (A's marks gone) | `8933c2a0` |
+| Return to my bowl | 1, 2, 1, 1, 1 | `ff247b15` |
+| Aim held mid-drag, then Escape | follows the preview, then restores | `ff247b15` |
+| Compare A \| B, zoom out twice, leave | each pane shows its own marks; main bowl unchanged | `ff247b15` |
+
+The raw `studio-v1` and `garden-v1` storage strings were byte-identical before
+and after. There were zero autosave writes and no page errors. Compare panes use
+their own studios at world scale 1, so the water plane and the marks share
+scale. (If comparison ever used a world scale other than 1, the marks would need
+to scale with the water rather than with the botanical root.)
+
+## Not reproduced / unresolved
+
+**The intermittently invisible bud support remains unresolved.** Fresh
+`one-branch-v1` (seed 8278) rendered its bud pedicel in Front, ¾ and Above
+close-ups on both builds. That does not reproduce the report. Nothing here fixes
+it or claims to.
 
 ## Playtest guide (phone)
 

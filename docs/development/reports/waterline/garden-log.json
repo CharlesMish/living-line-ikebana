@@ -1,0 +1,75 @@
+{
+ "log": [
+  {
+   "step": "working-initial",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1",
+   "canonicalHash": "ff247b15",
+   "posture": "arrange"
+  },
+  {
+   "step": "view-A",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1",
+   "canonicalHash": "8a8133df",
+   "posture": "step-back"
+  },
+  {
+   "step": "view-A-drag-mid",
+   "transaction": {
+    "operation": "camera",
+    "pointerId": 1,
+    "acquisitionHash": "8a8133df"
+   },
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1"
+  },
+  {
+   "step": "view-A-after-cancel",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1",
+   "canonicalHash": "8a8133df",
+   "posture": "step-back"
+  },
+  {
+   "step": "view-B-switched",
+   "inventory": "committed:plant-1=1",
+   "canonicalHash": "8933c2a0",
+   "posture": "step-back"
+  },
+  {
+   "step": "return-working",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1",
+   "canonicalHash": "ff247b15",
+   "posture": "step-back"
+  },
+  {
+   "step": "working-aim-mid",
+   "transaction": {
+    "operation": "aim",
+    "pointerId": 1,
+    "plantId": "plant-4",
+    "branchId": "plant-4:rachis",
+    "materialDistance": 2.1147086321043087,
+    "acquisitionHash": "ff247b15"
+   },
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1"
+  },
+  {
+   "step": "working-after-cancel",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1",
+   "canonicalHash": "ff247b15",
+   "posture": "arrange"
+  },
+  {
+   "step": "compare-open",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1"
+  },
+  {
+   "step": "after-compare",
+   "inventory": "committed:plant-1=1 committed:plant-2=2 committed:plant-3=1 committed:plant-4=1 committed:plant-5=1",
+   "canonicalHash": "ff247b15",
+   "posture": "step-back"
+  }
+ ],
+ "studioUnchanged": true,
+ "gardenUnchanged": true,
+ "autosaveWrites": 0,
+ "errors": []
+}

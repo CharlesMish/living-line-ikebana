@@ -49,7 +49,10 @@ never changes the core solver, saved schema, or default shaping mode.
 `materialCatalog.ts` registers durable generators and transient tray IDs.
 `presentation/materialAppearance.ts` selects appearance by generator version;
 `botanicalGeometry.ts` makes identity-seeded organ surfaces. Appearance never
-enters the generator or canonical schema. Insertion binds the selected source
-card (`[data-material-id]`); the Materials palette only changes that selection.
+enters the generator or canonical schema. `presentation/waterline.ts` places the
+water surface above the unchanged kenzan insertion plane and derives one meniscus
+per stem crossing from current graph points; it never feeds back into the graph.
+Insertion binds the selected source card (`[data-material-id]`); the Materials
+palette only changes that selection.
 Extension details and remaining physical checks:
 [Material references](docs/MATERIAL_REFERENCES.md).

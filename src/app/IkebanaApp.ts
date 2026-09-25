@@ -23,7 +23,6 @@ import {
 } from "../input/index.ts";
 import {
   ThreeStudio,
-  STUDIO_VERTICAL_FOV,
   compareHitCandidates,
   type HitCandidate,
   type KenzanIntersection,
@@ -37,6 +36,7 @@ import {
   orbitCameraPose,
   panCameraPose,
   type CameraPose,
+  type CameraRadiusLimits,
 } from "./camera.ts";
 import {
   DEFAULT_BEND_STATION,
@@ -151,7 +151,10 @@ type PruneGesture = PointerBase & {
 type CameraGesture = PointerBase & {
   kind: "camera";
   mode: CameraMode;
+  /** Frozen at acquisition: the pan projection and zoom limits of this stage. */
   viewportHeight: number;
+  verticalFov: number;
+  radiusLimits: CameraRadiusLimits;
   startedFree: boolean;
   pointers: Map<number, { x: number; y: number }>;
   startClientX: number;
@@ -183,6 +186,7 @@ interface IkebanaTestBridge {
   getState(): unknown;
   getCanonicalSnapshot(): unknown;
   getRenderInventory(): unknown[];
+  getStageLens(): unknown;
   getScreenTargets(): unknown[];
   resolveHitForTest(candidates: TestHitCandidate[]): { stableId: string } | null;
   getMetrics(): unknown;
@@ -272,6 +276,8 @@ export class IkebanaApp {
   private cameraIsFree = false;
   private started = false;
   private disposed = false;
+  private stageMeasureFrame: number | null = null;
+  private gestureCanvasSize: { width: number; height: number } | null = null;
   private restored = false;
   private loadWarning = false;
   private lastSaveSucceeded = true;
@@ -317,6 +323,8 @@ export class IkebanaApp {
       debugHitTargets: this.config.debug,
       pinnateDraw: this.config.pinnateDraw,
       fanLeafDraw: this.config.fanLeafDraw,
+      stageLens: true,
+      onCanvasResize: () => this.onViewportChanged(),
     });
 
     const initial = this.loadInitialDocument();
@@ -373,6 +381,9 @@ export class IkebanaApp {
             : "Place a cutting.",
       this.loadWarning ? "warning" : "quiet",
     );
+    this.measureStage();
+    // Web fonts can change the rail's height once; measure again then.
+    void document.fonts?.ready.then(() => this.scheduleStageMeasure());
     this.syncPresentation();
     this.root.dataset.ready = "true";
     if (new URL(location.href).searchParams.get("test") === "1") this.installTestBridge();
@@ -386,6 +397,8 @@ export class IkebanaApp {
     // and reduces the chance of losing a just-buffered telemetry write.
     this.telemetryStore.flush();
     this.abortController.abort();
+    if (this.stageMeasureFrame != null) cancelAnimationFrame(this.stageMeasureFrame);
+    this.stageMeasureFrame = null;
     this.removeUIListener?.();
     this.removeUIListener = null;
     this.endGardenComparisonView();
@@ -797,7 +810,7 @@ export class IkebanaApp {
       plantId: prepared.plantId,
       pendingVisible: intersection !== null,
     };
-    this.gesture = gesture;
+    this.setGesture(gesture);
     this.capturePointer(capture, command.pointerId);
     const result = this.coordinator.beginInsert(
       command.pointerId,
@@ -968,7 +981,7 @@ export class IkebanaApp {
       grabbedPoint,
     };
     this.assignSelectedBranch(branch.id);
-    this.gesture = gesture;
+    this.setGesture(gesture);
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginAim(
       event.pointerId,
@@ -1032,7 +1045,7 @@ export class IkebanaApp {
       stationPoint,
       stationDistance,
     };
-    this.gesture = gesture;
+    this.setGesture(gesture);
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginBend(
       event.pointerId,
@@ -1065,7 +1078,7 @@ export class IkebanaApp {
       startClientX: event.clientX,
       startClientY: event.clientY,
     };
-    this.gesture = gesture;
+    this.setGesture(gesture);
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginBase(
       event.pointerId,
@@ -1090,7 +1103,7 @@ export class IkebanaApp {
       branchId: branch.id,
     };
     this.assignSelectedBranch(branch.id);
-    this.gesture = gesture;
+    this.setGesture(gesture);
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginPrune(
       event.pointerId,
@@ -1112,7 +1125,11 @@ export class IkebanaApp {
     const gesture: CameraGesture = {
       kind: "camera",
       mode: this.ui.state.cameraMode,
-      viewportHeight: this.canvas.getBoundingClientRect().height,
+      ...(() => {
+        const projection = this.studio.getPanProjection();
+        return { viewportHeight: projection.viewportHeight, verticalFov: projection.verticalFov };
+      })(),
+      radiusLimits: this.studio.getCameraRadiusLimits(),
       startedFree: this.cameraIsFree,
       owner: event.pointerId,
       capture: this.canvas,
@@ -1124,7 +1141,7 @@ export class IkebanaApp {
       pinchStartDistance: null,
       pinchStartPose: null,
     };
-    this.gesture = gesture;
+    this.setGesture(gesture);
     this.capturePointer(this.canvas, event.pointerId);
     const result = this.coordinator.beginCamera(event.pointerId, {}, { pose: startPose });
     if (!result.ok) return this.abortFailedBegin(gesture);
@@ -1223,15 +1240,15 @@ export class IkebanaApp {
     let pose: CameraPose;
     if (points.length >= 2 && gesture.pinchStartDistance && gesture.pinchStartPose) {
       const current = Math.max(12, pointerDistance(points[0], points[1]));
-      pose = dollyCameraPose(gesture.pinchStartPose, gesture.pinchStartDistance / current);
+      pose = dollyCameraPose(gesture.pinchStartPose, gesture.pinchStartDistance / current, gesture.radiusLimits);
     } else {
       const primary = gesture.pointers.get(gesture.owner);
       if (!primary) return;
       const dx = primary.x - gesture.startClientX;
       const dy = primary.y - gesture.startClientY;
       pose = gesture.mode === "move"
-        ? panCameraPose(gesture.startPose, dx, dy, gesture.viewportHeight, STUDIO_VERTICAL_FOV)
-        : orbitCameraPose(gesture.startPose, dx, dy);
+        ? panCameraPose(gesture.startPose, dx, dy, gesture.viewportHeight, gesture.verticalFov)
+        : orbitCameraPose(gesture.startPose, dx, dy, 1, gesture.radiusLimits);
     }
     this.cameraIsFree = true;
     this.coordinator.updateCamera(gesture.owner, { pose });
@@ -1240,6 +1257,30 @@ export class IkebanaApp {
   private onPointerUp = (event: PointerEvent) => {
     this.handlePointerUp(event);
   };
+
+  /** Every acquisition records the canvas size it was made on. */
+  private setGesture(gesture: Gesture) {
+    this.gesture = gesture;
+    this.gestureCanvasSize = this.currentCanvasSize();
+  }
+
+  private currentCanvasSize() {
+    if (typeof this.canvas?.getBoundingClientRect !== "function") return null;
+    const rect = this.canvas.getBoundingClientRect();
+    return { width: Math.round(Number(rect.width) || 0), height: Math.round(Number(rect.height) || 0) };
+  }
+
+  /**
+   * A release can arrive after the viewport changed but before the browser has
+   * delivered its resize events. Layout is current here, so compare directly:
+   * a changed canvas cancels instead of committing a preview made on the old one.
+   */
+  private canvasChangedSinceAcquisition() {
+    const acquired = this.gestureCanvasSize;
+    const now = this.currentCanvasSize();
+    if (!acquired || !now) return false;
+    return now.width !== acquired.width || now.height !== acquired.height;
+  }
 
   private handlePointerUp(event: PointerEvent) {
     const gesture = this.gesture;
@@ -1272,6 +1313,11 @@ export class IkebanaApp {
       }
     } else if (gesture.owner !== event.pointerId) return;
     event.preventDefault();
+    if (this.canvasChangedSinceAcquisition()) {
+      this.interruptActive("system-interruption", false);
+      this.scheduleStageMeasure();
+      return;
+    }
     if (gesture.kind === "insert") {
       const intersection = this.studio.intersectKenzanPlane(event.clientX, event.clientY);
       gesture.pendingVisible = intersection !== null;
@@ -1336,8 +1382,36 @@ export class IkebanaApp {
     this.interruptActive("system-interruption", false);
     this.telemetryStore.flush();
   };
-  private onViewportChanged = () => this.interruptActive("system-interruption", false);
-  private onVisualViewportChanged = () => this.interruptActive("system-interruption", false);
+  private onViewportChanged = () => {
+    this.interruptActive("system-interruption", false);
+    this.scheduleStageMeasure();
+  };
+  private onVisualViewportChanged = () => {
+    this.interruptActive("system-interruption", false);
+    this.scheduleStageMeasure();
+  };
+
+  /**
+   * The only reframing path: after a viewport/layout change (which has already
+   * cancelled any live gesture), measure how far the top controls reach into
+   * the canvas and hand that to the stage lens. Posture, tool, selection and
+   * edits never call this, so the camera never follows the player's work.
+   */
+  private scheduleStageMeasure() {
+    if (this.stageMeasureFrame != null) return;
+    this.stageMeasureFrame = requestAnimationFrame(() => {
+      this.stageMeasureFrame = null;
+      this.measureStage();
+    });
+  }
+
+  private measureStage() {
+    if (this.disposed) return;
+    const chrome = this.root.querySelector<HTMLElement>(".top-chrome");
+    const canvas = this.canvas.getBoundingClientRect();
+    const inset = chrome ? chrome.getBoundingClientRect().bottom - canvas.top : 0;
+    this.studio.setStageTopInset(Math.max(0, inset));
+  }
 
   private onContextLost = (event: Event) => {
     event.preventDefault();
@@ -1357,7 +1431,9 @@ export class IkebanaApp {
     const start = this.coordinator.getDocumentSnapshot().camera;
     if (!this.coordinator.beginCamera(owner, {}, { pose: start }).ok) return;
     this.cameraIsFree = true;
-    this.coordinator.updateCamera(owner, { pose: dollyCameraPose(start, Math.exp(event.deltaY * 0.0011)) });
+    this.coordinator.updateCamera(owner, {
+      pose: dollyCameraPose(start, Math.exp(event.deltaY * 0.0011), this.studio.getCameraRadiusLimits()),
+    });
     this.coordinator.release(owner);
   };
 
@@ -1771,6 +1847,7 @@ export class IkebanaApp {
       },
       getCanonicalSnapshot: () => clonePlain(this.canonicalSnapshot()),
       getRenderInventory: () => this.studio.getRenderInventory(),
+      getStageLens: () => this.studio.getStageLens(),
       getScreenTargets: () => this.screenTargets(),
       resolveHitForTest: (candidates) => {
         const tier = { "selected-handle": 0, "selected-plant": 1, "other-plant": 2 } as const;

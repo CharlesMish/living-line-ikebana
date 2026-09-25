@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { IkebanaApp } from "../../src/app/IkebanaApp.ts";
-import { canonicalCameraPose, dollyCameraPose, panCameraPose } from "../../src/app/camera.ts";
+import { CAMERA_RADIUS_LIMITS, canonicalCameraPose, dollyCameraPose, orbitCameraPose, panCameraPose } from "../../src/app/camera.ts";
 import { createDomainAdapters } from "../../src/app/domainAdapters.ts";
 import { createFloweringBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { TransactionCoordinator } from "../../src/input/index.ts";
@@ -11,7 +11,18 @@ function pointer(pointerId: number, clientX: number, clientY: number) {
   return { pointerId, clientX, clientY, pointerType: "touch", buttons: 1, preventDefault() {} };
 }
 
-function harness() {
+type StudioStub = {
+  getPanProjection(): { viewportHeight: number; verticalFov: number };
+  getCameraRadiusLimits(): { min: number; max: number };
+};
+
+/** The reference (desktop) projection: no stage lens. */
+const referenceStudio = (): StudioStub => ({
+  getPanProjection: () => ({ viewportHeight: 390, verticalFov: STUDIO_VERTICAL_FOV }),
+  getCameraRadiusLimits: () => ({ ...CAMERA_RADIUS_LIMITS }),
+});
+
+function harness(studio: StudioStub = referenceStudio()) {
   const graph = createFloweringBranch("plant-1", 8278, { x: 0, y: 0.55, z: 0 });
   const camera = canonicalCameraPose("front");
   const saves: unknown[] = [];
@@ -22,7 +33,7 @@ function harness() {
   coordinator.commandPosture("step-back");
   const state = { cameraMode: "move", view: "front" };
   const app = Object.assign(Object.create(IkebanaApp.prototype), {
-    coordinator, gesture: null, hovering: false, cameraIsFree: false,
+    coordinator, gesture: null, hovering: false, cameraIsFree: false, studio,
     canvas: { getBoundingClientRect: () => ({ height: 390 }), setPointerCapture() {}, hasPointerCapture: () => false },
     ui: { state, setState: (patch: object) => Object.assign(state, patch), setStatus() {} },
     sound: { unlock() {} }, metrics: { resetAttempt() {} },
@@ -122,4 +133,58 @@ test("Stop and look retains a released pan and rolls back an unfinished camera d
   assert.deepEqual(coordinator.getDocumentSnapshot().camera, keptCamera);
   assert.equal(app.cameraIsFree, true);
   assert.equal(saves.length, 0);
+});
+
+test("a camera drag freezes the stage lens projection and zoom limit it acquired", () => {
+  const lens = { viewportHeight: 895, verticalFov: 55.2 };
+  const limits = { min: 5.7, max: 23.2 };
+  const studio: StudioStub = { getPanProjection: () => ({ ...lens }), getCameraRadiusLimits: () => ({ ...limits }) };
+  const { app, camera, preview } = harness(studio);
+  app.beginCamera(pointer(1, 200, 180));
+  // A later lens change (it only happens on resize, which also cancels) cannot alter this drag.
+  lens.viewportHeight = 100; lens.verticalFov = 90; limits.max = 15.5;
+  app.handlePointerMove(pointer(1, 240, 150));
+  assert.deepEqual(preview(), panCameraPose(camera, 40, -30, 895, 55.2));
+  app.handlePointerUp(pointer(1, 240, 150));
+
+  // Pinch-out may go past the base 15.5 limit up to this stage's frozen maximum.
+  const zoomed = dollyCameraPose(camera, 10, { min: 5.7, max: 23.2 });
+  const radius = Math.hypot(zoomed.position.x - zoomed.target.x, zoomed.position.y - zoomed.target.y, zoomed.position.z - zoomed.target.z);
+  assert.ok(Math.abs(radius - 23.2) < 1e-9);
+});
+
+test("radius limits never pull an acquired pose inward, and orbit keeps a larger kept radius", () => {
+  const far = dollyCameraPose(canonicalCameraPose("front"), 10, { min: 5.7, max: 23.2 });
+  const radius = (pose: typeof far) => Math.hypot(pose.position.x - pose.target.x, pose.position.y - pose.target.y, pose.position.z - pose.target.z);
+  // On a roomier screen (base limit), starting from 23.2 does not snap in.
+  assert.ok(Math.abs(radius(orbitCameraPose(far, 30, 0)) - radius(far)) < 1e-9);
+  assert.ok(Math.abs(radius(dollyCameraPose(far, 1.1)) - radius(far)) < 1e-9, "cannot zoom further out");
+  assert.ok(radius(dollyCameraPose(far, 0.9)) < radius(far), "can zoom back in");
+  // Base behaviour is unchanged.
+  assert.ok(Math.abs(radius(dollyCameraPose(canonicalCameraPose("front"), 10)) - 15.5) < 1e-9);
+  assert.ok(Math.abs(radius(dollyCameraPose(canonicalCameraPose("front"), 0.01)) - 5.7) < 1e-9);
+});
+
+test("a release after the canvas changed size cancels instead of committing, even before any resize event", () => {
+  const { app, coordinator, camera, saves, cancelled } = harness();
+  const size = { width: 390, height: 844 };
+  app.canvas = { getBoundingClientRect: () => ({ ...size }), setPointerCapture() {}, hasPointerCapture: () => false };
+  let remeasured = 0;
+  app.scheduleStageMeasure = () => { remeasured += 1; };
+  app.beginCamera(pointer(1, 200, 180));
+  app.handlePointerMove(pointer(1, 260, 150));
+  size.height = 760; // browser chrome or rotation; no window resize event delivered yet
+  app.handlePointerUp(pointer(1, 260, 150));
+  assert.deepEqual(coordinator.getDocumentSnapshot().camera, camera, "the preview is rolled back");
+  assert.equal(coordinator.getDebugState().active, null);
+  assert.equal(app.gesture, null);
+  assert.equal(saves.length, 0);
+  assert.deepEqual(cancelled, ["system-interruption"]);
+  assert.equal(remeasured, 1, "the stage lens is remeasured afterwards");
+
+  // An unchanged canvas still commits normally.
+  app.beginCamera(pointer(2, 200, 180));
+  app.handlePointerMove(pointer(2, 240, 150));
+  app.handlePointerUp(pointer(2, 240, 150));
+  assert.notDeepEqual(coordinator.getDocumentSnapshot().camera, camera);
 });

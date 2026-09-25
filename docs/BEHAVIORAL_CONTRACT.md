@@ -195,9 +195,16 @@ read, so the camera does not follow edits, and no content fitting occurs.
 - Beyond `15.5`, fog near/far move out with the camera distance; at or within
   `15.5` they are unchanged.
 - The lens is recomputed only after a viewport change: resize, rotation,
-  browser chrome, or font load. Those events already cancel any live gesture,
-  so a preview is never committed or reframed mid-edit. Posture, tool, view,
-  selection and edits do not remeasure the controls.
+  browser chrome, or font load. Posture, tool, view, selection and edits do not
+  remeasure the controls.
+- However a measurement was scheduled (startup, font settle, or a frame queued
+  after a resize that runs after a new acquisition), if applying it would change
+  the projection, it first cancels any live gesture. An unchanged measurement,
+  or an inset change that stays within the reference share, leaves a gesture
+  alone.
+- As a second guard, a release commits only if the canvas size and the
+  projection still match those recorded at acquisition; otherwise it rolls back
+  and nothing is saved.
 - Picking, drag planes, projection and Pan all use the same camera matrices.
   Pan and zoom limits are frozen at acquisition.
 - Canonical poses, saved coordinates, botanical scale and persistence are

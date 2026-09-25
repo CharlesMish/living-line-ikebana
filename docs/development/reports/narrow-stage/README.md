@@ -40,8 +40,13 @@ are pixel-identical in the scene.
 **When reframing happens.** Only after the viewport changes: window resize,
 rotation, browser chrome, a canvas-size change, or the one-time web-font
 settle at startup. Posture, tool, view, selection and edits never remeasure,
-so the camera never chases the player's work. Every such change first cancels
-any live gesture.
+so the camera never chases the player's work.
+
+**Cancellation rule for measurements.** A stage measurement that would change
+the projection (field of view, frame, centre shift or zoom limit) first cancels
+any live gesture, however it was scheduled. An unchanged measurement is
+harmless. A release commits only if the canvas size and the projection still
+match those at acquisition.
 
 **Consistency.** Picking (raycaster), projection, camera-facing drag planes
 and Pan all use the same camera matrices. Pan takes the lens frame's height and
@@ -53,6 +58,34 @@ at the stage centre.
 **Garden comparison.** The comparison panes don't use the lens. Both keep the
 shared field of view and world scale 1, as before. Garden *View* uses the main
 studio, so it gets the lens like the working bowl.
+
+### Inset-only remeasure during a drag (fixed after Astra's review)
+
+At `3e7d2cf`, a measurement from `document.fonts.ready`, or a frame queued
+after a resize, could call `setStageTopInset` while a gesture was live. The
+release guard compared canvas dimensions only, so it missed an inset-only
+change. Astra reproduced it with the production studio, app and coordinator
+(390×844, inset 186 → 240, field of view about 58.17° → 61.07°): the Aim stayed
+active and the release saved once.
+
+The fix has two parts:
+- `measureStage` asks the studio `stageTopInsetChangesProjection(inset)` and
+  cancels first when the answer is yes.
+- The release guard also compares the acquired projection.
+
+`tests/app/stageMeasureCancel.test.ts` (production `ThreeStudio`, `IkebanaApp`
+methods and `TransactionCoordinator`; only GPU drawing, chrome and animation
+frames are stubbed) covers four cases:
+- An inset-only remeasure mid-Aim cancels before the projection changes, and
+  the release saves nothing.
+- A queued measurement that runs after a new acquisition cancels that
+  acquisition, and its release saves nothing.
+- Unchanged or sub-pixel measurements leave a live Aim alone, and it commits
+  once.
+- An inset change within the reference share changes neither the projection
+  nor the gesture.
+
+The first two tests fail on `3e7d2cf` and pass now.
 
 ### Resize safety (pre-existing gap, fixed here)
 
@@ -114,7 +147,8 @@ That choice needs a phone.
 
 ## Validation
 
-- `npm run verify` passes. Test count and SHA are in the PR.
+- `npm run verify` passes: 293 tests, typecheck, build and standalone
+  validation. The final SHA is in PR #56.
 - Optional browser smoke test: 17/17 in Chromium.
 - No physical-phone testing.
 

@@ -278,6 +278,7 @@ export class IkebanaApp {
   private disposed = false;
   private stageMeasureFrame: number | null = null;
   private gestureCanvasSize: { width: number; height: number } | null = null;
+  private gestureProjection: { viewportHeight: number; verticalFov: number } | null = null;
   private restored = false;
   private loadWarning = false;
   private lastSaveSucceeded = true;
@@ -1262,6 +1263,13 @@ export class IkebanaApp {
   private setGesture(gesture: Gesture) {
     this.gesture = gesture;
     this.gestureCanvasSize = this.currentCanvasSize();
+    this.gestureProjection = this.currentProjection();
+  }
+
+  private currentProjection() {
+    if (typeof this.studio?.getPanProjection !== "function") return null;
+    const { viewportHeight, verticalFov } = this.studio.getPanProjection();
+    return { viewportHeight, verticalFov };
   }
 
   private currentCanvasSize() {
@@ -1278,8 +1286,14 @@ export class IkebanaApp {
   private canvasChangedSinceAcquisition() {
     const acquired = this.gestureCanvasSize;
     const now = this.currentCanvasSize();
-    if (!acquired || !now) return false;
-    return now.width !== acquired.width || now.height !== acquired.height;
+    if (acquired && now && (now.width !== acquired.width || now.height !== acquired.height)) return true;
+    // Defence in depth: any projection change (for example an inset-only
+    // remeasure) since acquisition also refuses to commit.
+    const projection = this.gestureProjection;
+    const current = this.currentProjection();
+    return Boolean(projection && current && (
+      Math.abs(projection.viewportHeight - current.viewportHeight) > 1e-6
+      || Math.abs(projection.verticalFov - current.verticalFov) > 1e-9));
   }
 
   private handlePointerUp(event: PointerEvent) {
@@ -1392,10 +1406,11 @@ export class IkebanaApp {
   };
 
   /**
-   * The only reframing path: after a viewport/layout change (which has already
-   * cancelled any live gesture), measure how far the top controls reach into
-   * the canvas and hand that to the stage lens. Posture, tool, selection and
-   * edits never call this, so the camera never follows the player's work.
+   * The only reframing path: after a viewport/layout change or font settle,
+   * measure how far the top controls reach into the canvas and hand that to
+   * the stage lens (measureStage cancels first if the projection would
+   * change). Posture, tool, selection and edits never call this, so the
+   * camera never follows the player's work.
    */
   private scheduleStageMeasure() {
     if (this.stageMeasureFrame != null) return;
@@ -1405,12 +1420,22 @@ export class IkebanaApp {
     });
   }
 
+  /**
+   * However it was scheduled (startup, font settle, a queued frame after a
+   * resize), a measurement that would change the projection first cancels any
+   * live gesture, so no preview outlives the projection it was made on. An
+   * unchanged measurement leaves an active gesture alone.
+   */
   private measureStage() {
     if (this.disposed) return;
     const chrome = this.root.querySelector<HTMLElement>(".top-chrome");
     const canvas = this.canvas.getBoundingClientRect();
-    const inset = chrome ? chrome.getBoundingClientRect().bottom - canvas.top : 0;
-    this.studio.setStageTopInset(Math.max(0, inset));
+    const inset = Math.max(0, chrome ? chrome.getBoundingClientRect().bottom - canvas.top : 0);
+    if (this.studio.stageTopInsetChangesProjection(inset)
+      && (this.gesture || this.coordinator.getDebugState().active)) {
+      this.interruptActive("system-interruption", false);
+    }
+    this.studio.setStageTopInset(inset);
   }
 
   private onContextLost = (event: Event) => {

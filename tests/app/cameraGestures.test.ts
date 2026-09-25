@@ -33,7 +33,7 @@ function harness(studio: StudioStub = referenceStudio()) {
   coordinator.commandPosture("step-back");
   const state = { cameraMode: "move", view: "front" };
   const app = Object.assign(Object.create(IkebanaApp.prototype), {
-    coordinator, gesture: null, hovering: false, cameraIsFree: false, studio,
+    coordinator, gesture: null, hovering: false, cameraIsFree: false, studio, scheduleStageMeasure() {},
     canvas: { getBoundingClientRect: () => ({ height: 390 }), setPointerCapture() {}, hasPointerCapture: () => false },
     ui: { state, setState: (patch: object) => Object.assign(state, patch), setStatus() {} },
     sound: { unlock() {} }, metrics: { resetAttempt() {} },
@@ -139,13 +139,16 @@ test("a camera drag freezes the stage lens projection and zoom limit it acquired
   const lens = { viewportHeight: 895, verticalFov: 55.2 };
   const limits = { min: 5.7, max: 23.2 };
   const studio: StudioStub = { getPanProjection: () => ({ ...lens }), getCameraRadiusLimits: () => ({ ...limits }) };
-  const { app, camera, preview } = harness(studio);
+  const { app, coordinator, camera, preview, saves } = harness(studio);
   app.beginCamera(pointer(1, 200, 180));
-  // A later lens change (it only happens on resize, which also cancels) cannot alter this drag.
+  // A later lens change cannot alter this drag's preview...
   lens.viewportHeight = 100; lens.verticalFov = 90; limits.max = 15.5;
   app.handlePointerMove(pointer(1, 240, 150));
   assert.deepEqual(preview(), panCameraPose(camera, 40, -30, 895, 55.2));
+  // ...and a release on a changed projection rolls back instead of committing.
   app.handlePointerUp(pointer(1, 240, 150));
+  assert.deepEqual(coordinator.getDocumentSnapshot().camera, camera);
+  assert.equal(saves.length, 0);
 
   // Pinch-out may go past the base 15.5 limit up to this stage's frozen maximum.
   const zoomed = dollyCameraPose(camera, 10, { min: 5.7, max: 23.2 });

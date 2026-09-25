@@ -270,6 +270,8 @@ function applyWaterFresnel(material: THREE.MeshPhysicalMaterial) {
   };
 }
 
+const sanitizeInset = (pixels: number) => (Number.isFinite(pixels) ? Math.max(0, pixels) : 0);
+
 /** A unit disc ring on the XZ plane whose vertex alpha fades outward. */
 function createWaterlineParts() {
   const segments = 40;
@@ -1090,11 +1092,35 @@ export class ThreeStudio {
    * caller updates it only on viewport/layout changes, never during an edit.
    */
   setStageTopInset(pixels: number) {
-    const inset = Number.isFinite(pixels) ? Math.max(0, pixels) : 0;
+    const inset = sanitizeInset(pixels);
     if (Math.abs(inset - this.stageTopInset) < 0.5) return;
     this.stageTopInset = inset;
     this.updateProjection();
     this.requestRender();
+  }
+
+  /**
+   * True when applying this inset would change the camera projection (field
+   * of view, frame, centre shift or zoom limit). The caller must cancel any
+   * live gesture before applying such a change. An unchanged measurement, or
+   * an inset that stays within the reference share, returns false.
+   */
+  stageTopInsetChangesProjection(pixels: number) {
+    if (!this.options.stageLens) return false;
+    const inset = sanitizeInset(pixels);
+    if (Math.abs(inset - this.stageTopInset) < 0.5) return false;
+    const { width, height } = this.canvasCssSize();
+    const next = computeStageLens({
+      width, height, topInset: inset,
+      baseVerticalFov: this.baseVerticalFov, baseMaxRadius: CAMERA_RADIUS_MAX,
+    });
+    const current = this.lens;
+    if (!current) return true;
+    const differs = (a: number, b: number) => Math.abs(a - b) > 1e-9;
+    return differs(next.verticalFov, current.verticalFov)
+      || differs(next.virtualHeight, current.virtualHeight)
+      || differs(next.shift, current.shift)
+      || differs(next.maxRadius, current.maxRadius);
   }
 
   /** The projection pan must use: pixels of the virtual frame and its field of view. */

@@ -3,7 +3,7 @@
 The botanical graph is authoritative. Three.js is a replaceable presentation adapter.
 
 - `src/core/` contains deterministic, renderer-free geometry, generation, pruning, shaping, serialization, and transaction snapshots.
-- `src/presentation/` owns Three.js entities, projection, candidate collection, and canonical cameras.
+- `src/presentation/` owns Three.js entities, projection, candidate collection, and canonical cameras. `stageLens.ts` derives the main studio's projection from canvas size and the top-controls inset only, never from plant geometry.
 - `src/input/` owns one deterministic gesture transaction at a time. Ordinary release commits; every interruption rolls back.
 - `src/app/` owns the small DOM shell, tray, posture/tool/view commands, autosave, experiment flags, and the acquisition-telemetry/export diagnostic layer (`metrics.ts`, `telemetry.ts`, `telemetrySummary.ts`). That layer is strictly observational: it never touches `src/core/` and never gates a craft operation.
 

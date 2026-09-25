@@ -88,7 +88,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - A tool, view, posture, selection, or bend-experiment command cancels first, then applies the command.
 - Persistent chrome remains usable as an interrupt command during a scene grab. A second scene pointer during a plant transaction is ignored.
 - Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing except explain Step Back.
-- Step Back permits constrained orbit, screen-space Pan and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5`; polar angle to `0.002...1.52` radians.
+- Step Back permits constrained orbit, screen-space Pan and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5` on reference stages, and up to the stage lens maximum on narrow stages (see *Narrow-stage lens*); polar angle to `0.002...1.52` radians. A limit never pulls an acquired radius inward: a gesture that starts beyond the current maximum can only move toward the limits.
 
 ## 5. Deterministic target arbitration
 
@@ -161,8 +161,8 @@ with an empty collection. See [Garden](GARDEN.md) and
 Orbit (the default) and Pan share the Step Back camera transaction. Pan
 translates camera position and target together along camera right/screen-up,
 preserving orientation and camera distance. At target depth the arrangement
-follows pointer displacement in CSS pixels, scaled from the acquired viewport
-height and vertical field of view. Above uses screen-up, not world vertical.
+follows pointer displacement in CSS pixels, scaled from the acquired projection
+(the stage lens frame height and its vertical field of view). Above uses screen-up, not world vertical.
 
 The acquired camera mode and viewport height freeze until release/cancel.
 Pinch continues to zoom in either mode; with two fingers down, one-finger pan
@@ -175,6 +175,42 @@ View presets recenter the camera. The chosen Orbit/Pan mode is remembered
 within the session and resets to Orbit on reload or test reset. Neither pan
 nor zoom edits botanical graphs, advances insertion ordinals or writes plant
 autosave. No solver, generator, fixture or persistence schema is changed.
+
+### Narrow-stage lens (experiment)
+
+The main studio derives a projection from two numbers only: the canvas CSS size
+and how far the persistent top controls reach into it. Plant geometry is never
+read, so the camera does not follow edits, and no content fitting occurs.
+
+- Reference: where the controls cover at most 16% of the canvas, projection is
+  exactly the 44° studio field with the target at canvas centre, and the radius
+  limit is `15.5`. Desktop framing is therefore unchanged.
+- Beyond that share, the optical centre moves down by half the excess, and the
+  field widens so the unobstructed stage shows at least the reference vertical
+  extent. The horizontal extent is at least 0.6 of the reference vertical
+  extent.
+- The maximum radius rises until full zoom-out shows at least 0.9 of the
+  reference vertical extent horizontally at the base limit. For example, about
+  23.2 at 390×844.
+- Beyond `15.5`, fog near/far move out with the camera distance; at or within
+  `15.5` they are unchanged.
+- The lens is recomputed only after a viewport change: resize, rotation,
+  browser chrome, or font load. Posture, tool, view, selection and edits do not
+  remeasure the controls.
+- However a measurement was scheduled (startup, font settle, or a frame queued
+  after a resize that runs after a new acquisition), if applying it would change
+  the projection, it first cancels any live gesture. An unchanged measurement,
+  or an inset change that stays within the reference share, leaves a gesture
+  alone.
+- As a second guard, a release commits only if the canvas size and the
+  projection still match those recorded at acquisition; otherwise it rolls back
+  and nothing is saved.
+- Picking, drag planes, projection and Pan all use the same camera matrices.
+  Pan and zoom limits are frozen at acquisition.
+- Canonical poses, saved coordinates, botanical scale and persistence are
+  unchanged.
+- Garden comparison panes do not use the lens. Both panes keep the shared
+  field of view and world scale 1.
 
 ### Top-controls layout
 

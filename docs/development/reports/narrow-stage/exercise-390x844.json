@@ -1,0 +1,88 @@
+{
+ "viewport": [
+  390,
+  844
+ ],
+ "lens": {
+  "enabled": true,
+  "topInset": 185.78125,
+  "canvas": {
+   "width": 390,
+   "height": 844
+  },
+  "shift": 25.370625000000004,
+  "stageHeight": 793.25875,
+  "zoom": 1.2984615384615383,
+  "virtualHeight": 894.74125,
+  "verticalFov": 58.16144032856298,
+  "maxRadius": 23.25
+ },
+ "railBottom": 185.78125,
+ "insert": {
+  "overPinsAtY": 565,
+  "ordinal": 6,
+  "selected": "plant-6"
+ },
+ "noddingAim": {
+  "acquired": "aim:plant-6:flower-stalk",
+  "stemUnchanged": true
+ },
+ "trailerAim": "aim:plant-2:trail",
+ "bend": "bend:plant-5:stem",
+ "pruneCancel": {
+  "acquired": "prune:plant-3:group-3",
+  "hashUnchanged": true,
+  "noWrite": true
+ },
+ "resizeEvents": [],
+ "sizeMidResize": [
+  760,
+  760,
+  760
+ ],
+ "resizeDuringAim": {
+  "acquired": "aim",
+  "transactionAfterResize": {
+   "operation": "aim",
+   "pointerId": 1,
+   "plantId": "plant-2",
+   "branchId": "plant-2:trail",
+   "materialDistance": 1.6629536672496035,
+   "acquisitionHash": "0288e0a7"
+  },
+  "hashUnchanged": true,
+  "noWrite": true
+ },
+ "sizeMidCanvas": [
+  844,
+  759.609375,
+  760
+ ],
+ "canvasResizeDuringAim": {
+  "acquired": "bend",
+  "transactionAfterResize": {
+   "operation": "bend",
+   "pointerId": 1,
+   "plantId": "plant-2",
+   "branchId": "plant-2:trail",
+   "materialDistance": 1.6327124093683303,
+   "acquisitionHash": "0288e0a7"
+  },
+  "hashUnchanged": true,
+  "noWrite": true
+ },
+ "nearRail": {
+  "target": "plant-5:pedicel",
+  "yBelowRail": 14.5,
+  "acquired": "aim:plant-5:plant-5:stem"
+ },
+ "pressOnRailPadding": null,
+ "nearRailHashUnchanged": true,
+ "pan": {
+  "dx": 40.3,
+  "dy": -30.2,
+  "note": "trunk sample is not at target depth; expect roughly (40,-30)"
+ },
+ "writesTotal": 5,
+ "errors": []
+}

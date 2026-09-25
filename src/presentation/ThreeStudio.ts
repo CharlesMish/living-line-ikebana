@@ -1,4 +1,5 @@
 import { createVesselGeometry } from "./vessel.ts";
+import { computeStageLens, fogRangeForDistance, type StageLens } from "./stageLens.ts";
 import { innerWallRadiusAt, KENZAN_TOP_Y, WATER_Y, waterlineCrossings } from "./waterline.ts";
 import { getMaterialAppearance } from "./materialAppearance.ts";
 import * as THREE from "three";
@@ -138,6 +139,18 @@ export interface ThreeStudioOptions {
   pinnateDraw?: PinnateDraw;
   /** Comparison override for foliage-fan leaves. Absent uses the appearance profile. */
   fanLeafDraw?: FanLeafDraw;
+  /**
+   * Main studio only: derive a stage lens from the canvas size and the top
+   * inset supplied by setStageTopInset. Comparison panes leave this off so
+   * both keep exactly the shared field of view and scale.
+   */
+  stageLens?: boolean;
+  /**
+   * Called when the canvas CSS size actually changes after construction. The
+   * app treats it like a viewport change (cancel, then remeasure), so a
+   * missed window resize event cannot leave a preview on a changed projection.
+   */
+  onCanvasResize?: () => void;
 }
 
 type BranchVisual = {
@@ -257,6 +270,8 @@ function applyWaterFresnel(material: THREE.MeshPhysicalMaterial) {
   };
 }
 
+const sanitizeInset = (pixels: number) => (Number.isFinite(pixels) ? Math.max(0, pixels) : 0);
+
 /** A unit disc ring on the XZ plane whose vertex alpha fades outward. */
 function createWaterlineParts() {
   const segments = 40;
@@ -321,7 +336,11 @@ export class ThreeStudio {
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw">;
+    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize">;
+  private lastCanvasSize: { width: number; height: number } | null = null;
+  private baseVerticalFov = STUDIO_VERTICAL_FOV;
+  private stageTopInset = 0;
+  private lens: StageLens | null = null;
 
   private pendingPlant: PlantVisual | null = null;
   private pendingValidity: boolean | null = null;
@@ -348,6 +367,8 @@ export class ThreeStudio {
       onViewChange: options.onViewChange,
       pinnateDraw: options.pinnateDraw,
       fanLeafDraw: options.fanLeafDraw,
+      stageLens: options.stageLens ?? false,
+      onCanvasResize: options.onCanvasResize,
     };
     this.canvas.style.touchAction = "none";
 
@@ -1055,14 +1076,104 @@ export class ThreeStudio {
 
   setVerticalFieldOfView(degrees: number) {
     if (!Number.isFinite(degrees) || degrees <= 1 || degrees >= 179) return;
-    if (this.camera.fov === degrees) return;
-    this.camera.fov = degrees;
-    this.camera.updateProjectionMatrix();
+    if (this.baseVerticalFov === degrees) return;
+    this.baseVerticalFov = degrees;
+    this.updateProjection();
     this.requestRender();
   }
 
+  /** The reference field of view; the stage lens (if any) derives from it. */
   getVerticalFieldOfView() {
-    return this.camera.fov;
+    return this.baseVerticalFov;
+  }
+
+  /**
+   * CSS pixels at the top of the canvas covered by persistent controls. The
+   * caller updates it only on viewport/layout changes, never during an edit.
+   */
+  setStageTopInset(pixels: number) {
+    const inset = sanitizeInset(pixels);
+    if (Math.abs(inset - this.stageTopInset) < 0.5) return;
+    this.stageTopInset = inset;
+    this.updateProjection();
+    this.requestRender();
+  }
+
+  /**
+   * True when applying this inset would change the camera projection (field
+   * of view, frame, centre shift or zoom limit). The caller must cancel any
+   * live gesture before applying such a change. An unchanged measurement, or
+   * an inset that stays within the reference share, returns false.
+   */
+  stageTopInsetChangesProjection(pixels: number) {
+    if (!this.options.stageLens) return false;
+    const inset = sanitizeInset(pixels);
+    if (Math.abs(inset - this.stageTopInset) < 0.5) return false;
+    const { width, height } = this.canvasCssSize();
+    const next = computeStageLens({
+      width, height, topInset: inset,
+      baseVerticalFov: this.baseVerticalFov, baseMaxRadius: CAMERA_RADIUS_MAX,
+    });
+    const current = this.lens;
+    if (!current) return true;
+    const differs = (a: number, b: number) => Math.abs(a - b) > 1e-9;
+    return differs(next.verticalFov, current.verticalFov)
+      || differs(next.virtualHeight, current.virtualHeight)
+      || differs(next.shift, current.shift)
+      || differs(next.maxRadius, current.maxRadius);
+  }
+
+  /** The projection pan must use: pixels of the virtual frame and its field of view. */
+  getPanProjection() {
+    return { viewportHeight: this.lens?.virtualHeight ?? this.canvasCssSize().height, verticalFov: this.camera.fov };
+  }
+
+  getCameraRadiusLimits() {
+    return { min: CAMERA_RADIUS_MIN, max: this.lens?.maxRadius ?? CAMERA_RADIUS_MAX };
+  }
+
+  getStageLens() {
+    const size = this.canvasCssSize();
+    return {
+      enabled: this.options.stageLens === true,
+      topInset: this.stageTopInset,
+      canvas: size,
+      ...(this.lens ?? {
+        shift: 0, stageHeight: size.height, zoom: 1, virtualHeight: size.height,
+        verticalFov: this.camera.fov, maxRadius: CAMERA_RADIUS_MAX,
+      }),
+    };
+  }
+
+  private canvasCssSize() {
+    const rect = this.canvas.getBoundingClientRect();
+    return {
+      width: Math.max(1, Math.round(rect.width || this.canvas.clientWidth || 1)),
+      height: Math.max(1, Math.round(rect.height || this.canvas.clientHeight || 1)),
+    };
+  }
+
+  /** Camera projection from canvas size, reference FOV and (optionally) the stage lens. */
+  private updateProjection() {
+    const { width, height } = this.canvasCssSize();
+    if (!this.options.stageLens) {
+      this.lens = null;
+      this.camera.clearViewOffset();
+      this.camera.fov = this.baseVerticalFov;
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+      return;
+    }
+    const lens = computeStageLens({
+      width, height, topInset: this.stageTopInset,
+      baseVerticalFov: this.baseVerticalFov, baseMaxRadius: CAMERA_RADIUS_MAX,
+    });
+    this.lens = lens;
+    this.camera.fov = lens.verticalFov;
+    this.camera.aspect = width / lens.virtualHeight;
+    if (lens.shift > 0) this.camera.setViewOffset(width, lens.virtualHeight, 0, 0, width, height);
+    else this.camera.clearViewOffset();
+    this.camera.updateProjectionMatrix();
   }
 
   /** Comparison passes 1 so neither arrangement is fit or rescaled to its pane. */
@@ -1340,7 +1451,7 @@ export class ThreeStudio {
     const radius = THREE.MathUtils.clamp(
       snapshot.radius * distanceScale,
       CAMERA_RADIUS_MIN,
-      CAMERA_RADIUS_MAX,
+      Math.max(this.getCameraRadiusLimits().max, snapshot.radius),
     );
     const direction = toThree(snapshot.position).sub(toThree(snapshot.target));
     if (direction.lengthSq() <= EPSILON) direction.set(0, 0, 1);
@@ -1627,14 +1738,14 @@ export class ThreeStudio {
 
   private resize() {
     if (this.disposed) return;
-    const rect = this.canvas.getBoundingClientRect();
-    const width = Math.max(1, Math.round(rect.width || this.canvas.clientWidth || 1));
-    const height = Math.max(1, Math.round(rect.height || this.canvas.clientHeight || 1));
+    const { width, height } = this.canvasCssSize();
+    const previous = this.lastCanvasSize;
+    this.lastCanvasSize = { width, height };
+    if (previous && (previous.width !== width || previous.height !== height)) this.options.onCanvasResize?.();
     const pixelRatio = Math.min(window.devicePixelRatio || 1, this.options.maxPixelRatio);
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(width, height, false);
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
+    this.updateProjection();
     this.requestRender();
   }
 
@@ -1681,6 +1792,11 @@ export class ThreeStudio {
     if (this.disposed) return;
     if (this.bendHandle.group.visible) this.bendHandle.group.quaternion.copy(this.camera.quaternion);
     if (this.touchCue.visible) this.touchCue.quaternion.copy(this.camera.quaternion);
+    if (this.scene.fog instanceof THREE.Fog) {
+      const fog = fogRangeForDistance(this.camera.position.distanceTo(this.cameraTarget), CAMERA_RADIUS_MAX);
+      this.scene.fog.near = fog.near;
+      this.scene.fog.far = fog.far;
+    }
     this.renderer.render(this.scene, this.camera);
   }
 

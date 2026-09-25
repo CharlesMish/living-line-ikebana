@@ -1,0 +1,123 @@
+{
+  "shots": [
+    "/tmp/living-line-review-shots/baseline_workbench_mixed6_front.png",
+    "/tmp/living-line-review-shots/A_studio_empty_tray.png",
+    "/tmp/living-line-review-shots/A_count1_front.png",
+    "/tmp/living-line-review-shots/A_count1_three_quarter.png",
+    "/tmp/living-line-review-shots/A_count1_above.png",
+    "/tmp/living-line-review-shots/A_mixed6_front.png",
+    "/tmp/living-line-review-shots/A_mixed12_front.png",
+    "/tmp/living-line-review-shots/A_workbench_garden.png",
+    "/tmp/living-line-review-shots/A_tray_320.png",
+    "/tmp/living-line-review-shots/B_studio_empty_tray.png",
+    "/tmp/living-line-review-shots/B_count1_front.png",
+    "/tmp/living-line-review-shots/B_count1_three_quarter.png",
+    "/tmp/living-line-review-shots/B_count1_above.png",
+    "/tmp/living-line-review-shots/B_mixed6_front.png",
+    "/tmp/living-line-review-shots/B_mixed12_front.png",
+    "/tmp/living-line-review-shots/B_workbench_garden.png",
+    "/tmp/living-line-review-shots/B_tray_320.png"
+  ],
+  "notes": [
+    {
+      "step": "baseline-workbench-mixed6",
+      "baselineReport": {
+        "materials": [
+          "flowering-branch",
+          "leafy-shoot"
+        ],
+        "workbenchVisible": true,
+        "ready": "true",
+        "plantCount": 1
+      }
+    },
+    {
+      "step": "A-tray-desktop",
+      "tray": {
+        "materials": [
+          "flowering-branch",
+          "leafy-shoot",
+          "bare-branch"
+        ],
+        "names": [
+          "Flowering branch",
+          "Leafy shoot",
+          "Bare branch"
+        ],
+        "workbench": true,
+        "trayColumns": "327.46px 327.476px",
+        "trayWidth": 661.3333740234375
+      }
+    },
+    {
+      "step": "A-workbench-garden",
+      "garden": {
+        "title": "Your Garden",
+        "count": "0 / 24 moments kept",
+        "cards": [],
+        "empty": "Your Garden starts with something you choose to keep. Arrange a cutting, step back, and decide whether this is a moment to save."
+      }
+    },
+    {
+      "step": "A-tray-320",
+      "narrow": {
+        "names": [
+          "Flowering branch",
+          "Leafy shoot",
+          "Bare branch"
+        ],
+        "trayColumns": "80.9683px 80.9841px",
+        "trayWidth": 168.34921264648438,
+        "cardHeights": [
+          72,
+          72,
+          57
+        ]
+      }
+    },
+    {
+      "step": "B-tray-desktop",
+      "tray": {
+        "materials": [
+          "flowering-branch",
+          "leafy-shoot",
+          "single-flower"
+        ],
+        "names": [
+          "Flowering branch",
+          "Leafy shoot",
+          "Single flower"
+        ],
+        "workbench": true,
+        "trayColumns": "216.175px 216.175px 216.175px 0px",
+        "trayWidth": 661.3333740234375
+      }
+    },
+    {
+      "step": "B-workbench-garden",
+      "garden": {
+        "title": "Your Garden",
+        "count": "0 / 24 moments kept",
+        "cards": [],
+        "empty": "Your Garden starts with something you choose to keep. Arrange a cutting, step back, and decide whether this is a moment to save."
+      }
+    },
+    {
+      "step": "B-tray-320",
+      "narrow": {
+        "names": [
+          "Flowering branch",
+          "Leafy shoot",
+          "Single flower"
+        ],
+        "trayColumns": "168.349px",
+        "trayWidth": 168.34921264648438,
+        "cardHeights": [
+          48,
+          48,
+          48
+        ]
+      }
+    }
+  ]
+}

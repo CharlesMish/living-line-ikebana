@@ -5,6 +5,7 @@ import {
   clonePlantGraph,
   previewPrune,
   sampleBranch,
+  serializePlantGraph,
   translatePlantBase,
   translatePendingGraph,
   validatePlantGraph,
@@ -73,6 +74,7 @@ export function createBotanicalTransactionAdapters<Camera, CameraInput>(
 > {
   return {
     cloneGraph: clonePlantGraph,
+    graphEquals: (left, right) => serializePlantGraph(left) === serializePlantGraph(right),
     cloneCamera: camera.clone,
     validateInsertReservation: (reservation) =>
       reservation.plantId === `plant-${reservation.ordinal}` &&

@@ -57,8 +57,10 @@ Inspect the built page once before physical play. All items are required.
   the scene. Choose one: the choices close. Escape, outside press and tabbing
   out also close them; selecting or escaping returns focus to View.
 - Drag the top tray down toward the pins in all three views. Above the Front
-  camera's ground-plane horizon, no placement ghost is expected; moving toward
-  the pins reveals it. An invalid release must still return it to the tray.
+  camera's ground-plane horizon, no placement ghost is expected; the destination
+  outline must nevertheless already be visible. Moving toward the pins reveals
+  the ghost. The outline follows the actual pin field, not the full bowl. An
+  invalid release must still return it to the tray.
 - A drag or pinch that begins on the scene never scrolls the document, selects text, or zooms the page.
 - In Step Back, Orbit/Pan replaces Shape/Prune and the tray. In Arrange,
   Orbit/Pan is hidden and cannot receive keyboard focus.
@@ -157,7 +159,12 @@ Cover at least one Shape transaction and one Prune transaction across the matrix
 | Second scene pointer | Add a second finger to the canvas during an edit | Ignore it; do not pinch, orbit, or retarget |
 | WebGL context loss | Harness extension or background/resume | Cancel preview; retain committed graph; rebuild presentation |
 
-Ordinary `pointerup` is the only plant-edit commit route. Dispatching a later `lostpointercapture` after a completed `pointerup` must not create a second finish or turn the commit into a rollback.
+Ordinary `pointerup` is the only gesture commit route. Explicit Undo/Remove and
+Garden fresh/copy are separate document commands, never preview commits. A
+captured ordinary release outside the canvas still commits; crossing chrome is
+not itself an interruption. Dispatching a later `lostpointercapture` after a
+completed `pointerup` must not create a second finish or turn the commit into a
+rollback.
 
 ## Deterministic acquisition and ownership
 
@@ -502,3 +509,42 @@ still work. Return to Arrange and continue shaping. Confirm the pause reads as
 permission to leave the composition alone, not a warning or a passed test.
 Opening the guide during a held edit must discard that preview. Stopping must
 not revive it, advance a pending insertion, or imply a separate collection save.
+
+
+## September 28 craft-usability owner pass — not yet run on a physical phone
+
+Record the build and whether it includes the narrow-stage lens from #56/#57.
+The September 28 Grok report tested main `a99f3e4` without that lens; its viewport
+measurements and miss counts are not a baseline phone sign-off for this candidate.
+
+1. Drag from the source card slowly. The pin-field outline must be visible from
+   acquisition, even while the ghost cannot intersect the insertion plane. Try
+   ten intentional locations across the field, including several near its edge;
+   record chosen spots and misses rather than repeating one successful point.
+   A release on the surrounding water is still invalid; it must not snap inward.
+2. At normal and maximum useful zoom-out, select a reed or fern stem, then aim
+   it. Acquire the selected base ring and bend bead. Record whether the intended
+   stem/operation wins, especially among overlapping flowers. Nearby acquisition
+   must not steal a direct visible leaf/flower hit or transfer a live drag.
+3. Make a visible change, then open **Edit → Undo last edit**. The botanical pose
+   returns and camera framing stays. Undo becomes unavailable; no redo appears.
+   Repeat for insertion, base movement, and a cut. After undoing an insertion,
+   the next insertion uses a new identity rather than recycling the removed one.
+4. After a changed edit, tap an unchanged stem, cancel a preview, orbit and choose
+   Above. Undo must still recover the changed edit. Cancel is not an Undo step.
+5. In Arrange, select a cutting, then **Edit → Remove selected cutting**. Only
+   that plant leaves. Undo restores its exact edited/pruned graph. Removal is
+   unavailable while inspecting a kept Garden entry.
+6. Open Garden from Arrange, close it, and confirm Arrange remains active. Keep,
+   View/Return and Compare must retain the working undo checkpoint and camera.
+   Compare shows no unrelated low-table brief. In a disposable bowl, confirm
+   reload and fresh/copy replacement clear Undo; keeping a Garden entry does not.
+7. At 320px portrait, short landscape and enlarged text, Edit, Garden, View and
+   the craft controls remain reachable. The menu must not pass a press into the
+   scene beneath it. Open Edit during a preview: it cancels first, and a later
+   owner release must not commit that cancelled preview.
+
+Storage-failure behavior is a harness check, not a request to fill a phone:
+when proposed Undo/Remove persistence fails, plants, ordinal, selection and the
+checkpoint stay unchanged; retry can succeed. Do not confuse failure to write
+with a successfully recovered arrangement.

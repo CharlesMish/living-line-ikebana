@@ -32,7 +32,18 @@
           </div>
 
           <div class="top-actions">
-            <button id="garden-open" class="quiet-button" type="button" aria-haspopup="dialog">Garden</button>
+            <div class="edit-menu">
+              <button id="edit-toggle" class="view-toggle" type="button" data-testid="edit-toggle" aria-expanded="false" aria-controls="edit-options">
+                <span>Edit</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+              </button>
+              <div id="edit-options" class="edit-options" role="group" aria-label="Recover and remove cuttings" hidden>
+                <button id="undo-edit" type="button" data-testid="undo-edit" disabled>Undo last edit</button>
+                <button id="remove-cutting" type="button" data-testid="remove-cutting" disabled>Remove selected cutting</button>
+                <p>One undo step. No redo.</p>
+              </div>
+            </div>
+            <button id="garden-open" class="quiet-button" type="button" aria-haspopup="dialog" aria-label="Garden — keep and revisit arrangements" title="Keep and revisit arrangements">Garden</button>
             <button id="workbench-open" class="quiet-button" type="button" hidden aria-haspopup="dialog">Workbench</button>
             <div class="view-menu">
               <button id="view-toggle" class="view-toggle" type="button" data-testid="view-toggle" aria-expanded="false" aria-controls="view-options">
@@ -550,7 +561,7 @@
           <li><strong>Prune.</strong> Slide along a stem. The faded part will leave when you release. Press Escape, or switch tools, to cancel.</li>
           <li><strong>Step Back.</strong> Choose Orbit to turn around the arrangement, or Pan to shift your view up, down or sideways. The bowl and cuttings stay together. Pinch or scroll to zoom. Open View for Front, ¾ or Above to recenter.</li>
         </ol>
-        <p class="panel-note">Changes save on this device when you release. A cut is permanent. Open Garden to keep a version before continuing.</p>
+        <p class="panel-note">Changes save on this device when you release. Use Edit to undo the last change or remove the selected cutting. Undo is one step, has no redo, and clears when you reload or replace the bowl. Open Garden to keep versions.</p>
         <details class="looking-study" data-testid="looking-study">
           <summary>Optional study · Line and water</summary>
           <p class="looking-prompt">Reveal one strong leaning line. Leave a shape of water visible.</p>

@@ -4,7 +4,7 @@ The botanical graph is authoritative. Three.js is a replaceable presentation ada
 
 - `src/core/` contains deterministic, renderer-free geometry, generation, pruning, shaping, serialization, and transaction snapshots.
 - `src/presentation/` owns Three.js entities, projection, candidate collection, and canonical cameras. `stageLens.ts` derives the main studio's projection from canvas size and the top-controls inset only, never from plant geometry.
-- `src/input/` owns one deterministic gesture transaction at a time. Ordinary release commits; every interruption rolls back.
+- `src/input/` owns one deterministic gesture transaction at a time. Ordinary release commits; every interruption rolls back. It also owns one transient botanical undo checkpoint and explicit Undo/Remove document commands.
 - `src/app/` owns the small DOM shell, tray, posture/tool/view commands, autosave, experiment flags, and the acquisition-telemetry/export diagnostic layer (`metrics.ts`, `telemetry.ts`, `telemetrySummary.ts`). That layer is strictly observational: it never touches `src/core/` and never gates a craft operation.
 
 Material law and UI experiments are deliberately separated. The fixed-bead and touch-located bend variants use the same broad, stiffness-capped, rest-length-preserving solver.
@@ -56,3 +56,29 @@ Insertion binds the selected source card (`[data-material-id]`); the Materials
 palette only changes that selection.
 Extension details and remaining physical checks:
 [Material references](docs/MATERIAL_REFERENCES.md).
+
+
+## Craft recovery and acquisition cues
+
+The working `TransactionCoordinator` records a cloned botanical checkpoint before
+changed graph commits. Canonical equality comes from its adapter, so an unchanged
+selection tap cannot replace the last meaningful undo point. Undo restores plants
+and selection without rewinding the camera or successful insertion ordinal; Remove
+creates a checkpoint and deletes one plant from the working map. There is no redo.
+The app supplies `beforeRecoveryCommit` to save the proposed recovery document
+before the coordinator changes memory; save failure vetoes recovery. New
+coordinators created by reload/fresh/copy have no checkpoint. Garden inspection
+holds and restores the working coordinator, preserving its checkpoint while
+blocking editing in the separate viewer. No storage schema or generator changes.
+
+`ThreeStudio` keeps the actual pin-field outline visible for the full pending
+insertion, independently of ghost visibility. Its CSS-pixel acquisition fallback
+adds nearby structural stems and selected visible handles only when no direct
+material surface was hit. Existing ordering and immutable acquisition ownership
+still decide the operation. Visible bend decoration scales to a small screen-space
+minimum; canonical branches and organs never scale to make a hit easier.
+
+See the [craft-usability report](docs/development/reports/craft-usability/README.md)
+for the tested-build distinction, retained collision limitation, and pending phone
+checks. These intentionally revise recovery and acquisition behavior; ordinary
+release and interruption rules remain intact.

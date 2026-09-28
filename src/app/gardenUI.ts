@@ -94,7 +94,6 @@ export class GardenUI {
         <div class="panel-heading"><div><p class="eyebrow">Same view and scale</p><h1 id="garden-compare-title">Compare two moments</h1></div>
           <button id="garden-compare-leave" class="icon-button" type="button" aria-label="Leave comparison">×</button></div>
         <p class="garden-compare-note">Same view for both. Nothing is saved.</p>
-        <p class="panel-note garden-compare-brief">${TABLE_TALK_STUDY_PROMPT} ${TABLE_TALK_STUDY_NOTE}</p>
         <div class="garden-compare-stage">
           <figure class="garden-compare-pane"><figcaption id="garden-compare-left-title"></figcaption><canvas id="garden-compare-left"></canvas></figure>
           <figure class="garden-compare-pane"><figcaption id="garden-compare-right-title"></figcaption><canvas id="garden-compare-right"></canvas></figure>

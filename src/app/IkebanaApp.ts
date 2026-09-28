@@ -170,7 +170,7 @@ type AutosaveAuditRecord = {
   commitSequence: number;
   canonicalHash: string;
   transactionActive: boolean;
-  reason: "commit";
+  reason: "commit" | "undo" | "remove";
 };
 
 type TestHitCandidate = {
@@ -364,12 +364,7 @@ export class IkebanaApp {
     window.addEventListener("pagehide", this.onPageHide, options);
     window.addEventListener("resize", this.onViewportChanged, options);
     window.addEventListener("orientationchange", this.onViewportChanged, options);
-    window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && this.gesture) {
-        event.preventDefault();
-        this.interruptActive("explicit-cancel");
-      }
-    }, options);
+    window.addEventListener("keydown", (event) => this.handleKeyDown(event), options);
     window.visualViewport?.addEventListener("resize", this.onVisualViewportChanged, options);
 
     this.ui.setStatus(
@@ -450,17 +445,18 @@ export class IkebanaApp {
         onCancel: (event) => {
           this.resolvePendingAcquisition("cancelled", event.reason);
         },
+        beforeRecoveryCommit: (event) => {
+          if (this.workingSession) return false;
+          return this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
+        },
         onAutosave: (event) => {
           if (this.workingSession) return; // Garden viewing can never write the working bowl.
-          const plantsToSave = [...event.document.plants.values()]
-            .sort((left, right) => left.id.localeCompare(right.id))
-            .map(toCanonicalPlantGraph);
           const canonicalHash = this.hashDocument(event.document.plants, event.document.successfulPlantOrdinal);
           this.autosaveWrites.push({
             commitSequence: event.sequence,
             canonicalHash,
             transactionActive: this.coordinator.getDebugState().active !== null,
-            reason: "commit",
+            reason: event.operation === "undo" || event.operation === "remove" ? event.operation : "commit",
           });
           // The committed botanical graph is the authority and must be
           // attempted first. Study telemetry is subordinate: if the graph
@@ -468,19 +464,9 @@ export class IkebanaApp {
           // part by accumulated telemetry), telemetry yields storage —
           // evict it and retry the graph save exactly once — before ever
           // reporting a save failure to the tester.
-          this.lastSaveSucceeded = this.store.save(
-            event.document.successfulPlantOrdinal + 1,
-            plantsToSave,
-          );
-          if (!this.lastSaveSucceeded) {
-            this.telemetryStore.clear();
-            this.lastSaveSucceeded = this.store.save(
-              event.document.successfulPlantOrdinal + 1,
-              plantsToSave,
-            );
-          }
-          if (!this.lastSaveSucceeded) {
-            this.ui.setStatus("Could not save this change.", "warning");
+          // Recovery was persisted before replacing memory. Do not write it twice.
+          if (event.operation !== "undo" && event.operation !== "remove") {
+            this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
           }
           // Recorded only after the graph save (and any eviction/retry) has
           // been fully attempted, and never allowed to block, delay, or fail it.
@@ -490,11 +476,64 @@ export class IkebanaApp {
     );
   }
 
+  private saveWorkingPlants(plants: ReadonlyMap<string, PlantGraph>, ordinal: number) {
+    const canonical = [...plants.values()]
+      .sort((left, right) => left.id.localeCompare(right.id)).map(toCanonicalPlantGraph);
+    this.lastSaveSucceeded = this.store.save(ordinal + 1, canonical);
+    if (!this.lastSaveSucceeded) {
+      this.telemetryStore.clear();
+      this.lastSaveSucceeded = this.store.save(ordinal + 1, canonical);
+    }
+    if (!this.lastSaveSucceeded) this.ui.setStatus("Could not save this change.", "warning");
+    return this.lastSaveSucceeded;
+  }
+
+  private recoverWorkingEdit(operation: "undo" | "remove") {
+    if (this.workingSession) return;
+    this.interruptActive("view-command", false);
+    this.metrics.resetAttempt();
+    this.ui.setState({ editMenuOpen: false, materialMenuOpen: false, viewMenuOpen: false });
+    const result = operation === "undo"
+      ? this.coordinator.commandUndo()
+      : this.coordinator.commandRemoveSelected();
+    if (!result.ok) {
+      if (result.reason === "save-failed") this.ui.setStatus("Could not save this change. Your bowl is unchanged.", "warning");
+      return;
+    }
+    const document = this.coordinator.getDocumentSnapshot();
+    const selected = document.selectedPlantId ? document.plants.get(document.selectedPlantId) : undefined;
+    const branch = this.selectedBranchId ? selected?.branches.get(this.selectedBranchId) : undefined;
+    this.assignSelectedBranch(branch?.active ? branch.id : selected?.rootBranchId ?? null);
+    this.ui.setStatus(operation === "undo" ? "Last edit undone." : "Cutting removed. Undo can bring it back.");
+    this.syncPresentation();
+  }
+
+  private handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      if (this.coordinator.getDebugState().active) this.interruptActive("explicit-cancel");
+      return;
+    }
+    if (event.defaultPrevented || event.repeat || !(event.ctrlKey || event.metaKey)
+      || event.altKey || event.shiftKey || event.key.toLowerCase() !== "z") return;
+    // Leave text editing and all modal workflows to their own keyboard behavior.
+    const target = event.target as HTMLElement | null;
+    if (target?.closest?.("input, textarea, select, [contenteditable]:not([contenteditable='false']), [role='textbox']")
+      || this.workingSession || this.root.querySelector("dialog[open], [role='dialog']:not([hidden])")) return;
+    if (this.coordinator.getDebugState().active) {
+      event.preventDefault();
+      this.interruptActive("explicit-cancel");
+    } else if (this.coordinator.canUndo()) {
+      event.preventDefault();
+      this.recoverWorkingEdit("undo");
+    }
+  }
+
   private pauseForGarden() {
     this.interruptActive("posture-command", false);
     this.metrics.resetAttempt();
-    this.coordinator.commandPosture("step-back");
-    this.ui.setState({ posture: "step-back", experimentPanelOpen: false, viewMenuOpen: false });
+    // The modal interrupts editing but does not change the working posture.
+    // Viewing a kept entry uses its own read-only Step Back coordinator below.
+    this.ui.setState({ experimentPanelOpen: false, viewMenuOpen: false, materialMenuOpen: false, editMenuOpen: false });
     this.syncPresentation();
   }
 
@@ -531,7 +570,7 @@ export class IkebanaApp {
     this.coordinator = saved.coordinator;
     this.assignSelectedBranch(saved.selectedBranchId);
     this.cameraIsFree = saved.cameraIsFree;
-    this.ui.setState({ posture: "step-back", tool: this.coordinator.getDebugState().tool, trayEnabled: true });
+    this.ui.setState({ posture: this.coordinator.getDebugState().posture, tool: this.coordinator.getDebugState().tool, trayEnabled: true });
     this.ui.setStatus("Your working bowl is here.");
     this.syncPresentation();
   }
@@ -637,11 +676,21 @@ export class IkebanaApp {
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
     if (this.workingSession && (command.kind === "set-posture" && command.posture === "arrange"
-      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant"].includes(command.kind))) {
+      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant", "undo-edit", "remove-cutting"].includes(command.kind))) {
       this.ui.setStatus("This is a kept arrangement. Make a working copy to change it.");
       return;
     }
     switch (command.kind) {
+      case "set-edit-menu": {
+        this.interruptActive("view-command", false);
+        this.ui.setState({ editMenuOpen: command.open, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });
+        break;
+      }
+      case "undo-edit":
+      case "remove-cutting": {
+        this.recoverWorkingEdit(command.kind === "undo-edit" ? "undo" : "remove");
+        break;
+      }
       case "stop-and-look": {
         this.interruptActive("posture-command");
         this.metrics.resetAttempt();
@@ -901,7 +950,9 @@ export class IkebanaApp {
         result: "miss",
         region: screenRegion(event.clientY),
       });
-      this.ui.setStatus("Step back to look around.");
+      this.ui.setStatus(debug.tool === "prune"
+        ? "Touch a stem or flower to preview a cut."
+        : "Touch a stem to aim, or its pale point to bend. Step Back moves the view.");
       return;
     }
 
@@ -938,7 +989,8 @@ export class IkebanaApp {
   private updateHover(event: PointerEvent) {
     const debug = this.coordinator.getDebugState();
     if (event.pointerType === "touch" || event.buttons !== 0 || event.target !== this.canvas
-      || debug.posture !== "arrange" || this.ui.state.experimentPanelOpen || this.ui.state.viewMenuOpen) {
+      || debug.posture !== "arrange" || this.ui.state.experimentPanelOpen || this.ui.state.viewMenuOpen
+      || this.ui.state.materialMenuOpen || this.ui.state.editMenuOpen) {
       this.clearHover();
       return;
     }
@@ -1777,6 +1829,8 @@ export class IkebanaApp {
       showSelection: true,
     });
     this.ui.setState({
+      canUndo: !this.workingSession && this.coordinator.canUndo(),
+      canRemove: !this.workingSession && debug.posture === "arrange" && Boolean(selectedPlantId),
       bendStationsMode: this.bendStationsMode,
       bendStationChoices: showStationChoices ? stations.map((station) => station.id) : [],
       bendStationSelected: showStationChoices && stationBranch

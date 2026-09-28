@@ -188,6 +188,11 @@ const CAMERA_RADIUS_MIN = 5.7;
 const CAMERA_RADIUS_MAX = 15.5;
 const CAMERA_PHI_MIN = 0.002;
 const CAMERA_PHI_MAX = 1.52;
+// Presentation-only near-miss envelopes in CSS pixels. Existing direct material
+// hits and world-space proxies remain authoritative; these help at distant views.
+const HANDLE_ACQUISITION_RADIUS_PX = 16;
+const STEM_ACQUISITION_RADIUS_PX = 8;
+const BEND_BEAD_MIN_RADIUS_PX = 6;
 
 const CANONICAL_CAMERA: Record<CanonicalView, { position: Vec3; target: Vec3; up: Vec3 }> = {
   front: {
@@ -518,16 +523,26 @@ export class ThreeStudio {
     this.scene.add(front);
 
     const kenzanGlow = new THREE.Mesh(
-      new THREE.TorusGeometry(1.43, 0.035, 8, 64),
+      new THREE.TorusGeometry(KENZAN_RADIUS, 0.035, 8, 64),
       new THREE.MeshBasicMaterial({
         color: 0xc47a4c,
         opacity: 0.86,
         transparent: true,
         depthTest: false,
+        depthWrite: false,
       }),
     );
+    // Draw through the water at the actual insertion plane: the centre of this
+    // line is the usable boundary, rather than a larger, misleading bowl target.
+    const underOutline = new THREE.Mesh(
+      new THREE.TorusGeometry(KENZAN_RADIUS, 0.065, 8, 64),
+      new THREE.MeshBasicMaterial({ color: 0xfff9e9, transparent: true, opacity: 0.95,
+        depthTest: false, depthWrite: false }),
+    );
+    underOutline.renderOrder = 4;
+    kenzanGlow.add(underOutline);
     kenzanGlow.rotation.x = Math.PI / 2;
-    kenzanGlow.position.y = WATER_Y + 0.012;
+    kenzanGlow.position.y = KENZAN_Y;
     kenzanGlow.renderOrder = 5;
     kenzanGlow.visible = false;
     this.scene.add(kenzanGlow);
@@ -558,10 +573,12 @@ export class ThreeStudio {
       new THREE.SphereGeometry(0.105, 16, 12),
       new THREE.MeshBasicMaterial({ color: 0xf5efdf, depthTest: false }),
     );
+    bead.name = "bend-bead";
     const halo = new THREE.Mesh(
       new THREE.TorusGeometry(0.18, 0.018, 7, 40),
       new THREE.MeshBasicMaterial({ color: 0x7d6a54, depthTest: false, transparent: true, opacity: 0.78 }),
     );
+    halo.name = "bend-halo";
     const hit = new THREE.Mesh(
       new THREE.SphereGeometry(0.3, 14, 10),
       invisibleHitMaterial(this.options.debugHitTargets, 0xc08f3d),
@@ -1232,10 +1249,13 @@ export class ThreeStudio {
     }
     this.pendingPlant.group.visible = presentation.visible ?? true;
     this.syncWaterline(this.pendingPlant);
-    this.kenzanGlow.visible = presentation.visible ?? true;
+    // The ghost can be hidden while its owner is still over the source rail or
+    // above the ground-plane horizon. Its destination must already be visible.
+    this.kenzanGlow.visible = true;
+    const cueValidity = presentation.visible === false ? null : presentation.valid;
     this.kenzanGlow.material.color.setHex(
-      presentation.valid === true ? 0x73906d
-        : presentation.valid === false ? 0xb85f4e
+      cueValidity === true ? 0x73906d
+        : cueValidity === false ? 0xb85f4e
           : 0xc47a4c,
     );
     this.requestRender();
@@ -1312,6 +1332,7 @@ export class ThreeStudio {
           this.bendHandle.group.position.copy(toThree(sample.position));
           this.bendHandle.group.quaternion.copy(this.camera.quaternion);
           this.bendHandle.group.visible = true;
+          this.updateBendCueScale();
         }
       }
     }
@@ -1326,6 +1347,21 @@ export class ThreeStudio {
         this.touchCue.visible = true;
       }
     }
+  }
+
+  private updateBendCueScale() {
+    const group = this.bendHandle.group;
+    const bead = group.getObjectByName("bend-bead");
+    const halo = group.getObjectByName("bend-halo");
+    if (!group.visible || !bead || !halo) return;
+    const centre = this.projectPoint(toVec3(group.position));
+    const right = new THREE.Vector3().setFromMatrixColumn(this.camera.matrixWorld, 0);
+    const edge = this.projectPoint(toVec3(group.position.clone().addScaledVector(right, 0.105)));
+    const radiusPx = Math.hypot(edge.clientX - centre.clientX, edge.clientY - centre.clientY);
+    const scale = radiusPx > EPSILON ? Math.max(1, BEND_BEAD_MIN_RADIUS_PX / radiusPx) : 1;
+    // Only decoration scales; the hit proxy keeps its original world geometry.
+    bead.scale.setScalar(scale);
+    halo.scale.setScalar(scale);
   }
 
   setCutPreview(preview: CutPreviewPresentation | null) {
@@ -1543,23 +1579,27 @@ export class ThreeStudio {
     branch: Branch,
     clientX: number,
     clientY: number,
+    acquiredRay?: SpatialRay,
   ): ProjectedBranchPoint {
     const rect = this.canvas.getBoundingClientRect();
     const touch = new THREE.Vector2(clientX - rect.left, clientY - rect.top);
-    const pointerRay = this.rayFromClient(clientX, clientY);
+    const pointerRay = acquiredRay ?? this.rayFromClient(clientX, clientY);
     let best: ProjectedBranchPoint | null = null;
     let cursor = 0;
 
     for (let index = 0; index < branch.points.length - 1; index += 1) {
-      const startProjection = this.projectPoint(branch.points[index]);
-      const endProjection = this.projectPoint(branch.points[index + 1]);
+      // Matrices are already current for this acquisition. Projecting each
+      // endpoint directly avoids a full scene-matrix update per point during
+      // the bounded screen-space fallback across a mixed bowl.
+      const startProjection = toThree(branch.points[index]).project(this.camera);
+      const endProjection = toThree(branch.points[index + 1]).project(this.camera);
       const start = new THREE.Vector2(
-        startProjection.clientX - rect.left,
-        startProjection.clientY - rect.top,
+        (startProjection.x * 0.5 + 0.5) * rect.width,
+        (-startProjection.y * 0.5 + 0.5) * rect.height,
       );
       const end = new THREE.Vector2(
-        endProjection.clientX - rect.left,
-        endProjection.clientY - rect.top,
+        (endProjection.x * 0.5 + 0.5) * rect.width,
+        (-endProjection.y * 0.5 + 0.5) * rect.height,
       );
       const segment = end.clone().sub(start);
       const t = segment.lengthSq() <= EPSILON
@@ -1603,6 +1643,7 @@ export class ThreeStudio {
     }
 
     const candidates = new Map<string, HitCandidate>();
+    let directMaterialHit = false;
     const intersections = this.raycaster.intersectObjects(targets, false);
     for (const intersection of intersections) {
       const data = intersection.object.userData as {
@@ -1672,6 +1713,7 @@ export class ThreeStudio {
           (nearest, hit) => !nearest || hit.distance < nearest.distance ? hit : nearest,
           undefined,
         );
+        directMaterialHit ||= Boolean(surface);
         const candidate: HitCandidate = {
           kind: "organ",
           priorityTier,
@@ -1704,6 +1746,7 @@ export class ThreeStudio {
           (nearest, hit) => !nearest || hit.distance < nearest.distance ? hit : nearest,
           undefined,
         );
+        directMaterialHit ||= Boolean(surface);
         const candidate: HitCandidate = {
           kind: "branch",
           priorityTier,
@@ -1720,7 +1763,59 @@ export class ThreeStudio {
       }
     }
 
+    // This is a bounded near-miss fallback, not a replacement raycast. Never
+    // introduce an enlarged handle/stem that steals a real visible surface hit.
+    if (!directMaterialHit) {
+      for (const candidate of this.screenProximityCandidates(clientX, clientY, acquisitionRay)) {
+        if (!candidates.has(candidate.stableId)) candidates.set(candidate.stableId, candidate);
+      }
+    }
+
     return [...candidates.values()].sort(candidateComparator);
+  }
+
+  private screenProximityCandidates(clientX: number, clientY: number, ray: THREE.Ray): HitCandidate[] {
+    const rect = this.canvas.getBoundingClientRect();
+    if (clientX < rect.left || clientX > rect.left + rect.width
+      || clientY < rect.top || clientY > rect.top + rect.height) return [];
+    const result: HitCandidate[] = [];
+    const acquiredRay = { origin: toVec3(ray.origin), direction: toVec3(ray.direction) };
+    const selected = this.selectedBranch();
+    if (selected) {
+      for (const kind of ["base", "bend"] as const) {
+        const group = (kind === "base" ? this.baseHandle : this.bendHandle).group;
+        if (!group.visible) continue;
+        const point = toVec3(group.position);
+        const projected = this.projectPoint(point);
+        const distance = Math.hypot(projected.clientX - clientX, projected.clientY - clientY);
+        const rayDepth = group.position.clone().sub(ray.origin).dot(ray.direction);
+        if (!projected.visible || rayDepth <= 0 || distance > HANDLE_ACQUISITION_RADIUS_PX) continue;
+        result.push({
+          kind, priorityTier: 0, plantId: selected.plant.graph.id, branchId: selected.branch.id,
+          materialDistance: kind === "bend" ? this.fixedBendDistance ?? 0 : 0,
+          worldPoint: point, screenDistancePx: distance, rayDepth,
+          stableId: `${selected.plant.graph.id}:handle-${kind}`,
+        });
+      }
+    }
+    for (const plant of this.plants.values()) {
+      for (const branch of plant.graph.branches.values()) {
+        // Do not add a new halo to short leaf/flower stalks. Their existing
+        // proxies and direct organ surfaces already provide acquisition.
+        if (!branch.active || !["trunk", "lateral", "twig"].includes(branch.kind)) continue;
+        const projected = this.closestProjectedOnBranch(branch, clientX, clientY, acquiredRay);
+        if (projected.screenDistancePx > STEM_ACQUISITION_RADIUS_PX || projected.rayDepth <= 0) continue;
+        const ndc = toThree(projected.worldPoint).project(this.camera);
+        if (ndc.z < -1 || ndc.z > 1) continue;
+        result.push({
+          kind: "branch", priorityTier: this.selection?.plantId === plant.graph.id ? 1 : 2,
+          plantId: plant.graph.id, branchId: branch.id, materialDistance: projected.materialDistance,
+          worldPoint: projected.worldPoint, screenDistancePx: projected.screenDistancePx,
+          rayDepth: projected.rayDepth, stableId: branch.id,
+        });
+      }
+    }
+    return result;
   }
 
   private setRaycaster(clientX: number, clientY: number) {
@@ -1790,7 +1885,10 @@ export class ThreeStudio {
 
   renderNow() {
     if (this.disposed) return;
-    if (this.bendHandle.group.visible) this.bendHandle.group.quaternion.copy(this.camera.quaternion);
+    if (this.bendHandle.group.visible) {
+      this.bendHandle.group.quaternion.copy(this.camera.quaternion);
+      this.updateBendCueScale();
+    }
     if (this.touchCue.visible) this.touchCue.quaternion.copy(this.camera.quaternion);
     if (this.scene.fog instanceof THREE.Fog) {
       const fog = fogRangeForDistance(this.camera.position.distanceTo(this.cameraTarget), CAMERA_RADIUS_MAX);

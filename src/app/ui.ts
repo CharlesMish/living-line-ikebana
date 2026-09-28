@@ -16,6 +16,9 @@ export interface UIState {
   view: CanonicalView | "orbit";
   viewMenuOpen: boolean;
   materialMenuOpen: boolean;
+  editMenuOpen: boolean;
+  canUndo: boolean;
+  canRemove: boolean;
   selectedMaterialId: string;
   bendVariant: BendVariant;
   bendStationsMode: BendStationsMode;
@@ -38,6 +41,9 @@ export type UICommand =
   | { kind: "set-view"; view: CanonicalView }
   | { kind: "set-view-menu"; open: boolean }
   | { kind: "set-material-menu"; open: boolean }
+  | { kind: "set-edit-menu"; open: boolean }
+  | { kind: "undo-edit" }
+  | { kind: "remove-cutting" }
   | { kind: "select-material"; materialId: string }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
   | { kind: "set-bend-station"; station: BendStationId }
@@ -99,6 +105,9 @@ const DEFAULT_STATE: UIState = {
   view: "front",
   viewMenuOpen: false,
   materialMenuOpen: false,
+  editMenuOpen: false,
+  canUndo: false,
+  canRemove: false,
   selectedMaterialId: "flowering-branch",
   bendVariant: "fixed-bead",
   bendStationsMode: "off",
@@ -152,6 +161,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
   const viewToggle = requireElement<HTMLButtonElement>(root, "#view-toggle");
   const viewOptions = requireElement<HTMLElement>(root, "#view-options");
+  const editMenu = requireElement<HTMLElement>(root, ".edit-menu");
+  const editToggle = requireElement<HTMLButtonElement>(root, "#edit-toggle");
+  const editOptions = requireElement<HTMLElement>(root, "#edit-options");
+  const undoEdit = requireElement<HTMLButtonElement>(root, "#undo-edit");
+  const removeCutting = requireElement<HTMLButtonElement>(root, "#remove-cutting");
   const materialMenu = requireElement<HTMLElement>(root, ".material-menu");
   const materialsToggle = requireElement<HTMLButtonElement>(root, "#materials-toggle");
   const materialOptionsFrame = requireElement<HTMLElement>(root, ".material-options-frame");
@@ -190,6 +204,12 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const listenerOptions = { signal: controller.signal };
 
   function emit(command: UICommand, sourceEvent: Event): void {
+    if (command.kind !== "set-edit-menu" && currentState.editMenuOpen) {
+      setState({ editMenuOpen: false });
+      if (command.kind === "undo-edit" || command.kind === "remove-cutting") {
+        editToggle.focus({ preventScroll: true });
+      }
+    }
     if (command.kind !== "set-view-menu" && currentState.viewMenuOpen) {
       setState({ viewMenuOpen: false });
       if (command.kind === "set-view") viewToggle.focus({ preventScroll: true });
@@ -260,6 +280,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
 
   function render(): void {
+    editToggle.setAttribute("aria-expanded", String(currentState.editMenuOpen));
+    editOptions.hidden = !currentState.editMenuOpen;
+    undoEdit.disabled = !currentState.canUndo;
+    removeCutting.disabled = !currentState.canRemove;
     viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
     viewOptions.hidden = !currentState.viewMenuOpen;
     const stationChoices = currentState.bendStationsMode === "on" ? currentState.bendStationChoices : [];
@@ -392,6 +416,18 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     emit({ kind: "set-view-menu", open: !currentState.viewMenuOpen }, event);
   }, listenerOptions);
 
+  editToggle.addEventListener("click", (event) => {
+    emit({ kind: "set-edit-menu", open: !currentState.editMenuOpen }, event);
+  }, listenerOptions);
+
+  undoEdit.addEventListener("click", (event) => {
+    if (currentState.canUndo) emit({ kind: "undo-edit" }, event);
+  }, listenerOptions);
+
+  removeCutting.addEventListener("click", (event) => {
+    if (currentState.canRemove) emit({ kind: "remove-cutting" }, event);
+  }, listenerOptions);
+
   materialsToggle.addEventListener("click", (event) => {
     emit({ kind: "set-material-menu", open: !currentState.materialMenuOpen }, event);
   }, listenerOptions);
@@ -406,6 +442,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   // Dismissal never consumes a scene press or turns it into a UI command.
   root.ownerDocument.addEventListener("pointerdown", (event) => {
+    if (currentState.editMenuOpen && !event.composedPath().includes(editMenu)) {
+      setState({ editMenuOpen: false });
+    }
     if (currentState.viewMenuOpen && !event.composedPath().includes(viewMenu)) {
       setState({ viewMenuOpen: false });
     }
@@ -413,6 +452,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       emit({ kind: "set-material-menu", open: false }, event);
     }
   }, { ...listenerOptions, capture: true });
+
+  editMenu.addEventListener("focusout", (event) => {
+    if (!editMenu.contains(event.relatedTarget as Node | null)) setState({ editMenuOpen: false });
+  }, listenerOptions);
 
   viewMenu.addEventListener("focusout", (event) => {
     if (!viewMenu.contains(event.relatedTarget as Node | null)) setState({ viewMenuOpen: false });
@@ -425,7 +468,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }, listenerOptions);
 
   root.ownerDocument.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && currentState.materialMenuOpen) {
+    if (event.key === "Escape" && currentState.editMenuOpen) {
+      event.preventDefault();
+      setState({ editMenuOpen: false });
+      editToggle.focus({ preventScroll: true });
+    } else if (event.key === "Escape" && currentState.materialMenuOpen) {
       event.preventDefault();
       emit({ kind: "set-material-menu", open: false }, event);
       materialsToggle.focus({ preventScroll: true });

@@ -1,0 +1,86 @@
+{
+ "p320-simple": {
+  "shift": 46.1,
+  "zoom": 1.2,
+  "fov": 58,
+  "maxRadius": 23.25,
+  "inset": 195
+ },
+ "p320-tall": {
+  "shift": 46.1,
+  "zoom": 1.2,
+  "fov": 58,
+  "maxRadius": 23.25,
+  "inset": 195
+ },
+ "p320-wide": {
+  "shift": 46.1,
+  "zoom": 1.2,
+  "fov": 58,
+  "maxRadius": 23.25,
+  "inset": 195
+ },
+ "p390-simple": {
+  "shift": 25.4,
+  "zoom": 1.298,
+  "fov": 58.2,
+  "maxRadius": 23.25,
+  "inset": 186
+ },
+ "p390-tall": {
+  "shift": 25.4,
+  "zoom": 1.298,
+  "fov": 58.2,
+  "maxRadius": 23.25,
+  "inset": 186
+ },
+ "p390-wide": {
+  "shift": 25.4,
+  "zoom": 1.298,
+  "fov": 58.2,
+  "maxRadius": 23.25,
+  "inset": 186
+ },
+ "land-simple": {
+  "shift": 32.4,
+  "zoom": 1.199,
+  "fov": 58.9,
+  "maxRadius": 15.5,
+  "inset": 127
+ },
+ "land-tall": {
+  "shift": 32.4,
+  "zoom": 1.199,
+  "fov": 58.9,
+  "maxRadius": 15.5,
+  "inset": 127
+ },
+ "land-wide": {
+  "shift": 32.4,
+  "zoom": 1.199,
+  "fov": 58.9,
+  "maxRadius": 15.5,
+  "inset": 127
+ },
+ "desk-simple": {
+  "shift": 0,
+  "zoom": 1,
+  "fov": 44,
+  "maxRadius": 15.5,
+  "inset": 127
+ },
+ "desk-tall": {
+  "shift": 0,
+  "zoom": 1,
+  "fov": 44,
+  "maxRadius": 15.5,
+  "inset": 127
+ },
+ "desk-wide": {
+  "shift": 0,
+  "zoom": 1,
+  "fov": 44,
+  "maxRadius": 15.5,
+  "inset": 127
+ }
+}

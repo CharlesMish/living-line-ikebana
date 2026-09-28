@@ -1,0 +1,77 @@
+{
+ "viewport": [
+  844,
+  390
+ ],
+ "lens": {
+  "enabled": true,
+  "topInset": 127.234375,
+  "canvas": {
+   "width": 844,
+   "height": 390
+  },
+  "shift": 32.4171875,
+  "stageHeight": 325.165625,
+  "zoom": 1.1993887730291295,
+  "virtualHeight": 454.834375,
+  "verticalFov": 58.945300901973326,
+  "maxRadius": 15.5
+ },
+ "railBottom": 127.234375,
+ "insert": {
+  "overPinsAtY": 284,
+  "ordinal": 6,
+  "selected": "plant-6"
+ },
+ "noddingAim": {
+  "acquired": "aim:plant-6:flower-stalk",
+  "stemUnchanged": true
+ },
+ "trailerAim": "aim:plant-2:trail",
+ "bend": "bend:plant-5:stem",
+ "pruneCancel": {
+  "acquired": "prune:plant-3:group-3",
+  "hashUnchanged": true,
+  "noWrite": true
+ },
+ "resizeEvents": [
+  "win:351",
+  "vv"
+ ],
+ "sizeMidResize": [
+  351,
+  351,
+  351
+ ],
+ "resizeDuringAim": {
+  "acquired": "base",
+  "transactionAfterResize": null,
+  "hashUnchanged": true,
+  "noWrite": true
+ },
+ "sizeMidCanvas": [
+  390,
+  351,
+  351
+ ],
+ "canvasResizeDuringAim": {
+  "acquired": "aim",
+  "transactionAfterResize": null,
+  "hashUnchanged": true,
+  "noWrite": true
+ },
+ "nearRail": {
+  "target": "plant-5:pedicel",
+  "yBelowRail": 17,
+  "acquired": "aim:plant-5:plant-5:stem"
+ },
+ "pressOnRailPadding": null,
+ "nearRailHashUnchanged": true,
+ "pan": {
+  "dx": 40.3,
+  "dy": -30.2,
+  "note": "trunk sample is not at target depth; expect roughly (40,-30)"
+ },
+ "writesTotal": 5,
+ "errors": []
+}

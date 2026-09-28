@@ -1,4 +1,5 @@
 import { createVesselGeometry } from "./vessel.ts";
+import { innerWallRadiusAt, KENZAN_TOP_Y, WATER_Y, waterlineCrossings } from "./waterline.ts";
 import { getMaterialAppearance } from "./materialAppearance.ts";
 import * as THREE from "three";
 
@@ -235,6 +236,68 @@ function candidateComparator(left: RankedHitCandidate, right: RankedHitCandidate
 
 export const compareHitCandidates = candidateComparator;
 
+/**
+ * Water reads as a surface at grazing angles and as depth from above: blend
+ * toward a pale reflected room tone and toward opacity as the view flattens.
+ * One extra dot product per water fragment; no textures or render targets.
+ */
+function applyWaterFresnel(material: THREE.MeshPhysicalMaterial) {
+  material.customProgramCacheKey = () => "living-line-water-fresnel-v1";
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.waterReflection = { value: new THREE.Color(0xa9c9c4) };
+    shader.fragmentShader = shader.fragmentShader
+      .replace("void main() {", "uniform vec3 waterReflection;\nvoid main() {")
+      .replace("#include <opaque_fragment>", [
+        "float waterFacing = clamp( dot( normal, normalize( vViewPosition ) ), 0.0, 1.0 );",
+        "float waterFresnel = pow( 1.0 - waterFacing, 3.0 );",
+        "outgoingLight = mix( outgoingLight, waterReflection, waterFresnel * 0.4 );",
+        "diffuseColor.a = mix( diffuseColor.a, 0.97, waterFresnel );",
+        "#include <opaque_fragment>",
+      ].join("\n"));
+  };
+}
+
+/** A unit disc ring on the XZ plane whose vertex alpha fades outward. */
+function createWaterlineParts() {
+  const segments = 40;
+  const inner = 0.12;
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+  for (let index = 0; index <= segments; index += 1) {
+    const angle = (index / segments) * Math.PI * 2;
+    const x = Math.cos(angle);
+    const z = Math.sin(angle);
+    positions.push(x * inner, 0, z * inner, x, 0, z);
+    colors.push(1, 1, 1, 1, 1, 1, 1, 0);
+    if (index < segments) {
+      const a = index * 2;
+      indices.push(a, a + 2, a + 1, a + 1, a + 2, a + 3);
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 4));
+  geometry.setIndex(indices);
+  geometry.computeBoundingSphere();
+  const surface = (color: number, opacity: number) => new THREE.MeshBasicMaterial({
+    color,
+    opacity,
+    transparent: true,
+    vertexColors: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    // A flat disc needs no back-then-front transparent pass.
+    forceSinglePass: true,
+    fog: true,
+  });
+  return {
+    geometry,
+    meniscus: surface(0xf6f2e4, 0.78),
+    ripple: surface(0x1f3a3b, 0.28),
+  };
+}
+
 export class ThreeStudio {
   public readonly canvas: HTMLCanvasElement;
 
@@ -244,6 +307,12 @@ export class ThreeStudio {
   private readonly raycaster = new THREE.Raycaster();
   private readonly botanicalRoot = new THREE.Group();
   private readonly pendingRoot = new THREE.Group();
+  /**
+   * Rebuildable waterline marks, keyed by plant; shared geometry, never disposed
+   * per plant. Created on first use so a studio rebuilt from its prototype
+   * (as the headless picking tests do) needs no extra wiring.
+   */
+  private waterline?: { marks: Map<string, THREE.Group>; parts: ReturnType<typeof createWaterlineParts> };
   private readonly plants = new Map<string, PlantVisual>();
   private readonly cameraTarget = new THREE.Vector3();
   private readonly kenzanGlow: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
@@ -321,18 +390,24 @@ export class ThreeStudio {
     this.scene.background = new THREE.Color(0xeee9dd);
     this.scene.fog = new THREE.Fog(0xeee9dd, 13, 27);
 
-    this.scene.add(new THREE.HemisphereLight(0xfffaec, 0x657064, 2.15));
-    const key = new THREE.DirectionalLight(0xfff3d8, 3.15);
-    key.position.set(-5, 10, 7);
+    this.scene.add(new THREE.HemisphereLight(0xfffaec, 0x657064, 1.95));
+    // A steep, slightly frontal key keeps stem shadows short enough to land on
+    // the water and vessel rather than as a second silhouette on the floor.
+    const key = new THREE.DirectionalLight(0xfff3d8, 3.0);
+    key.position.set(-3.2, 12.5, 4.4);
     key.castShadow = true;
     key.shadow.mapSize.set(1024, 1024);
-    key.shadow.camera.left = -7;
-    key.shadow.camera.right = 7;
-    key.shadow.camera.top = 9;
-    key.shadow.camera.bottom = -3;
+    key.shadow.camera.left = -6;
+    key.shadow.camera.right = 6;
+    key.shadow.camera.top = 6;
+    key.shadow.camera.bottom = -6;
+    key.shadow.camera.near = 4;
+    key.shadow.camera.far = 24;
+    key.shadow.bias = -0.0004;
+    key.shadow.normalBias = 0.02;
     this.scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xcddce0, 0.72);
+    const fill = new THREE.DirectionalLight(0xcddce0, 0.8);
     fill.position.set(6, 4, -5);
     this.scene.add(fill);
 
@@ -353,19 +428,25 @@ export class ThreeStudio {
     vessel.receiveShadow = true;
     this.scene.add(vessel);
 
+    // The water fills the basin to just below the lip and covers the kenzan
+    // top, so stems are read from the waterline. Graph insertion height is unchanged.
     const water = new THREE.Mesh(
-      new THREE.CircleGeometry(2.345, 72),
+      new THREE.CircleGeometry(innerWallRadiusAt(WATER_Y), 96),
       new THREE.MeshPhysicalMaterial({
-        color: 0x497d82,
-        opacity: 0.82,
+        color: 0x2f5d60,
+        opacity: 0.84,
         transparent: true,
         depthWrite: false,
-        roughness: 0.16,
+        roughness: 0.12,
         clearcoat: 1,
+        clearcoatRoughness: 0.08,
       }),
     );
+    applyWaterFresnel(water.material);
     water.rotation.x = -Math.PI / 2;
-    water.position.y = 0.46;
+    water.position.y = WATER_Y;
+    water.receiveShadow = true;
+    water.renderOrder = 1;
     this.scene.add(water);
 
     const rim = new THREE.Mesh(
@@ -376,28 +457,32 @@ export class ThreeStudio {
     rim.position.y = 0.635;
     this.scene.add(rim);
 
+    // A quiet, submerged pin frog: matte and low, seen through the water as
+    // the seating field rather than as the darkest object in the composition.
     const kenzan = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.34, 1.34, 0.36, 64),
-      new THREE.MeshStandardMaterial({ color: 0x4c4943, roughness: 0.44, metalness: 0.56 }),
+      new THREE.CylinderGeometry(1.34, 1.36, 0.36, 64),
+      new THREE.MeshStandardMaterial({ color: 0x20221f, roughness: 0.9, metalness: 0.1 }),
     );
-    // Extend down to the basin floor while retaining the original top at 0.55.
-    kenzan.position.y = 0.37;
+    kenzan.position.y = KENZAN_TOP_Y - 0.18;
+    kenzan.receiveShadow = true;
     this.scene.add(kenzan);
 
     const pinCoordinates: Array<[number, number]> = [];
-    for (let x = -1.12; x <= 1.1201; x += 0.16) {
-      for (let z = -1.12; z <= 1.1201; z += 0.16) {
+    for (let x = -1.155; x <= 1.1551; x += 0.11) {
+      for (let z = -1.155; z <= 1.1551; z += 0.11) {
         if (Math.hypot(x, z) <= KENZAN_RADIUS) pinCoordinates.push([x, z]);
       }
     }
+    const pinHeight = WATER_Y - 0.018 - KENZAN_TOP_Y;
     const pins = new THREE.InstancedMesh(
-      new THREE.CylinderGeometry(0.012, 0.018, 0.25, 5),
-      new THREE.MeshStandardMaterial({ color: 0xa9a197, metalness: 0.76, roughness: 0.28 }),
+      // Open four-sided pins: seen only through water, so caps and facets add nothing.
+      new THREE.CylinderGeometry(0.008, 0.012, pinHeight, 4, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0x55544d, metalness: 0.35, roughness: 0.55 }),
       pinCoordinates.length,
     );
     const pinMatrix = new THREE.Matrix4();
     pinCoordinates.forEach(([x, z], index) => {
-      pinMatrix.makeTranslation(x, 0.62, z);
+      pinMatrix.makeTranslation(x, KENZAN_TOP_Y + pinHeight / 2, z);
       pins.setMatrixAt(index, pinMatrix);
     });
     pins.instanceMatrix.needsUpdate = true;
@@ -421,7 +506,8 @@ export class ThreeStudio {
       }),
     );
     kenzanGlow.rotation.x = Math.PI / 2;
-    kenzanGlow.position.y = KENZAN_Y + 0.03;
+    kenzanGlow.position.y = WATER_Y + 0.012;
+    kenzanGlow.renderOrder = 5;
     kenzanGlow.visible = false;
     this.scene.add(kenzanGlow);
     return { kenzanGlow };
@@ -881,9 +967,65 @@ export class ThreeStudio {
       visual.organs.delete(organId);
     }
 
+    this.syncWaterline(visual);
     this.updateAffordances();
     this.updateCutCollar();
     this.requestRender();
+  }
+
+  /**
+   * One meniscus where each active branch meets the water. Derived from the
+   * current graph (or live preview) on every sync; it never feeds back.
+   */
+  private syncWaterline(visual: PlantVisual) {
+    this.waterline ??= { marks: new Map(), parts: createWaterlineParts() };
+    const { marks, parts } = this.waterline;
+    const key = `${visual.pending ? "pending" : "plant"}:${visual.graph.id}`;
+    let group = marks.get(key);
+    if (!group) {
+      group = new THREE.Group();
+      group.name = `waterline:${key}`;
+      marks.set(key, group);
+      (visual.pending ? this.pendingRoot : this.botanicalRoot).add(group);
+    }
+    const crossings = waterlineCrossings(visual.graph);
+    while (group.children.length > crossings.length) group.remove(group.children[group.children.length - 1]);
+    while (group.children.length < crossings.length) {
+      const mark = new THREE.Group();
+      const meniscus = new THREE.Mesh(parts.geometry, parts.meniscus);
+      const ripple = new THREE.Mesh(parts.geometry, parts.ripple);
+      meniscus.renderOrder = 3;
+      ripple.renderOrder = 2;
+      mark.add(ripple, meniscus);
+      group.add(mark);
+    }
+    const plan = visual.pending ? null : this.previewForPlant(visual.graph.id);
+    const removed = new Set(plan?.removedBranchIds ?? []);
+    crossings.forEach((crossing, index) => {
+      const mark = group!.children[index] as THREE.Group;
+      const [ripple, meniscus] = mark.children as THREE.Mesh[];
+      mark.position.set(crossing.point.x, WATER_Y + 0.002, crossing.point.z);
+      // A tilted stem cuts the surface in an ellipse stretched along its lean.
+      const lean = Math.atan2(crossing.tangent.z, crossing.tangent.x);
+      mark.rotation.set(0, -lean, 0);
+      const stretch = 1 / Math.max(0.4, Math.abs(crossing.tangent.y));
+      const meniscusRadius = crossing.radius + 0.055;
+      meniscus.scale.set(meniscusRadius * stretch, 1, meniscusRadius);
+      const rippleRadius = crossing.radius + 0.16;
+      ripple.scale.set(rippleRadius * stretch, 1, rippleRadius);
+      const doomed = removed.has(crossing.branchId)
+        || (plan?.branchId === crossing.branchId && crossing.distance > plan.distance);
+      mark.visible = visual.pending ? this.pendingValidity !== false : !doomed;
+    });
+    group.visible = visual.group.visible;
+  }
+
+  private removeWaterline(plantId: string, pending: boolean) {
+    const key = `${pending ? "pending" : "plant"}:${plantId}`;
+    const group = this.waterline?.marks.get(key);
+    if (!group) return;
+    group.parent?.remove(group);
+    this.waterline!.marks.delete(key);
   }
 
   upsertGraph(graph: PlantGraph, hints: GraphUpdateHints = {}) {
@@ -939,6 +1081,7 @@ export class ThreeStudio {
     if (!visual) return;
     this.botanicalRoot.remove(visual.group);
     disposeObject(visual.group);
+    this.removeWaterline(plantId, false);
     this.plants.delete(plantId);
     if (this.selection?.plantId === plantId) this.selection = null;
     if (this.cutPreview?.plantId === plantId) this.cutPreview = null;
@@ -957,6 +1100,7 @@ export class ThreeStudio {
       if (this.pendingPlant) {
         this.pendingRoot.remove(this.pendingPlant.group);
         disposeObject(this.pendingPlant.group);
+        this.removeWaterline(this.pendingPlant.graph.id, true);
       }
       this.pendingPlant = null;
       this.kenzanGlow.visible = false;
@@ -968,6 +1112,7 @@ export class ThreeStudio {
       if (this.pendingPlant) {
         this.pendingRoot.remove(this.pendingPlant.group);
         disposeObject(this.pendingPlant.group);
+        this.removeWaterline(this.pendingPlant.graph.id, true);
       }
       this.pendingPlant = this.createPlantVisual(graph, true);
     } else {
@@ -975,6 +1120,7 @@ export class ThreeStudio {
       this.syncPlantVisual(this.pendingPlant);
     }
     this.pendingPlant.group.visible = presentation.visible ?? true;
+    this.syncWaterline(this.pendingPlant);
     this.kenzanGlow.visible = presentation.visible ?? true;
     this.kenzanGlow.material.color.setHex(
       presentation.valid === true ? 0x73906d
@@ -1561,7 +1707,13 @@ export class ThreeStudio {
       plantId: string;
       branchIds: string[];
       organIds: string[];
+      /** Visible derived waterline marks; presentation only. */
+      waterlineMarks: number;
     }> = [];
+    const visibleMarks = (key: string) => {
+      const group = this.waterline?.marks.get(key);
+      return group?.visible ? group.children.filter((mark) => mark.visible).length : 0;
+    };
     for (const plant of this.plants.values()) {
       inventory.push({
         scope: "committed",
@@ -1574,6 +1726,7 @@ export class ThreeStudio {
           .filter((organ) => organ.active && plant.organs.has(organ.id))
           .map((organ) => organ.id)
           .sort(),
+        waterlineMarks: visibleMarks(`plant:${plant.graph.id}`),
       });
     }
     if (this.pendingPlant) {
@@ -1588,6 +1741,7 @@ export class ThreeStudio {
           .filter((organ) => organ.active && this.pendingPlant!.organs.has(organ.id))
           .map((organ) => organ.id)
           .sort(),
+        waterlineMarks: visibleMarks(`pending:${this.pendingPlant.graph.id}`),
       });
     }
     return inventory.sort((left, right) =>

@@ -399,6 +399,7 @@ interface IkebanaTestBridgeV1 {
     organIds: string[];
     waterlineMarks: number; // visible derived waterline marks, presentation only
   }[];
+  getStageLens(): unknown; // narrow-stage lens: inset, shift, zoom, field of view, max radius
   getScreenTargets(): {
     role: string;
     plantId?: string;

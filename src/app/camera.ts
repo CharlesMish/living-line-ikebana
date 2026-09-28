@@ -37,15 +37,33 @@ export function canonicalCameraPose(view: CanonicalView): CameraPose {
   };
 }
 
+/** Base Step Back radius limits. A narrow stage may raise the maximum (see stageLens.ts). */
+export const CAMERA_RADIUS_LIMITS = Object.freeze({ min: 5.7, max: 15.5 });
+
+export interface CameraRadiusLimits {
+  min: number;
+  max: number;
+}
+
+/**
+ * Clamp a requested radius. An acquired radius already beyond the current
+ * maximum (for example, a pose kept on a narrower screen) is never pulled in
+ * merely by starting a gesture; it can only move toward the limits.
+ */
+export function clampCameraRadius(requested: number, acquired: number, limits: CameraRadiusLimits = CAMERA_RADIUS_LIMITS) {
+  return clamp(requested, Math.min(limits.min, acquired), Math.max(limits.max, acquired));
+}
+
 export function orbitCameraPose(
   acquired: CameraPose,
   deltaX: number,
   deltaY: number,
   zoomScale = 1,
+  limits: CameraRadiusLimits = CAMERA_RADIUS_LIMITS,
 ): CameraPose {
   const offset = subtract(acquired.position, acquired.target);
   const originalRadius = Math.max(0.001, length(offset));
-  const radius = clamp(originalRadius * zoomScale, 5.7, 15.5);
+  const radius = clampCameraRadius(originalRadius * zoomScale, originalRadius, limits);
   const originalPhi = Math.acos(clamp(offset.y / originalRadius, -1, 1));
   const originalTheta = Math.atan2(offset.x, offset.z);
   const theta = originalTheta - deltaX * 0.006;
@@ -63,12 +81,17 @@ export function orbitCameraPose(
   };
 }
 
-export function dollyCameraPose(acquired: CameraPose, zoomScale: number): CameraPose {
+export function dollyCameraPose(
+  acquired: CameraPose,
+  zoomScale: number,
+  limits: CameraRadiusLimits = CAMERA_RADIUS_LIMITS,
+): CameraPose {
   const offset = subtract(acquired.position, acquired.target);
   const radius = length(offset);
   if (radius <= 1e-8) return cloneCameraPose(acquired);
+  const next = clampCameraRadius(radius * zoomScale, radius, limits);
   return {
-    position: add(acquired.target, scale(offset, clamp(radius * zoomScale, 5.7, 15.5) / radius)),
+    position: add(acquired.target, scale(offset, next / radius)),
     target: cloneVec3(acquired.target),
     up: cloneVec3(acquired.up),
   };

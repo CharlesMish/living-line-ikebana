@@ -1,3 +1,4 @@
+import type { StemOverlap } from "../core/stemOverlaps.ts";
 import { createVesselGeometry } from "./vessel.ts";
 import { StemOverlapOverlay } from "./stemOverlapOverlay.ts";
 import { computeStageLens, fogRangeForDistance, type StageLens } from "./stageLens.ts";
@@ -1891,12 +1892,12 @@ export class ThreeStudio {
   }
 
   /** Derived inspection only. Null removes cues and avoids detection work. */
-  setStemOverlapGraphs(graphs: Iterable<PlantGraph> | null): number {
-    if (!this.stemOverlaps && graphs !== null) {
+  setStemOverlapGraphs(graphs: Iterable<PlantGraph> | null, barriers: StemOverlap[] = []): number {
+    if (!this.stemOverlaps && (graphs !== null || barriers.length > 0)) {
       this.stemOverlaps = new StemOverlapOverlay();
       this.scene.add(this.stemOverlaps.group);
     }
-    const count = this.stemOverlaps?.setGraphs(graphs) ?? 0;
+    const count = this.stemOverlaps?.setGraphs(graphs, barriers) ?? 0;
     this.requestRender();
     return count;
   }

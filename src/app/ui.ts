@@ -15,6 +15,8 @@ export interface UIState {
   cameraMode: CameraMode;
   view: CanonicalView | "orbit";
   viewMenuOpen: boolean;
+  showStemOverlaps: boolean;
+  stemOverlapCount: number;
   materialMenuOpen: boolean;
   editMenuOpen: boolean;
   canUndo: boolean;
@@ -40,6 +42,7 @@ export type UICommand =
   | { kind: "set-camera-mode"; cameraMode: CameraMode }
   | { kind: "set-view"; view: CanonicalView }
   | { kind: "set-view-menu"; open: boolean }
+  | { kind: "set-stem-overlaps"; visible: boolean }
   | { kind: "set-material-menu"; open: boolean }
   | { kind: "set-edit-menu"; open: boolean }
   | { kind: "undo-edit" }
@@ -104,6 +107,8 @@ const DEFAULT_STATE: UIState = {
   cameraMode: "orbit",
   view: "front",
   viewMenuOpen: false,
+  showStemOverlaps: false,
+  stemOverlapCount: 0,
   materialMenuOpen: false,
   editMenuOpen: false,
   canUndo: false,
@@ -161,6 +166,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
   const viewToggle = requireElement<HTMLButtonElement>(root, "#view-toggle");
   const viewOptions = requireElement<HTMLElement>(root, "#view-options");
+  const overlapsToggle = requireElement<HTMLButtonElement>(root, "#stem-overlaps-toggle");
+  const overlapsNote = requireElement<HTMLElement>(root, "#stem-overlaps-note");
   const editMenu = requireElement<HTMLElement>(root, ".edit-menu");
   const editToggle = requireElement<HTMLButtonElement>(root, "#edit-toggle");
   const editOptions = requireElement<HTMLElement>(root, "#edit-options");
@@ -212,7 +219,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     }
     if (command.kind !== "set-view-menu" && currentState.viewMenuOpen) {
       setState({ viewMenuOpen: false });
-      if (command.kind === "set-view") viewToggle.focus({ preventScroll: true });
+      if (command.kind === "set-view" || command.kind === "set-stem-overlaps") viewToggle.focus({ preventScroll: true });
     }
     if (
       command.kind !== "set-material-menu"
@@ -280,6 +287,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
 
   function render(): void {
+    overlapsToggle.setAttribute("aria-pressed", String(currentState.showStemOverlaps));
+    overlapsToggle.textContent = `Stem overlaps: ${currentState.showStemOverlaps ? "on" : "off"}`;
+    overlapsNote.hidden = !currentState.showStemOverlaps;
+    const areas = currentState.stemOverlapCount;
+    overlapsNote.textContent = `${areas ? `${areas} possible overlap ${areas === 1 ? "area" : "areas"}.` : "No stem overlaps detected."} Main stems of separate cuttings only. ${areas > 32 ? "Up to 32 visible areas marked." : "Orbit to inspect the marks."}`;
     editToggle.setAttribute("aria-expanded", String(currentState.editMenuOpen));
     editOptions.hidden = !currentState.editMenuOpen;
     undoEdit.disabled = !currentState.canUndo;
@@ -414,6 +426,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   viewToggle.addEventListener("click", (event) => {
     emit({ kind: "set-view-menu", open: !currentState.viewMenuOpen }, event);
+  }, listenerOptions);
+
+  overlapsToggle.addEventListener("click", (event) => {
+    emit({ kind: "set-stem-overlaps", visible: !currentState.showStemOverlaps }, event);
   }, listenerOptions);
 
   editToggle.addEventListener("click", (event) => {

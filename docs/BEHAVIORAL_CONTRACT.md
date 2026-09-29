@@ -347,3 +347,24 @@ released camera pose and chosen Orbit/Pan mode. It does not finish a live edit,
 write a save, advance an ordinal, certify a composition, or archive an arrangement.
 The DOM returns focus to Arrange, which remains immediately available. No tools
 or materials are gated, and no cut, view visit, angle or water threshold is required.
+
+### Optional stem-overlap inspection — September 28 presentation study
+
+`View → Stem overlaps` is off by default and session-only. It marks approximate
+3D penetration between active structural stems (trunk/lateral/twig) of separate
+cuttings using their current points and radii. Same-plant contact, organs/stalks,
+vessel and floor are not checked. Capsule envelopes are approximate at end caps
+and faceted bends; marks mean **possible overlap**, not a physical validity score.
+Exact touching and very shallow numerical grazing are excluded. A depth-separated
+screen crossing is not enough to mark an area.
+
+Visible insertion, Aim/Bend/base, and remaining-material prune previews feed the
+inspection; hover prune uses the same remaining graph. Cancel/Undo restores cues
+from the restored material. Toggling cancels an active edit first but writes no
+save and changes no camera, selection, ordinal or Undo checkpoint. Marks are
+unpickable and never constrain shaping. They stay out of canonical graphs and
+Garden thumbnails; Compare studios do not enable them. One kept entry may be
+inspected read-only. Off-state hides all marks and avoids detection work.
+
+See [scope, evidence and phone checks](development/reports/stem-overlaps/README.md)
+and the [separate prevention audit](development/reports/stem-overlaps/PREVENTION_AUDIT.md).

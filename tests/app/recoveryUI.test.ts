@@ -150,3 +150,21 @@ test("Escape, outside press and focus leaving Edit dismiss without a recovery co
     assert.equal(h.commands.every((command) => command.kind === "set-edit-menu"), true);
   } finally { h.close(); }
 });
+
+test("stem inspection toggle exposes scope/count and returns focus without changing camera", () => {
+  const h = setup();
+  try {
+    assert.equal(h.document.element("#stem-overlaps-toggle").getAttribute("aria-pressed"), "false");
+    assert.equal(h.document.element("#stem-overlaps-note").hidden, true);
+    h.ui.setState({ viewMenuOpen: true });
+    h.click("#stem-overlaps-toggle");
+    assert.deepEqual(h.commands, [{ kind: "set-stem-overlaps", visible: true }]);
+    assert.equal(h.document.activeElement, h.document.element("#view-toggle"));
+    h.ui.setState({ showStemOverlaps: true, stemOverlapCount: 2 });
+    assert.equal(h.document.element("#stem-overlaps-toggle").getAttribute("aria-pressed"), "true");
+    assert.match(h.document.element("#stem-overlaps-note").textContent, /2 possible overlap areas/);
+    assert.match(h.document.element("#stem-overlaps-note").textContent, /separate cuttings only/);
+    h.ui.setState({ stemOverlapCount: 0 });
+    assert.match(h.document.element("#stem-overlaps-note").textContent, /No stem overlaps detected/);
+  } finally { h.close(); }
+});

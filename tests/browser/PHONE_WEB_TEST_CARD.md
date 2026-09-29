@@ -548,3 +548,14 @@ Storage-failure behavior is a harness check, not a request to fill a phone:
 when proposed Undo/Remove persistence fails, plants, ordinal, selection and the
 checkpoint stay unchanged; retry can succeed. Do not confuse failure to write
 with a successfully recovered arrangement.
+
+## Stem-overlap inspection (draft; physical phone not yet run)
+
+Use the six checks in
+[the stem-overlap report](../../docs/development/reports/stem-overlaps/README.md#short-ownerbrowser-check).
+Record exact head, device and viewport. Confirm default-off matches normal play,
+View toggle remains reachable at 320px/large text/short landscape, markers do not
+look like grab handles, and real 3D depth separation is not marked. Compare marks
+through live shaping, hover/held prune, Cancel, Undo, insertion and removal. Keep
+with inspection on: its thumbnail and Compare must remain clean. No restraint,
+warning count or agent opinion constitutes botanical correctness or phone feel.

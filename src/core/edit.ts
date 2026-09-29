@@ -27,7 +27,7 @@ import {
   scale,
   subtract,
 } from "./math.ts";
-import type { Vec3 } from "./math.ts";
+import type { Vec3, Quat } from "./math.ts";
 import type { BendRequest, Branch, PlantGraph } from "./types.ts";
 
 const firstTangent = (branch: Branch): Vec3 =>
@@ -45,16 +45,16 @@ export interface AimOptions {
  * Rigidly aims one continuation and its active descendants from the provided
  * acquisition snapshot. Inactive history is deliberately untouched.
  */
-export const aimBranch = (
+export const aimRotation = (
   snapshot: PlantGraph,
   branchId: string,
   grabbedPoint: Vec3,
   requestedTarget: Vec3,
   options: AimOptions = {},
-): PlantGraph => {
-  const graph = clonePlantGraph(snapshot);
+): Quat => {
   const selected = snapshot.branches.get(branchId);
-  if (!selected?.active) return graph;
+  const identity = { x: 0, y: 0, z: 0, w: 1 };
+  if (!selected?.active) return identity;
 
   const anchor = selected.points[0];
   const target = cloneVec3(requestedTarget);
@@ -63,10 +63,10 @@ export const aimBranch = (
   // This guards only undefined directions, not a material-size-dependent
   // interaction dead zone. Short flower and leaf stalks are valid aim targets.
   const minimumSquared = options.minimumDirectionSquared ?? GEOMETRY_EPSILON * GEOMETRY_EPSILON;
-  if (lengthSquared(startDirection) < minimumSquared || lengthSquared(targetDirection) < minimumSquared) return graph;
+  if (lengthSquared(startDirection) < minimumSquared || lengthSquared(targetDirection) < minimumSquared) return identity;
 
   let rotation = quaternionBetween(startDirection, targetDirection, selected.referenceNormal);
-  if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return graph;
+  if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return identity;
   if (selected.kind === "trunk") {
     // An arch can descend while its seated exit still points upward. Clamping
     // the grabbed tip's height made that legitimate motion stick, and could
@@ -90,6 +90,15 @@ export const aimBranch = (
       rotation = quaternionFromAxisAngle(axis, lower);
     }
   }
+  return rotation;
+};
+
+/** Reconstruct a rigid Aim from the immutable acquisition, including descendants. */
+export const applyAimRotation = (snapshot: PlantGraph, branchId: string, rotation: Quat): PlantGraph => {
+  const graph = clonePlantGraph(snapshot);
+  const selected = snapshot.branches.get(branchId);
+  if (!selected?.active || (rotation.x === 0 && rotation.y === 0 && rotation.z === 0)) return graph;
+  const anchor = selected.points[0];
   const affected = descendantIds(snapshot, branchId);
   affected.add(branchId);
   for (const id of affected) {
@@ -101,6 +110,10 @@ export const aimBranch = (
   }
   return graph;
 };
+
+export const aimBranch = (snapshot: PlantGraph, branchId: string, grabbedPoint: Vec3,
+  requestedTarget: Vec3, options: AimOptions = {}): PlantGraph =>
+  applyAimRotation(snapshot, branchId, aimRotation(snapshot, branchId, grabbedPoint, requestedTarget, options));
 
 const smootherstep = (value: number): number => {
   const t = clamp(value, 0, 1);
@@ -136,27 +149,30 @@ const remapActiveDescendants = (
  * station or a touch-located material station. The station is an arc distance,
  * never a point index. This is intentionally not a free-chain IK solver.
  */
-export const bendBranch = (snapshot: PlantGraph, request: BendRequest): PlantGraph => {
-  const graph = clonePlantGraph(snapshot);
+const bendParameters = (snapshot: PlantGraph, request: BendRequest): { axis: Vec3; totalRotation: number } | null => {
   const source = snapshot.branches.get(request.branchId);
-  const branch = graph.branches.get(request.branchId);
-  if (!source?.active || !branch) return graph;
-
+  if (!source?.active) return null;
   const stationDistance = legalBendStation(source, request.stationDistance);
-  if (stationDistance === null) return graph;
+  if (stationDistance === null) return null;
   const station = sampleBranch(source, stationDistance);
   const requested = subtract(request.target, station.position);
   let perpendicular = projectPerpendicular(requested, station.tangent);
-  if (lengthSquared(perpendicular) < GEOMETRY_EPSILON * GEOMETRY_EPSILON) return graph;
-
-  // Extend the end of the gesture by 20%, retaining small-drag sensitivity.
-  // This is an authored shaping limit, not a physical fracture threshold.
+  if (lengthSquared(perpendicular) < GEOMETRY_EPSILON * GEOMETRY_EPSILON) return null;
   const rangeExtension = 1.2;
   const maximumInput = (0.55 + (1 - source.stiffness) * 0.45) * rangeExtension;
   perpendicular = scale(clampLength(perpendicular, maximumInput), 0.58 + (1 - source.stiffness) * 0.25);
   const axis = normalize(cross(station.tangent, perpendicular));
   const maximumRotation = (0.28 + (1 - source.stiffness) * 0.55) * rangeExtension;
-  const totalRotation = Math.min(maximumRotation, length(perpendicular) * 1.05);
+  return { axis, totalRotation: Math.min(maximumRotation, length(perpendicular) * 1.05) };
+};
+
+export const bendRotationVector = (snapshot: PlantGraph, request: BendRequest): Vec3 => {
+  const parameters = bendParameters(snapshot, request);
+  return parameters ? scale(parameters.axis, parameters.totalRotation) : { x: 0, y: 0, z: 0 };
+};
+
+/** Shared segment influence weights, also used to bound constrained motion. */
+export const bendInfluenceProfile = (source: Branch, stationDistance: number): number[] => {
   const activeLength = source.restLengths.reduce((sum, value) => sum + value, 0);
   const meanSegmentLength = activeLength / source.restLengths.length;
   const influenceBefore = Math.max(activeLength * 0.38, meanSegmentLength * 4);
@@ -165,15 +181,34 @@ export const bendBranch = (snapshot: PlantGraph, request: BendRequest): PlantGra
   const endDistance = Math.min(activeLength, stationDistance + influenceAfter);
   const span = Math.max(meanSegmentLength, endDistance - startDistance);
 
-  const directions: Vec3[] = [];
   let cursor = 0;
+  return source.restLengths.map(restLength => {
+    const midpoint = cursor + restLength * .5;
+    cursor += restLength;
+    return smootherstep((midpoint - startDistance) / span);
+  });
+};
+
+/** Same solver with a bounded rotation parameter, never interpolated vertices. */
+export const applyBendRotation = (snapshot: PlantGraph, request: BendRequest, rotation: Vec3): PlantGraph =>
+  applyBendParameters(snapshot, request, { axis: normalize(rotation), totalRotation: length(rotation) });
+
+const applyBendParameters = (snapshot: PlantGraph, request: BendRequest,
+  parameters: { axis: Vec3; totalRotation: number } | null): PlantGraph => {
+  const graph = clonePlantGraph(snapshot);
+  const source = snapshot.branches.get(request.branchId);
+  const branch = graph.branches.get(request.branchId);
+  if (!source?.active || !branch || !parameters || parameters.totalRotation === 0) return graph;
+  const stationDistance = legalBendStation(source, request.stationDistance);
+  if (stationDistance === null) return graph;
+  const { axis, totalRotation } = parameters;
+  const profiles = bendInfluenceProfile(source, stationDistance);
+
+  const directions: Vec3[] = [];
   for (let index = 0; index < source.restLengths.length; index += 1) {
-    const restLength = source.restLengths[index];
-    const midpoint = cursor + restLength * 0.5;
-    const profile = smootherstep((midpoint - startDistance) / span);
+    const profile = profiles[index];
     const restingDirection = normalize(subtract(source.points[index + 1], source.points[index]));
     directions.push(rotateVector(restingDirection, quaternionFromAxisAngle(axis, totalRotation * profile)));
-    cursor += restLength;
   }
 
   const acquiredFirstTangent = firstTangent(source);
@@ -182,6 +217,9 @@ export const bendBranch = (snapshot: PlantGraph, request: BendRequest): PlantGra
   remapActiveDescendants(snapshot, graph, source.id);
   return graph;
 };
+
+export const bendBranch = (snapshot: PlantGraph, request: BendRequest): PlantGraph =>
+  applyBendParameters(snapshot, request, bendParameters(snapshot, request));
 
 export const bendBranchAtFraction = (
   snapshot: PlantGraph,

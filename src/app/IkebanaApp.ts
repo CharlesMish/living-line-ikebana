@@ -1,3 +1,4 @@
+import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
   add,
@@ -285,6 +286,7 @@ export class IkebanaApp {
   private lastSaveSucceeded = true;
   private removeUIListener: (() => void) | null = null;
   private hovering = false;
+  private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
   private gardenUI!: GardenUI;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean } | null = null;
   private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
@@ -429,8 +431,13 @@ export class IkebanaApp {
   }
 
   private replaceCoordinator(plants: ReadonlyMap<string, PlantGraph>, successfulPlantOrdinal: number) {
-    this.coordinator = new TransactionCoordinator(
-      createDomainAdapters(),
+    let coordinator: Coordinator;
+    const prevention = new StemPrevention(
+      () => Boolean(this.ui.state?.preventStemOverlaps) && !this.workingSession,
+      () => coordinator.getPresentationState().document.plants.values(),
+    );
+    coordinator = new TransactionCoordinator(
+      createDomainAdapters(prevention),
       {
         plants,
         camera: canonicalCameraPose("front"),
@@ -475,6 +482,8 @@ export class IkebanaApp {
         },
       },
     );
+    this.coordinator = coordinator;
+    (this.preventionByCoordinator ??= new WeakMap()).set(coordinator, prevention);
   }
 
   private saveWorkingPlants(plants: ReadonlyMap<string, PlantGraph>, ordinal: number) {
@@ -739,6 +748,15 @@ export class IkebanaApp {
         this.ui.setStatus(command.view === "front" ? "Front." : command.view === "above" ? "Above." : "Three-quarter.");
         break;
       }
+      case "set-stem-prevention": {
+        this.interruptActive("experiment-command", false);
+        this.ui.setState({ preventStemOverlaps: command.enabled, viewMenuOpen: false });
+        this.ui.setStatus(command.enabled
+          ? "Stem protection study on. Existing overlaps can move freely."
+          : "Stem protection off. Shape freely.");
+        this.syncPresentation();
+        break;
+      }
       case "set-stem-overlaps": {
         this.interruptActive("view-command", false);
         this.ui.setState({ showStemOverlaps: command.visible, viewMenuOpen: false });
@@ -892,7 +910,7 @@ export class IkebanaApp {
       inputMethod: "pointer",
       region: screenRegion(command.clientY),
     });
-    this.ui.setStatus(input.valid ? "Over the pins." : "Find the pins.");
+    this.ui.setStatus(this.placementStatus(input.valid));
   }
 
   private activateMaterial(materialId: string) {
@@ -929,6 +947,11 @@ export class IkebanaApp {
     const released = this.coordinator.release(owner);
     if (!released.ok) return;
     const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(prepared.plantId);
+    if (!seatedGraph) {
+      this.resolvePendingAcquisition("declined");
+      this.ui.setStatus("No clear seat here. Drag the cutting to another pin.");
+      return;
+    }
     this.assignSelectedBranch(seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null);
     this.sound.seat();
     if (this.lastSaveSucceeded) this.ui.setStatus(this.bendVariant === "bead"
@@ -1256,7 +1279,7 @@ export class IkebanaApp {
       const intersection = this.studio.intersectKenzanPlane(event.clientX, event.clientY);
       gesture.pendingVisible = intersection !== null;
       this.coordinator.updateInsert(event.pointerId, placementInputFromIntersection(intersection));
-      this.ui.setStatus(intersection?.valid ? "Over the pins." : "Find the pins.");
+      this.ui.setStatus(this.placementStatus(Boolean(intersection?.valid)));
       return;
     }
     if (gesture.kind === "aim" || gesture.kind === "bend") {
@@ -1782,15 +1805,28 @@ export class IkebanaApp {
     return prepared;
   }
 
+  private activePreventionFeedback() {
+    if (!this.ui.state?.preventStemOverlaps) return undefined;
+    const active = this.coordinator.getDebugState().active;
+    return this.ui.state.preventStemOverlaps && active && ["aim", "bend", "base", "insert"].includes(active.kind)
+      ? this.preventionByCoordinator?.get(this.coordinator)?.feedback : undefined;
+  }
+
+  private placementStatus(valid: boolean) {
+    return this.activePreventionFeedback()?.reason === "insertion"
+      ? "Stem meets another cutting. Choose a clear pin."
+      : valid ? "Over the pins." : "Find the pins.";
+  }
+
   private syncStemOverlaps(hover: { plantId: string; plan: CutPlan } | null = null) {
     let graphs: PlantGraph[] | null = null;
-    if (this.ui.state.showStemOverlaps) {
+    if (this.ui.state.showStemOverlaps || this.ui.state.preventStemOverlaps) {
       const presentation = this.coordinator.getPresentationState();
       graphs = stemOverlapPreview(presentation.document.plants,
         presentation.active ?? (hover ? { kind: "prune", ...hover } : null),
         this.gesture?.kind !== "insert" || this.gesture.pendingVisible);
     }
-    const count = this.studio.setStemOverlapGraphs(graphs);
+    const count = this.studio.setStemOverlapGraphs(graphs, this.activePreventionFeedback()?.marks ?? []);
     if (this.ui.state.stemOverlapCount !== count) this.ui.setState({ stemOverlapCount: count });
   }
 
@@ -1868,7 +1904,12 @@ export class IkebanaApp {
       const graph = presentation.document.plants.get(active.plantId);
       this.ui.setCraftCue(graph ? cutCue(graph, active.plan, true) : null, true);
     } else if (active && ["aim", "bend", "base"].includes(active.kind) && selectedBranch) {
-      this.ui.setCraftCue(shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true, selectedGraph ?? undefined), true);
+      const cue = shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true, selectedGraph ?? undefined);
+      const protection = this.activePreventionFeedback();
+      if (protection?.reason === "contact") cue.detail = "At a movement limit. Ease back or try another direction.";
+      else if (protection?.reason === "budget") cue.detail = "Movement paused. Try a smaller move, or turn protection off in View.";
+      else if (protection?.existingPairs) cue.detail = "Existing overlaps stay free during this grab. Orbit to separate them.";
+      this.ui.setCraftCue(cue, true);
     } else {
       this.ui.setCraftCue(null);
     }

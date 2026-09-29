@@ -1,3 +1,4 @@
+import type { StemPrevention } from "./stemPrevention.ts";
 import {
   aimBranch,
   applyPrune,
@@ -43,7 +44,7 @@ function placePendingAt(graph: PlantGraph, base: Vec3): PlantGraph {
   return translatePendingGraph(graph, base);
 }
 
-export function createDomainAdapters(): TransactionAdapters<
+export function createDomainAdapters(prevention?: StemPrevention): TransactionAdapters<
   PlantGraph,
   CameraPose,
   CutPlan,
@@ -55,23 +56,27 @@ export function createDomainAdapters(): TransactionAdapters<
     graphEquals: (left, right) => serializePlantGraph(left) === serializePlantGraph(right),
     cloneCamera: cloneCameraPose,
     placePending(graph, _spec, input) {
-      return { graph: placePendingAt(graph, input.base), isValid: input.valid };
+      const placed = placePendingAt(graph, input.base);
+      const clear = prevention?.enabled() ? prevention.insert(placed) : true;
+      return { graph: placed, isValid: input.valid && clear };
     },
     aim(graph, spec, input) {
       const branch = graph.branches.get(spec.branchId);
       if (!branch) return clonePlantGraph(graph);
       const grabbed = spec.context.surfaceGrip ?? sampleBranch(branch, spec.grabbedMaterialDistance).position;
-      return aimBranch(graph, spec.branchId, grabbed, input.target);
+      return prevention?.enabled() ? prevention.aim(graph, spec, input.target)
+        : aimBranch(graph, spec.branchId, grabbed, input.target);
     },
     bend(graph, spec, input) {
+      if (prevention?.enabled()) return prevention.bend(graph, spec, input.target);
       return bendBranch(graph, {
         branchId: spec.branchId,
         stationDistance: spec.stationDistance,
         target: input.target,
       });
     },
-    moveBase(graph, _spec, input) {
-      return translatePlantBase(graph, input.base);
+    moveBase(graph, spec, input) {
+      return prevention?.enabled() ? prevention.base(graph, spec, input.base) : translatePlantBase(graph, input.base);
     },
     previewPrune(graph, spec, input) {
       return previewPrune(graph, spec.branchId, input.distance);

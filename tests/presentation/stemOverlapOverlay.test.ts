@@ -59,3 +59,13 @@ test('Garden thumbnail hides inspection and restores it even when capture fails'
  assert.equal(overlay.group.visible,true);assert.deepEqual(restored,selected);
  overlay.dispose();
 });
+
+test('a protection boundary is marked without falsely increasing the overlap count, and clears after release',()=>{
+ const overlay=new StemOverlapOverlay();
+ const mark={plantA:'a',branchA:'a:trunk',plantB:'b',branchB:'b:trunk',position:p(0,0),penetration:0};
+ assert.equal(overlay.setGraphs([a()],[mark]),0);
+ overlay.update(camera(),844);assert.equal((overlay.group.children[0] as THREE.InstancedMesh).count,1);
+ overlay.setGraphs([a()]);overlay.update(camera(),844);
+ assert.equal((overlay.group.children[0] as THREE.InstancedMesh).count,0);
+ overlay.dispose();
+});

@@ -16,6 +16,7 @@ export interface UIState {
   view: CanonicalView | "orbit";
   viewMenuOpen: boolean;
   showStemOverlaps: boolean;
+  preventStemOverlaps: boolean;
   stemOverlapCount: number;
   materialMenuOpen: boolean;
   editMenuOpen: boolean;
@@ -43,6 +44,7 @@ export type UICommand =
   | { kind: "set-view"; view: CanonicalView }
   | { kind: "set-view-menu"; open: boolean }
   | { kind: "set-stem-overlaps"; visible: boolean }
+  | { kind: "set-stem-prevention"; enabled: boolean }
   | { kind: "set-material-menu"; open: boolean }
   | { kind: "set-edit-menu"; open: boolean }
   | { kind: "undo-edit" }
@@ -108,6 +110,7 @@ const DEFAULT_STATE: UIState = {
   view: "front",
   viewMenuOpen: false,
   showStemOverlaps: false,
+  preventStemOverlaps: false,
   stemOverlapCount: 0,
   materialMenuOpen: false,
   editMenuOpen: false,
@@ -166,6 +169,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const viewMenu = requireElement<HTMLElement>(root, ".view-menu");
   const viewToggle = requireElement<HTMLButtonElement>(root, "#view-toggle");
   const viewOptions = requireElement<HTMLElement>(root, "#view-options");
+  const preventionToggle = requireElement<HTMLButtonElement>(root, "#stem-prevention-toggle");
+  const preventionNote = requireElement<HTMLElement>(root, "#stem-prevention-note");
   const overlapsToggle = requireElement<HTMLButtonElement>(root, "#stem-overlaps-toggle");
   const overlapsNote = requireElement<HTMLElement>(root, "#stem-overlaps-note");
   const editMenu = requireElement<HTMLElement>(root, ".edit-menu");
@@ -219,7 +224,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     }
     if (command.kind !== "set-view-menu" && currentState.viewMenuOpen) {
       setState({ viewMenuOpen: false });
-      if (command.kind === "set-view" || command.kind === "set-stem-overlaps") viewToggle.focus({ preventScroll: true });
+      if (command.kind === "set-view" || command.kind === "set-stem-overlaps" || command.kind === "set-stem-prevention") viewToggle.focus({ preventScroll: true });
     }
     if (
       command.kind !== "set-material-menu"
@@ -287,6 +292,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
 
   function render(): void {
+    preventionToggle.setAttribute("aria-pressed", String(currentState.preventStemOverlaps));
+    preventionToggle.textContent = `Prevent overlaps (study): ${currentState.preventStemOverlaps ? "on" : "off"}`;
+    preventionNote.hidden = !currentState.preventStemOverlaps;
     overlapsToggle.setAttribute("aria-pressed", String(currentState.showStemOverlaps));
     overlapsToggle.textContent = `Stem overlaps: ${currentState.showStemOverlaps ? "on" : "off"}`;
     overlapsNote.hidden = !currentState.showStemOverlaps;
@@ -428,6 +436,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     emit({ kind: "set-view-menu", open: !currentState.viewMenuOpen }, event);
   }, listenerOptions);
 
+  preventionToggle.addEventListener("click", (event) => {
+    emit({ kind: "set-stem-prevention", enabled: !currentState.preventStemOverlaps }, event);
+  }, listenerOptions);
   overlapsToggle.addEventListener("click", (event) => {
     emit({ kind: "set-stem-overlaps", visible: !currentState.showStemOverlaps }, event);
   }, listenerOptions);

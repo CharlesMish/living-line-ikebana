@@ -93,3 +93,16 @@ most 32 unpickable camera-facing bracket marks in two instanced layers. The
 uncapped count is available in View. The session-only opt-in leaves normal play,
 Garden thumbnails and Compare clean. This detector is not a collision solver;
 its approximation and any later constraint require separate acceptance.
+
+## Opt-in contact prevention
+
+`core/stemContact.ts` bounds and limits motion against structural capsule envelopes;
+`core/rotationPath.ts` supplies a rigid path and analytic root-floor crossing.
+`edit.ts` exposes acquisition-relative rotation parameters while sharing the existing
+Aim/Bend reconstruction and influence law. `app/stemPrevention.ts` adapts each
+transaction spec to a transient accepted parameter and frozen obstacle set. The
+coordinator still owns commit/cancel/Undo and receives the actual constrained graph.
+No solver state enters storage. View's default-off study supplies this optional
+adapter; contact feedback is separate from the inspection count. See the
+[study report](docs/development/reports/stem-prevention/README.md) for deliberate
+legacy-pair exemptions, motion bounds and pending phone acceptance.

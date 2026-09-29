@@ -559,3 +559,18 @@ look like grab handles, and real 3D depth separation is not marked. Compare mark
 through live shaping, hover/held prune, Cancel, Undo, insertion and removal. Keep
 with inspection on: its thumbnail and Compare must remain clean. No restraint,
 warning count or agent opinion constitutes botanical correctness or phone feel.
+
+## Stem prevention study — physical phone acceptance open
+
+Run the seven steps in the
+[prevention study](../../docs/development/reports/stem-prevention/README.md#try-it)
+on the exact candidate head with **View → Prevent overlaps (study)** both off and
+on. Compare clear movement, fast crossings, approach and reversal, tangential
+movement, dense bowls, invalid insertion, Cancel/Undo and a legacy overlapping
+bowl. A held constrained release must equal its displayed preview; interrupted
+movement must save zero. Existing overlapping branch pairs are deliberately exempt
+for one grab and can worsen; this is not silent proof of repair. Budget pauses,
+contact marks and smaller moves need human feel review. Keep the study off if it
+gets in the way. Check 320px/large text/short landscape menu reachability, plus
+Garden View/Return and clean thumbnails/Compare. Record phone/GPU timing separately
+from CPU probes and automated geometry checks.

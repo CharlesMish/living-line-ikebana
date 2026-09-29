@@ -368,3 +368,35 @@ inspected read-only. Off-state hides all marks and avoids detection work.
 
 See [scope, evidence and phone checks](development/reports/stem-overlaps/README.md)
 and the [separate prevention audit](development/reports/stem-overlaps/PREVENTION_AUDIT.md).
+
+### Opt-in stem prevention study
+
+**View → Prevent overlaps (study)** is default-off, session-only, and separate
+from overlap inspection. Toggling cancels active work first. While on, Aim, Bend
+and base translation limit motion against the capsule envelopes of separate active
+trunk/lateral/twig branches. Petioles, pedicels, organs, same-cutting contact, floor
+and bowl are excluded. Inspection's grazing allowance also applies here.
+
+Every graph still reconstructs from immutable acquisition. Transient accepted
+motion parameters define a continuous path from the preceding displayed pose;
+this intentionally makes constrained progress gesture-history-dependent without
+accumulating vertex deformation. Conservative advancement checks the whole path,
+including carried descendants. Contact or work-budget exhaustion keeps a certified
+preview and explains the stop. No post-solver nudging, shortening, auto-rerouting,
+or unchecked jump at release is allowed. Release commits exactly the displayed
+graph; existing cancellation and Undo laws remain authoritative.
+
+Branch pairs already overlapping at acquisition are exempt for that whole gesture,
+so old bowls remain editable. Their warnings remain visible, and they may worsen
+as well as improve; this is an explicit legacy escape policy, not monotonic repair.
+Other branch pairs remain constrained. Exemptions expire at the end of the grab.
+Pruning is never blocked by this study.
+
+A pending insertion follows its requested translation freely, but contact with
+another cutting makes its seat invalid. Such a release saves nothing and does not
+advance the successful-seat ordinal; keyboard insertion obeys the same validity.
+Normal kenzan validity remains required. No new storage field or generator law.
+
+The [implementation report](development/reports/stem-prevention/README.md) defines
+motion bounds, approximation, bounded-work behavior and unrun phone gates. This
+study does not establish exact mesh collision or accepted default phone feel.

@@ -194,3 +194,22 @@ test("a copied Garden arrangement reloads through the existing studio format", (
     else Reflect.deleteProperty(globalThis, "localStorage");
   }
 });
+
+test("protection toggles cancel before changing policy; Garden returns the same working protection instance",()=>{
+ const {app,writes,snapshot}=harness();
+ const initial=JSON.stringify(app.arrangementSnapshot());
+ app.handleUICommand({kind:'set-stem-prevention',enabled:true},{});
+ const working=app.coordinator, protection=app.preventionByCoordinator.get(working);
+ moveBase(app,.7,false);
+ app.gesture={kind:'base',owner:7,capture:{hasPointerCapture:()=>false}};
+ app.handleUICommand({kind:'set-stem-prevention',enabled:false},{});
+ assert.equal(app.gesture,null);assert.equal(working.getDebugState().active,null);
+ assert.equal(working.release(7).ok,false);assert.equal(writes.length,0);
+ assert.equal(JSON.stringify(app.arrangementSnapshot()),initial);
+ app.handleUICommand({kind:'set-stem-prevention',enabled:true},{});
+ app.viewGardenEntry({id:'test-entry',title:'Test',arrangement:snapshot});
+ assert.equal(protection.enabled(),false,'kept viewing cannot edit');
+ app.returnToWorkingBowl();
+ assert.equal(app.coordinator,working);assert.equal(app.preventionByCoordinator.get(working),protection);
+ assert.equal(protection.enabled(),true);assert.equal(writes.length,0);
+});

@@ -168,3 +168,17 @@ test("stem inspection toggle exposes scope/count and returns focus without chang
     assert.match(h.document.element("#stem-overlaps-note").textContent, /No stem overlaps detected/);
   } finally { h.close(); }
 });
+
+test("prevention is an explicit default-off study and returns focus to View", () => {
+ const h=setup();
+ try {
+  const button=h.document.element('#stem-prevention-toggle');
+  assert.equal(button.getAttribute('aria-pressed'),'false');
+  h.click('#view-toggle');h.click('#stem-prevention-toggle');
+  assert.deepEqual(h.commands.at(-1),{kind:'set-stem-prevention',enabled:true});
+  h.ui.setState({preventStemOverlaps:true});
+  assert.equal(button.getAttribute('aria-pressed'),'true');
+  assert.equal(h.document.element('#stem-prevention-note').hidden,false);
+  assert.equal(h.document.activeElement,h.document.element('#view-toggle'));
+ } finally {h.close();}
+});

@@ -24,6 +24,7 @@ export class StemOverlapOverlay {
   private readonly ink = this.layer(0x93602c, .81, 1.03, 41);
   private signature: string | null = null;
   private contacts: StemOverlap[] = [];
+  private barriers: StemOverlap[] = [];
 
   constructor() { this.group.name = "stem-overlap-inspection"; this.group.add(this.outline, this.ink); }
 
@@ -37,9 +38,10 @@ export class StemOverlapOverlay {
     return mesh;
   }
 
-  setGraphs(graphs: Iterable<PlantGraph> | null): number {
+  setGraphs(graphs: Iterable<PlantGraph> | null, barriers: StemOverlap[] = []): number {
+    this.barriers = barriers;
     if (graphs === null) {
-      this.group.visible = false; this.contacts = []; this.signature = null;
+      this.group.visible = barriers.length > 0; this.contacts = []; this.signature = null;
       this.outline.count = this.ink.count = 0;
       return 0;
     }
@@ -55,7 +57,7 @@ export class StemOverlapOverlay {
     camera.updateMatrixWorld(true);
     const matrix = new THREE.Matrix4(), scale = new THREE.Vector3();
     let count = 0;
-    for (const contact of this.contacts) {
+    for (const contact of [...this.barriers, ...this.contacts]) {
       const p = new THREE.Vector3(contact.position.x, contact.position.y, contact.position.z);
       const local = p.clone().applyMatrix4(camera.matrixWorldInverse), ndc = p.clone().project(camera);
       if (local.z >= 0 || Math.abs(ndc.x) > 1 || Math.abs(ndc.y) > 1 || Math.abs(ndc.z) > 1) continue;

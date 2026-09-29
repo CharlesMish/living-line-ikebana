@@ -224,7 +224,7 @@ button:focus-visible {
   margin-left: auto;
 }
 
-.view-menu { position: relative; }
+.view-menu, .edit-menu { position: relative; }
 .view-toggle {
   display: flex;
   align-items: center;
@@ -261,6 +261,35 @@ button:focus-visible {
 }
 .view-switcher[hidden] { display: none; }
 .view-switcher button { min-height: 2.75rem; border-radius: 0.65rem; }
+
+.edit-options {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.65rem);
+  left: 0;
+  width: min(16rem, calc(100vw - var(--safe-left) - var(--safe-right) - 2rem));
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper-solid);
+  box-shadow: var(--shadow);
+}
+.edit-options[hidden] { display: none; }
+.edit-options button {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  text-align: left;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.edit-options button:not(:disabled):hover { background: rgba(83, 99, 76, 0.09); }
+.edit-options button:disabled { color: var(--ink-muted); opacity: 0.55; cursor: default; }
+.edit-options p { margin: 0.35rem 0.65rem; color: var(--ink-muted); font-size: 0.75rem; }
 
 .experiment-panel {
   position: absolute;
@@ -800,6 +829,7 @@ noscript {
 @media (forced-colors: active) {
   .top-chrome,
   .view-toggle,
+  .edit-options,
   .segmented,
   .material-dock,
   .material-card,

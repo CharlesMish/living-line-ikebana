@@ -9,13 +9,15 @@ mission system, or school curriculum.
 
 1. Place and shape one or more cuttings. Step Back to choose a view.
 2. Open **Garden**. Opening cancels an unfinished gesture before reading any state.
+   Opening and closing the dialog preserve your working Arrange/Step Back posture.
 3. Optionally name the moment and select **Keep this bowl**. The committed graphs,
    cut history, camera pose and a small actual-view thumbnail are saved together.
    Keeping does not clear the working bowl. A missing thumbnail does not prevent
    keeping the arrangement.
 4. Open a card to view it in 3D. Orbit, Pan, zoom and presets are available. Editing
    requires **Make a working copy**. **Return to my bowl** restores the working
-   coordinator, its camera and selection. Looking never overwrites it.
+   coordinator, its camera, posture, selection and current undo checkpoint. Looking
+   never overwrites it.
 5. **Start a fresh bowl** and **Make a working copy** offer Keep first / Replace
    without keeping / Cancel when the working bowl contains material. Copying
    leaves the Garden original intact. Replacement saves before changing memory;
@@ -38,7 +40,8 @@ mission system, or school curriculum.
 for a person to interpret. The scene has no table and no sightline, so the app
 does not calculate whether an arrangement passes. One way to look again is the
 sequence above: keep a bowl, make a working copy, revise it, keep the revision,
-then compare the two.
+then compare the two. Generic Compare does not repeat this brief or imply that
+unrelated arrangements were made for it.
 
 **Download backup** exports all Garden entries, including graph history and
 thumbnails. **Import backup** merges compatible entries without replacing the
@@ -48,6 +51,17 @@ reject the entire import. No partial recovery or silent substitution occurs.
 
 An entry can be removed after an explicit confirmation. Download a backup before
 removing an entry you may want again; removal has no built-in undo.
+
+## Working-bowl recovery
+
+**Edit → Undo last edit** restores one changed botanical action, including a cut.
+**Edit → Remove selected cutting** removes the selected working plant and can
+itself be undone. This is separate from removing a kept Garden entry. There is no
+redo; the checkpoint lives only in the current working session. Keep, viewing and
+comparison preserve it. Reload, Start a fresh bowl and Make a working copy clear
+it, even when copying a previously kept version. A failed save leaves the working
+state and recovery checkpoint available; successful Undo/Remove preserves the
+current camera and never rewinds insertion IDs.
 
 ## Persistence boundaries
 

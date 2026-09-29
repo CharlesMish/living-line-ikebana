@@ -31,6 +31,7 @@ export type TransactionKind =
   | "camera";
 
 export type GraphCommitKind = Exclude<TransactionKind, "camera">;
+export type RecoveryOperation = "undo" | "remove";
 
 export interface OperationInputMap {
   insert: unknown;
@@ -123,6 +124,8 @@ export interface TransactionAdapters<
 > {
   /** Must preserve every canonical graph field and inactive identity. */
   readonly cloneGraph: (graph: Graph) => Graph;
+  /** Canonical equality, including inactive material; renderer data is excluded. */
+  readonly graphEquals: (left: Graph, right: Graph) => boolean;
   readonly cloneCamera: (camera: Camera) => Camera;
 
   readonly placePending: (
@@ -190,6 +193,8 @@ export interface CoordinatorOptions<Graph, Camera> {
   readonly onChange?: () => void;
   readonly onCancel?: (event: CancelEvent) => void;
   readonly onAutosave?: (event: AutosaveEvent<Graph, Camera>) => void;
+  /** Explicit undo/removal writes first. False or a thrown error vetoes recovery. */
+  readonly beforeRecoveryCommit?: (event: RecoveryCommitEvent<Graph, Camera>) => boolean;
 }
 
 export type CancelReason =
@@ -220,10 +225,15 @@ export interface DocumentSnapshot<Graph, Camera> {
 export interface AutosaveEvent<Graph, Camera> {
   readonly sequence: number;
   readonly domain: "graph" | "camera";
-  readonly operation: TransactionKind | "canonical-view";
+  readonly operation: TransactionKind | "canonical-view" | RecoveryOperation;
   readonly plantId?: PlantId;
   /** A defensive committed-only snapshot; never a live preview. */
   readonly document: DocumentSnapshot<Graph, Camera>;
+}
+
+export interface RecoveryCommitEvent<Graph, Camera> extends AutosaveEvent<Graph, Camera> {
+  readonly domain: "graph";
+  readonly operation: RecoveryOperation;
 }
 
 export type CommandFailure =
@@ -238,7 +248,9 @@ export type CommandFailure =
   | "duplicate-plant"
   | "ordinal-mismatch"
   | "invalid-reservation"
-  | "invalid-material-distance";
+  | "invalid-material-distance"
+  | "nothing-to-undo"
+  | "save-failed";
 
 export type CommandResult =
   | { readonly ok: true }

@@ -5,6 +5,7 @@ import {
   clonePlantGraph,
   previewPrune,
   sampleBranch,
+  serializePlantGraph,
   successfulSeatIdentity,
   translatePendingGraph,
   translatePlantBase,
@@ -51,6 +52,7 @@ export function createDomainAdapters(): TransactionAdapters<
 > {
   return {
     cloneGraph: clonePlantGraph,
+    graphEquals: (left, right) => serializePlantGraph(left) === serializePlantGraph(right),
     cloneCamera: cloneCameraPose,
     placePending(graph, _spec, input) {
       return { graph: placePendingAt(graph, input.base), isValid: input.valid };

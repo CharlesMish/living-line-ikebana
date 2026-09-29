@@ -40,6 +40,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Each preview is a translation of the acquisition graph.
 - A valid release commits, selects the plant, advances the ordinal once, and autosaves committed graph state.
 - An invalid release or interruption discards the ghost, leaves the document and ordinal unchanged, and does not autosave.
+- The insertion target remains the pin field at radius `1.22` on the insertion plane. A destination outline follows that exact boundary throughout a tray drag, including while the source is over the rail or above the plane horizon and its ghost is hidden. Colour/text show validity; neither an outline nor the wider visible water changes the hit test. There is no whole-basin snapping.
 
 ### Aim
 
@@ -83,11 +84,11 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Acquisition freezes the operation, owner/pointer, stable plant and branch IDs, material station, spatial constraint, and immutable snapshot.
 - Every update recomputes from that snapshot, never from the preceding preview.
 - Crossing another plant, branch, handle, or empty space cannot transfer ownership or give the drag to the camera.
-- Only the acquired owner's ordinary `pointerup` release commits. Repeated release or the normal capture loss after release is an idle no-op.
+- Only the acquired owner's ordinary `pointerup` release commits a gesture. This remains true if capture delivers that release outside the canvas or over chrome; moving there is not itself a cancellation command. Repeated release or the normal capture loss after release is an idle no-op. Named Undo/Remove and Garden fresh/copy are separate explicit document commands, described below, not alternate ways to commit a preview.
 - `pointercancel`, premature lost capture, hidden visibility, `pagehide`, relevant viewport or orientation changes, WebGL context loss, and explicit cancellation restore the snapshot and write no save.
 - A tool, view, posture, selection, or bend-experiment command cancels first, then applies the command.
 - Persistent chrome remains usable as an interrupt command during a scene grab. A second scene pointer during a plant transaction is ignored.
-- Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing except explain Step Back.
+- Arrange permits botanical acquisition and keeps the camera unchanged. Empty-space drag in Arrange does nothing; its message explains the active craft tool and, for Shape, how Step Back moves the view.
 - Step Back permits constrained orbit, screen-space Pan and pinch while the canonical graph remains unchanged. Orbit radius is constrained to `5.7...15.5` on reference stages, and up to the stage lens maximum on narrow stages (see *Narrow-stage lens*); polar angle to `0.002...1.52` radians. A limit never pulls an acquired radius inward: a gesture that starts beyond the current maximum can only move toward the limits.
 
 ## 5. Deterministic target arbitration
@@ -109,6 +110,17 @@ projected arc distance, and organs keep their supporting-branch attachment.
 
 Base and bend handles may acquire only for the already selected plant. Shape acquisition of a branch or organ may select its plant. Temporary handles are subordinate and appear only where they resolve ambiguity.
 
+The September 28 craft-usability revision adds bounded CSS-pixel near-miss
+candidates only when acquisition found no true visible material-surface hit:
+selected visible base/bend handles within `16` CSS pixels of their centre, and
+active trunk/lateral/twig centreline material within `8` CSS pixels. Existing
+world-space proxies and candidate ordering remain in use. This does not add
+halos to petioles, pedicels or organs, and does not retarget an acquired gesture.
+Candidates outside the canvas, behind the camera, or beyond clipping are excluded.
+The visible bend bead has a minimum projected diameter of `12` CSS pixels;
+only its decoration scales, not canonical geometry or the original hit proxy.
+These are acquisition/readability bounds, not physical-phone acceptance.
+
 ## 6. Persistence and recovery
 
 - Local storage key: `ikebana-web-alpha:studio-v1`.
@@ -119,10 +131,41 @@ Base and bend handles may acquire only for the already selected plant. Shape acq
 - Corrupt or unsupported stored data fails closed to an empty session with a terse warning; it never partially hydrates a graph.
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
 
+### Explicit botanical recovery — September 28 contract revision
+
+The working coordinator keeps one transient botanical checkpoint, not a history
+stack. `Edit → Undo last edit` restores the state before the most recent changed
+Insert/Aim/Bend/base/Prune or Remove operation, including canonical inactive cut
+history. Undo consumes the checkpoint and provides no redo. No-op releases,
+cancelled edits, failed/invalid insertions, camera moves and selection/tool/view
+commands retain the preceding checkpoint. A no-op release still follows the
+ordinary-release commit/save law; it does not become an undoable botanical change.
+
+`Edit → Remove selected cutting` removes the entire selected plant from the
+working bowl while idle in Arrange. It is not a cut through the trunk, and does
+not affect other graphs. It creates the one undo checkpoint, so immediate Undo
+can restore that cutting. Undo may also be invoked in Step Back. Kept Garden
+views cannot invoke either command. Opening Edit or using its recovery command
+cancels any live preview before recovery; it never stores that preview in history.
+
+Undo and Remove persist their proposed committed plants **before** replacing
+in-memory plants or consuming/replacing the checkpoint. The app's save callback
+can veto the operation on failure; both working state and checkpoint then remain
+available for retry. Successful recovery is saved once. Camera framing and the
+successful insertion ordinal do not rewind: undoing an insertion or removing a
+cutting does not recycle its plant ID or seed ordinal.
+
+The checkpoint is not serialized. Reload and explicit fresh-bowl/working-copy
+replacement clear it; Keep, opening/closing Garden, temporary View/Return and
+Compare retain the working coordinator and its checkpoint. Undo does not remove
+or rewrite Garden entries, and Garden-entry removal is a separate operation.
+
 ### Garden and explicit bowl commands
 
 The Garden extension consumes committed snapshots; it does not change gesture
-commit laws. Opening Garden cancels any live gesture before reading state. Keep
+commit laws. Opening Garden cancels any live gesture before reading state and
+preserves the working posture. Closing it returns to that posture; actual kept
+entry viewing uses its own read-only Step Back coordinator. Keep
 writes a separate versioned collection with canonical plants, retained cut history,
 ordinal, camera and optional thumbnail. Viewing is Step Back only and writes no
 working save. Make a working copy and Start a fresh bowl are explicit document
@@ -134,8 +177,9 @@ entries and shows both under one shared camera pose, the studio vertical field
 of view, and world scale 1. It does not frame each entry with its own stored
 camera, and it does not fit either arrangement to its pane. Comparison writes
 no Garden entry, no working save, and no change to either stored camera or the
-current working arrangement. Leaving it discards the temporary view. An optional
-study brief may be shown beside it; that brief is for a person to interpret.
+current working arrangement. Leaving it discards the temporary view. The generic
+comparison does not assign an unrelated study to those entries. The Garden keeps
+its separately labelled optional study; that brief is for a person to interpret.
 The app does not judge whether an arrangement satisfies it.
 A comparison drag has one pointer owner. A second pointer does not replace
 that owner or its start pose. The owner's release keeps the temporary shared

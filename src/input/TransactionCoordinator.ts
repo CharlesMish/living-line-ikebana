@@ -15,6 +15,7 @@ import type {
   CoordinatorDebugState,
   CoordinatorOptions,
   DocumentSnapshot,
+  GraphCommitKind,
   InitialDocument,
   InsertReservation,
   InsertSpec,
@@ -25,6 +26,8 @@ import type {
   Posture,
   PresentationState,
   PruneSpec,
+  RecoveryCommitEvent,
+  RecoveryOperation,
   Tool,
   TransactionAdapters,
   TransactionKind,
@@ -38,6 +41,13 @@ function fail(reason: CommandFailure): CommandResult {
 
 interface BaseActive {
   readonly owner: OwnerToken;
+  readonly selectedPlantIdBefore: PlantId | null;
+}
+
+/** One working-session checkpoint. Camera and insertion ordinal never rewind. */
+interface BotanicalCheckpoint<Graph> {
+  readonly plants: ReadonlyMap<PlantId, Graph>;
+  readonly selectedPlantId: PlantId | null;
 }
 
 interface InsertActive<Graph, Context> extends BaseActive {
@@ -127,6 +137,8 @@ export class TransactionCoordinator<
   private bendVariant: BendVariant;
   private commitSequence = 0;
   private active: ActiveTransaction<Graph, Camera, PrunePlan, Contexts> | null = null;
+  private undoCheckpoint: BotanicalCheckpoint<Graph> | null = null;
+  private recoveryCommitting = false;
 
   public constructor(
     adapters: TransactionAdapters<Graph, Camera, PrunePlan, Inputs, Contexts>,
@@ -228,6 +240,7 @@ export class TransactionCoordinator<
     this.active = {
       kind: "insert",
       owner,
+      selectedPlantIdBefore: this.selectedPlantId,
       spec,
       snapshot,
       preview: this.adapters.cloneGraph(placed.graph),
@@ -267,10 +280,12 @@ export class TransactionCoordinator<
       frozenSpec,
       input,
     );
+    const selectedPlantIdBefore = this.selectedPlantId;
     this.selectedPlantId = spec.plantId;
     this.active = {
       kind: "aim",
       owner,
+      selectedPlantIdBefore,
       spec: frozenSpec,
       snapshot: graph.snapshot,
       preview: this.adapters.cloneGraph(preview),
@@ -322,6 +337,7 @@ export class TransactionCoordinator<
     this.active = {
       kind: "bend",
       owner,
+      selectedPlantIdBefore: this.selectedPlantId,
       spec,
       snapshot: graph.snapshot,
       preview: this.adapters.cloneGraph(preview),
@@ -360,6 +376,7 @@ export class TransactionCoordinator<
     this.active = {
       kind: "base",
       owner,
+      selectedPlantIdBefore: this.selectedPlantId,
       spec: frozenSpec,
       snapshot: graph.snapshot,
       preview: this.adapters.cloneGraph(preview),
@@ -398,10 +415,12 @@ export class TransactionCoordinator<
       frozenSpec,
       input,
     );
+    const selectedPlantIdBefore = this.selectedPlantId;
     this.selectedPlantId = spec.plantId;
     this.active = {
       kind: "prune",
       owner,
+      selectedPlantIdBefore,
       spec: frozenSpec,
       snapshot: graph.snapshot,
       plan,
@@ -439,6 +458,7 @@ export class TransactionCoordinator<
     this.active = {
       kind: "camera",
       owner,
+      selectedPlantIdBefore: this.selectedPlantId,
       spec,
       snapshot,
       preview: this.adapters.cloneCamera(preview),
@@ -478,6 +498,7 @@ export class TransactionCoordinator<
           return OK;
         }
         const { reservation } = active.spec;
+        this.undoCheckpoint = this.botanicalCheckpoint(active.selectedPlantIdBefore);
         this.plants.set(
           reservation.plantId,
           this.adapters.cloneGraph(active.preview),
@@ -490,6 +511,7 @@ export class TransactionCoordinator<
       case "aim":
       case "bend":
       case "base": {
+        this.rememberChangedGraph(active.snapshot, active.preview, active.selectedPlantIdBefore);
         this.plants.set(
           active.spec.plantId,
           this.adapters.cloneGraph(active.preview),
@@ -502,6 +524,7 @@ export class TransactionCoordinator<
           this.adapters.cloneGraph(active.snapshot),
           active.plan,
         );
+        this.rememberChangedGraph(active.snapshot, committedGraph, active.selectedPlantIdBefore);
         this.plants.set(
           active.spec.plantId,
           this.adapters.cloneGraph(committedGraph),
@@ -592,8 +615,88 @@ export class TransactionCoordinator<
     this.changed();
   }
 
+  /** Botanical recovery is session-only; camera and selection commands retain it. */
+  public canUndo(): boolean {
+    return this.undoCheckpoint !== null;
+  }
+
+  /** Undo can be used while inspecting in Step Back, but never during a drag. */
+  public commandUndo(): CommandResult {
+    if (this.active !== null || this.recoveryCommitting) return fail("busy");
+    const checkpoint = this.undoCheckpoint;
+    if (checkpoint === null) return fail("nothing-to-undo");
+    return this.commitRecovery("undo", checkpoint, null);
+  }
+
+  /** Removing a cutting is a separate reversible document command, not pruning. */
+  public commandRemoveSelected(): CommandResult {
+    const gate = this.requireIdle("arrange");
+    if (!gate.ok) return gate;
+    const plantId = this.selectedPlantId;
+    if (plantId === null) return fail("plant-not-selected");
+    if (!this.plants.has(plantId)) return fail("plant-not-found");
+    const before = this.botanicalCheckpoint();
+    const remaining = new Map(before.plants);
+    remaining.delete(plantId);
+    return this.commitRecovery("remove", { plants: remaining, selectedPlantId: null }, before, plantId);
+  }
+
+  private botanicalCheckpoint(selectedPlantId = this.selectedPlantId): BotanicalCheckpoint<Graph> {
+    const plants = new Map<PlantId, Graph>();
+    for (const [plantId, graph] of this.plants) plants.set(plantId, this.adapters.cloneGraph(graph));
+    return { plants, selectedPlantId };
+  }
+
+  private rememberChangedGraph(before: Graph, after: Graph, selectedPlantId: PlantId | null): void {
+    // A tap/no-op still follows the existing ordinary-release contract, but it
+    // must not hide the last meaningful recovery point behind an unchanged pose.
+    if (!this.adapters.graphEquals(before, after)) {
+      this.undoCheckpoint = this.botanicalCheckpoint(selectedPlantId);
+    }
+  }
+
+  private commitRecovery(
+    operation: RecoveryOperation,
+    target: BotanicalCheckpoint<Graph>,
+    nextUndo: BotanicalCheckpoint<Graph> | null,
+    plantId?: PlantId,
+  ): CommandResult {
+    // The save callback receives its own defensive copy. It cannot mutate the
+    // checkpoint to be restored. Nothing canonical changes until it succeeds.
+    const plants = new Map<PlantId, Graph>();
+    for (const [id, graph] of target.plants) plants.set(id, this.adapters.cloneGraph(graph));
+    const event: RecoveryCommitEvent<Graph, Camera> = Object.freeze({
+      sequence: this.commitSequence + 1,
+      domain: "graph",
+      operation,
+      plantId,
+      document: Object.freeze({
+        plants,
+        selectedPlantId: target.selectedPlantId,
+        camera: this.adapters.cloneCamera(this.camera),
+        successfulPlantOrdinal: this.successfulPlantOrdinal,
+      }),
+    });
+    this.recoveryCommitting = true;
+    let accepted: boolean;
+    try {
+      accepted = this.options.beforeRecoveryCommit?.(event) ?? true;
+    } catch {
+      accepted = false;
+    } finally {
+      this.recoveryCommitting = false;
+    }
+    if (!accepted) return fail("save-failed");
+    this.plants.clear();
+    for (const [id, graph] of target.plants) this.plants.set(id, this.adapters.cloneGraph(graph));
+    this.selectedPlantId = target.selectedPlantId;
+    this.undoCheckpoint = nextUndo;
+    this.committed("graph", operation, plantId);
+    return OK;
+  }
+
   private requireIdle(posture: Posture): CommandResult {
-    if (this.active !== null) return fail("busy");
+    if (this.active !== null || this.recoveryCommitting) return fail("busy");
     if (this.posture !== posture) return fail("wrong-posture");
     return OK;
   }
@@ -668,8 +771,8 @@ export class TransactionCoordinator<
 
   private committed(
     domain: "graph",
-    operation: Exclude<TransactionKind, "camera">,
-    plantId: PlantId,
+    operation: GraphCommitKind | RecoveryOperation,
+    plantId?: PlantId,
   ): void {
     this.commitSequence += 1;
     this.changed();
@@ -678,7 +781,7 @@ export class TransactionCoordinator<
 
   private emitAutosave(
     domain: "graph" | "camera",
-    operation: TransactionKind | "canonical-view",
+    operation: TransactionKind | "canonical-view" | RecoveryOperation,
     plantId?: PlantId,
   ): void {
     if (this.options.onAutosave === undefined) return;

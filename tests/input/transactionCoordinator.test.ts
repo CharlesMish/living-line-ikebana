@@ -63,6 +63,7 @@ function makeAdapters(log: string[] = []): TransactionAdapters<
 > {
   return {
     cloneGraph,
+    graphEquals: (left, right) => JSON.stringify(left) === JSON.stringify(right),
     cloneCamera: (camera) => ({ ...camera }),
     validateInsertReservation: ({ ordinal, plantId, seed, graph: pending }) =>
       plantId === `plant-${ordinal}` &&

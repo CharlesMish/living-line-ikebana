@@ -16,7 +16,7 @@ The behavioral contract, golden fixture, and automated tests outrank renderer co
 - Keep `src/core/` free of Three.js, DOM, camera, browser, and pointer types.
 - Treat meshes, hit proxies, handles, selection decoration, and camera presentation as rebuildable derivatives.
 - Recompute every live edit from its immutable acquisition snapshot. Do not accumulate frame-to-frame deformation.
-- Only an ordinary owner release commits. Cancellation and interruption roll back, write no preview to storage, and never advance an insertion ordinal.
+- For gesture transactions, only an ordinary owner release commits. Cancellation and interruption roll back, write no preview to storage, and never advance an insertion ordinal. Named Undo/Remove and fresh/copy commands are separate explicit document operations governed by the recovery and Garden contracts; they never commit a live preview.
 - Do not regenerate, rescale, reroll, or relocate unrelated botanical detail during an edit.
 - Ordinary aim and bend preserve stock length. Shortening is an explicit prune.
 - Preserve inactive records as same-material history; do not delete pruned graph records.

@@ -1,6 +1,6 @@
 # Living Line — Three.js web alpha
 
-A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and two persistent cutting materials. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
+A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and twelve persistent cutting materials. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
 
 A quiet botanical arrangement study influenced by shallow-vessel moribana and the
 expressive openness of modern ikebana. These are influences, not a school curriculum.
@@ -83,13 +83,14 @@ The generated outputs are `dist/index.html` plus assets and `dist/ikebana-web-al
 
 ## Gesture grammar
 
-- Drag either cutting down from the top tray onto the exposed pins; release over the usable pin field to seat that exact pending graph.
+- Choose a material, then drag its source card down from the top tray. The outlined pin field marks the insertion target beneath the water; release inside it to seat that exact pending graph.
 - In **Arrange · Shape**, drag a branch to aim its continuation, use the temporary base ring to move insertion, and use the current bend interaction to shape a broad curve.
 - In **Arrange · Prune**, touch and slide along a branch, inspect the exact distal material that will leave, and release to cut.
 - In **Step Back**, choose **Orbit** to rotate or **Pan** to drag the view up, down or sideways. Pinch or scroll to zoom in either mode. These controls replace the craft row; moving the view leaves the stems seated where they were. The **View** button opens Front, ¾ and Above; choosing a preset recenters the camera.
 - Camera mode freezes when a drag begins. Switching Orbit/Pan during a drag cancels its preview first. After lifting a second pinch finger, the remaining finger resumes its chosen mode without jumping. Cancelled camera movement restores the view from before the gesture; camera-only changes never autosave plant data.
 - Controls share the top rail, including the cutting tray; its gaps cannot pass presses through to a branch. Opening View during a grab cancels the preview before showing choices.
-- Any interruption, lost pointer, view/tool/posture change, or hidden tab cancels the live plant edit. Only an ordinary release commits.
+- Any interruption, lost pointer, view/tool/posture change, or hidden tab cancels the live plant edit. Only an ordinary release commits a gesture.
+- **Edit → Undo last edit** restores one changed botanical action. **Remove selected cutting** removes one plant and can itself be undone. There is no redo. Reload or replacing the working bowl clears this session-only checkpoint; keeping or inspecting Garden entries does not.
 
 ## Bend experiment
 

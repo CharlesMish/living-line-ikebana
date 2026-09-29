@@ -1,4 +1,5 @@
 import { createVesselGeometry } from "./vessel.ts";
+import { StemOverlapOverlay } from "./stemOverlapOverlay.ts";
 import { computeStageLens, fogRangeForDistance, type StageLens } from "./stageLens.ts";
 import { innerWallRadiusAt, KENZAN_TOP_Y, WATER_Y, waterlineCrossings } from "./waterline.ts";
 import { getMaterialAppearance } from "./materialAppearance.ts";
@@ -333,6 +334,7 @@ export class ThreeStudio {
    * (as the headless picking tests do) needs no extra wiring.
    */
   private waterline?: { marks: Map<string, THREE.Group>; parts: ReturnType<typeof createWaterlineParts> };
+  private stemOverlaps?: StemOverlapOverlay;
   private readonly plants = new Map<string, PlantVisual>();
   private readonly cameraTarget = new THREE.Vector3();
   private readonly kenzanGlow: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
@@ -1855,7 +1857,9 @@ export class ThreeStudio {
   /** Small actual-view JPEG; thumbnail failure never prevents keeping the graph. */
   captureThumbnail(): string | null {
     const selection = this.getSelection();
+    const overlapsVisible = this.stemOverlaps?.group.visible ?? false;
     try {
+      if (this.stemOverlaps) this.stemOverlaps.group.visible = false;
       this.setSelection(null);
       this.renderNow();
       const thumbnail = document.createElement("canvas");
@@ -1869,7 +1873,10 @@ export class ThreeStudio {
       const data = thumbnail.toDataURL("image/jpeg", 0.78);
       return data.length <= 80_000 ? data : null;
     } catch { return null; }
-    finally { this.setSelection(selection); }
+    finally {
+      if (this.stemOverlaps) this.stemOverlaps.group.visible = overlapsVisible;
+      this.setSelection(selection);
+    }
   }
 
   getRendererStats() {
@@ -1881,6 +1888,17 @@ export class ThreeStudio {
       pixelRatio: this.renderer.getPixelRatio(),
       pixelRatioCap: this.options.maxPixelRatio,
       note: "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements." };
+  }
+
+  /** Derived inspection only. Null removes cues and avoids detection work. */
+  setStemOverlapGraphs(graphs: Iterable<PlantGraph> | null): number {
+    if (!this.stemOverlaps && graphs !== null) {
+      this.stemOverlaps = new StemOverlapOverlay();
+      this.scene.add(this.stemOverlaps.group);
+    }
+    const count = this.stemOverlaps?.setGraphs(graphs) ?? 0;
+    this.requestRender();
+    return count;
   }
 
   renderNow() {
@@ -1895,6 +1913,7 @@ export class ThreeStudio {
       this.scene.fog.near = fog.near;
       this.scene.fog.far = fog.far;
     }
+    this.stemOverlaps?.update(this.camera, this.canvas.getBoundingClientRect().height);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -1985,6 +2004,7 @@ export class ThreeStudio {
     this.renderFrame = null;
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
+    this.stemOverlaps?.dispose();
     disposeObject(this.scene);
     this.renderer.dispose();
     this.plants.clear();

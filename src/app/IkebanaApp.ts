@@ -1,3 +1,4 @@
+import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
   add,
   addScaled,
@@ -738,6 +739,15 @@ export class IkebanaApp {
         this.ui.setStatus(command.view === "front" ? "Front." : command.view === "above" ? "Above." : "Three-quarter.");
         break;
       }
+      case "set-stem-overlaps": {
+        this.interruptActive("view-command", false);
+        this.ui.setState({ showStemOverlaps: command.visible, viewMenuOpen: false });
+        this.ui.setStatus(command.visible
+          ? "Amber brackets mark possible stem overlaps. Orbit to inspect."
+          : "Stem overlap inspection off.");
+        this.syncPresentation();
+        break;
+      }
       case "set-view-menu": {
         // A second pointer can open this while the first holds a branch.
         // Cancel before exposing camera choices; opening never moves the view.
@@ -983,6 +993,7 @@ export class IkebanaApp {
     this.hovering = false;
     this.studio.setCutPreview(null);
     this.ui.setCraftCue(null);
+    if (this.ui.state.showStemOverlaps) this.syncStemOverlaps();
   }
 
   /** Hover is observational: no selection, acquisition, telemetry or save. */
@@ -1007,9 +1018,11 @@ export class IkebanaApp {
       const plan = previewPrune(graph, branch.id, candidate.materialDistance);
       this.studio.setCutPreview({ plantId: graph.id, plan });
       this.ui.setCraftCue(cutCue(graph, plan, false));
+      if (this.ui.state.showStemOverlaps) this.syncStemOverlaps({ plantId: graph.id, plan });
     } else {
       this.studio.setCutPreview(null);
       this.ui.setCraftCue(shapeCue(branch, operation, false, graph));
+      if (this.ui.state.showStemOverlaps) this.syncStemOverlaps();
     }
   }
 
@@ -1769,6 +1782,18 @@ export class IkebanaApp {
     return prepared;
   }
 
+  private syncStemOverlaps(hover: { plantId: string; plan: CutPlan } | null = null) {
+    let graphs: PlantGraph[] | null = null;
+    if (this.ui.state.showStemOverlaps) {
+      const presentation = this.coordinator.getPresentationState();
+      graphs = stemOverlapPreview(presentation.document.plants,
+        presentation.active ?? (hover ? { kind: "prune", ...hover } : null),
+        this.gesture?.kind !== "insert" || this.gesture.pendingVisible);
+    }
+    const count = this.studio.setStemOverlapGraphs(graphs);
+    if (this.ui.state.stemOverlapCount !== count) this.ui.setState({ stemOverlapCount: count });
+  }
+
   private syncPresentation() {
     if (!this.coordinator || this.disposed) return;
     const presentation = this.coordinator.getPresentationState();
@@ -1853,6 +1878,8 @@ export class IkebanaApp {
       : presentation.document.camera;
     const view: StudioView = this.cameraIsFree ? "orbit" : debug.view;
     this.studio.setCameraPose(camera, view, false);
+
+    this.syncStemOverlaps();
 
     this.root.dataset.transaction = debug.active?.kind ?? "none";
     this.root.dataset.posture = debug.posture;

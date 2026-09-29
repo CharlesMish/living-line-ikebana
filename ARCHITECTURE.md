@@ -82,3 +82,14 @@ See the [craft-usability report](docs/development/reports/craft-usability/README
 for the tested-build distinction, retained collision limitation, and pending phone
 checks. These intentionally revise recovery and acquisition behavior; ordinary
 release and interruption rules remain intact.
+
+## Stem-overlap inspection
+
+`core/stemOverlaps.ts` is a pure, non-mutating segment-envelope diagnostic for
+separate structural cuttings. `app/stemOverlapPreview.ts` adapts current presentation
+and exact remaining prune material; it never writes the coordinator or storage.
+`presentation/stemOverlapOverlay.ts` caches by structural geometry and draws at
+most 32 unpickable camera-facing bracket marks in two instanced layers. The
+uncapped count is available in View. The session-only opt-in leaves normal play,
+Garden thumbnails and Compare clean. This detector is not a collision solver;
+its approximation and any later constraint require separate acceptance.

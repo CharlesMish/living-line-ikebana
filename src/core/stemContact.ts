@@ -1,4 +1,4 @@
-import { add, distance, length, lerp, scale, subtract, type Vec3 } from './math.ts';
+import { add, distance, dot, length, lerp, scale, subtract, type Vec3 } from './math.ts';
 import { descendantIds, childrenOf } from './graph.ts';
 import { legalBendStation, sampleBranch } from './arcLength.ts';
 import { bendInfluenceProfile } from './edit.ts';
@@ -121,6 +121,8 @@ export function bendPointSpeeds(snapshot: PlantGraph, branchId: string, rotation
 export interface ContactMotion {
     at(t: number): PlantGraph;
     speeds: PointSpeeds;
+    /** Only for paths that translate every active segment by exactly t * delta. */
+    translation?: Vec3;
 }
 export interface LimitedMotion {
     graph: PlantGraph;
@@ -129,6 +131,23 @@ export interface LimitedMotion {
     marks: StemOverlap[];
 }
 const CLEARANCE = 1e-5, MAX_STEPS = 48, MAX_PAIR_CHECKS = 40000;
+/**
+ * A fixed separating plane certifies the entire straight translation, including
+ * near-tangent travel. Project both segment endpoints, rather than trusting that
+ * a computed closest-point normal is exact. Their interval gap is affine in t;
+ * if it stays positive at both ends it stays positive throughout the path.
+ * The small positive guard handles floating-point projection error. A crossing
+ * to the other side of the plane fails this proof even if its endpoint is clear.
+ */
+function translationStaysSeparated(a: Segment, b: Segment, radius: number, delta: Vec3): boolean {
+    const [pa, pb] = closestStemSegments(a.a, a.b, b.a, b.b);
+    const separation = subtract(pa, pb), magnitude = length(separation);
+    if (magnitude <= radius) return false;
+    const normal = scale(separation, 1 / magnitude);
+    const gap = Math.min(dot(a.a, normal), dot(a.b, normal))
+        - Math.max(dot(b.a, normal), dot(b.b, normal)) - radius;
+    return Math.min(gap, gap + dot(delta, normal)) > 1e-9;
+}
 /** Conservative advancement: gap / max endpoint speed certifies the whole interval. */
 export function limitStemMotion(motion: ContactMotion, env: ContactEnvironment): LimitedMotion {
     let t = 0, graph = motion.at(0), marks: StemOverlap[] = [], pairChecks = 0;
@@ -155,9 +174,15 @@ export function limitStemMotion(motion: ContactMotion, env: ContactEnvironment):
                 const speed = typeof speeds === 'number' ? speeds : Math.max(speeds[i], speeds[i + 1]);
                 if (speed <= 1e-14)
                     continue;
-                for (const segment of obstacle.segments)
-                    if (boxDistance(moving[i], segment) - radius <= speed + CLEARANCE)
-                        pairs.push({ id: a.id, index: i, obstacle, segment, speed });
+                for (const segment of obstacle.segments) {
+                    if (boxDistance(moving[i], segment) - radius > speed + CLEARANCE) continue;
+                    if (motion.translation) {
+                        if (++pairChecks > MAX_PAIR_CHECKS)
+                            return { graph, fraction: 0, reason: 'budget', marks: [] };
+                        if (translationStaysSeparated(moving[i], segment, radius, motion.translation)) continue;
+                    }
+                    pairs.push({ id: a.id, index: i, obstacle, segment, speed });
+                }
             }
         }
     }

@@ -79,6 +79,7 @@ export class StemPrevention {
         const result = limitStemMotion({
             at: t => translatePendingGraph(snapshot, interpolateParameter(from, desired, t)),
             speeds: new Map([...snapshot.branches.keys()].map(id => [id, speed])),
+            translation: subtract(desired, from),
         }, session.environment);
         session.parameter = interpolateParameter(from, desired, result.fraction);
         this.feedback = { reason: result.reason, existingPairs: session.environment.exempt.size, marks: result.marks };

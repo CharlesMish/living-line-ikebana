@@ -62,6 +62,8 @@ pose cannot teleport through another stem when the requested direction changes.
   the authored cap is <=.996. If a future law exceeds that, this study holds rather
   than applying an unsupported bound.
 - **Base:** coherent translation between accepted and requested clamped bases.
+  A positive separating-plane gap at both ends certifies straight translation
+  along a clear obstacle. Uncertified pairs retain conservative advancement.
 - **Insert:** endpoint validity, because the unseated ghost is not a solid object
   moving through the arrangement. It may pass through material en route to a clear
   seat; it may not commit an intersecting seat.
@@ -121,6 +123,11 @@ node /tmp/living-line-prevention-probe.mjs
 ```
 
 ## Verdict and next decision
+
+The [post-merge browser stress study](BROWSER_STRESS_STUDY.md) reproduced severe
+clear grazing restraint during base movement and proposes a narrowly scoped
+continuous separation certificate for that translation. It records browser
+evidence separately from the still-open physical-phone acceptance gate.
 
 Retain as an opt-in owner-playtest candidate. Do not promote to default without a
 real-phone comparison of acquisition, clear movement, approaching contact, reversing,

@@ -19,6 +19,37 @@ function harness(plants: Map<string, any>) {
 }
 const baseSpec = { plantId: 'a', context: {} };
 const graphOf = (c: any) => c.getPresentationState().active.graph;
+test('base travel along a clear lateral after contact follows the request, and keeps release, Cancel and Undo exact', () => {
+    const a = stem('a', [p(-.6, .55), p(-.6, 1.2), p(-.6, 1.85), p(-.6, 2.55)], .02);
+    const b = stem('b', [p(0, .55, -.9), p(0, 1.75, -.9)], .03);
+    const child = stem('rail', [p(0, 1.75, -.9), p(0, 1.75, .9)], .03).branches.get('rail:trunk')!;
+    Object.assign(child, { kind: 'lateral', parentId: b.rootBranchId, parentDistance: 1.2, referenceNormal: p(1, 0) });
+    b.branches.set(child.id, child);
+    const h = harness(new Map([['a', a], ['b', b]])), c = h.coordinator;
+    const before = serializePlantGraph(a);
+    c.beginBase(1, baseSpec, { base: p(-.6, .55) });
+    c.updateBase(1, { base: p(.6, .55) });
+    assert.equal(h.protection.feedback.reason, 'contact');
+    const x = graphOf(c).branches.get(a.rootBranchId).points[0].x;
+    for (let i = 1; i <= 12; i++) {
+        c.updateBase(1, { base: p(x, .55, i * .03) });
+        assert.equal(h.protection.feedback.reason, 'clear');
+        assert.ok(Math.abs(graphOf(c).branches.get(a.rootBranchId).points[0].z - i * .03) < 1e-12);
+        assert.equal(insertionContacts(graphOf(c), contactEnvironment(a, [b])).length, 0);
+    }
+    assert.equal(h.saves(), 0);
+    const displayed = serializePlantGraph(graphOf(c));
+    c.release(1);
+    assert.equal(serializePlantGraph(c.getDocumentSnapshot().plants.get('a')), displayed);
+    assert.equal(h.saves(), 1);
+    c.commandUndo();
+    assert.equal(serializePlantGraph(c.getDocumentSnapshot().plants.get('a')), before);
+    c.beginBase(2, baseSpec, { base: p(-.6, .55) });
+    c.updateBase(2, { base: p(.6, .55) });
+    c.pointerCancel(2);
+    assert.equal(serializePlantGraph(c.getDocumentSnapshot().plants.get('a')), before);
+    assert.equal(h.saves(), 2, 'only release and Undo saved');
+});
 test('base preview stops, reverses immediately, commits the displayed graph, and Undo restores exact acquisition', () => {
     const a = stem('a', [p(-.6, 0), p(-.6, 2)], .02), b = stem('b', [p(0, 0), p(0, 2)], .03);
     const h = harness(new Map([['a', a], ['b', b]])), c = h.coordinator, before = serializePlantGraph(a);

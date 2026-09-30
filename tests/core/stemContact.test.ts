@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { stem } from '../fixtures/stemOverlapFixture.ts';
-import { aimPointSpeeds, bendPointSpeeds, contactEnvironment, insertionContacts, limitStemMotion } from '../../src/core/stemContact.ts';
+import { aimPointSpeeds, bendPointSpeeds, contactEnvironment, insertionContacts, limitStemMotion, contactRadius } from '../../src/core/stemContact.ts';
 import { applyBendRotation, bendRotationVector, translatePendingGraph } from '../../src/core/edit.ts';
 import { length, distance, scale, vec3 as p, normalize, rotateVector } from '../../src/core/math.ts';
 import { rotationPath, rotationQuaternion } from '../../src/core/rotationPath.ts';
@@ -9,6 +9,62 @@ import { createFlowerVolume, createNoddingFlowerV2, createFernFrondV2, sampleBra
 import { assertRestLengthsPreserved, assertAttachmentCoincidence } from './helpers.ts';
 const moving = () => stem('a', [p(-.6, 0), p(-.6, 2)], .02);
 const fixed = () => stem('b', [p(0, 0), p(0, 2)], .03);
+test('straight base translation certifies clear near-tangent travel without using up the advancement budget', () => {
+    const a = moving(), b = stem('b', [p(0, 1, -.9), p(0, 1, .9)], .03);
+    const gap = contactRadius(a.branches.get(a.rootBranchId)!, b.branches.get(b.rootBranchId)!);
+    const start = translatePendingGraph(a, p(-gap - 5e-6, 0));
+    const delta = p(0, 0, .36), env = contactEnvironment(start, [b]);
+    const motion = { at: (t: number) => translatePendingGraph(start, p(-gap - 5e-6, 0, .36 * t)), speeds: new Map([[a.rootBranchId, .36]]), translation: delta };
+    const result = limitStemMotion(motion, env);
+    assert.equal(result.reason, 'clear');
+    assert.equal(result.fraction, 1);
+    assert.equal(insertionContacts(result.graph, env).length, 0);
+    assertRestLengthsPreserved(start, result.graph);
+});
+test('translation certificate cannot tunnel through a clear-ended crossing or a second obstacle', () => {
+    const a = moving(), b = fixed(), env = contactEnvironment(a, [b]);
+    const result = limitStemMotion({ at: t => translatePendingGraph(a, p(-.6 + 1.2 * t, 0)), speeds: new Map([[a.rootBranchId, 1.2]]), translation: p(1.2, 0) }, env);
+    assert.equal(result.reason, 'contact');
+    assert.ok(result.fraction < .5);
+    const start = translatePendingGraph(a, p(-.048005, 0));
+    const rail = stem('rail', [p(0, 1, -.9), p(0, 1, .9)], .03);
+    const blocker = stem('blocker', [p(-.048005, 0, .2), p(-.048005, 2, .2)], .03);
+    const obstacles = contactEnvironment(start, [rail, blocker]);
+    const stopped = limitStemMotion({ at: t => translatePendingGraph(start, p(-.048005, 0, .36 * t)), speeds: new Map([[a.rootBranchId, .36]]), translation: p(0, 0, .36) }, obstacles);
+    assert.equal(stopped.reason, 'contact');
+    assert.equal(stopped.marks[0].plantB, 'blocker');
+    assert.equal(insertionContacts(stopped.graph, obstacles).length, 0);
+});
+test('translation separation can use a vertical plane even when the endpoint passes the obstacle in x', () => {
+    const b = stem('b', [p(0, -1, -.9), p(0, -1, .9)], .03);
+    for (const clearance of [5e-6, 1e-12]) {
+        const a = stem('a', [p(-.048 - clearance, 0), p(-.048 - clearance, 2)], .02);
+        const env = contactEnvironment(a, [b]);
+        const delta = p(.3, 0, .2);
+        const result = limitStemMotion({ at: t => translatePendingGraph(a, p(a.branches.get(a.rootBranchId)!.points[0].x + delta.x * t, 0, delta.z * t)), speeds: new Map([[a.rootBranchId, length(delta)]]), translation: delta }, env);
+        assert.equal(result.reason, 'clear', 'vertical separating plane remains clear even if x passes the rail');
+        for (let i = 0; i <= 50; i++) assert.equal(insertionContacts(translatePendingGraph(a, p(a.branches.get(a.rootBranchId)!.points[0].x + delta.x * i / 50, 0, delta.z * i / 50)), env).length, 0);
+    }
+});
+test('translation certificates preserve clearance for skew segments and fail closed at numerical contact', () => {
+    for (let i = 0; i < 24; i++) {
+        const angle = i * .29;
+        const a = stem('a', [p(-.12, 0, -.2), p(-.08, 2, .17)], .02);
+        const b = stem('b', [p(0, .8, -.8), p(.03, 1.1, .8)], .03);
+        const delta = p(.3 * Math.sin(angle), 0, .35 * Math.cos(angle));
+        const root = a.branches.get(a.rootBranchId)!, start = root.points[0];
+        const at = (t: number) => translatePendingGraph(a, p(start.x + delta.x * t, start.y, start.z + delta.z * t));
+        const env = contactEnvironment(a, [b]);
+        const result = limitStemMotion({ at, speeds: new Map([[root.id, length(delta)]]), translation: delta }, env);
+        assert.equal(insertionContacts(result.graph, env).length, 0);
+        for (let j = 0; j <= 40; j++) assert.equal(insertionContacts(at(result.fraction * j / 40), env).length, 0, `case ${i}, step ${j}`);
+    }
+    const a = stem('a', [p(-.048 - 1e-12, 0), p(-.048 - 1e-12, 2)], .02);
+    const b = stem('b', [p(0, 1, -.9), p(0, 1, .9)], .03);
+    const result = limitStemMotion({ at: t => translatePendingGraph(a, p(-.048 - 1e-12, 0, .36 * t)), speeds: new Map([[a.rootBranchId, .36]]), translation: p(0, 0, .36) }, contactEnvironment(a, [b]));
+    assert.notEqual(result.reason, 'clear', 'the certificate retains its positive roundoff guard');
+    assert.equal(insertionContacts(result.graph, contactEnvironment(a, [b])).length, 0);
+});
 test('swept translation stops at first contact even when both endpoints are clear; same visual crossing at different depth stays free', () => {
     const a = moving(), b = fixed(), env = contactEnvironment(a, [b]);
     const motion = { at: (t: number) => translatePendingGraph(a, p(-.6 + 1.2 * t, 0)), speeds: new Map([['a:trunk', 1.2]]) };

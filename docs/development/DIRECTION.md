@@ -39,6 +39,14 @@ public availability is not permission to reproduce lesson text or images. Obtain
 appropriate permission before any close adaptation or school/teacher affiliation
 claim. No need to settle this to evaluate two material prototypes.
 
+A first pass of that research lives in
+[LESSON_SOURCE_LEDGER.md](LESSON_SOURCE_LEDGER.md): one researched form
+(moribana upright / *chokuritsu-kei*, as a public Ohara example—not Ohara’s
+first classroom units, which HQ lists as Hana-isho). Cited public pages,
+required-vs-variant notes, source-term and reuse-policy notes, and original
+exercise proposals. It is documentation only; it does not add an in-app lesson
+and is not a rights clearance.
+
 ## Palette and progression
 
 Six to eight material roles can be a useful first collection, not a permanent cap.

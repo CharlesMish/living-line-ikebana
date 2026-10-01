@@ -1,0 +1,2743 @@
+{
+  "label": "Google Chrome headless, Linux. Draw counts include the vessel. Mode 4 is counted as triangles. Not a physical phone.",
+  "protocol": "Workbench or Garden view, then one view-button click, then three animation frames. Counters reset immediately before the click.",
+  "seed": 8278,
+  "specimens": [
+    {
+      "material": "flowering-branch",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "b81a82aa",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "one-branch-v1",
+            "branches": 15,
+            "activeBranches": 15,
+            "organs": 10,
+            "activeOrgans": 10,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 159,
+            "calls": 153,
+            "triangles": 26042
+          },
+          "canonicalHash": "b81a82aa",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/flowering-branch-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 106.20000000001164,
+            "calls": 153,
+            "triangles": 26042
+          },
+          "canonicalHash": "b81a82aa",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/flowering-branch-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 143,
+            "calls": 153,
+            "triangles": 26042
+          },
+          "canonicalHash": "b81a82aa",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/flowering-branch-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "leafy-shoot",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "6645d73a",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "leafy-shoot-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 81.39999999996508,
+            "calls": 81,
+            "triangles": 14034
+          },
+          "canonicalHash": "6645d73a",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/leafy-shoot-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 24,
+            "calls": 81,
+            "triangles": 14034
+          },
+          "canonicalHash": "6645d73a",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/leafy-shoot-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 127.20000000001164,
+            "calls": 81,
+            "triangles": 14034
+          },
+          "canonicalHash": "6645d73a",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/leafy-shoot-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "bare-branch",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "eae353f1",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 83.20000000001164,
+            "calls": 27,
+            "triangles": 8766
+          },
+          "canonicalHash": "eae353f1",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/bare-branch-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 104.60000000003492,
+            "calls": 27,
+            "triangles": 8766
+          },
+          "canonicalHash": "eae353f1",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/bare-branch-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 137.39999999996508,
+            "calls": 27,
+            "triangles": 8766
+          },
+          "canonicalHash": "eae353f1",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/bare-branch-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "single-flower",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "21619d02",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "single-flower-v1",
+            "branches": 4,
+            "activeBranches": 4,
+            "organs": 3,
+            "activeOrgans": 3,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 81.40000000002328,
+            "calls": 51,
+            "triangles": 12166
+          },
+          "canonicalHash": "21619d02",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/single-flower-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 21.79999999998836,
+            "calls": 51,
+            "triangles": 12166
+          },
+          "canonicalHash": "21619d02",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/single-flower-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 129.29999999998836,
+            "calls": 51,
+            "triangles": 12166
+          },
+          "canonicalHash": "21619d02",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/single-flower-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "reed",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "7a30da1d",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "reed-v1",
+            "branches": 1,
+            "activeBranches": 1,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 80.30000000004657,
+            "calls": 11,
+            "triangles": 6838
+          },
+          "canonicalHash": "7a30da1d",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/reed-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 20.099999999976717,
+            "calls": 11,
+            "triangles": 6838
+          },
+          "canonicalHash": "7a30da1d",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/reed-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 22.20000000001164,
+            "calls": 11,
+            "triangles": 6838
+          },
+          "canonicalHash": "7a30da1d",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/reed-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "flower-volume",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "5c6ba5af",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 105.5,
+            "calls": 81,
+            "triangles": 16734
+          },
+          "canonicalHash": "5c6ba5af",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/flower-volume-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 102.89999999996508,
+            "calls": 81,
+            "triangles": 16734
+          },
+          "canonicalHash": "5c6ba5af",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/flower-volume-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 142.59999999997672,
+            "calls": 81,
+            "triangles": 16734
+          },
+          "canonicalHash": "5c6ba5af",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/flower-volume-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "arching-trailer",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "d0ebb2e1",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "arching-trailer-v1",
+            "branches": 4,
+            "activeBranches": 4,
+            "organs": 3,
+            "activeOrgans": 3,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 85.29999999998836,
+            "calls": 41,
+            "triangles": 10058
+          },
+          "canonicalHash": "d0ebb2e1",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/arching-trailer-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 99.09999999997672,
+            "calls": 41,
+            "triangles": 10058
+          },
+          "canonicalHash": "d0ebb2e1",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/arching-trailer-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 27.100000000034925,
+            "calls": 41,
+            "triangles": 10058
+          },
+          "canonicalHash": "d0ebb2e1",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/arching-trailer-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "foliage-fan",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "0c41197f",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "activeBranches": 12,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 85.70000000001164,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/foliage-fan-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 24.399999999965075,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/foliage-fan-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 24.399999999965075,
+            "calls": 103,
+            "triangles": 16134
+          },
+          "canonicalHash": "0c41197f",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/foliage-fan-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "blossom-spray",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "e313704c",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 10,
+            "activeBranches": 10,
+            "organs": 6,
+            "activeOrgans": 6,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 104.20000000001164,
+            "calls": 83,
+            "triangles": 17998
+          },
+          "canonicalHash": "e313704c",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/blossom-spray-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 104.79999999998836,
+            "calls": 83,
+            "triangles": 17998
+          },
+          "canonicalHash": "e313704c",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/blossom-spray-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 147.70000000001164,
+            "calls": 83,
+            "triangles": 17998
+          },
+          "canonicalHash": "e313704c",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/blossom-spray-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "nodding-flower",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "f4ed4497",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "activeBranches": 3,
+            "organs": 2,
+            "activeOrgans": 2,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 92.20000000001164,
+            "calls": 29,
+            "triangles": 12302
+          },
+          "canonicalHash": "f4ed4497",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/nodding-flower-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 93.89999999996508,
+            "calls": 29,
+            "triangles": 12302
+          },
+          "canonicalHash": "f4ed4497",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/nodding-flower-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 130.5,
+            "calls": 29,
+            "triangles": 12302
+          },
+          "canonicalHash": "f4ed4497",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/nodding-flower-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "berry-twig",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "0d768a64",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 13,
+            "activeBranches": 13,
+            "organs": 9,
+            "activeOrgans": 9,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 84.20000000001164,
+            "calls": 95,
+            "triangles": 14338
+          },
+          "canonicalHash": "0d768a64",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/berry-twig-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 19.20000000001164,
+            "calls": 95,
+            "triangles": 14338
+          },
+          "canonicalHash": "0d768a64",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/berry-twig-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 129.5,
+            "calls": 95,
+            "triangles": 14338
+          },
+          "canonicalHash": "0d768a64",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/berry-twig-seed8278-count1-above.png"
+        }
+      }
+    },
+    {
+      "material": "fern-frond",
+      "obtained": "Workbench single-material fixture, count 1, starting seed 8278. Plant id plant-1. Workbench seed for index 0 is the starting seed.",
+      "summary": {
+        "canonicalHash": "32a97877",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 89.5,
+            "calls": 91,
+            "triangles": 16726
+          },
+          "canonicalHash": "32a97877",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/fern-frond-seed8278-count1-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 97.70000000001164,
+            "calls": 91,
+            "triangles": 16726
+          },
+          "canonicalHash": "32a97877",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/fern-frond-seed8278-count1-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 131.40000000002328,
+            "calls": 91,
+            "triangles": 16726
+          },
+          "canonicalHash": "32a97877",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/fern-frond-seed8278-count1-above.png"
+        }
+      }
+    }
+  ],
+  "costs": [
+    {
+      "fixture": "round5-palette",
+      "seed": 8278,
+      "count": 12,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 145.39999999996508,
+            "calls": 777,
+            "triangles": 110010
+          },
+          "canonicalHash": "6fd84a83",
+          "still": "docs/development/reports/polish-baseline/round5-palette-seed8278-count12-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 188.29999999998836,
+            "calls": 777,
+            "triangles": 110010
+          },
+          "canonicalHash": "6fd84a83",
+          "still": null
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 225.60000000003492,
+            "calls": 777,
+            "triangles": 110010
+          },
+          "canonicalHash": "6fd84a83",
+          "still": null
+        }
+      },
+      "summary": {
+        "canonicalHash": "6fd84a83",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 12,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "one-branch-v1",
+            "branches": 15,
+            "activeBranches": 15,
+            "organs": 10,
+            "activeOrgans": 10,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-10",
+            "seed": 17071,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "activeBranches": 3,
+            "organs": 2,
+            "activeOrgans": 2,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-11",
+            "seed": 18048,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 14,
+            "activeBranches": 14,
+            "organs": 10,
+            "activeOrgans": 10,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-12",
+            "seed": 19025,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "leafy-shoot-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-4",
+            "seed": 11209,
+            "generatorVersion": "single-flower-v1",
+            "branches": 4,
+            "activeBranches": 4,
+            "organs": 3,
+            "activeOrgans": 3,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-5",
+            "seed": 12186,
+            "generatorVersion": "reed-v1",
+            "branches": 1,
+            "activeBranches": 1,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-6",
+            "seed": 13163,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-7",
+            "seed": 14140,
+            "generatorVersion": "arching-trailer-v1",
+            "branches": 4,
+            "activeBranches": 4,
+            "organs": 3,
+            "activeOrgans": 3,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-8",
+            "seed": 15117,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "activeBranches": 12,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-9",
+            "seed": 16094,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 10,
+            "activeBranches": 10,
+            "organs": 6,
+            "activeOrgans": 6,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "Leafy fern and fan",
+      "source": "Garden import, then View",
+      "viewing": true,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 168.79999999998836,
+            "calls": 255,
+            "triangles": 34414
+          },
+          "canonicalHash": "3b1e9ad9",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/arrangement-a-leafy-fern-fan-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 119.79999999998836,
+            "calls": 255,
+            "triangles": 34414
+          },
+          "canonicalHash": "3b1e9ad9",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/arrangement-a-leafy-fern-fan-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 146.09999999997672,
+            "calls": 255,
+            "triangles": 34414
+          },
+          "canonicalHash": "3b1e9ad9",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/arrangement-a-leafy-fern-fan-above.png"
+        }
+      },
+      "summary": {
+        "canonicalHash": "3b1e9ad9",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 3,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "leafy-shoot-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": [
+              "plant-2:pinna-blade-4"
+            ]
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "foliage-fan-v1",
+            "branches": 12,
+            "activeBranches": 12,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "matchesKeepHash": true
+    },
+    {
+      "fixture": "Berry and flower accents",
+      "source": "Garden import, then View",
+      "viewing": true,
+      "views": {
+        "front": {
+          "counts": {
+            "renderElapsedMs": 200.70000000001164,
+            "calls": 253,
+            "triangles": 42090
+          },
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "f3827392",
+          "still": "docs/development/reports/polish-baseline/arrangement-b-berry-flower-accents-front.png"
+        },
+        "three-quarter": {
+          "counts": {
+            "renderElapsedMs": 27.79999999998836,
+            "calls": 253,
+            "triangles": 42090
+          },
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "3873951b",
+          "still": "docs/development/reports/polish-baseline/arrangement-b-berry-flower-accents-three-quarter.png"
+        },
+        "above": {
+          "counts": {
+            "renderElapsedMs": 26.70000000001164,
+            "calls": 253,
+            "triangles": 42090
+          },
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "fb0ff9ba",
+          "still": "docs/development/reports/polish-baseline/arrangement-b-berry-flower-accents-above.png"
+        }
+      },
+      "summary": {
+        "canonicalHash": "1f7e3e94",
+        "cameraHash": "fb0ff9ba",
+        "ordinal": 4,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "above",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "berry-twig-v1",
+            "branches": 13,
+            "activeBranches": 13,
+            "organs": 9,
+            "activeOrgans": 9,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-2",
+            "seed": 9255,
+            "generatorVersion": "blossom-spray-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 5,
+            "activeOrgans": 5,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-3",
+            "seed": 10232,
+            "generatorVersion": "flower-volume-v1",
+            "branches": 8,
+            "activeBranches": 8,
+            "organs": 7,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          },
+          {
+            "id": "plant-4",
+            "seed": 11209,
+            "generatorVersion": "nodding-flower-v1",
+            "branches": 3,
+            "activeBranches": 3,
+            "organs": 2,
+            "activeOrgans": 2,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "matchesKeepHash": true
+    }
+  ],
+  "arrangements": [
+    {
+      "built": {
+        "id": "A",
+        "title": "Leafy fern and fan",
+        "insertions": [
+          {
+            "ok": true,
+            "beforeOrdinal": 0,
+            "ordinal": 1,
+            "selected": "leafy-shoot",
+            "plant": {
+              "id": "plant-1",
+              "seed": 8278,
+              "generatorVersion": "leafy-shoot-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          },
+          {
+            "ok": true,
+            "beforeOrdinal": 1,
+            "ordinal": 2,
+            "selected": "fern-frond",
+            "plant": {
+              "id": "plant-2",
+              "seed": 9255,
+              "generatorVersion": "fern-frond-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          },
+          {
+            "ok": true,
+            "beforeOrdinal": 2,
+            "ordinal": 3,
+            "selected": "foliage-fan",
+            "plant": {
+              "id": "plant-3",
+              "seed": 10232,
+              "generatorVersion": "foliage-fan-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          }
+        ],
+        "seatedHash": "2c29f804",
+        "aims": [
+          {
+            "branchId": "plant-2:rachis",
+            "dx": -72,
+            "dy": 8,
+            "pointerId": 201,
+            "result": {
+              "point": {
+                "role": "branch",
+                "plantId": "plant-2",
+                "branchId": "plant-2:rachis",
+                "materialDistance": 2.0816519809300082,
+                "x": 639.6562975333434,
+                "y": 394.7405457650369,
+                "region": "middle-left"
+              },
+              "cue": "Aim main stem\nThis continuation moves together.",
+              "beforeHash": "2c29f804",
+              "duringHash": "2c29f804",
+              "during": {
+                "operation": "aim",
+                "pointerId": 201,
+                "plantId": "plant-2",
+                "branchId": "plant-2:rachis",
+                "materialDistance": 2.0815803601785987,
+                "acquisitionHash": "2c29f804"
+              },
+              "selectedDuring": "plant-2:rachis",
+              "afterHash": "04671e28",
+              "afterTransaction": null,
+              "selectedAfter": "plant-2:rachis",
+              "ordinal": 3
+            }
+          },
+          {
+            "branchId": "plant-3:stem",
+            "dx": 76,
+            "dy": -6,
+            "pointerId": 202,
+            "result": {
+              "point": {
+                "role": "branch",
+                "plantId": "plant-3",
+                "branchId": "plant-3:stem",
+                "materialDistance": 1.4086839959034698,
+                "x": 600.9803208315519,
+                "y": 439.907332408427,
+                "region": "middle-left"
+              },
+              "cue": "Aim main stem\nThis continuation moves together.",
+              "beforeHash": "04671e28",
+              "duringHash": "04671e28",
+              "during": {
+                "operation": "aim",
+                "pointerId": 202,
+                "plantId": "plant-2",
+                "branchId": "plant-2:rachis",
+                "materialDistance": 1.57758389128457,
+                "acquisitionHash": "04671e28"
+              },
+              "selectedDuring": "plant-2:rachis",
+              "afterHash": "44d3e992",
+              "afterTransaction": null,
+              "selectedAfter": "plant-2:rachis",
+              "ordinal": 3
+            }
+          }
+        ],
+        "prune": {
+          "point": {
+            "role": "branch",
+            "plantId": "plant-2",
+            "branchId": "plant-2:pinna-4",
+            "materialDistance": 0.06882153182872568,
+            "x": 676.0127152519258,
+            "y": 396.2663100801525,
+            "region": "middle-right"
+          },
+          "cue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+          "beforeHash": "44d3e992",
+          "duringHash": "44d3e992",
+          "during": {
+            "operation": "prune",
+            "pointerId": 203,
+            "plantId": "plant-2",
+            "branchId": "plant-2:pinna-4",
+            "materialDistance": 0.06881631452900458,
+            "acquisitionHash": "44d3e992"
+          },
+          "selectedDuring": "plant-2:pinna-4",
+          "afterHash": "3b1e9ad9",
+          "afterTransaction": null,
+          "selectedAfter": "plant-2:pinna-4",
+          "ordinal": 3,
+          "beforeSummary": {
+            "canonicalHash": "44d3e992",
+            "cameraHash": "f3827392",
+            "ordinal": 3,
+            "bendVariant": "fixed",
+            "tool": "prune",
+            "view": "front",
+            "posture": "arrange",
+            "selectedBranchId": "plant-2:rachis",
+            "transaction": null,
+            "plants": [
+              {
+                "id": "plant-1",
+                "seed": 8278,
+                "generatorVersion": "leafy-shoot-v1",
+                "branches": 8,
+                "activeBranches": 8,
+                "organs": 7,
+                "activeOrgans": 7,
+                "inactiveBranchIds": [],
+                "inactiveOrganIds": []
+              },
+              {
+                "id": "plant-2",
+                "seed": 9255,
+                "generatorVersion": "fern-frond-v1",
+                "branches": 9,
+                "activeBranches": 9,
+                "organs": 8,
+                "activeOrgans": 8,
+                "inactiveBranchIds": [],
+                "inactiveOrganIds": []
+              },
+              {
+                "id": "plant-3",
+                "seed": 10232,
+                "generatorVersion": "foliage-fan-v1",
+                "branches": 12,
+                "activeBranches": 12,
+                "organs": 8,
+                "activeOrgans": 8,
+                "inactiveBranchIds": [],
+                "inactiveOrganIds": []
+              }
+            ]
+          },
+          "afterSummary": {
+            "canonicalHash": "3b1e9ad9",
+            "cameraHash": "f3827392",
+            "ordinal": 3,
+            "bendVariant": "fixed",
+            "tool": "prune",
+            "view": "front",
+            "posture": "arrange",
+            "selectedBranchId": "plant-2:pinna-4",
+            "transaction": null,
+            "plants": [
+              {
+                "id": "plant-1",
+                "seed": 8278,
+                "generatorVersion": "leafy-shoot-v1",
+                "branches": 8,
+                "activeBranches": 8,
+                "organs": 7,
+                "activeOrgans": 7,
+                "inactiveBranchIds": [],
+                "inactiveOrganIds": []
+              },
+              {
+                "id": "plant-2",
+                "seed": 9255,
+                "generatorVersion": "fern-frond-v1",
+                "branches": 9,
+                "activeBranches": 9,
+                "organs": 8,
+                "activeOrgans": 7,
+                "inactiveBranchIds": [],
+                "inactiveOrganIds": [
+                  "plant-2:pinna-blade-4"
+                ]
+              },
+              {
+                "id": "plant-3",
+                "seed": 10232,
+                "generatorVersion": "foliage-fan-v1",
+                "branches": 12,
+                "activeBranches": 12,
+                "organs": 8,
+                "activeOrgans": 8,
+                "inactiveBranchIds": [],
+                "inactiveOrganIds": []
+              }
+            ]
+          }
+        },
+        "composed": {
+          "canonicalHash": "3b1e9ad9",
+          "cameraHash": "f3827392",
+          "ordinal": 3,
+          "bendVariant": "fixed",
+          "tool": "prune",
+          "view": "front",
+          "posture": "arrange",
+          "selectedBranchId": "plant-2:pinna-4",
+          "transaction": null,
+          "plants": [
+            {
+              "id": "plant-1",
+              "seed": 8278,
+              "generatorVersion": "leafy-shoot-v1",
+              "branches": 8,
+              "activeBranches": 8,
+              "organs": 7,
+              "activeOrgans": 7,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": []
+            },
+            {
+              "id": "plant-2",
+              "seed": 9255,
+              "generatorVersion": "fern-frond-v1",
+              "branches": 9,
+              "activeBranches": 9,
+              "organs": 8,
+              "activeOrgans": 7,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": [
+                "plant-2:pinna-blade-4"
+              ]
+            },
+            {
+              "id": "plant-3",
+              "seed": 10232,
+              "generatorVersion": "foliage-fan-v1",
+              "branches": 12,
+              "activeBranches": 12,
+              "organs": 8,
+              "activeOrgans": 8,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": []
+            }
+          ]
+        },
+        "kept": {
+          "error": "Kept. You can leave it here, or keep working.",
+          "cards": [
+            "Leafy fern and fan\n9/23/2026 · 3 cuttings\nRemove"
+          ],
+          "count": "1 / 24 moments kept"
+        }
+      },
+      "keptTitle": "Leafy fern and fan",
+      "entry": "b63160eb-bd11-4f91-bad9-654bd778160a"
+    },
+    {
+      "built": {
+        "id": "B",
+        "title": "Berry and flower accents",
+        "insertions": [
+          {
+            "ok": true,
+            "beforeOrdinal": 0,
+            "ordinal": 1,
+            "selected": "berry-twig",
+            "plant": {
+              "id": "plant-1",
+              "seed": 8278,
+              "generatorVersion": "berry-twig-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          },
+          {
+            "ok": true,
+            "beforeOrdinal": 1,
+            "ordinal": 2,
+            "selected": "blossom-spray",
+            "plant": {
+              "id": "plant-2",
+              "seed": 9255,
+              "generatorVersion": "blossom-spray-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          },
+          {
+            "ok": true,
+            "beforeOrdinal": 2,
+            "ordinal": 3,
+            "selected": "flower-volume",
+            "plant": {
+              "id": "plant-3",
+              "seed": 10232,
+              "generatorVersion": "flower-volume-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          },
+          {
+            "ok": true,
+            "beforeOrdinal": 3,
+            "ordinal": 4,
+            "selected": "nodding-flower",
+            "plant": {
+              "id": "plant-4",
+              "seed": 11209,
+              "generatorVersion": "nodding-flower-v1"
+            },
+            "status": "Drag a branch to aim. Use the pale point to bend."
+          }
+        ],
+        "seatedHash": "58952009",
+        "aims": [
+          {
+            "branchId": "plant-2:stem",
+            "dx": -64,
+            "dy": 10,
+            "pointerId": 211,
+            "result": {
+              "point": {
+                "role": "branch",
+                "plantId": "plant-2",
+                "branchId": "plant-2:stem",
+                "materialDistance": 2.8556501906248744,
+                "x": 649.1318927470688,
+                "y": 343.40759356317324,
+                "region": "middle-right"
+              },
+              "cue": "Aim flower stem\nThis continuation moves together.",
+              "beforeHash": "58952009",
+              "duringHash": "58952009",
+              "during": {
+                "operation": "aim",
+                "pointerId": 211,
+                "plantId": "plant-2",
+                "branchId": "plant-2:stalk-1-3",
+                "materialDistance": 0.5422749881260098,
+                "acquisitionHash": "58952009"
+              },
+              "selectedDuring": "plant-2:stalk-1-3",
+              "afterHash": "33f901ea",
+              "afterTransaction": null,
+              "selectedAfter": "plant-2:stalk-1-3",
+              "ordinal": 4
+            }
+          },
+          {
+            "branchId": "plant-3:stem",
+            "dx": 48,
+            "dy": -18,
+            "pointerId": 212,
+            "result": {
+              "point": {
+                "role": "branch",
+                "plantId": "plant-3",
+                "branchId": "plant-3:stem",
+                "materialDistance": 2.4484886448853658,
+                "x": 627.0493871097186,
+                "y": 371.4360479532835,
+                "region": "middle-left"
+              },
+              "cue": "Aim flower stem\nThis continuation moves together.",
+              "beforeHash": "33f901ea",
+              "duringHash": "33f901ea",
+              "during": {
+                "operation": "aim",
+                "pointerId": 212,
+                "plantId": "plant-2",
+                "branchId": "plant-2:stalk-1-3",
+                "materialDistance": 0.5422749881260098,
+                "acquisitionHash": "33f901ea"
+              },
+              "selectedDuring": "plant-2:stalk-1-3",
+              "afterHash": "c76c1fe5",
+              "afterTransaction": null,
+              "selectedAfter": "plant-2:stalk-1-3",
+              "ordinal": 4
+            }
+          },
+          {
+            "branchId": "plant-4:stem",
+            "dx": 86,
+            "dy": 12,
+            "pointerId": 213,
+            "result": {
+              "point": {
+                "role": "branch",
+                "plantId": "plant-4",
+                "branchId": "plant-4:stem",
+                "materialDistance": 1.3319018194954846,
+                "x": 666.1689736616529,
+                "y": 446.9705581922934,
+                "region": "middle-right"
+              },
+              "cue": "Aim flower stem\nThis continuation moves together.",
+              "beforeHash": "c76c1fe5",
+              "duringHash": "c76c1fe5",
+              "during": {
+                "operation": "aim",
+                "pointerId": 213,
+                "plantId": "plant-4",
+                "branchId": "plant-4:neck",
+                "materialDistance": 1.4790943491947528,
+                "acquisitionHash": "c76c1fe5"
+              },
+              "selectedDuring": "plant-4:neck",
+              "afterHash": "1f7e3e94",
+              "afterTransaction": null,
+              "selectedAfter": "plant-4:neck",
+              "ordinal": 4
+            }
+          }
+        ],
+        "prune": null,
+        "composed": {
+          "canonicalHash": "1f7e3e94",
+          "cameraHash": "f3827392",
+          "ordinal": 4,
+          "bendVariant": "fixed",
+          "tool": "shape",
+          "view": "front",
+          "posture": "arrange",
+          "selectedBranchId": "plant-4:neck",
+          "transaction": null,
+          "plants": [
+            {
+              "id": "plant-1",
+              "seed": 8278,
+              "generatorVersion": "berry-twig-v1",
+              "branches": 13,
+              "activeBranches": 13,
+              "organs": 9,
+              "activeOrgans": 9,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": []
+            },
+            {
+              "id": "plant-2",
+              "seed": 9255,
+              "generatorVersion": "blossom-spray-v1",
+              "branches": 8,
+              "activeBranches": 8,
+              "organs": 5,
+              "activeOrgans": 5,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": []
+            },
+            {
+              "id": "plant-3",
+              "seed": 10232,
+              "generatorVersion": "flower-volume-v1",
+              "branches": 8,
+              "activeBranches": 8,
+              "organs": 7,
+              "activeOrgans": 7,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": []
+            },
+            {
+              "id": "plant-4",
+              "seed": 11209,
+              "generatorVersion": "nodding-flower-v1",
+              "branches": 3,
+              "activeBranches": 3,
+              "organs": 2,
+              "activeOrgans": 2,
+              "inactiveBranchIds": [],
+              "inactiveOrganIds": []
+            }
+          ]
+        },
+        "kept": {
+          "error": "Kept. You can leave it here, or keep working.",
+          "cards": [
+            "Berry and flower accents\n9/23/2026 · 4 cuttings\nCompare\nRemove",
+            "Leafy fern and fan\n9/23/2026 · 3 cuttings\nCompare\nRemove"
+          ],
+          "count": "2 / 24 moments kept"
+        }
+      },
+      "keptTitle": "Berry and flower accents",
+      "entry": "5a03717a-b69d-4be6-8c1a-d09a1474d8a5"
+    }
+  ],
+  "smoke": [
+    {
+      "material": "bare-branch",
+      "before": {
+        "canonicalHash": "eae353f1",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "beforeLengths": [
+        {
+          "id": "plant-1",
+          "branches": [
+            {
+              "id": "plant-1:answering",
+              "active": true,
+              "activeLength": 2.01913359711878
+            },
+            {
+              "id": "plant-1:counter",
+              "active": true,
+              "activeLength": 1.382102036476135
+            },
+            {
+              "id": "plant-1:distal",
+              "active": true,
+              "activeLength": 1.0225663183163851
+            },
+            {
+              "id": "plant-1:spur",
+              "active": true,
+              "activeLength": 0.6571476861322294
+            },
+            {
+              "id": "plant-1:trunk",
+              "active": true,
+              "activeLength": 5.547559870416299
+            }
+          ]
+        }
+      ],
+      "select": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:trunk",
+          "materialDistance": 3.0511579287289647,
+          "x": 679.9915593676502,
+          "y": 335.1465888813605,
+          "region": "middle-right"
+        },
+        "cue": "Aim main stem\nThis continuation moves together.",
+        "beforeHash": "eae353f1",
+        "duringHash": "eae353f1",
+        "during": {
+          "operation": "aim",
+          "pointerId": 300,
+          "plantId": "plant-1",
+          "branchId": "plant-1:trunk",
+          "materialDistance": 3.0511266733985654,
+          "acquisitionHash": "eae353f1"
+        },
+        "selectedDuring": "plant-1:trunk",
+        "afterHash": "eae353f1",
+        "afterTransaction": null,
+        "selectedAfter": "plant-1:trunk",
+        "ordinal": 1
+      },
+      "aim": {
+        "acquired": true,
+        "offset": [
+          0,
+          80
+        ],
+        "drag": [
+          64,
+          -24
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              -120
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              120
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              -180
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              180
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              -36,
+              -140
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              36,
+              140
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              -80
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              80
+            ],
+            "operation": "aim",
+            "missing": false
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "aim",
+            "pointerId": 308,
+            "plantId": "plant-1",
+            "branchId": "plant-1:answering",
+            "materialDistance": 0.34870893388232305,
+            "acquisitionHash": "eae353f1"
+          },
+          "duringHash": "eae353f1",
+          "afterHash": "49abbec8",
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim branchThis continuation moves together.\n      "
+        }
+      },
+      "aimStill": "docs/development/reports/polish-baseline/smoke-bare-branch-aim-front.png",
+      "bend": {
+        "acquired": true,
+        "offset": [
+          0,
+          -16
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              0
+            ],
+            "operation": "aim",
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              -16
+            ],
+            "operation": "bend",
+            "missing": false
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "bend",
+            "pointerId": 311,
+            "plantId": "plant-1",
+            "branchId": "plant-1:trunk",
+            "materialDistance": 2.9956823300248017,
+            "acquisitionHash": "49abbec8"
+          },
+          "duringHash": "49abbec8",
+          "afterHash": "bf99b950",
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Bend main stemA broad curve · release to keep it.\n      "
+        }
+      },
+      "bendStill": "docs/development/reports/polish-baseline/smoke-bare-branch-bend-front.png",
+      "afterBend": {
+        "canonicalHash": "bf99b950",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": "plant-1:trunk",
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "preview": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:distal",
+          "materialDistance": 0.5624114750740119,
+          "x": 786.4917916494039,
+          "y": 273.5247784508619,
+          "region": "middle-right"
+        },
+        "cue": "Cut twig\nTip only · release to cut",
+        "beforeHash": "bf99b950",
+        "duringHash": "bf99b950",
+        "during": {
+          "operation": "prune",
+          "pointerId": 330,
+          "plantId": "plant-1",
+          "branchId": "plant-1:distal",
+          "materialDistance": 0.5623026656834709,
+          "acquisitionHash": "bf99b950"
+        },
+        "selectedDuring": "plant-1:distal",
+        "afterHash": "bf99b950",
+        "afterTransaction": {
+          "operation": "prune",
+          "pointerId": 330,
+          "plantId": "plant-1",
+          "branchId": "plant-1:distal",
+          "materialDistance": 0.5623026656834709,
+          "acquisitionHash": "bf99b950"
+        },
+        "selectedAfter": "plant-1:distal",
+        "ordinal": 1
+      },
+      "previewStill": "docs/development/reports/polish-baseline/smoke-bare-branch-prune-preview-front.png",
+      "cancel": {
+        "beforeHash": "bf99b950",
+        "beforeTransaction": {
+          "operation": "prune",
+          "pointerId": 330,
+          "plantId": "plant-1",
+          "branchId": "plant-1:distal",
+          "materialDistance": 0.5623026656834709,
+          "acquisitionHash": "bf99b950"
+        },
+        "afterHash": "bf99b950",
+        "afterTransaction": null
+      },
+      "afterCancel": {
+        "canonicalHash": "bf99b950",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "prune",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": "plant-1:distal",
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "commit": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:distal",
+          "materialDistance": 0.5624114750740119,
+          "x": 786.4917916494039,
+          "y": 273.5247784508619,
+          "region": "middle-right"
+        },
+        "cue": "Cut twig\nTip only · release to cut",
+        "beforeHash": "bf99b950",
+        "duringHash": "bf99b950",
+        "during": {
+          "operation": "prune",
+          "pointerId": 331,
+          "plantId": "plant-1",
+          "branchId": "plant-1:distal",
+          "materialDistance": 0.5623026656834709,
+          "acquisitionHash": "bf99b950"
+        },
+        "selectedDuring": "plant-1:distal",
+        "afterHash": "d85af919",
+        "afterTransaction": null,
+        "selectedAfter": "plant-1:distal",
+        "ordinal": 1
+      },
+      "commitStill": "docs/development/reports/polish-baseline/smoke-bare-branch-prune-commit-front.png",
+      "afterCommit": {
+        "canonicalHash": "d85af919",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "prune",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": "plant-1:distal",
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "afterCommitLengths": [
+        {
+          "id": "plant-1",
+          "branches": [
+            {
+              "id": "plant-1:answering",
+              "active": true,
+              "activeLength": 2.01913359711878
+            },
+            {
+              "id": "plant-1:counter",
+              "active": true,
+              "activeLength": 1.382102036476135
+            },
+            {
+              "id": "plant-1:distal",
+              "active": true,
+              "activeLength": 0.5623026656834709
+            },
+            {
+              "id": "plant-1:spur",
+              "active": true,
+              "activeLength": 0.6571476861322294
+            },
+            {
+              "id": "plant-1:trunk",
+              "active": true,
+              "activeLength": 5.547559870416299
+            }
+          ]
+        }
+      ],
+      "hashBeforeReload": "d85af919",
+      "afterReload": {
+        "canonicalHash": "d85af919",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "reloadStill": "docs/development/reports/polish-baseline/smoke-bare-branch-reload-front.png",
+      "reloadMatches": true,
+      "kept": {
+        "error": "Kept. You can leave it here, or keep working.",
+        "cards": [
+          "Smoke bare branch\n9/23/2026 · 1 cutting\nRemove"
+        ],
+        "count": "1 / 24 moments kept"
+      },
+      "viewing": true,
+      "viewed": {
+        "canonicalHash": "d85af919",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "viewStill": "docs/development/reports/polish-baseline/smoke-bare-branch-garden-view-front.png",
+      "viewMatches": true,
+      "copied": {
+        "canonicalHash": "d85af919",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "bare-branch-v1",
+            "branches": 5,
+            "activeBranches": 5,
+            "organs": 0,
+            "activeOrgans": 0,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "copyStill": "docs/development/reports/polish-baseline/smoke-bare-branch-garden-copy-front.png",
+      "copyMatches": true
+    },
+    {
+      "material": "fern-frond",
+      "before": {
+        "canonicalHash": "32a97877",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "beforeLengths": [
+        {
+          "id": "plant-1",
+          "branches": [
+            {
+              "id": "plant-1:pinna-1",
+              "active": true,
+              "activeLength": 0.11462277845712376
+            },
+            {
+              "id": "plant-1:pinna-2",
+              "active": true,
+              "activeLength": 0.11342818659963085
+            },
+            {
+              "id": "plant-1:pinna-3",
+              "active": true,
+              "activeLength": 0.12309153283480548
+            },
+            {
+              "id": "plant-1:pinna-4",
+              "active": true,
+              "activeLength": 0.13596926540601995
+            },
+            {
+              "id": "plant-1:pinna-5",
+              "active": true,
+              "activeLength": 0.1152540339739063
+            },
+            {
+              "id": "plant-1:pinna-6",
+              "active": true,
+              "activeLength": 0.11262505934806535
+            },
+            {
+              "id": "plant-1:pinna-7",
+              "active": true,
+              "activeLength": 0.12953266822732992
+            },
+            {
+              "id": "plant-1:pinna-8",
+              "active": true,
+              "activeLength": 0.13570806154049933
+            },
+            {
+              "id": "plant-1:rachis",
+              "active": true,
+              "activeLength": 3.75022561246995
+            }
+          ]
+        }
+      ],
+      "select": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:rachis",
+          "materialDistance": 2.0626240868584724,
+          "x": 627.2600351353141,
+          "y": 396.9575252512246,
+          "region": "middle-left"
+        },
+        "cue": "Aim main stem\nThis continuation moves together.",
+        "beforeHash": "32a97877",
+        "duringHash": "32a97877",
+        "during": {
+          "operation": "aim",
+          "pointerId": 400,
+          "plantId": "plant-1",
+          "branchId": "plant-1:rachis",
+          "materialDistance": 2.0625528123117753,
+          "acquisitionHash": "32a97877"
+        },
+        "selectedDuring": "plant-1:rachis",
+        "afterHash": "32a97877",
+        "afterTransaction": null,
+        "selectedAfter": "plant-1:rachis",
+        "ordinal": 1
+      },
+      "aim": {
+        "acquired": true,
+        "offset": [
+          0,
+          120
+        ],
+        "drag": [
+          48,
+          20
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              -120
+            ],
+            "operation": null,
+            "missing": false
+          },
+          {
+            "offset": [
+              0,
+              120
+            ],
+            "operation": "aim",
+            "missing": false
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "aim",
+            "pointerId": 402,
+            "plantId": "plant-1",
+            "branchId": "plant-1:rachis",
+            "materialDistance": 0.21125294776093814,
+            "acquisitionHash": "32a97877"
+          },
+          "duringHash": "32a97877",
+          "afterHash": "1d40c4fa",
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Aim main stemThis continuation moves together.\n      "
+        }
+      },
+      "aimStill": "docs/development/reports/polish-baseline/smoke-fern-frond-aim-front.png",
+      "bend": {
+        "acquired": true,
+        "offset": [
+          0,
+          0
+        ],
+        "attempts": [
+          {
+            "offset": [
+              0,
+              0
+            ],
+            "operation": "bend",
+            "missing": false
+          }
+        ],
+        "moved": {
+          "during": {
+            "operation": "bend",
+            "pointerId": 410,
+            "plantId": "plant-1",
+            "branchId": "plant-1:rachis",
+            "materialDistance": 2.025121830733773,
+            "acquisitionHash": "1d40c4fa"
+          },
+          "duringHash": "1d40c4fa",
+          "afterHash": "13f16a3a",
+          "cue": "\n        \n          \n          \n          \n          \n        \n        Bend main stemA broad curve · release to keep it.\n      "
+        }
+      },
+      "bendStill": "docs/development/reports/polish-baseline/smoke-fern-frond-bend-front.png",
+      "afterBend": {
+        "canonicalHash": "13f16a3a",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": "plant-1:rachis",
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "preview": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.06238550262979697,
+          "x": 734.0579291375309,
+          "y": 516.8521192157168,
+          "region": "middle-right"
+        },
+        "cue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+        "beforeHash": "13f16a3a",
+        "duringHash": "13f16a3a",
+        "during": {
+          "operation": "prune",
+          "pointerId": 430,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.11342818659963085,
+          "acquisitionHash": "13f16a3a"
+        },
+        "selectedDuring": "plant-1:pinna-2",
+        "afterHash": "13f16a3a",
+        "afterTransaction": {
+          "operation": "prune",
+          "pointerId": 430,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.11342818659963085,
+          "acquisitionHash": "13f16a3a"
+        },
+        "selectedAfter": "plant-1:pinna-2",
+        "ordinal": 1
+      },
+      "previewStill": "docs/development/reports/polish-baseline/smoke-fern-frond-prune-preview-front.png",
+      "cancel": {
+        "beforeHash": "13f16a3a",
+        "beforeTransaction": {
+          "operation": "prune",
+          "pointerId": 430,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.11342818659963085,
+          "acquisitionHash": "13f16a3a"
+        },
+        "afterHash": "13f16a3a",
+        "afterTransaction": null
+      },
+      "afterCancel": {
+        "canonicalHash": "13f16a3a",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "prune",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": "plant-1:pinna-2",
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 8,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": []
+          }
+        ]
+      },
+      "commit": {
+        "point": {
+          "role": "branch",
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.06238550262979697,
+          "x": 734.0579291375309,
+          "y": 516.8521192157168,
+          "region": "middle-right"
+        },
+        "cue": "Cut leaf stem\nTip + 1 leaf · release to cut",
+        "beforeHash": "13f16a3a",
+        "duringHash": "13f16a3a",
+        "during": {
+          "operation": "prune",
+          "pointerId": 431,
+          "plantId": "plant-1",
+          "branchId": "plant-1:pinna-2",
+          "materialDistance": 0.11342818659963085,
+          "acquisitionHash": "13f16a3a"
+        },
+        "selectedDuring": "plant-1:pinna-2",
+        "afterHash": "3a655f55",
+        "afterTransaction": null,
+        "selectedAfter": "plant-1:pinna-2",
+        "ordinal": 1
+      },
+      "commitStill": "docs/development/reports/polish-baseline/smoke-fern-frond-prune-commit-front.png",
+      "afterCommit": {
+        "canonicalHash": "3a655f55",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "prune",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": "plant-1:pinna-2",
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": [
+              "plant-1:pinna-blade-2"
+            ]
+          }
+        ]
+      },
+      "afterCommitLengths": [
+        {
+          "id": "plant-1",
+          "branches": [
+            {
+              "id": "plant-1:pinna-1",
+              "active": true,
+              "activeLength": 0.11462277845712376
+            },
+            {
+              "id": "plant-1:pinna-2",
+              "active": true,
+              "activeLength": 0.062377121257785495
+            },
+            {
+              "id": "plant-1:pinna-3",
+              "active": true,
+              "activeLength": 0.12309153283480548
+            },
+            {
+              "id": "plant-1:pinna-4",
+              "active": true,
+              "activeLength": 0.13596926540601995
+            },
+            {
+              "id": "plant-1:pinna-5",
+              "active": true,
+              "activeLength": 0.1152540339739063
+            },
+            {
+              "id": "plant-1:pinna-6",
+              "active": true,
+              "activeLength": 0.11262505934806535
+            },
+            {
+              "id": "plant-1:pinna-7",
+              "active": true,
+              "activeLength": 0.12953266822732992
+            },
+            {
+              "id": "plant-1:pinna-8",
+              "active": true,
+              "activeLength": 0.13570806154049933
+            },
+            {
+              "id": "plant-1:rachis",
+              "active": true,
+              "activeLength": 3.75022561246995
+            }
+          ]
+        }
+      ],
+      "hashBeforeReload": "3a655f55",
+      "afterReload": {
+        "canonicalHash": "3a655f55",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": [
+              "plant-1:pinna-blade-2"
+            ]
+          }
+        ]
+      },
+      "reloadStill": "docs/development/reports/polish-baseline/smoke-fern-frond-reload-front.png",
+      "reloadMatches": true,
+      "kept": {
+        "error": "Kept. You can leave it here, or keep working.",
+        "cards": [
+          "Smoke fern frond\n9/23/2026 · 1 cutting\nCompare\nRemove",
+          "Smoke bare branch\n9/23/2026 · 1 cutting\nCompare\nRemove"
+        ],
+        "count": "2 / 24 moments kept"
+      },
+      "viewing": true,
+      "viewed": {
+        "canonicalHash": "3a655f55",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "step-back",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": [
+              "plant-1:pinna-blade-2"
+            ]
+          }
+        ]
+      },
+      "viewStill": "docs/development/reports/polish-baseline/smoke-fern-frond-garden-view-front.png",
+      "viewMatches": true,
+      "copied": {
+        "canonicalHash": "3a655f55",
+        "cameraHash": "f3827392",
+        "ordinal": 1,
+        "bendVariant": "fixed",
+        "tool": "shape",
+        "view": "front",
+        "posture": "arrange",
+        "selectedBranchId": null,
+        "transaction": null,
+        "plants": [
+          {
+            "id": "plant-1",
+            "seed": 8278,
+            "generatorVersion": "fern-frond-v1",
+            "branches": 9,
+            "activeBranches": 9,
+            "organs": 8,
+            "activeOrgans": 7,
+            "inactiveBranchIds": [],
+            "inactiveOrganIds": [
+              "plant-1:pinna-blade-2"
+            ]
+          }
+        ]
+      },
+      "copyStill": "docs/development/reports/polish-baseline/smoke-fern-frond-garden-copy-front.png",
+      "copyMatches": true
+    }
+  ],
+  "environment": {
+    "cssViewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "devicePixelRatio": 1,
+    "browserWindow": {
+      "width": 1280,
+      "height": 800
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "webgl": "webgl2",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "materialsMenu": {
+    "before": {
+      "clientHeight": 286,
+      "scrollHeight": 539,
+      "scrollTop": 0,
+      "box": {
+        "top": 126.515625,
+        "bottom": 414.515625,
+        "height": 288
+      },
+      "items": [
+        {
+          "id": "flowering-branch",
+          "name": "Flowering branch",
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "leafy-shoot",
+          "name": "Leafy shoot",
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "bare-branch",
+          "name": "Bare branch",
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "single-flower",
+          "name": "Single flower",
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "reed",
+          "name": "Reed",
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "flower-volume",
+          "name": "Flower volume",
+          "fullyVisible": true,
+          "visibleFraction": 1
+        },
+        {
+          "id": "arching-trailer",
+          "name": "Arching trailer",
+          "fullyVisible": false,
+          "visibleFraction": 0.3955965909090909
+        },
+        {
+          "id": "foliage-fan",
+          "name": "Foliage fan",
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "blossom-spray",
+          "name": "Blossom spray",
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "nodding-flower",
+          "name": "Nodding flower",
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "berry-twig",
+          "name": "Berry twig",
+          "fullyVisible": false,
+          "visibleFraction": 0
+        },
+        {
+          "id": "fern-frond",
+          "name": "Fern frond",
+          "fullyVisible": false,
+          "visibleFraction": 0
+        }
+      ]
+    },
+    "after": {
+      "scrollTop": 253,
+      "items": [
+        {
+          "id": "flowering-branch",
+          "fullyVisible": false
+        },
+        {
+          "id": "leafy-shoot",
+          "fullyVisible": false
+        },
+        {
+          "id": "bare-branch",
+          "fullyVisible": false
+        },
+        {
+          "id": "single-flower",
+          "fullyVisible": false
+        },
+        {
+          "id": "reed",
+          "fullyVisible": false
+        },
+        {
+          "id": "flower-volume",
+          "fullyVisible": false
+        },
+        {
+          "id": "arching-trailer",
+          "fullyVisible": true
+        },
+        {
+          "id": "foliage-fan",
+          "fullyVisible": true
+        },
+        {
+          "id": "blossom-spray",
+          "fullyVisible": true
+        },
+        {
+          "id": "nodding-flower",
+          "fullyVisible": true
+        },
+        {
+          "id": "berry-twig",
+          "fullyVisible": true
+        },
+        {
+          "id": "fern-frond",
+          "fullyVisible": true
+        }
+      ]
+    },
+    "stills": [
+      "docs/development/reports/polish-baseline/materials-list-1280x800.png",
+      "docs/development/reports/polish-baseline/materials-list-1280x800-scrolled.png"
+    ]
+  },
+  "import": {
+    "dialogOpened": {
+      "opened": true
+    },
+    "error": "Imported 2 arrangements.",
+    "count": "2 / 24 moments kept",
+    "titles": [
+      "Berry and flower accents",
+      "Leafy fern and fan"
+    ],
+    "path": "artifacts/polish-baseline-arrangements.json"
+  }
+}

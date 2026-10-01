@@ -9,6 +9,22 @@ const a=()=>stem('a',[p(0,-1),p(0,1)]);
 const b=()=>stem('b',[p(-1,0),p(1,0)]);
 function camera() { const c=new THREE.PerspectiveCamera(44,390/844,.1,80);c.position.set(0,0,10);c.lookAt(0,0,0);c.updateMatrixWorld(true);return c; }
 
+test('contact glyph has straight angular corners and an empty centre distinct from a round bend bead',()=>{
+ const overlay=new StemOverlapOverlay();
+ for(const mesh of overlay.group.children as THREE.InstancedMesh[]) {
+  const positions=mesh.geometry.getAttribute('position');
+  for(let i=0;i<positions.count;i+=3) {
+   const pts=Array.from({length:3},(_,j)=>[positions.getX(i+j),positions.getY(i+j)]);
+   assert.ok(pts.every(([x,y])=>Math.abs(x)>=.34 && Math.abs(y)>=.34),'centre stays open');
+   assert.equal(new Set(pts.map(([x])=>x)).size,2,'each corner stroke is a rectangle');
+   assert.equal(new Set(pts.map(([,y])=>y)).size,2);
+  }
+  assert.equal((mesh.material as THREE.MeshBasicMaterial).opacity,1);
+  assert.equal((mesh.material as THREE.MeshBasicMaterial).toneMapped,false,'indicator contrast does not follow scene exposure');
+ }
+ overlay.dispose();
+});
+
 test('inspection updates and clears derived marks without changing graphs or adding pick targets',()=>{
  const overlay=new StemOverlapOverlay(),graphs=[a(),b()], c=camera();
  const before=JSON.stringify(graphs.map(g=>[...g.branches.values()]));

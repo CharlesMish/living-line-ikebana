@@ -56,6 +56,12 @@ Inspect the built page once before physical play. All items are required.
 - Open View: Front, ¾ and Above expand downward over the scene without moving
   the scene. Choose one: the choices close. Escape, outside press and tabbing
   out also close them; selecting or escaping returns focus to View.
+- On a phone, Arrange / Step Back occupy one aligned mode row and Edit / View /
+  More a second action row. Open More → Garden or Guide; closing either returns
+  keyboard focus to More. Repeat opening, Escape, outside press and tabbing out.
+  Angular contact brackets must be visibly distinct from the round bend bead;
+  the brackets are indicators, not drag handles. Inspection and protection stay
+  separately optional in View.
 - Drag the top tray down toward the pins in all three views. Above the Front
   camera's ground-plane horizon, no placement ghost is expected; the destination
   outline must nevertheless already be visible. Moving toward the pins reveals

@@ -366,6 +366,14 @@ unpickable and never constrain shaping. They stay out of canonical graphs and
 Garden thumbnails; Compare studios do not enable them. One kept entry may be
 inspected read-only. Off-state hides all marks and avoids detection work.
 
+The presentation uses four angular corners with an open centre, distinct from
+the round bend bead. The two-tone mark denotes a possible stem overlap or a
+contact stop; it is never an acquisition target. Phone chrome groups Arrange /
+Step Back above Edit / View / More. More contains Garden and the cutting guide;
+opening it cancels a live preview, and closing a secondary destination returns
+focus to the visible More disclosure. This changes presentation only, not the
+gesture, persistence, geometry, or independently optional study laws.
+
 See [scope, evidence and phone checks](development/reports/stem-overlaps/README.md)
 and the [separate prevention audit](development/reports/stem-overlaps/PREVENTION_AUDIT.md).
 

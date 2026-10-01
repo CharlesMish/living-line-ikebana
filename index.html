@@ -43,8 +43,6 @@
                 <p>One undo step. No redo.</p>
               </div>
             </div>
-            <button id="garden-open" class="quiet-button" type="button" aria-haspopup="dialog" aria-label="Garden — keep and revisit arrangements" title="Keep and revisit arrangements">Garden</button>
-            <button id="workbench-open" class="quiet-button" type="button" hidden aria-haspopup="dialog">Workbench</button>
             <div class="view-menu">
               <button id="view-toggle" class="view-toggle" type="button" data-testid="view-toggle" aria-expanded="false" aria-controls="view-options">
                 <span>View</span>
@@ -57,19 +55,20 @@
                 <button id="stem-overlaps-toggle" type="button" data-testid="stem-overlaps-toggle" aria-pressed="false" aria-describedby="stem-overlaps-note">Stem overlaps: off</button>
                 <p id="stem-overlaps-note" hidden></p>
                 <button id="stem-prevention-toggle" type="button" data-testid="stem-prevention-toggle" aria-pressed="false" aria-describedby="stem-prevention-note">Prevent overlaps (study): off</button>
-                <p id="stem-prevention-note" hidden>Amber marks show contacts and existing overlaps between separate main stems. Existing overlaps stay free to move during the grab. Leaves, flowers and bowl contact are not constrained. Turn off to shape freely.</p>
+                <p id="stem-prevention-note" hidden>Angular brackets mark contacts and existing overlaps between separate main stems. They are indicators, not drag handles. Existing overlaps stay free to move during the grab. Leaves, flowers and bowl contact are not constrained. Turn off to shape freely.</p>
               </nav>
             </div>
-            <button
-              id="experiment-toggle"
-              class="icon-button quiet-button"
-              type="button"
-              aria-label="Working with a cutting"
-              aria-controls="experiment-panel"
-              aria-expanded="false"
-            >
-              <span aria-hidden="true">i</span>
-            </button>
+            <div class="more-menu">
+              <button id="more-toggle" class="view-toggle" type="button" data-testid="more-toggle" aria-label="More — Garden and guide" aria-expanded="false" aria-controls="more-options">
+                <span>More</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+              </button>
+              <div id="more-options" class="more-options" role="group" aria-label="Garden and guide" hidden>
+                <button id="garden-open" type="button" aria-haspopup="dialog" aria-label="Garden — keep and revisit arrangements">Garden <span>Keep and revisit arrangements</span></button>
+                <button id="experiment-toggle" type="button" aria-label="Working with a cutting" aria-controls="experiment-panel" aria-expanded="false">Guide <span>Working with a cutting</span></button>
+                <button id="workbench-open" type="button" hidden aria-haspopup="dialog">Workbench</button>
+              </div>
+            </div>
           </div>
         </div>
 

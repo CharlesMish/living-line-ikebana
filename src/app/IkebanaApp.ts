@@ -691,6 +691,11 @@ export class IkebanaApp {
       return;
     }
     switch (command.kind) {
+      case "set-more-menu": {
+        this.interruptActive("view-command", false);
+        this.ui.setState({ moreMenuOpen: command.open, editMenuOpen: false, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });
+        break;
+      }
       case "set-edit-menu": {
         this.interruptActive("view-command", false);
         this.ui.setState({ editMenuOpen: command.open, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });
@@ -761,7 +766,7 @@ export class IkebanaApp {
         this.interruptActive("view-command", false);
         this.ui.setState({ showStemOverlaps: command.visible, viewMenuOpen: false });
         this.ui.setStatus(command.visible
-          ? "Amber brackets mark possible stem overlaps. Orbit to inspect."
+          ? "Angular brackets mark possible stem overlaps. They are not drag handles. Orbit to inspect."
           : "Stem overlap inspection off.");
         this.syncPresentation();
         break;

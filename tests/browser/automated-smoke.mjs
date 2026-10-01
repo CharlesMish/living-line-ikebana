@@ -571,7 +571,8 @@ try {
     });
     // Open the info panel so its export button is reachable, as a second
     // finger/click would reach it during a real hold-drag.
-    await page.evaluate(() => document.querySelector("#experiment-toggle").click());
+    await page.getByTestId("more-toggle").click();
+    await page.locator("#experiment-toggle").click();
     await page.waitForSelector("#experiment-panel:not([hidden])");
     await page.locator(".study-options > summary").click();
 
@@ -838,7 +839,8 @@ try {
       await sharePage.evaluate(async () => {
         await window.__IKEBANA_TEST__.resetForTest({ clearAutosave: true, clearTelemetry: true, bendVariant: "fixed" });
       });
-      await sharePage.evaluate(() => document.querySelector("#experiment-toggle").click());
+      await sharePage.getByTestId("more-toggle").click();
+      await sharePage.locator("#experiment-toggle").click();
       await sharePage.waitForSelector("#experiment-panel:not([hidden])");
       await sharePage.locator(".study-options > summary").click();
       await sharePage.evaluate(() => document.querySelector("#telemetry-export-trigger").click());

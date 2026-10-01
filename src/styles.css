@@ -224,7 +224,7 @@ button:focus-visible {
   margin-left: auto;
 }
 
-.view-menu, .edit-menu { position: relative; }
+.view-menu, .edit-menu, .more-menu { position: relative; }
 .view-toggle {
   display: flex;
   align-items: center;
@@ -291,6 +291,38 @@ button:focus-visible {
   font-size: 0.875rem;
   cursor: pointer;
 }
+
+.more-options {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.65rem);
+  right: 0;
+  width: min(17rem, calc(100vw - var(--safe-left) - var(--safe-right) - 2rem));
+  max-height: calc(100dvh - 8rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: .35rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper-solid);
+  box-shadow: var(--shadow);
+}
+.more-options[hidden] { display: none; }
+.more-options button {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: .55rem .65rem;
+  border: 0;
+  border-radius: .65rem;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.more-options button[hidden] { display: none; }
+.more-options button span { display: block; margin-top: .2rem; color: var(--ink-muted); font-size: .75rem; }
+.more-options button:hover { background: rgba(103, 117, 75, .09); }
 .edit-options button:not(:disabled):hover { background: rgba(83, 99, 76, 0.09); }
 .edit-options button:disabled { color: var(--ink-muted); opacity: 0.55; cursor: default; }
 .edit-options p { margin: 0.35rem 0.65rem; color: var(--ink-muted); font-size: 0.75rem; }
@@ -490,8 +522,8 @@ button:focus-visible {
 .tool-control {
   grid-template-columns: repeat(2, 1fr);
 }
-.posture-control button,
-.tool-control button { min-height: 2.5rem; white-space: nowrap; }
+.posture-control button { min-height: 2.75rem; white-space: nowrap; }
+.tool-control button { min-height: 2.75rem; white-space: nowrap; }
 
 .craft-chrome {
   display: grid;
@@ -863,7 +895,7 @@ noscript {
   .materials-scroll-cue svg { stroke: CanvasText; }
 }
 
-/* Garden stays in the upper chrome; its collection is a scrollable modal. */
+/* Secondary destinations share More; its collection is a scrollable modal. */
 .top-row { flex-wrap: wrap; }
 .top-actions { flex-wrap: wrap; }
 .garden-dialog {
@@ -993,9 +1025,26 @@ noscript {
   .garden-compare-controls { flex-wrap: wrap; }
   .garden-compare-controls button { flex: 1 1 4.25rem; padding-inline: .4rem; }
 }
+
+/* Deliberate phone rows: one mode pair, then three equal action disclosures.
+   No isolated Garden/info pills, shortened labels, or incidental flex wrapping. */
+@media (max-width: 640px) {
+  .top-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .3rem; }
+  .posture-control { width: 100%; }
+  .top-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin: 0; gap: .3rem; }
+  .top-actions .view-toggle { width: 100%; min-height: 2.75rem; }
+  .top-actions .view-toggle svg { display: none; }
+  .posture-control button { min-height: 2.75rem; }
+  .craft-chrome { display: flex; flex-wrap: wrap; }
+  .tool-control { flex: 1 1 7rem; }
+  .material-dock { flex: 2 1 10rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .material-name { overflow-wrap: anywhere; }
+  .materials-toggle { width: 100%; white-space: normal; }
+  .materials-toggle svg { display: none; }
+  .bend-stations, .bend-stations-note { flex-basis: 100%; }
+  .edit-options { left: 0; }
+  .view-switcher { right: 50%; transform: translateX(50%); width: min(17rem, calc(100vw - var(--safe-left) - var(--safe-right) - 2rem)); }
+  .view-switcher, .more-options { max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8rem); }
+}
 /* Respect native/explicit visibility even on components with display layouts. */
 .garden-host [hidden], #workbench-open[hidden] { display: none !important; }
-#garden-open, #workbench-open {
-  min-height: 44px; padding: .4rem .65rem; border: 1px solid var(--line);
-  border-radius: 999px; background: var(--paper); cursor: pointer; font-size: .9rem;
-}

@@ -54,6 +54,9 @@ function setup() {
   for (const selector of ["#edit-toggle", "#edit-options", "#undo-edit", "#remove-cutting"]) {
     document.element(selector).parent = document.element(".edit-menu");
   }
+  for (const selector of ["#more-toggle", "#more-options", "#garden-open", "#experiment-toggle"]) {
+    document.element(selector).parent = document.element(".more-menu");
+  }
   const observerBefore = globalThis.ResizeObserver;
   const frameBefore = globalThis.requestAnimationFrame;
   globalThis.ResizeObserver = class { observe() {} disconnect() {} } as unknown as typeof ResizeObserver;
@@ -66,6 +69,8 @@ function setup() {
     if (command.kind === "set-edit-menu") ui.setState({ editMenuOpen: command.open });
     if (command.kind === "set-view-menu") ui.setState({ viewMenuOpen: command.open });
     if (command.kind === "set-material-menu") ui.setState({ materialMenuOpen: command.open });
+    if (command.kind === "set-more-menu") ui.setState({ moreMenuOpen: command.open });
+    if (command.kind === "set-experiment-panel") ui.setState({ experimentPanelOpen: command.open });
   });
   return {
     document, ui, commands,
@@ -96,6 +101,42 @@ test("recovery commands follow application availability in both postures", () =>
     h.click("#undo-edit");
     h.click("#remove-cutting");
     assert.deepEqual(h.commands, [{ kind: "undo-edit" }, { kind: "remove-cutting" }]);
+  } finally { h.close(); }
+});
+
+test("More repeatedly dismisses by Escape, outside press and focus exit; actions return to a visible opener", () => {
+  const h = setup();
+  try {
+    for (let i = 0; i < 3; i++) {
+      h.click("#more-toggle");
+      assert.equal(h.document.element("#more-options").hidden, false);
+      assert.equal(h.document.element("#more-toggle").getAttribute("aria-expanded"), "true");
+      const escape = new Event("keydown", { cancelable: true });
+      Object.defineProperty(escape, "key", { value: "Escape" });
+      h.document.dispatchEvent(escape);
+      assert.equal(h.ui.state.moreMenuOpen, false);
+      assert.equal(h.document.activeElement, h.document.element("#more-toggle"));
+      h.click("#more-toggle");
+      h.document.dispatchEvent(new Event("pointerdown"));
+      assert.equal(h.ui.state.moreMenuOpen, false);
+    }
+    h.click("#more-toggle");
+    const inside = new Event("focusout");
+    Object.defineProperty(inside, "relatedTarget", { value: h.document.element("#garden-open") });
+    h.document.element(".more-menu").dispatchEvent(inside);
+    assert.equal(h.ui.state.moreMenuOpen, true);
+    h.document.element(".more-menu").dispatchEvent(new Event("focusout"));
+    assert.equal(h.ui.state.moreMenuOpen, false);
+    h.click("#more-toggle"); h.click("#view-toggle");
+    assert.equal(h.ui.state.moreMenuOpen, false);
+    h.click("#more-toggle"); h.click("#experiment-toggle");
+    assert.equal(h.ui.state.moreMenuOpen, false);
+    assert.equal(h.ui.state.experimentPanelOpen, true);
+    assert.equal(h.document.activeElement, h.document.element("#experiment-close"));
+    h.click("#experiment-close");
+    assert.equal(h.document.activeElement, h.document.element("#more-toggle"));
+    h.click("#more-toggle"); h.click("#garden-open");
+    assert.equal(h.ui.state.moreMenuOpen, false);
   } finally { h.close(); }
 });
 

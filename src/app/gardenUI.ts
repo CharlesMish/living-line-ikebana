@@ -155,7 +155,7 @@ export class GardenUI {
     }, { signal: this.controller.signal });
     this.dialog.addEventListener("close", () => {
       this.clearChoice();
-      if (!this.comparing) this.find<HTMLButtonElement>("#garden-open").focus();
+      if (!this.comparing) this.find<HTMLButtonElement>("#more-toggle").focus();
     }, { signal: this.controller.signal });
     on("#garden-compare-go", () => this.startComparison());
     on("#garden-compare-leave", () => this.leaveComparison());
@@ -255,7 +255,7 @@ export class GardenUI {
   private returnToWork() {
     this.actions.returnToWork(); this.viewedEntry = null; this.viewer.hidden = true;
     delete this.root.dataset.gardenViewing;
-    this.find<HTMLButtonElement>("#garden-open").focus();
+    this.find<HTMLButtonElement>("#more-toggle").focus();
   }
   private offerReplacement(snapshot: ArrangementSnapshot | null) {
     this.returnToWork(); this.open();
@@ -290,6 +290,7 @@ export class GardenUI {
     this.find<HTMLAnchorElement>("#workbench-leave").href = leave.href;
     on("#workbench-open", () => { this.actions.pause(); dialog.showModal(); });
     on("#workbench-close", () => dialog.close());
+    dialog.addEventListener("close", () => this.find<HTMLButtonElement>("#more-toggle").focus(), { signal: this.controller.signal });
     on("#workbench-report", () => downloadJSON("living-line-material-report.json", JSON.stringify(this.actions.report?.(), null, 2)));
     this.find("#workbench-form").addEventListener("submit", (event) => {
       event.preventDefault();

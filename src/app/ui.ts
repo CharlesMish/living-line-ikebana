@@ -20,6 +20,7 @@ export interface UIState {
   stemOverlapCount: number;
   materialMenuOpen: boolean;
   editMenuOpen: boolean;
+  moreMenuOpen: boolean;
   canUndo: boolean;
   canRemove: boolean;
   selectedMaterialId: string;
@@ -47,6 +48,7 @@ export type UICommand =
   | { kind: "set-stem-prevention"; enabled: boolean }
   | { kind: "set-material-menu"; open: boolean }
   | { kind: "set-edit-menu"; open: boolean }
+  | { kind: "set-more-menu"; open: boolean }
   | { kind: "undo-edit" }
   | { kind: "remove-cutting" }
   | { kind: "select-material"; materialId: string }
@@ -114,6 +116,7 @@ const DEFAULT_STATE: UIState = {
   stemOverlapCount: 0,
   materialMenuOpen: false,
   editMenuOpen: false,
+  moreMenuOpen: false,
   canUndo: false,
   canRemove: false,
   selectedMaterialId: "flowering-branch",
@@ -203,6 +206,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const telemetryExportClose = requireElement<HTMLButtonElement>(root, "#telemetry-export-close");
 
   const search = options.search ?? globalThis.location?.search ?? "";
+  const moreMenu = requireElement<HTMLElement>(root, ".more-menu");
+  const moreToggle = requireElement<HTMLButtonElement>(root, "#more-toggle");
+  const moreOptions = requireElement<HTMLElement>(root, "#more-options");
   const showTestingTools = new URLSearchParams(search).get("debug") === "1";
   studyTools.hidden = !showTestingTools;
   studyTools.inert = !showTestingTools;
@@ -216,6 +222,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const listenerOptions = { signal: controller.signal };
 
   function emit(command: UICommand, sourceEvent: Event): void {
+    if (command.kind !== "set-more-menu" && currentState.moreMenuOpen) {
+      setState({ moreMenuOpen: false });
+    }
     if (command.kind !== "set-edit-menu" && currentState.editMenuOpen) {
       setState({ editMenuOpen: false });
       if (command.kind === "undo-edit" || command.kind === "remove-cutting") {
@@ -299,7 +308,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     overlapsToggle.textContent = `Stem overlaps: ${currentState.showStemOverlaps ? "on" : "off"}`;
     overlapsNote.hidden = !currentState.showStemOverlaps;
     const areas = currentState.stemOverlapCount;
-    overlapsNote.textContent = `${areas ? `${areas} possible overlap ${areas === 1 ? "area" : "areas"}.` : "No stem overlaps detected."} Main stems of separate cuttings only. ${areas > 32 ? "Up to 32 visible areas marked." : "Orbit to inspect the marks."}`;
+    overlapsNote.textContent = `${areas ? `${areas} possible overlap ${areas === 1 ? "area" : "areas"}.` : "No stem overlaps detected."} Angular brackets are indicators, not drag handles. Main stems of separate cuttings only. ${areas > 32 ? "Up to 32 visible areas marked." : "Orbit to inspect the marks."}`;
+    moreToggle.setAttribute("aria-expanded", String(currentState.moreMenuOpen));
+    moreOptions.hidden = !currentState.moreMenuOpen;
     editToggle.setAttribute("aria-expanded", String(currentState.editMenuOpen));
     editOptions.hidden = !currentState.editMenuOpen;
     undoEdit.disabled = !currentState.canUndo;
@@ -447,6 +458,18 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     emit({ kind: "set-edit-menu", open: !currentState.editMenuOpen }, event);
   }, listenerOptions);
 
+  moreToggle.addEventListener("click", (event) => {
+    emit({ kind: "set-more-menu", open: !currentState.moreMenuOpen }, event);
+  }, listenerOptions);
+  // Garden owns its own open/cancel boundary. Close this disclosure before
+  // that listener runs; its return focus target is the visible More button.
+  requireElement<HTMLButtonElement>(root, "#garden-open").addEventListener("click", () => {
+    setState({ moreMenuOpen: false });
+  }, listenerOptions);
+  requireElement<HTMLButtonElement>(root, "#workbench-open").addEventListener("click", () => {
+    setState({ moreMenuOpen: false });
+  }, listenerOptions);
+
   undoEdit.addEventListener("click", (event) => {
     if (currentState.canUndo) emit({ kind: "undo-edit" }, event);
   }, listenerOptions);
@@ -469,6 +492,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   // Dismissal never consumes a scene press or turns it into a UI command.
   root.ownerDocument.addEventListener("pointerdown", (event) => {
+    if (currentState.moreMenuOpen && !event.composedPath().includes(moreMenu)) {
+      setState({ moreMenuOpen: false });
+    }
     if (currentState.editMenuOpen && !event.composedPath().includes(editMenu)) {
       setState({ editMenuOpen: false });
     }
@@ -484,6 +510,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     if (!editMenu.contains(event.relatedTarget as Node | null)) setState({ editMenuOpen: false });
   }, listenerOptions);
 
+  moreMenu.addEventListener("focusout", (event) => {
+    if (!moreMenu.contains(event.relatedTarget as Node | null)) setState({ moreMenuOpen: false });
+  }, listenerOptions);
+
   viewMenu.addEventListener("focusout", (event) => {
     if (!viewMenu.contains(event.relatedTarget as Node | null)) setState({ viewMenuOpen: false });
   }, listenerOptions);
@@ -495,7 +525,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }, listenerOptions);
 
   root.ownerDocument.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && currentState.editMenuOpen) {
+    if (event.key === "Escape" && currentState.moreMenuOpen) {
+      event.preventDefault();
+      setState({ moreMenuOpen: false });
+      moreToggle.focus({ preventScroll: true });
+    } else if (event.key === "Escape" && currentState.editMenuOpen) {
       event.preventDefault();
       setState({ editMenuOpen: false });
       editToggle.focus({ preventScroll: true });
@@ -510,7 +544,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     } else if (event.key === "Escape" && currentState.experimentPanelOpen) {
       event.preventDefault();
       emit({ kind: "set-experiment-panel", open: false }, event);
-      experimentToggle.focus({ preventScroll: true });
+      moreToggle.focus({ preventScroll: true });
     }
   }, listenerOptions);
 
@@ -518,6 +552,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       emit({ kind: "set-experiment-panel", open: !currentState.experimentPanelOpen }, event);
+      if (currentState.experimentPanelOpen) experimentClose.focus({ preventScroll: true });
     },
     listenerOptions,
   );
@@ -526,7 +561,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       emit({ kind: "set-experiment-panel", open: false }, event);
-      experimentToggle.focus({ preventScroll: true });
+      moreToggle.focus({ preventScroll: true });
     },
     listenerOptions,
   );

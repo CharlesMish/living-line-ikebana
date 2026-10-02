@@ -1,3 +1,4 @@
+import { readVesselStudy, type VesselProfile } from "../study/vesselProfiles.ts";
 import type { FanLeafDraw, PinnateDraw } from "../presentation/botanicalGeometry.ts";
 import { bendStationsMode, type BendStationsMode } from "./bendStations.ts";
 
@@ -12,6 +13,7 @@ function drawParam<T extends string>(url: URL, key: string, allowed: readonly T[
 }
 
 export type ExperimentConfig = {
+  vesselProfile?: VesselProfile;
   bendVariant: BendVariant;
   bendStationsRequested: boolean;
   bendStationsMode: BendStationsMode;
@@ -39,6 +41,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
   const bendVariant = bend === "touch" ? "touch" : "bead";
   const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
   return {
+    vesselProfile: readVesselStudy(url),
     bendVariant,
     bendStationsRequested,
     bendStationsMode: bendStationsMode(bendStationsRequested, bendVariant),

@@ -1,0 +1,105 @@
+{
+  "viewport": [
+    1100,
+    850
+  ],
+  "phoneViewport": [
+    320,
+    640
+  ],
+  "results": [
+    {
+      "id": "original",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "compact",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "petite",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "offset",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "islands",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "long-bed",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "vessel-pair",
+      "pointerInsertion": "pass",
+      "protectedAimBaseBendPruneUndo": "pass",
+      "appearanceNoGraphOrSaveChange": "pass",
+      "appearanceURLReload": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    }
+  ],
+  "errors": [],
+  "physicalPhoneTested": false
+}

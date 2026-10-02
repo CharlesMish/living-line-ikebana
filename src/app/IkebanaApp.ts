@@ -1,3 +1,6 @@
+import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
+import { readVesselAppearance, vesselAppearanceURL, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
+import { keyboardPlantingPoint, vesselStudyStorageKey } from "../study/vesselProfiles.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -189,6 +192,7 @@ interface IkebanaTestBridge {
   getCanonicalSnapshot(): unknown;
   getRenderInventory(): unknown[];
   getStageLens(): unknown;
+  getVesselPresentation(): unknown;
   getScreenTargets(): unknown[];
   resolveHitForTest(candidates: TestHitCandidate[]): { stableId: string } | null;
   getMetrics(): unknown;
@@ -257,11 +261,13 @@ export class IkebanaApp {
   private readonly canvas: HTMLCanvasElement;
   private readonly studio: ThreeStudio;
   private readonly config = readExperimentConfig();
-  private readonly store = new CommittedStore<CanonicalPlantGraph>(this.config.workbench ? "ikebana-web-alpha:workbench-studio-v1" : undefined);
+  private vesselAppearance: VesselAppearanceChoice = readVesselAppearance(new URL(window.location.href));
+  private vesselAppearanceUI?: VesselAppearanceUI;
+  private readonly store = new CommittedStore<CanonicalPlantGraph>(vesselStudyStorageKey(this.config.vesselProfile, "studio", this.config.workbench));
   private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
   private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
-  private readonly telemetryStore = new TelemetryStore(this.config.workbench ? "ikebana-web-alpha:workbench-telemetry-v1" : undefined);
+  private readonly telemetryStore = new TelemetryStore(vesselStudyStorageKey(this.config.vesselProfile, "telemetry", this.config.workbench));
   private readonly autosaveWrites: AutosaveAuditRecord[] = [];
   private readonly abortController = new AbortController();
 
@@ -293,6 +299,10 @@ export class IkebanaApp {
 
   constructor(root: HTMLElement) {
     this.root = root;
+    if (this.config.vesselProfile) {
+      root.dataset.vesselStudy = this.config.vesselProfile.id;
+      document.title = `${this.config.vesselProfile.label} · Living Line study`;
+    }
     this.bendVariant = this.config.bendVariant;
     this.bendStationsRequested = this.config.bendStationsRequested;
     this.bendStationsMode = this.config.bendStationsMode;
@@ -327,13 +337,15 @@ export class IkebanaApp {
       debugHitTargets: this.config.debug,
       pinnateDraw: this.config.pinnateDraw,
       fanLeafDraw: this.config.fanLeafDraw,
+      vesselProfile: this.config.vesselProfile,
+      vesselAppearance: this.config.vesselProfile ? this.vesselAppearance : undefined,
       stageLens: true,
       onCanvasResize: () => this.onViewportChanged(),
     });
 
     const initial = this.loadInitialDocument();
     this.replaceCoordinator(initial.plants, initial.successfulPlantOrdinal);
-    this.gardenUI = new GardenUI(root, new GardenStore(this.config.workbench ? "ikebana-web-alpha:workbench-garden-v1" : undefined), {
+    this.gardenUI = new GardenUI(root, new GardenStore(vesselStudyStorageKey(this.config.vesselProfile, "garden", this.config.workbench)), {
       pause: () => this.pauseForGarden(),
       snapshot: () => this.arrangementSnapshot(),
       thumbnail: () => this.studio.captureThumbnail(),
@@ -346,6 +358,19 @@ export class IkebanaApp {
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
     }, this.config.workbench);
+    if (this.config.vesselProfile) this.vesselAppearanceUI = new VesselAppearanceUI(root,
+      this.config.vesselProfile.label, this.vesselAppearance,
+      () => {
+        this.interruptActive("view-command");
+        this.ui.setState({ moreMenuOpen: false, editMenuOpen: false, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });
+      },
+      choice => {
+        this.interruptActive("view-command");
+        this.vesselAppearance = choice;
+        this.studio.setVesselAppearance(choice);
+        history.replaceState(null, "", vesselAppearanceURL(choice, new URL(location.href)));
+      });
+
   }
 
   start() {
@@ -402,6 +427,7 @@ export class IkebanaApp {
     this.removeUIListener = null;
     this.endGardenComparisonView();
     this.gardenUI?.destroy();
+    this.vesselAppearanceUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
     if (window.__IKEBANA_TEST__) delete window.__IKEBANA_TEST__;
@@ -437,7 +463,7 @@ export class IkebanaApp {
       () => coordinator.getPresentationState().document.plants.values(),
     );
     coordinator = new TransactionCoordinator(
-      createDomainAdapters(prevention),
+      createDomainAdapters(prevention, this.config.vesselProfile),
       {
         plants,
         camera: canonicalCameraPose("front"),
@@ -622,9 +648,9 @@ export class IkebanaApp {
   private createComparisonViewports(
     canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement },
   ): [ComparisonViewport, ComparisonViewport] {
-    const left = createStudioComparisonViewport(canvases.left);
+    const left = createStudioComparisonViewport(canvases.left, this.config.vesselProfile, this.config.vesselProfile ? this.vesselAppearance : undefined);
     try {
-      return [left, createStudioComparisonViewport(canvases.right)];
+      return [left, createStudioComparisonViewport(canvases.right, this.config.vesselProfile, this.config.vesselProfile ? this.vesselAppearance : undefined)];
     } catch (error) {
       left.destroy();
       throw error;
@@ -930,7 +956,8 @@ export class IkebanaApp {
     };
     const angle = (prepared.ordinal - 1) * 2.399963;
     const radius = Math.min(0.86, Math.sqrt(Math.max(0, prepared.ordinal - 1)) * 0.28);
-    const base = { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
+    const base = this.config.vesselProfile ? keyboardPlantingPoint(prepared.ordinal, this.config.vesselProfile)
+      : { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
     const owner = `keyboard-${prepared.ordinal}`;
     const started = this.coordinator.beginInsert(
       owner,
@@ -2000,6 +2027,7 @@ export class IkebanaApp {
       getCanonicalSnapshot: () => clonePlain(this.canonicalSnapshot()),
       getRenderInventory: () => this.studio.getRenderInventory(),
       getStageLens: () => this.studio.getStageLens(),
+      getVesselPresentation: () => this.studio.getVesselPresentation(),
       getScreenTargets: () => this.screenTargets(),
       resolveHitForTest: (candidates) => {
         const tier = { "selected-handle": 0, "selected-plant": 1, "other-plant": 2 } as const;

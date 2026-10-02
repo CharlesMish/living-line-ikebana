@@ -1,3 +1,4 @@
+import { keyboardPlantingPoint, vesselStudyStorageKey } from "../study/vesselProfiles.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -257,11 +258,11 @@ export class IkebanaApp {
   private readonly canvas: HTMLCanvasElement;
   private readonly studio: ThreeStudio;
   private readonly config = readExperimentConfig();
-  private readonly store = new CommittedStore<CanonicalPlantGraph>(this.config.workbench ? "ikebana-web-alpha:workbench-studio-v1" : undefined);
+  private readonly store = new CommittedStore<CanonicalPlantGraph>(vesselStudyStorageKey(this.config.vesselProfile, "studio", this.config.workbench));
   private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
   private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
-  private readonly telemetryStore = new TelemetryStore(this.config.workbench ? "ikebana-web-alpha:workbench-telemetry-v1" : undefined);
+  private readonly telemetryStore = new TelemetryStore(vesselStudyStorageKey(this.config.vesselProfile, "telemetry", this.config.workbench));
   private readonly autosaveWrites: AutosaveAuditRecord[] = [];
   private readonly abortController = new AbortController();
 
@@ -293,6 +294,10 @@ export class IkebanaApp {
 
   constructor(root: HTMLElement) {
     this.root = root;
+    if (this.config.vesselProfile) {
+      root.dataset.vesselStudy = this.config.vesselProfile.id;
+      document.title = `${this.config.vesselProfile.label} · Living Line study`;
+    }
     this.bendVariant = this.config.bendVariant;
     this.bendStationsRequested = this.config.bendStationsRequested;
     this.bendStationsMode = this.config.bendStationsMode;
@@ -327,13 +332,14 @@ export class IkebanaApp {
       debugHitTargets: this.config.debug,
       pinnateDraw: this.config.pinnateDraw,
       fanLeafDraw: this.config.fanLeafDraw,
+      vesselProfile: this.config.vesselProfile,
       stageLens: true,
       onCanvasResize: () => this.onViewportChanged(),
     });
 
     const initial = this.loadInitialDocument();
     this.replaceCoordinator(initial.plants, initial.successfulPlantOrdinal);
-    this.gardenUI = new GardenUI(root, new GardenStore(this.config.workbench ? "ikebana-web-alpha:workbench-garden-v1" : undefined), {
+    this.gardenUI = new GardenUI(root, new GardenStore(vesselStudyStorageKey(this.config.vesselProfile, "garden", this.config.workbench)), {
       pause: () => this.pauseForGarden(),
       snapshot: () => this.arrangementSnapshot(),
       thumbnail: () => this.studio.captureThumbnail(),
@@ -437,7 +443,7 @@ export class IkebanaApp {
       () => coordinator.getPresentationState().document.plants.values(),
     );
     coordinator = new TransactionCoordinator(
-      createDomainAdapters(prevention),
+      createDomainAdapters(prevention, this.config.vesselProfile),
       {
         plants,
         camera: canonicalCameraPose("front"),
@@ -622,9 +628,9 @@ export class IkebanaApp {
   private createComparisonViewports(
     canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement },
   ): [ComparisonViewport, ComparisonViewport] {
-    const left = createStudioComparisonViewport(canvases.left);
+    const left = createStudioComparisonViewport(canvases.left, this.config.vesselProfile);
     try {
-      return [left, createStudioComparisonViewport(canvases.right)];
+      return [left, createStudioComparisonViewport(canvases.right, this.config.vesselProfile)];
     } catch (error) {
       left.destroy();
       throw error;
@@ -930,7 +936,8 @@ export class IkebanaApp {
     };
     const angle = (prepared.ordinal - 1) * 2.399963;
     const radius = Math.min(0.86, Math.sqrt(Math.max(0, prepared.ordinal - 1)) * 0.28);
-    const base = { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
+    const base = this.config.vesselProfile ? keyboardPlantingPoint(prepared.ordinal, this.config.vesselProfile)
+      : { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
     const owner = `keyboard-${prepared.ordinal}`;
     const started = this.coordinator.beginInsert(
       owner,

@@ -1,0 +1,11 @@
+Vessel study verification (2026-10-02)
+Main baseline: 09db578e2430754e992b4acb6228a201d66e1555
+npm ci: completed; lockfile unchanged
+Node 24.21.0: typecheck passed; 365 / 366 tests passed (before 5 renderer tests added)
+Baseline main: phase2Arrangements.test.ts reproduces same frozen Garden float mismatch
+Separate build and validate-dist: passed
+Focused vessel study tests: 16 app + 5 presentation passed
+Node 22.22.3: typecheck passed; 370 / 371 tests passed, same existing phase-2 frozen Garden failure
+Baseline main on Node 22.22.3: same failing test reproduced (1 / 2 focused tests passed)
+Chromium browser study: 5 / 5 profiles passed; zero page errors; 320x640 controls inspected
+Physical phone: not run

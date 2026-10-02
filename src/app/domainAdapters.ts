@@ -1,3 +1,4 @@
+import { constrainBaseToProfile, inPlantingArea, type VesselProfile } from "../study/vesselProfiles.ts";
 import type { StemPrevention } from "./stemPrevention.ts";
 import {
   aimBranch,
@@ -44,7 +45,7 @@ function placePendingAt(graph: PlantGraph, base: Vec3): PlantGraph {
   return translatePendingGraph(graph, base);
 }
 
-export function createDomainAdapters(prevention?: StemPrevention): TransactionAdapters<
+export function createDomainAdapters(prevention?: StemPrevention, vesselProfile?: VesselProfile): TransactionAdapters<
   PlantGraph,
   CameraPose,
   CutPlan,
@@ -58,7 +59,7 @@ export function createDomainAdapters(prevention?: StemPrevention): TransactionAd
     placePending(graph, _spec, input) {
       const placed = placePendingAt(graph, input.base);
       const clear = prevention?.enabled() ? prevention.insert(placed) : true;
-      return { graph: placed, isValid: input.valid && clear };
+      return { graph: placed, isValid: input.valid && (!vesselProfile || inPlantingArea(input.base, vesselProfile)) && clear };
     },
     aim(graph, spec, input) {
       const branch = graph.branches.get(spec.branchId);
@@ -76,7 +77,9 @@ export function createDomainAdapters(prevention?: StemPrevention): TransactionAd
       });
     },
     moveBase(graph, spec, input) {
-      return prevention?.enabled() ? prevention.base(graph, spec, input.base) : translatePlantBase(graph, input.base);
+      const root = graph.branches.get(graph.rootBranchId)?.points[0];
+      const base = vesselProfile && root ? constrainBaseToProfile(input.base, root, vesselProfile) : input.base;
+      return prevention?.enabled() ? prevention.base(graph, spec, base) : translatePlantBase(graph, base);
     },
     previewPrune(graph, spec, input) {
       return previewPrune(graph, spec.branchId, input.distance);

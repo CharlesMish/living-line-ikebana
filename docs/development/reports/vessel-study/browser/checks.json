@@ -1,0 +1,69 @@
+{
+  "viewport": [
+    1100,
+    850
+  ],
+  "phoneViewport": [
+    320,
+    640
+  ],
+  "results": [
+    {
+      "id": "original",
+      "pointerInsertion": "pass",
+      "protectedBendPruneUndo": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "compact",
+      "pointerInsertion": "pass",
+      "protectedBendPruneUndo": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "petite",
+      "pointerInsertion": "pass",
+      "protectedBendPruneUndo": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "offset",
+      "pointerInsertion": "pass",
+      "protectedBendPruneUndo": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    },
+    {
+      "id": "islands",
+      "pointerInsertion": "pass",
+      "protectedBendPruneUndo": "pass",
+      "invalidSeat": "pass",
+      "cancelNoSave": "pass",
+      "keyboardInsertion": "pass",
+      "reload": "pass",
+      "gardenViewReturnCompare": "pass",
+      "oldBowlUntouched": "pass"
+    }
+  ],
+  "errors": [],
+  "physicalPhoneTested": false
+}

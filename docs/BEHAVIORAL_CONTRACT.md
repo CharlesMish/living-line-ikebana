@@ -408,3 +408,14 @@ Normal kenzan validity remains required. No new storage field or generator law.
 The [implementation report](development/reports/stem-prevention/README.md) defines
 motion bounds, approximation, bounded-work behavior and unrun phone gates. This
 study does not establish exact mesh collision or accepted default phone feel.
+
+### Isolated vessel-footprint study (October 2)
+
+Recognized `?vesselStudy=` profiles intentionally replace the ordinary circular
+insertion/base boundary with explicit elliptical components in separate study
+storage. All graph, stock-length, transaction, protection and recovery laws
+remain unchanged. Base acquisition locks a component; imported out-of-field
+roots retain a documented per-grab legacy allowance. No stored graph is scaled
+or migrated. The default bowl remains unchanged. This is not a production
+multi-vessel persistence format. See the [profile definitions, exact exceptions,
+compatibility limits and evidence](development/reports/vessel-study/README.md).

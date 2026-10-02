@@ -51,6 +51,51 @@ profile persistence and validation in that lane. Pass a resolved profile to both
 main and photo studios; do not translate graphs to make a perch fit. The current
 study does not promise compatibility with future asymmetric/two-basin profiles.
 
+### Minimal vessel appearance/settings interface (documentation only)
+
+The vessel lane owns layout geometry, pin-bed laws, palette IDs, finish presets,
+and its material resolver. Staging owns backdrop/perch choices and framing. A
+future composition boundary can accept this small, renderer-free descriptor:
+
+```ts
+type VesselAppearanceChoice = { colorId: string; finishId: string };
+type ResolvedVesselPart = {
+  partId: string; // stable within this resolved layout; one record per vessel
+  appearance: VesselAppearanceChoice;
+  contactY: number;
+  footprintXZ: { minX: number; maxX: number; minZ: number; maxZ: number };
+};
+type PhotoSceneSettings = {
+  layoutId: string; // selected named layout, resolved by the vessel lane
+  vessels: readonly ResolvedVesselPart[];
+  backdropId: string;
+  perchId: string;
+};
+```
+
+Both main and photo studios should receive the same resolved layout and call the
+vessel-owned `resolveVesselAppearance(choice)` (name illustrative). Its resolved
+material parameters need only supply an explicitly sRGB base color and bounded
+roughness/clearcoat settings; preset validation and exact parameters stay in the
+vessel lane. Each renderer creates its own disposable material instances from
+those settings. Do not share live materials between studios, copy a second palette
+into Photograph, tint a vessel to match a background, or change the lights/exposure
+when switching finishes. The existing fixed lighting then makes color/finish versus
+backdrop comparisons meaningful.
+
+`vessels[]` permits separate petite vessels or a puzzle pair without assuming one
+centered bowl. The footprint is each outer ceramic support in the resolved world
+pose; union bounds can size a shared perch. It is not the long narrow pin-bed
+boundary, and offset-oval planting remains the vessel lane's responsibility.
+Staging must never move a vessel or committed stems to make that footprint fit.
+
+These are integration names and settings only, not an implementation or an added
+Garden field. A v1 cover can show a selected finish, but the saved arrangement
+cannot restore its IDs. Even matching a named layout does not identify the chosen
+finish. A future exact scene restore therefore needs an explicit validated
+presentation descriptor and migration policy; this bounded study keeps that gap
+visible rather than broadening saves.
+
 ### Independent vessel study (#65): unresolved persistence interface
 
 PR #65 is intentionally separate. Its Garden backups do not preserve vessel

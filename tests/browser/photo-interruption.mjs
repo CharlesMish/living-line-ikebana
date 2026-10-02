@@ -1,7 +1,7 @@
 /** Optional Playwright interruption test; disposable profile, synthetic data only. */
 import assert from 'node:assert/strict';
 import {writeFile,mkdir} from 'node:fs/promises';
-import {chromium} from 'playwright';
+const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??'playwright');
 await mkdir(process.env.IKEBANA_EVIDENCE_DIR??'.',{recursive:true});
 const browser=await chromium.launch({headless:true});const results=[];
 try {
@@ -30,7 +30,7 @@ try {
  await page.evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.originalToBlob;});
  results.push('Close during pending PNG encoding cancels delivery; session token prevents stale download');
  // Unknown v2 data must survive a failed Keep unchanged.
- await page.evaluate(async()=>{const{createWorkbenchFixture}=await import('/src/app/workbench.ts');const f=createWorkbenchFixture('reed',8278,1);localStorage.setItem('ikebana-web-alpha:workbench-studio-v1',JSON.stringify({storageVersion:1,nextSuccessfulOrdinal:2,plants:f.plants}));localStorage.setItem('ikebana-web-alpha:workbench-garden-v1','{"gardenVersion":99,"precious":"synthetic"}');});
+ await page.evaluate(async()=>{const{createWorkbenchFixture}=await import('/src/app/workbench.ts');const f=createWorkbenchFixture('reed',8278,1);localStorage.setItem('ikebana-web-alpha:workbench-studio-v1',JSON.stringify({storageVersion:1,savedAt:new Date().toISOString(),nextSuccessfulOrdinal:2,plants:f.plants}));localStorage.setItem('ikebana-web-alpha:workbench-garden-v1','{"gardenVersion":99,"precious":"synthetic"}');});
  await page.reload();await page.locator('[data-ready=true]').waitFor();await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-keep').click();
  assert.equal(await page.evaluate(()=>localStorage.getItem('ikebana-web-alpha:workbench-garden-v1')),'{"gardenVersion":99,"precious":"synthetic"}');
  results.push('unsupported Garden version fails closed and keeps its exact bytes');

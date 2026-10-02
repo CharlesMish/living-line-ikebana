@@ -51,7 +51,7 @@ export class GardenUI {
   private compareMode: ComparisonDragMode = "orbit";
   private compareDrag: ComparisonDrag | null = null;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
-  constructor(private readonly root: HTMLElement, private readonly store: GardenStore, private readonly actions: GardenActions, workbench = false) {
+  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false) {
     const host = document.createElement("div");
     host.className = "garden-host";
     host.innerHTML = `

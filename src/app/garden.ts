@@ -1,3 +1,4 @@
+import { validateScene, type SceneSettings } from "./scene.ts";
 import { assertValidPlantGraph, fromCanonicalPlantGraph, toCanonicalPlantGraph, type CanonicalPlantGraph } from "../core/index.ts";
 import { cloneCameraPose, type CameraPose } from "./camera.ts";
 
@@ -8,6 +9,7 @@ export interface ArrangementSnapshot {
   plants: CanonicalPlantGraph[];
   successfulPlantOrdinal: number;
   camera: CameraPose;
+  scene?: SceneSettings;
 }
 export interface GardenEntry {
   id: string;
@@ -23,11 +25,11 @@ const record = (value: unknown): Record<string, unknown> => {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid Garden data.");
   return value as Record<string, unknown>;
 };
-export function validateArrangement(value: unknown): ArrangementSnapshot {
+export function validateArrangement(value: unknown, maxPlants = 64): ArrangementSnapshot {
   const source = record(value);
   const ordinal = source.successfulPlantOrdinal;
   if (!Number.isSafeInteger(ordinal) || (ordinal as number) < 0 || (ordinal as number) >= Number.MAX_SAFE_INTEGER
-    || !Array.isArray(source.plants) || source.plants.length > 64) throw new Error("Invalid arrangement.");
+    || !Array.isArray(source.plants) || source.plants.length > maxPlants) throw new Error("Invalid arrangement.");
   const ids = new Set<string>();
   const plants = source.plants.map((plant) => {
     const graph = fromCanonicalPlantGraph(plant);
@@ -46,9 +48,10 @@ export function validateArrangement(value: unknown): ArrangementSnapshot {
   const direction = { x: pose.position.x - pose.target.x, y: pose.position.y - pose.target.y, z: pose.position.z - pose.target.z };
   const cross = { x: direction.y * pose.up.z - direction.z * pose.up.y, y: direction.z * pose.up.x - direction.x * pose.up.z, z: direction.x * pose.up.y - direction.y * pose.up.x };
   if (Math.hypot(cross.x, cross.y, cross.z) < 1e-6) throw new Error("Invalid saved view.");
-  return { plants, successfulPlantOrdinal: ordinal as number, camera: pose };
+  return { plants, successfulPlantOrdinal: ordinal as number, camera: pose,
+    ...(source.scene === undefined ? {} : { scene: validateScene(source.scene) }) };
 }
-function validateEntry(value: unknown): GardenEntry {
+export function validateEntry(value: unknown): GardenEntry {
   const entry = record(value);
   if (typeof entry.id !== "string" || !/^[a-zA-Z0-9_-]{1,100}$/.test(entry.id)
     || typeof entry.title !== "string" || entry.title.length > 80

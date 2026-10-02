@@ -1,14 +1,16 @@
+import { DEFAULT_SCENE, sceneProfile } from "../../src/app/scene.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { IkebanaApp } from "../../src/app/IkebanaApp.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
-import { fromCanonicalPlantGraph, sampleBranch } from "../../src/core/index.ts";
+import { fromCanonicalPlantGraph, sampleBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { CommittedStore } from "../../src/app/persistence.ts";
 
 function harness(workbench = false) {
   const writes: unknown[] = [];
   const state = { posture: "arrange", tool: "shape", view: "front", cameraMode: "orbit" };
   const app = Object.assign(Object.create(IkebanaApp.prototype), {
+    scene: { ...DEFAULT_SCENE }, applyScene(value: any) { this.scene = structuredClone(value); this.config.vesselProfile = sceneProfile(value); },
     workingSession: null, config: { workbench }, bendVariant: "bead", selectedBranchId: "plant-1:trunk", cameraIsFree: false,
     hovering: false, gesture: null, autosaveWrites: [],
     root: { querySelector: () => null },
@@ -212,4 +214,31 @@ test("protection toggles cancel before changing policy; Garden returns the same 
  app.returnToWorkingBowl();
  assert.equal(app.coordinator,working);assert.equal(app.preventionByCoordinator.get(working),protection);
  assert.equal(protection.enabled(),true);assert.equal(writes.length,0);
+});
+
+test("camera autosave preserves the released telemetry outcome and never resolves it as a graph commit", () => {
+  const {app,writes}=harness(); const outcomes: string[]=[];
+  app.resolvePendingAcquisition=(outcome: string)=>outcomes.push(outcome);
+  app.coordinator.commandPosture("step-back");
+  const pose=app.coordinator.getDocumentSnapshot().camera;
+  const moved={...pose,position:{...pose.position,x:pose.position.x+.5},target:{...pose.target,x:pose.target.x+.5}};
+  assert.equal(app.coordinator.beginCamera(7,{}, {pose:moved}).ok,true);
+  app.gesture={kind:"camera",owner:7,pointers:new Map([[7,{x:0,y:0}]]),capture:{hasPointerCapture:()=>false},startCameraIsFree:false};
+  app.handlePointerUp({pointerId:7,preventDefault(){}});
+  assert.equal(writes.length,1);assert.deepEqual(outcomes,["released"]);
+  assert.deepEqual(app.coordinator.getDocumentSnapshot().camera,moved);
+});
+
+test("a65-cutting legacy working bowl can change scene without becoming a Garden-sized document", () => {
+ const {app}=harness();
+ const graph=app.coordinator.getDocumentSnapshot().plants.get("plant-1");
+ const many=new Map();for(let i=1;i<=65;i++) {
+  const source=JSON.stringify(toCanonicalPlantGraph(graph));
+  const canonical=JSON.parse(source.replaceAll("plant-1",`plant-${i}`));many.set(canonical.id,fromCanonicalPlantGraph(canonical));
+ }
+ app.replaceCoordinator(many,65);let savedCount=0;
+ app.store.save=(_ordinal: number, plants: unknown[])=>{savedCount=plants.length;return true;};
+ app.setupVesselUI=()=>{};
+ app.changeScene({...DEFAULT_SCENE,colorId:"celadon"});
+ assert.equal(savedCount,65);assert.equal(app.arrangementSnapshot().plants.length,65);
 });

@@ -1,3 +1,5 @@
+> Historical isolated study. The combined release supersedes the opt-in and v1 limitations below; see [COMBINED_SCENE.md](COMBINED_SCENE.md).
+
 # Photograph and quiet staging study
 
 Opt-in on `experiment/photo-staging-study`, based on `09db578` (PR #63).

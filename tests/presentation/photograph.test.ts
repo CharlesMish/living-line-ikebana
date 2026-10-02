@@ -18,12 +18,12 @@ test("photo framing recomputes from its fixed pose and does not change its input
   assert.equal(PHOTO_SIZES.landscape.width / PHOTO_SIZES.landscape.height, 4/3);
 });
 
-test("perch tops remain below the unchanged vessel bottom", () => {
+test("perch tops meet the unchanged vessel bottom", () => {
   for (const perch of ["ground", "stone", "bench"] as const) {
     const {group, floorY} = createPhotoPerch(perch);
     group.updateMatrixWorld(true);
     const bounds = new THREE.Box3().setFromObject(group);
-    if (perch !== "ground") assert.ok(bounds.max.y < -0.024 && bounds.max.y > -0.026);
+    if (perch !== "ground") assert.ok(Math.abs(bounds.max.y - .04) < 1e-7);
     assert.ok(floorY < 0); disposeObject(group);
   }
 });
@@ -54,4 +54,27 @@ test("fiber coordinates preserve geometry and proximal material phase through pr
   }
   assert.equal(JSON.stringify(toCanonicalPlantGraph(graph)), canonical);
   geometry.dispose(); second.dispose();
+});
+
+test("all perches support every frozen vessel profile at contact height without moving vessels", async () => {
+  const { VESSEL_PROFILES } = await import("../../src/study/vesselProfiles.ts");
+  const { resolveVesselPresentation, DEFAULT_VESSEL_APPEARANCE } = await import("../../src/study/vesselAppearance.ts");
+  const { photoSupportBounds } = await import("../../src/presentation/photoStage.ts");
+  for (const profile of VESSEL_PROFILES) {
+    const supports = resolveVesselPresentation(profile, DEFAULT_VESSEL_APPEARANCE).vessels;
+    const bounds = photoSupportBounds(supports);
+    for (const support of supports) {
+      const b = support.footprintXZ, cx = (b.minX+b.maxX)/2, cz = (b.minZ+b.maxZ)/2;
+      for (let angle=0;angle<Math.PI*2;angle+=.05) {
+        const x=cx+Math.cos(angle)*(b.maxX-b.minX)/2, z=cz+Math.sin(angle)*(b.maxZ-b.minZ)/2;
+        assert.ok(Math.hypot(x-bounds.x,z-bounds.z)<bounds.radius);
+        assert.ok(Math.abs(x-bounds.x)<bounds.width/2 && Math.abs(z-bounds.z)<bounds.depth/2);
+      }
+      assert.equal(bounds.topY,support.contactY);
+    }
+    for (const perch of ["stone", "bench"] as const) {
+      const created=createPhotoPerch(perch,supports);created.group.updateMatrixWorld(true);
+      assert.ok(Math.abs(new THREE.Box3().setFromObject(created.group).max.y-bounds.topY)<1e-7);disposeObject(created.group);
+    }
+  }
 });

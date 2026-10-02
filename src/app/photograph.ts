@@ -1,3 +1,4 @@
+import { DEFAULT_SCENE, sceneProfile, validateScene } from "./scene.ts";
 import { fromCanonicalPlantGraph } from "../core/index.ts";
 import { ThreeStudio, type CanonicalView, type StudioCameraPose } from "../presentation/ThreeStudio.ts";
 import { framePhotoCamera, PHOTO_SIZES, type PhotoBackdrop, type PhotoPerch, type PhotoFormat } from "../presentation/photoStage.ts";
@@ -27,7 +28,7 @@ export class Photograph {
     this.dialog = document.createElement("dialog"); this.dialog.id = "photo-dialog"; this.dialog.className = "photo-dialog";
     this.dialog.setAttribute("aria-labelledby", "photo-title");
     this.dialog.innerHTML = `
-      <div class="panel-heading"><div><p class="eyebrow">A moment to keep · local study</p><h1 id="photo-title">Photograph</h1></div><button id="photo-close" type="button" aria-label="Close Photograph">×</button></div>
+      <div class="panel-heading"><div><p class="eyebrow">A moment to keep</p><h1 id="photo-title">Photograph</h1></div><button id="photo-close" type="button" aria-label="Close Photograph">×</button></div>
       <div class="photo-layout"><div class="photo-preview"><div class="photo-frame"><canvas id="photo-canvas" aria-label="Photograph preview"></canvas></div><p id="photo-size" class="panel-note"></p></div>
       <div class="photo-controls">
         <label>Backdrop <select id="photo-backdrop"><option value="paper">Warm paper</option><option value="sage">Sage wall</option><option value="dusk">Dusk wall</option><option value="transparent">Transparent cutout</option></select></label>
@@ -37,12 +38,12 @@ export class Photograph {
         <label>Closer <input id="photo-zoom" type="range" min="0.8" max="1.8" step="0.01" value="1"></label>
         <label>Across <input id="photo-horizontal" type="range" min="-2" max="2" step="0.02" value="0"></label>
         <label>Height <input id="photo-vertical" type="range" min="-2" max="2" step="0.02" value="0"></label>
-        <label class="photo-check"><input id="photo-fibers" type="checkbox"> Subtle stem fibers (study)</label>
+        <label class="photo-check"><input id="photo-fibers" type="checkbox"> Subtle stem fibers</label>
         <button id="photo-reset" type="button">Reset framing</button>
         <button id="photo-export" type="button">Download PNG</button>
         <label>Garden title <input id="photo-name" type="text" maxlength="80" placeholder="A quiet afternoon"></label>
         <button id="photo-keep" type="button">Keep photo in Garden</button>
-        <p class="panel-note">The cover keeps this photograph. Opening it returns to the saved arrangement and view; scene dressing stays in this photo session.</p>
+        <p class="panel-note">The Garden keeps this photograph, its scene setting and view. Reopen Photograph to capture the same frame.</p>
         <p id="photo-message" role="status" aria-live="polite"></p>
       </div></div>`;
     root.append(this.dialog);
@@ -73,14 +74,16 @@ export class Photograph {
   private message(value: string) { this.find("photo-message").textContent = value; }
   private open() {
     if (this.dialog.open) return;
-    this.actions.pause(); this.snapshot = validateArrangement(this.actions.snapshot());
+    this.actions.pause(); this.snapshot = validateArrangement(this.actions.snapshot(), Infinity);
     this.root.querySelector<HTMLElement>("#more-options")!.hidden = true;
     this.dialog.showModal(); this.session++;
     try {
-      this.studio = new ThreeStudio(this.find<HTMLCanvasElement>("photo-canvas"), { photography: true, maxPixelRatio: 1.5 });
+      const scene = this.snapshot.scene ?? DEFAULT_SCENE;
+      this.studio = new ThreeStudio(this.find<HTMLCanvasElement>("photo-canvas"), { photography: true, maxPixelRatio: 1.5, vesselProfile: sceneProfile(scene), vesselAppearance: scene });
+      for (const [id, value] of [["photo-backdrop", scene.backdropId], ["photo-perch", scene.perchId], ["photo-format", scene.photoFormat]]) this.find<HTMLSelectElement>(id).value = value;
       for (const graph of this.snapshot.plants) this.studio.upsertGraph(fromCanonicalPlantGraph(graph));
       this.pose = this.snapshot.camera; this.find<HTMLSelectElement>("photo-view").value = "current";
-      this.find<HTMLInputElement>("photo-fibers").checked = false;
+      this.find<HTMLInputElement>("photo-fibers").checked = scene.stemFibers; this.studio.setStemFibers(scene.stemFibers);
       this.find<HTMLButtonElement>("photo-keep").disabled = !this.snapshot.plants.length || !this.actions.canKeep();
       this.find<HTMLButtonElement>("photo-export").disabled = false;
       this.busy = false; this.stage(); this.format(); this.reset();
@@ -143,7 +146,9 @@ export class Photograph {
       context.drawImage(frame, (360 - frame.width * scale) / 2, (270 - frame.height * scale) / 2, frame.width * scale, frame.height * scale);
       const thumbnail = cover.toDataURL("image/jpeg", 0.78);
       if (thumbnail.length > 80_000) throw new Error("This cover is too large. Try a simpler frame.");
-      const snapshot = validateArrangement({ ...this.snapshot, camera: this.studio.getCameraPose() });
+      const scene = validateScene({ ...(this.snapshot.scene ?? DEFAULT_SCENE),
+        backdropId: this.value("photo-backdrop"), perchId: this.value("photo-perch"), photoFormat: this.value("photo-format"), stemFibers: this.find<HTMLInputElement>("photo-fibers").checked });
+      const snapshot = validateArrangement({ ...this.snapshot, scene, camera: this.studio.getCameraPose() }, Infinity);
       const id = this.actions.keep(snapshot, thumbnail, this.value("photo-name"));
       this.dialog.dataset.keptId = id;
       this.message("Photo kept in Garden. Your working bowl is unchanged.");

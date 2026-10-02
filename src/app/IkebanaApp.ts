@@ -1,4 +1,9 @@
+import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
+import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
+import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
+import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
+import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -75,7 +80,7 @@ import {
   type AcquisitionRecord,
   type TransactionOutcome,
 } from "./metrics.ts";
-import { GardenStore, validateArrangement, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
+import { validateArrangement, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
 import {
   applyMatchedCamera,
   beginGardenComparison,
@@ -88,7 +93,7 @@ import { createStudioComparisonViewport } from "./gardenCompareView.ts";
 import { GardenUI } from "./gardenUI.ts";
 import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
-import { CommittedStore } from "./persistence.ts";
+
 import { CraftSound } from "./sound.ts";
 import { cutCue, shapeCue } from "./craftCues.ts";
 import { TelemetryStore, TELEMETRY_INSTRUMENT_VERSION, type PersistedTelemetry } from "./telemetry.ts";
@@ -190,6 +195,7 @@ interface IkebanaTestBridge {
   getCanonicalSnapshot(): unknown;
   getRenderInventory(): unknown[];
   getStageLens(): unknown;
+  getVesselPresentation(): unknown;
   getScreenTargets(): unknown[];
   resolveHitForTest(candidates: TestHitCandidate[]): { stableId: string } | null;
   getMetrics(): unknown;
@@ -256,13 +262,19 @@ export class IkebanaApp {
   private readonly root: HTMLElement;
   private readonly ui: UIBindings;
   private readonly canvas: HTMLCanvasElement;
-  private readonly studio: ThreeStudio;
+  private studio: ThreeStudio;
   private readonly config = readExperimentConfig();
-  private readonly store = new CommittedStore<CanonicalPlantGraph>(this.config.workbench ? "ikebana-web-alpha:workbench-studio-v1" : undefined);
+  private scene: SceneSettings = { ...DEFAULT_SCENE, layoutId: this.config.vesselProfile?.id ?? "original", ...readVesselAppearance(new URL(window.location.href)) };
+  private vesselAppearance: VesselAppearanceChoice = this.scene;
+  private readonly storageKeys = sceneStorageKeys(new URL(location.href), this.config.workbench, this.config.vesselProfile?.id);
+  private suppressSave = false;
+  private vesselAppearanceUI?: VesselAppearanceUI;
+  private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
+  private readonly initialSaved = this.store.load();
   private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
   private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
-  private readonly telemetryStore = new TelemetryStore(this.config.workbench ? "ikebana-web-alpha:workbench-telemetry-v1" : undefined);
+  private readonly telemetryStore = new TelemetryStore(this.storageKeys.telemetry);
   private readonly autosaveWrites: AutosaveAuditRecord[] = [];
   private readonly abortController = new AbortController();
 
@@ -290,11 +302,19 @@ export class IkebanaApp {
   private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
   private gardenUI!: GardenUI;
   private photograph: Photograph | null = null;
-  private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean } | null = null;
+  private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean; scene: SceneSettings } | null = null;
   private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
+    if (!this.config.fresh && this.initialSaved) this.scene = this.initialSaved.scene;
+    this.config.vesselProfile = sceneProfile(this.scene);
+    this.vesselAppearance = this.scene;
+    this.loadWarning = this.store.error;
+    if (this.config.vesselProfile) {
+      root.dataset.vesselStudy = this.config.vesselProfile.id;
+      document.title = `Living Line · ${this.config.vesselProfile.label}`;
+    }
     this.bendVariant = this.config.bendVariant;
     this.bendStationsRequested = this.config.bendStationsRequested;
     this.bendStationsMode = this.config.bendStationsMode;
@@ -325,17 +345,12 @@ export class IkebanaApp {
     this.canvas.dataset.testid = "scene-canvas";
     this.canvas.setAttribute("aria-label", "Ikebana arrangement");
     this.ui.studio.append(this.canvas);
-    this.studio = new ThreeStudio(this.canvas, {
-      debugHitTargets: this.config.debug,
-      pinnateDraw: this.config.pinnateDraw,
-      fanLeafDraw: this.config.fanLeafDraw,
-      stageLens: true,
-      onCanvasResize: () => this.onViewportChanged(),
-    });
+    this.studio = this.createStudio();
 
-    const initial = this.loadInitialDocument();
+    const initial = this.loadInitialDocument(this.initialSaved);
     this.replaceCoordinator(initial.plants, initial.successfulPlantOrdinal);
-    this.gardenUI = new GardenUI(root, new GardenStore(this.config.workbench ? "ikebana-web-alpha:workbench-garden-v1" : undefined), {
+    if (!this.config.fresh && this.initialSaved) { this.restoreCamera(this.initialSaved.camera); this.cameraIsFree = true; }
+    this.gardenUI = new GardenUI(root, new SceneGardenStore(this.storageKeys.garden, this.storageKeys.legacyGarden), {
       pause: () => this.pauseForGarden(),
       snapshot: () => this.arrangementSnapshot(),
       thumbnail: () => this.studio.captureThumbnail(),
@@ -348,7 +363,7 @@ export class IkebanaApp {
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
     }, this.config.workbench);
-    if (new URL(location.href).searchParams.get("photo") === "1") {
+    {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
         snapshot: () => this.arrangementSnapshot(),
@@ -356,6 +371,52 @@ export class IkebanaApp {
         keep: (snapshot, thumbnail, title) => this.gardenUI.keepPhotograph(snapshot, thumbnail, title),
       });
     }
+    this.setupVesselUI();
+
+  }
+
+  private createStudio() {
+    const studio = new ThreeStudio(this.canvas, {
+      debugHitTargets: this.config.debug, pinnateDraw: this.config.pinnateDraw, fanLeafDraw: this.config.fanLeafDraw,
+      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, stageLens: true,
+      onCanvasResize: () => this.onViewportChanged(),
+    });
+    studio.setPhotoStage(this.scene.backdropId, this.scene.perchId);
+    studio.setStemFibers(this.scene.stemFibers);
+    return studio;
+  }
+  private applyScene(value: SceneSettings) {
+    const next = validateScene(value), rebuild = next.layoutId !== this.scene.layoutId;
+    this.scene = next; this.vesselAppearance = next; this.config.vesselProfile = sceneProfile(next);
+    this.root.dataset.vesselStudy = next.layoutId;
+    if (rebuild) { this.studio.dispose(); this.studio = this.createStudio(); this.measureStage(); }
+    else { this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
+    this.setupVesselUI();
+  }
+  private setupVesselUI() {
+    if (this.vesselAppearanceUI) {
+      this.vesselAppearanceUI.update(sceneProfile(this.scene).label, this.scene, this.scene.layoutId, !this.workingSession);
+      return;
+    }
+    this.vesselAppearanceUI = new VesselAppearanceUI(this.root, sceneProfile(this.scene).label, this.scene,
+      () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
+      choice => this.changeScene({ ...this.scene, ...choice }),
+      this.scene.layoutId, layoutId => this.changeScene({ ...this.scene, layoutId }));
+    this.root.querySelector<HTMLButtonElement>("#vessel-appearance-open")!.disabled = Boolean(this.workingSession);
+  }
+  private changeScene(scene: SceneSettings) {
+    if (this.workingSession) return;
+    this.pauseForGarden();
+    const snapshot = this.arrangementSnapshot();
+    if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene, camera: snapshot.camera })) {
+      this.ui.setStatus("Could not save the scene. Your previous setting is unchanged.", "warning");
+      this.setupVesselUI(); return;
+    }
+    this.applyScene(scene); this.syncPresentation();
+  }
+  private restoreCamera(camera: CameraPose) {
+    this.suppressSave = true;
+    try { this.coordinator.commandView("front", camera); } finally { this.suppressSave = false; }
   }
 
   start() {
@@ -413,15 +474,15 @@ export class IkebanaApp {
     this.endGardenComparisonView();
     this.photograph?.destroy();
     this.gardenUI?.destroy();
+    this.vesselAppearanceUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
     if (window.__IKEBANA_TEST__) delete window.__IKEBANA_TEST__;
   }
 
-  private loadInitialDocument() {
+  private loadInitialDocument(saved = this.store.load()) {
     const empty = { plants: new Map<string, PlantGraph>(), successfulPlantOrdinal: 0 };
     if (this.config.fresh) return empty;
-    const saved = this.store.load();
     if (!saved) return empty;
     try {
       const plants = new Map<string, PlantGraph>();
@@ -448,7 +509,7 @@ export class IkebanaApp {
       () => coordinator.getPresentationState().document.plants.values(),
     );
     coordinator = new TransactionCoordinator(
-      createDomainAdapters(prevention),
+      createDomainAdapters(prevention, () => this.config.vesselProfile),
       {
         plants,
         camera: canonicalCameraPose("front"),
@@ -456,6 +517,7 @@ export class IkebanaApp {
         successfulPlantOrdinal,
       },
       {
+        autosaveCameraCommits: true,
         posture: "arrange",
         tool: "shape",
         view: "front",
@@ -469,7 +531,7 @@ export class IkebanaApp {
           return this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
         },
         onAutosave: (event) => {
-          if (this.workingSession) return; // Garden viewing can never write the working bowl.
+          if (this.workingSession || this.suppressSave) return; // Garden viewing can never write the working bowl.
           const canonicalHash = this.hashDocument(event.document.plants, event.document.successfulPlantOrdinal);
           this.autosaveWrites.push({
             commitSequence: event.sequence,
@@ -489,7 +551,7 @@ export class IkebanaApp {
           }
           // Recorded only after the graph save (and any eviction/retry) has
           // been fully attempted, and never allowed to block, delay, or fail it.
-          this.resolvePendingAcquisition("committed");
+          if (event.domain === "graph") this.resolvePendingAcquisition("committed");
         },
       },
     );
@@ -563,21 +625,22 @@ export class IkebanaApp {
     return validateArrangement({
       plants: [...document.plants.values()].map(toCanonicalPlantGraph),
       successfulPlantOrdinal: document.successfulPlantOrdinal,
-      camera: document.camera,
-    });
+      camera: document.camera, scene: this.scene,
+    }, Infinity);
   }
 
   private viewGardenEntry(entry: GardenEntry) {
     const snapshot = validateArrangement(entry.arrangement);
     this.pauseForGarden();
     if (!this.workingSession) this.workingSession = {
-      coordinator: this.coordinator, selectedBranchId: this.selectedBranchId, cameraIsFree: this.cameraIsFree,
+      coordinator: this.coordinator, selectedBranchId: this.selectedBranchId, cameraIsFree: this.cameraIsFree, scene: structuredClone(this.scene),
     };
+    this.applyScene(snapshot.scene ?? DEFAULT_SCENE);
     this.assignSelectedBranch(null);
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
     this.coordinator.commandPosture("step-back");
     this.cameraIsFree = true;
-    this.coordinator.commandView("front", snapshot.camera);
+    this.restoreCamera(snapshot.camera);
     this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false, materialMenuOpen: false });
     this.ui.setStatus("A kept moment. Orbit or pan to look; make a copy to change it.");
     this.syncPresentation();
@@ -588,6 +651,7 @@ export class IkebanaApp {
     this.interruptActive("system-interruption", false);
     const saved = this.workingSession;
     this.workingSession = null;
+    this.applyScene(saved.scene);
     this.coordinator = saved.coordinator;
     this.assignSelectedBranch(saved.selectedBranchId);
     this.cameraIsFree = saved.cameraIsFree;
@@ -604,7 +668,7 @@ export class IkebanaApp {
   ): GardenComparison {
     this.endGardenComparisonView();
     const session = beginGardenComparison([left, right], left.id, right.id);
-    const viewports = this.createComparisonViewports(canvases);
+    const viewports = this.createComparisonViewports(canvases, [left, right]);
     try {
       presentComparison(session, viewports[0], viewports[1]);
     } catch (error) {
@@ -631,11 +695,11 @@ export class IkebanaApp {
   }
 
   private createComparisonViewports(
-    canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement },
+    canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement }, entries: [GardenEntry, GardenEntry],
   ): [ComparisonViewport, ComparisonViewport] {
-    const left = createStudioComparisonViewport(canvases.left);
+    const left = createStudioComparisonViewport(canvases.left, sceneProfile(entries[0].arrangement.scene), entries[0].arrangement.scene ?? DEFAULT_SCENE);
     try {
-      return [left, createStudioComparisonViewport(canvases.right)];
+      return [left, createStudioComparisonViewport(canvases.right, sceneProfile(entries[1].arrangement.scene), entries[1].arrangement.scene ?? DEFAULT_SCENE)];
     } catch (error) {
       left.destroy();
       throw error;
@@ -652,14 +716,15 @@ export class IkebanaApp {
     };
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
-    if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants)) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene: snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene), camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    this.applyScene(snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene));
     const loaded = getLastWorkbenchFixtureLoad();
     if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
     this.assignSelectedBranch(null);
     this.cameraIsFree = value !== null;
     this.metrics.resetAttempt();
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
-    this.coordinator.commandView("front", snapshot.camera);
+    this.restoreCamera(snapshot.camera);
     this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false, materialMenuOpen: false });
     this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : "A fresh bowl. Place a cutting.");
     this.syncPresentation();
@@ -941,7 +1006,8 @@ export class IkebanaApp {
     };
     const angle = (prepared.ordinal - 1) * 2.399963;
     const radius = Math.min(0.86, Math.sqrt(Math.max(0, prepared.ordinal - 1)) * 0.28);
-    const base = { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
+    const base = this.config.vesselProfile ? keyboardPlantingPoint(prepared.ordinal, this.config.vesselProfile)
+      : { x: Math.sin(angle) * radius, y: 0.55, z: Math.cos(angle) * radius };
     const owner = `keyboard-${prepared.ordinal}`;
     const started = this.coordinator.beginInsert(
       owner,
@@ -1467,9 +1533,8 @@ export class IkebanaApp {
       this.sound.cut();
       if (this.lastSaveSucceeded) this.ui.setStatus("Cut.");
     } else if (gesture.kind === "camera") {
-      // Camera never edits the graph and never routes through the
-      // coordinator's autosave hook, so it is resolved as "released", never
-      // "committed" — that word is reserved for an actual graph commit.
+      // Camera persistence is separate from botanical outcomes. The acquisition
+      // resolves as released; committed is reserved for actual graph edits.
       this.resolvePendingAcquisition("released");
     } else {
       if (this.lastSaveSucceeded) this.ui.setStatus("Set.");
@@ -2011,6 +2076,7 @@ export class IkebanaApp {
       getCanonicalSnapshot: () => clonePlain(this.canonicalSnapshot()),
       getRenderInventory: () => this.studio.getRenderInventory(),
       getStageLens: () => this.studio.getStageLens(),
+      getVesselPresentation: () => this.studio.getVesselPresentation(),
       getScreenTargets: () => this.screenTargets(),
       resolveHitForTest: (candidates) => {
         const tier = { "selected-handle": 0, "selected-plant": 1, "other-plant": 2 } as const;

@@ -37,7 +37,7 @@ mission system, or school curriculum.
 
 **Optional study · Across the table.** The guide and Garden include this brief:
 “Make a lower arrangement for a table where people will talk across it.” It is
-for a person to interpret. The scene has no table and no sightline, so the app
+for a person to interpret. The optional perch is presentation only and defines no sightline, so the app
 does not calculate whether an arrangement passes. One way to look again is the
 sequence above: keep a bowl, make a working copy, revise it, keep the revision,
 then compare the two. Generic Compare does not repeat this brief or imply that
@@ -65,12 +65,12 @@ current camera and never rewinds insertion IDs.
 
 ## Persistence boundaries
 
-- Working autosave remains `ikebana-web-alpha:studio-v1`, `storageVersion: 1`.
-- Garden is `ikebana-web-alpha:garden-v1`, `gardenVersion: 1`. It has at most 24
+- Working autosave writes `ikebana-web-alpha:studio-v2`, `storageVersion: 2`. The old studio-v1 key is a read-only fallback and stays intact.
+- Garden writes `ikebana-web-alpha:garden-v2`, `gardenVersion: 2`, retaining garden-v1 as a read-only fallback. It has at most 24
   entries and a 1,800,000-character JSON limit. The browser's shared quota may be
   reached earlier. No automatic eviction of kept arrangements occurs.
 - A snapshot has canonical plants, successful insertion ordinal and a camera
-  pose. It excludes previews, pending cuttings, pointer state and renderer objects.
+  pose plus versioned vessel/layout/finish, backdrop/perch and photo recipe. It excludes previews, pending cuttings, pointer state and renderer objects.
 - Plant identity is scoped to an arrangement. Copies preserve it. Ordinary player
   bowl replacement retains the larger current/snapshot insertion ordinal, so a
   subsequent seat cannot reuse an existing plant ID. An empty fresh bowl retains
@@ -80,12 +80,12 @@ current camera and never rewinds insertion IDs.
   a comparison that was open.
 - Garden mutation checks that storage still matches the last loaded collection.
   A stale tab must close and reopen Garden before writing. This is an optimistic
-  check, not a cross-tab locking protocol; the working autosave remains single-tab.
+  check, not a cross-tab locking protocol. Both studio and Garden guard the v2 and old fallback bytes.
 - Incompatible/corrupt Garden storage stays untouched and can still be downloaded
   for recovery. Keeping/importing are disabled until readable data is available.
 - Reload always restores the working bowl, never a temporary Garden viewer or
   comparison.
-  Working autosave still does not store camera framing; Garden entries do.
+  Working autosave stores only committed camera framing, including ordinary camera releases and explicit view commands. Viewing/reloading never writes it.
 - Data lives in this browser/origin. A downloaded standalone file, GitHub Pages,
   localhost, private browsing and another device can have separate storage.
   Browser data clearing can remove both collections and drafts. Export backups.
@@ -122,8 +122,16 @@ Cloud Browser could not access the local preview (`ERR_BLOCKED_BY_CLIENT`), so n
 browser visual pass or physical-phone signoff is claimed for that version.
 
 Comparison preserves the Garden contract: it adds a transient matched view and
-does not revise gesture laws, persistence, generators, or fixture profiles.
+does not revise gesture ownership, generators or fixture profiles. The combined v2 presentation release changes persistence as described above.
 Automated tests cover non-mutation, the shared camera, field of view, and
 world scale, second-pointer ownership, interruption rollback, and equal canvas
 slots when titles differ. Physical-phone observations for comparison are still
 open. A resized-browser screenshot is not that phone pass.
+
+## Photograph and vessel setting
+
+More → Vessel offers seven layouts and three colors × two surfaces. Changing layout cancels an owned edit first, keeps the working coordinator/Undo and preserves existing plants at their exact world coordinates. Imported roots need not fit a new planting field; changing layout is not an automatic fitting tool. Both separate bowls share one color/finish choice.
+
+More → Photograph opens a committed copy. Choose Warm paper, Sage, Dusk or transparent cutout; Ground, Low stone or Small bench; landscape, portrait or square framing. PNG sizes are1600×1200,1200×1600 and1600×1600. Transparent cutouts omit perches and floor. Keep photo stores the scene recipe and photo camera alongside the existing botanical snapshot, with a360×270 JPEG cover. Transparent covers use a paper matte. Reopen Photograph from a kept moment to restore its exact frame aspect; the ordinary viewer uses the current device's viewport aspect.
+
+Old v1 backups carry no reliable vessel/staging identity, so the importer defaults to Original/Sand/Glaze/Paper/Ground. Every canonical plant and inactive history record remains. Previously isolated vessel-study exports need manual layout/appearance selection after importing. New backups carry the identities and restore them regardless of the destination's previous setting. Unknown scene versions/IDs fail closed and preserve existing data. Older clients cannot open v2 backups; retain the old fallback or download a backup before changing browsers.

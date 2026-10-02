@@ -51,6 +51,20 @@ profile persistence and validation in that lane. Pass a resolved profile to both
 main and photo studios; do not translate graphs to make a perch fit. The current
 study does not promise compatibility with future asymmetric/two-basin profiles.
 
+### Independent vessel study (#65): unresolved persistence interface
+
+PR #65 is intentionally separate. Its Garden backups do not preserve vessel
+identity and require the same named layout on restore. A photo cover can record
+that vessel visually, but the current v1 arrangement cannot reconstruct it.
+Combining the two without a resolved layout descriptor could therefore show a
+faithful cover and reopen a different vessel/planting footprint. The photo
+renderer must receive the same resolved runtime vessel profile as the main
+studio, and Garden restoration must have an explicit matching-layout policy.
+This branch neither merges #65 nor extends the Garden save schema. Exact
+vessel/staging restoration remains an integration blocker, not a cover migration.
+Both lanes touch ThreeStudio presentation wiring; merge that interface deliberately
+instead of replacing one buildStudio implementation with the other.
+
 `stemSurface.ts` derives transported radial coordinates and rest-arc distance from
 existing ten-facet tube rings. The shader modulates diffuse color by at most 7.5%;
 no normal, roughness, position, index, radius or pick proxy changes. Angular

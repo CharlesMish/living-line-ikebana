@@ -1,60 +1,81 @@
 # Vessel and planting-footprint study
 
-Exploratory branch from main `09db578e2430754e992b4acb6228a201d66e1555` (October 2, 2026).
-No merge or deployment. Open `/vessel-study.html` in the local preview, or use the packaged standalone launcher.
+Exploratory branch from main `09db578e2430754e992b4acb6228a201d66e1555` (October 2, 2026). Draft PR #65; no merge or deployment. Open `/vessel-study.html` locally, or `START-HERE.html` in the standalone ZIP. The five first-pass layouts retain their IDs and storage; this follow-up adds two layouts and six appearance combinations.
 
 ## Recommendation
 
-Try **Compact** first as an optional everyday vessel. It reduces visual bowl mass without tightly bunching the full-size stock. **Two islands** is the strongest distinct experiment: separating the roots makes the water between them an active compositional choice. **Offset oval** is worth a short owner trial for lateral arrangements. Keep **Petite** as a specialist option; at unchanged stock size and camera scale it emphasizes height and concentrates the insertion target. None replaces the original by default.
+**Compact** remains the conservative everyday candidate. **Long offset bed** is the most useful new composition study: its roughly 9:1 field makes a lateral fan possible without making the entire bowl tiny. **Separate small bowls** creates a different decision from Two islands: there is a real ceramic and water gap, and each vessel is smaller than Petite. Try both additions before adding more shapes. Sand/Glaze stays the default; Celadon/Stoneware is a quiet alternative, and Charcoal gives stronger edge contrast. None of these observations establishes a user preference or changes ordinary play.
 
-The screenshots are observations of one deterministic trio, not a user preference study: reed, single flower, fern frond; ordinals 1–3 and seeds 8278/9255/10232. Each layout seats the trio in its own bed; only placement changes. No plant is scaled, refit, regenerated on load, or altered to flatter a vessel. All matched images use the same viewport, canonical camera and world scale. Front, three-quarter, Above, insertion outlines, Garden Compare and 320×640 browser layouts are in `browser/`.
+Matched comparisons use reed, single flower and fern frond at their original stock lengths, seeds 8278/9255/10232 and ordinals 1–3. Only seat positions vary by layout. The separate fan example uses five full-stock reeds, deliberately seated along the long bed and shaped using ordinary Aim. It is an authored example, not the standard comparison or an automatic fitting algorithm. No stored plant is rescaled or regenerated.
 
-## What changes
+## Geometry and framing
 
-| Profile | Vessel width × depth | Allowed planting area | Plan area vs original field | Intent |
+| Profile | Ceramic width × depth | Permitted bed in X/Z | Field area vs original | Intent |
 | --- | --- | --- | --- | --- |
-| Original | 5.28 × 5.28 | Circle r=1.22 at (0,0) | 100% | Exact control silhouette |
-| Compact | 4.224 × 4.224 | Circle r=0.92 at (0,0) | 57% | Less bowl, still generous |
-| Petite | 3.379 × 3.379 | Circle r=0.67 at (0,0) | 30% | Few lines, strong vertical tension |
-| Offset oval | 5.174 × 3.590 | Ellipse rx=0.68, rz=0.43 at (-0.45,0) | 20% | Open water to one side |
-| Two islands | 5.28 × 5.28 | Two circles r=0.42 at (±0.75,0) | 24% total | Separate roots; 0.66 unpinned gap |
+| Original | 5.28 × 5.28 | Circle r=1.22 at (0,0) | 100% | Original control |
+| Compact | 4.224 × 4.224 | Circle r=0.92 at (0,0) | 57% | Less ceramic mass |
+| Petite | 3.379 × 3.379 | Circle r=0.67 at (0,0) | 30% | Few lines, vertical tension |
+| Offset oval | 5.174 × 3.590 | Ellipse radii 0.68 / 0.43 at (-0.45,0) | 20% | Open water to one side |
+| Two islands | 5.28 × 5.28 | Two circles r=0.42 at (±0.75,0) | 24% total | 0.66 unpinned water gap |
+| Long offset bed | 5.174 × 3.590 | Ellipse radii 1.45 / 0.16 at (-0.30,-0.22) | 16% | 2.90 × 0.32, near-linear field |
+| Separate small bowls | Each 2.851 × 2.851; total width 6.151 | Two circles r=0.46 at (±1.65,0) | 28% total | 0.449 clear ceramic gap |
 
-Dimensions are domain units, not centimeters. Vessel geometry scales horizontally only; height and water level stay fixed. The ceramic profile itself remains the original hollow lathe. Oval is an affine version of that profile, not a new hand-authored pot. Kenzan supports scale separately to each footprint. Pins retain their 0.11 spacing and physical size. The support body extends slightly past the valid field, as before. The visible insertion outline, pin filtering, pointer validity and keyboard seating consume the same area definitions. Camera presets, stage lens, botanical geometry and world scale are unchanged. Waterline marks are filtered to the selected water surface.
+These are domain units, not centimeters. The original hollow lathe is scaled only in X/Z; height, water level, stock size, camera presets, stage lens and lights stay fixed. The long bed reuses the first offset oval's vessel silhouette. Each separate bowl has its own ceramic, rim, water surface, front mark and kenzan; no common hidden bowl or water spans the gap.
 
-## Intentional experimental contract
+Kenzan support geometry follows each field with the original slight margin outside the valid insertion boundary. Pins retain 0.11 spacing and physical size. Pin filtering, outlines, pointer validity and keyboard seating share the same area definitions. Waterline marks use the union of actual water surfaces, including the portions beyond the old centered basin. All seven comparison images use the same viewport/camera; the palette sheet uses one documented closer camera for all six finishes, with unchanged production lighting and exposure. There is no automatic zoom-to-fit.
 
-The ordinary app retains its current bowl and storage. Only a recognized `?vesselStudy=original|compact|petite|offset|islands` opts in; unknown values do not. Each profile has independent working, Garden and diagnostic keys, also separate from the normal workbench. The explicit Original control has isolated study storage too.
+## Appearance, separate from geometry
 
-The study intentionally revises the single-circle insertion/base law to a union of explicit ellipses. An invalid pointer seat follows the pointer but cannot commit. Keyboard seats are generated inside a component, alternating components for Two islands. A base is clamped to the component nearest its acquisition root, so it cannot jump across the water. Contact prevention still checks its ordinary continuous motion path after footprint clamping; no protection solver or marker module was modified. New profile areas are wholly inside the core's existing r=1.22 outer clamp. This prototype does not support larger external beds.
+More → Vessel offers Sand, Celadon or Charcoal, each with Glaze or Stoneware. Glaze preserves the original material properties. Stoneware uses greater roughness, lower clearcoat and deterministic fine neutral bump grain (0.008 amplitude); it changes shading normals only. Colors are explicit sRGB. No finish changes the mesh, silhouette, insertion boundary, water, collision envelope, stem data or camera. Each renderer owns/disposes its materials and optional grain texture.
 
-Old canonical graphs load byte-for-byte after serialization, including inactive cut history. Legacy roots outside a selected footprint are never relocated on load. For a deliberate base edit, an out-of-field acquisition keeps its normalized elliptical extent for that grab; releasing inward reduces the allowance on the next grab. This is an explicit legacy escape policy, not strict in-field certification for imports. Aim, Bend, Prune and Undo keep the existing laws.
+Appearance is remembered in the URL (`vesselColor`, `vesselFinish`), not written into the botanical autosave or Garden schema. Opening the dialog cancels an active edit before applying a choice; no live preview is saved. Both bowls currently share one choice. Per-part selections are supported by the handoff descriptor, but a separate UI for them is parked.
 
-Garden View and Compare use the current study's vessel, including thumbnails. The current Garden backup schema has no vessel field. Restore a study backup into the same study. Importing into another profile preserves all botanical data but displays that destination's vessel. Do not promote this storage approach to a player-facing multi-vessel collection without adding a versioned arrangement-level vessel identity.
+## Experimental contract and saves
+
+Only a recognized `?vesselStudy=original|compact|petite|offset|islands|long-bed|vessel-pair` opts in. Each profile has separate working, Garden and telemetry keys, also separate from the normal workbench. Normal play retains its original default bowl and storage. The explicit Original control has isolated study storage too.
+
+The study intentionally revises the centered circular insertion/base law to a union of explicit ellipses. Invalid seats cannot commit. Keyboard seats stay inside a field and alternate fields for split layouts. Base edits remain in the connected field nearest the acquisition root. The enclosing radius passed through the existing translation adapter is enlarged only where the new layouts require it; the acquired ellipse remains the actual constraint. The optional radius parameter is the only change in `StemPrevention.base`; continuous contact checks, exclusions, approved protection controls and overlap markers retain their existing behavior.
+
+Canonical old and pruned graphs load without relocation or rescaling, including inactive history. An imported out-of-field root keeps its acquired normalized elliptical extent for that grab, avoiding a snap; a deliberate inward release reduces the allowance for the next grab. Imports are preserved data, not certification that every root lies in the destination bed. Aim, Bend, Prune, Cancel and Undo keep their existing laws.
+
+**Garden backup portability is incomplete.** The current backup has no vessel identity or appearance settings. Restore into the same named study and manually select the original Color/Surface or reopen its saved URL. A matching thumbnail does not prove the reconstructed 3D scene matches: importing a Celadon/Stoneware pair into Compact/Sand/Glaze retains the same thumbnail and exact plants but renders the Compact vessel. This limitation was reproduced with actual export/import in separate browser contexts, including Make a working copy and reload. See [OWNER-TEST-GUIDE.md](OWNER-TEST-GUIDE.md). Do not ship a multi-vessel collection until an arrangement envelope persists a versioned layout and appearance; missing settings must resolve to Original/Sand/Glaze without rewriting plants.
 
 ## Evidence and limits
 
-- `npm ci` completed with the repository lockfile unchanged.
-- 21 focused tests cover profile routing, storage isolation, pointer/keyboard domain seating, gap rejection, component-preserving base travel with protection on/off, exact cancellation/release/Undo, stock-preserving bend, prune history and old graph persistence; projected boundaries are checked in Front/¾/Above and all visible pins must lie inside the permitted field.
-- `tests/browser/vessel-study.mjs` exercises real DOM/pointer input for every profile: invalid release, cancelled insertion with no save, valid planting, protected bead bending, pruning, Undo, keyboard planting, exact reload, Garden Keep/View/Return/Compare and untouched ordinary-bowl storage. `browser/checks.json` is the result record.
-- The approved overlap/protection control presentation is unchanged; narrow Chromium layouts are inspected separately. This is browser automation, not a physical-phone acceptance pass.
-- Main's frozen phase-2 Garden equality test has a floating-point mismatch on Node 24.21.0 and 22.22.3 here; reproduced on untouched `09db578`. Do not regenerate fixtures to hide it. See `verification.txt` for the final runtime outcomes.
-- No ceramic collision, leaf/flower collision, automatic fitting, preferred-stem count or composition scoring was added. Existing protection exclusions and legacy overlapping-pair policy remain in force.
+- Repository lockfile unchanged; `npm ci`, typecheck, full tests, build and standalone validation are recorded in `verification.txt`.
+- 32 focused tests cover storage/routing, all seven domain footprints and projected boundaries, pins, separate geometry/water, distant protected base travel/contact, stock/history/cancellation/Undo, exact canonical persistence and six presentation-only appearance combinations.
+- `tests/browser/vessel-study.mjs`: all seven profiles passed pointer/keyboard insertion, invalid/cancelled seats without save, protected Base/Aim/Bend/Prune and Undo, appearance changes without graph/save/camera changes, URL reload, Garden View/Return/Compare and preservation of the ordinary bowl. Results: `browser/checks.json`.
+- `tests/browser/vessel-followup.mjs`: appearance interruption without save, actual Garden export/import, matching and mismatched restore behavior, exact working-copy reload, authored five-reed fan and six constant-light material captures. Results: `browser/followup-checks.json`.
+- 320×640 Chromium layouts show the approved controls and the new appearance dialog. Physical-phone precision and feel are still untested.
+- One inherited local test fails: phase-2 frozen Garden equality differs at floating-point precision on this Mac in Node 22 and 24, also reproduced on untouched main. Fixtures were not regenerated. Linux draft-PR CI is reported separately.
+- No ceramic contact, leaf/flower collision, automatic fitting, scoring or inter-vessel lift/reseat gesture was added. Existing stem protection limitations remain.
 
-## Minimal integration interface with the background/perch/export work
+## Minimal interface with the photo/background/perch lane
 
-`src/study/vesselProfiles.ts` owns immutable definitions and pure footprint rules. `ThreeStudioOptions.vesselProfile?: VesselProfile` is the presentation entry point. `createDomainAdapters(prevention?, vesselProfile?)` is the insertion/base constraint seam. `vesselStudyStorageKey` and `keyboardPlantingPoint` are app composition helpers. All are additive; absence retains ordinary behavior.
+This branch leaves the parallel Sol task and PR #64 unchanged. The shared app/renderer wiring will need a deliberate merge later. Vessel lane owns layout definitions and material resolution; photo lane owns backdrop, perch, framing and export/cover behavior.
 
-The only shared-file seams are options/imports and vessel rendering in `ThreeStudio.ts`, app wiring in `IkebanaApp.ts`, config parsing, and the comparison studio constructor. The background/perch/export task should own a separate presentation group/options object; it must not modify these footprint ellipses or botanical transforms. This branch leaves floor, lights, background, camera, material detail, Garden cover UI, capture/export behavior, protection solver, overlap overlay, core and input coordinator files unchanged. Both tasks can pass their options into the same `ThreeStudio` call. This is an integration note, not an attempt to merge the other work.
+```ts
+type VesselAppearanceChoice = { colorId: string; finishId: string };
+type ResolvedVesselPart = {
+  partId: string;
+  appearance: VesselAppearanceChoice;
+  contactY: number;
+  footprintXZ: { minX: number; maxX: number; minZ: number; maxZ: number };
+};
+type PhotoSceneSettings = {
+  layoutId: string;
+  vessels: readonly ResolvedVesselPart[];
+  backdropId: string;
+  perchId: string;
+};
+```
 
-For a later production pass, persist a stable versioned `vesselProfileId` in the arrangement envelope, never on each plant. Missing IDs resolve to Original. Carry it through working save, Keep, copy, import/export and both comparison panes; unknown IDs should be reported without changing stored plants. Keep framing/perch choices separate and avoid automatically changing either the graph or camera when a vessel changes.
+`resolveVesselPresentation(profile, appearance)` supplies `layoutId` and `vessels`; `ThreeStudio.getVesselPresentation()` exposes the current resolved descriptor. `resolveVesselAppearance` and `applyVesselAppearance` are the pure-settings/material seam. Main, comparison and photo renderers must receive the same resolved choices and create their own disposable materials. No GPU objects cross the interface. `footprintXZ` is outer ceramic support extent, never a planting boundary. `contactY` is 0.04. The pair's combined X extent is ±3.0756: a future perch must support all pots, accounting for its actual shape, rather than assuming the old bowl radius or moving/scaling the arrangement to fit. Keep color independent of backdrop; evaluate with fixed lighting/exposure first. The existing photo branch was inspected for this interface only; combined visual harmony and export are not claimed tested here.
 
-## Parked ideas and next decision
+## Parked ideas
 
-- Crescent, annulus, L-shaped or polygon beds: wait until there is an explicit rule for sliding around nonconvex boundaries. A naive nearest-point clamp could jump across holes.
-- Transfer between islands: requires an explicit lift/reseat verb and preservation of protection and Undo semantics; dragging across empty water is not that verb.
-- More than two islands, unequal island sizes and per-island heights: not needed to answer this first separation question.
-- Tall vases and neck openings: require insertion-depth, occlusion and ceramic-contact decisions. Horizontal basin scaling alone is insufficient.
-- Automatic fitting or rescaling stored stems: excluded. A later deliberate camera framing command could be evaluated separately.
-- Global vessel switching inside an existing saved bowl: wait for the arrangement envelope and an owner-approved policy for out-of-field roots.
-
-Suggested owner pass: spend a few minutes in Compact and Two islands on a physical phone. Plant near each edge and the split gap; move bases, bend, prune, Cancel and Undo; toggle the existing protection; Keep and reopen a bowl. Judge the precision of small targets and the clarity of the island lock before adopting any candidate. No deployment is proposed by this study.
+- Complementary puzzle vessels: interesting silhouette, but require deliberately authored wall/water shapes, a specified gap and tests for near-contact. Two genuinely separate round vessels answer the current spatial question with less ambiguity.
+- Per-vessel colors: descriptor is ready; defer the extra choice until the paired layout proves useful.
+- Crescents, annuli and L-shaped beds: need explicit nonconvex travel laws.
+- Lift/reseat across islands or pots: requires an intentional gesture distinct from sliding a base.
+- Tall vases, ceramic collision and automatic fitting: different physical/interaction problems. Stored-stem rescaling remains excluded.

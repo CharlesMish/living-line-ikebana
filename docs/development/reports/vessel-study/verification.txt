@@ -9,3 +9,19 @@ Node 22.22.3: typecheck passed; 370 / 371 tests passed, same existing phase-2 fr
 Baseline main on Node 22.22.3: same failing test reproduced (1 / 2 focused tests passed)
 Chromium browser study: 5 / 5 profiles passed; zero page errors; 320x640 controls inspected
 Physical phone: not run
+
+Bounded follow-up (long bed, separate bowls and appearance)
+Node 22.22.3; npm ci: completed; package-lock unchanged
+npm run verify: typecheck passed; 381 / 382 tests passed
+Only failing test: phase2Arrangements.test.ts / the phase 2 garden backup is the two frozen bowls
+Same inherited floating-point mismatch documented above on untouched main; fixture not regenerated
+Separate npm run build and tools/validate-dist.mjs: passed
+Focused vessel suite: 32 / 32 passed (22 app, 7 projected profile, 3 geometry/appearance)
+Chromium vessel-study.mjs: 7 / 7 profiles; zero page errors
+Chromium vessel-followup.mjs: appearance interruption, actual matching/mismatched Garden restore,
+working-copy reload, authored fan and 6 constant-light material captures passed
+Narrow layouts: petite, long-bed and vessel-pair at 320x640; appearance dialog inspected
+Physical phone and combined photo/perch branch: not run
+Final follow-up browser rerun additionally confirms restored camera hash exactly
+Offline ZIP payload: all 7 launcher links, keyboard planting and appearance selectors passed with HTTP(S) blocked
+PDF: six pages rendered and visually checked; updated comparison uses one shared crop/scale

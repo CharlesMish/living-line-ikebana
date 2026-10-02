@@ -1,4 +1,4 @@
-import { constrainBaseToProfile, inPlantingArea, type VesselProfile } from "../study/vesselProfiles.ts";
+import { constrainBaseToProfile, inPlantingArea, profileBaseRadius, type VesselProfile } from "../study/vesselProfiles.ts";
 import type { StemPrevention } from "./stemPrevention.ts";
 import {
   aimBranch,
@@ -79,7 +79,8 @@ export function createDomainAdapters(prevention?: StemPrevention, vesselProfile?
     moveBase(graph, spec, input) {
       const root = graph.branches.get(graph.rootBranchId)?.points[0];
       const base = vesselProfile && root ? constrainBaseToProfile(input.base, root, vesselProfile) : input.base;
-      return prevention?.enabled() ? prevention.base(graph, spec, base) : translatePlantBase(graph, base);
+      const radius = vesselProfile ? profileBaseRadius(vesselProfile) : 1.22;
+      return prevention?.enabled() ? prevention.base(graph, spec, base, radius) : translatePlantBase(graph, base, radius);
     },
     previewPrune(graph, spec, input) {
       return previewPrune(graph, spec.branchId, input.distance);

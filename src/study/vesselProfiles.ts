@@ -2,6 +2,13 @@ import type { Vec3 } from "../core/math.ts";
 
 /** Domain-unit footprint, independent of vessel silhouette and camera framing. */
 export interface PlantingArea { readonly x: number; readonly z: number; readonly rx: number; readonly rz: number }
+export interface VesselPart {
+  readonly partId: string;
+  readonly x: number;
+  readonly z: number;
+  readonly scaleX: number;
+  readonly scaleZ: number;
+}
 export interface VesselProfile {
   readonly id: string;
   readonly label: string;
@@ -9,6 +16,8 @@ export interface VesselProfile {
   readonly scaleX: number;
   readonly scaleZ: number;
   readonly areas: readonly PlantingArea[];
+  /** Separate ceramic and water surfaces; omitted preserves the single bowl. */
+  readonly vessels?: readonly VesselPart[];
 }
 
 export const VESSEL_PROFILES: readonly VesselProfile[] = [
@@ -17,8 +26,41 @@ export const VESSEL_PROFILES: readonly VesselProfile[] = [
   { id: "petite", label: "Petite bowl", description: "An intimate bowl and a tighter bed for a few lines.", scaleX: .64, scaleZ: .64, areas: [{ x: 0, z: 0, rx: .67, rz: .67 }] },
   { id: "offset", label: "Offset oval", description: "An oval bowl with a left-offset bed and an open stretch of water.", scaleX: .98, scaleZ: .68, areas: [{ x: -.45, z: 0, rx: .68, rz: .43 }] },
   { id: "islands", label: "Two islands", description: "The original bowl with two separate beds. Slide a base within its own island.", scaleX: 1, scaleZ: 1, areas: [{ x: -.75, z: 0, rx: .42, rz: .42 }, { x: .75, z: 0, rx: .42, rz: .42 }] },
+  { id: "long-bed", label: "Long offset bed", description: "A long, almost linear bed in the oval bowl, set slightly to one side.", scaleX: .98, scaleZ: .68, areas: [{ x: -.3, z: -.22, rx: 1.45, rz: .16 }] },
+  { id: "vessel-pair", label: "Separate small bowls", description: "Two small vessels, each with its own water and planting bed. The gap is empty.", scaleX: 1, scaleZ: 1, areas: [{ x: -1.65, z: 0, rx: .46, rz: .46 }, { x: 1.65, z: 0, rx: .46, rz: .46 }], vessels: [{ partId: "left", x: -1.65, z: 0, scaleX: .54, scaleZ: .54 }, { partId: "right", x: 1.65, z: 0, scaleX: .54, scaleZ: .54 }] },
 ];
 export const ORIGINAL_VESSEL = VESSEL_PROFILES[0];
+
+export function vesselParts(profile = ORIGINAL_VESSEL): readonly VesselPart[] {
+  return profile.vessels ?? [{ partId: "bowl", x: 0, z: 0, scaleX: profile.scaleX, scaleZ: profile.scaleZ }];
+}
+
+export function inVesselWater(point: Pick<Vec3, "x" | "z">, profile: VesselProfile, innerRadius: number) {
+  return vesselParts(profile).some(part => Math.hypot((point.x - part.x) / part.scaleX, (point.z - part.z) / part.scaleZ) <= innerRadius);
+}
+
+/** Secondary outer guard for the existing translation adapter; the actual
+ * permitted area is still the acquired ellipse, not this enclosing circle. */
+export function profileBaseRadius(profile: VesselProfile) {
+  return Math.max(1.22, ...profile.areas.map(area => Math.hypot(area.x, area.z) + Math.max(area.rx, area.rz)));
+}
+
+/** Same globally aligned 0.11 grid as the original field, extended only when
+ * a layout needs it. Pin radii and spacing never scale with the ceramic. */
+export function plantingPins(profile: VesselProfile): Array<[number, number]> {
+  const extent = (axis: "x" | "z", radius: "rx" | "rz") => [
+    Math.min(-1.155, ...profile.areas.map(area => area[axis] - area[radius])),
+    Math.max(1.1551, ...profile.areas.map(area => area[axis] + area[radius])),
+  ];
+  const [minX, maxX] = extent("x", "rx"), [minZ, maxZ] = extent("z", "rz");
+  const startX = -1.155 - Math.ceil((-1.155 - minX) / .11) * .11;
+  const startZ = -1.155 - Math.ceil((-1.155 - minZ) / .11) * .11;
+  const pins: Array<[number, number]> = [];
+  for (let x = startX; x <= maxX; x += .11) for (let z = startZ; z <= maxZ; z += .11) {
+    if (inPlantingArea({ x, z }, profile)) pins.push([x, z]);
+  }
+  return pins;
+}
 
 /** Only explicit study URLs opt in. Unknown values leave ordinary play alone. */
 export function readVesselStudy(url: URL): VesselProfile | undefined {

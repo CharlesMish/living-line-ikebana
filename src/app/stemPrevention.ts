@@ -71,10 +71,10 @@ export class StemPrevention {
         this.feedback = { reason: result.reason, existingPairs: session.environment.exempt.size, marks: result.marks };
         return result.graph;
     }
-    base(snapshot: PlantGraph, spec: BaseSpec<StudioContextMap['base']>, requested: Vec3) {
+    base(snapshot: PlantGraph, spec: BaseSpec<StudioContextMap['base']>, requested: Vec3, usableRadius = 1.22) {
         const root = snapshot.branches.get(snapshot.rootBranchId)!;
         const session = this.session(snapshot, spec, root.points[0]);
-        const desired = translatePlantBaseWithResult(snapshot, requested).base, from = session.parameter;
+        const desired = translatePlantBaseWithResult(snapshot, requested, usableRadius).base, from = session.parameter;
         const speed = parameterDistance(from, desired);
         const result = limitStemMotion({
             at: t => translatePendingGraph(snapshot, interpolateParameter(from, desired, t)),

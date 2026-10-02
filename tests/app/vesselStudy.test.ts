@@ -1,3 +1,4 @@
+import { stem } from '../fixtures/stemOverlapFixture.ts';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { VESSEL_PROFILES, readVesselStudy, inPlantingArea, constrainBaseToProfile, keyboardPlantingPoint, vesselStudyStorageKey } from '../../src/study/vesselProfiles.ts';
@@ -26,7 +27,7 @@ test('profile opt-in and namespaces preserve normal play and isolate every study
   assert.equal(readVesselStudy(new URL('https://example.test/')), undefined);
   assert.equal(vesselStudyStorageKey(undefined, 'studio'), undefined);
   const keys = VESSEL_PROFILES.flatMap(p => ['studio', 'garden', 'telemetry'].flatMap(k => [false, true].map(w => vesselStudyStorageKey(p, k as any, w))));
-  assert.equal(new Set(keys).size, 30);
+  assert.equal(new Set(keys).size, VESSEL_PROFILES.length * 6);
 });
 
 test('keyboard placements and each visible footprint agree; the island gap and offset empty water reject seats', () => {
@@ -44,7 +45,7 @@ for (const p of VESSEL_PROFILES) test(`${p.id}: invalid seat/cancel preserves or
   const identity = successfulSeatIdentity(1);
   const graph = createReed(identity.id, identity.seed, point(0));
   const reservation = { ordinal: 1, plantId: identity.id, seed: identity.seed, graph };
-  c.beginInsert(1, reservation, {}, { base: point(2), valid: true });
+  c.beginInsert(1, reservation, {}, { base: point(4), valid: true });
   assert.equal(c.getDebugState().active.isValid, false);
   c.release(1);
   assert.equal(saves(), 0); assert.equal(c.getDebugState().successfulPlantOrdinal, 0);
@@ -137,4 +138,41 @@ test('experimental working saves and Garden round-trip canonical old/pruned grap
     store.clear();
   }
   assert.equal(values.get('ikebana-web-alpha:studio-v1'), original);
+});
+
+
+test('expanded fields preserve bases beyond the original clamp and retain contact stopping', () => {
+  for (const protectedOn of [false, true]) {
+    const a = createReed('a', 8278, point(1.65)), { c } = harness('vessel-pair', new Map([['a', a]]), protectedOn);
+    const before = serializePlantGraph(a), spec = { plantId: 'a', context: {} };
+    assert.ok(c.beginBase(1, spec, { base: point(1.65) }).ok);
+    assert.equal(serializePlantGraph(active(c)), before, 'no acquisition snap to old r=1.22');
+    c.updateBase(1, { base: point(-1.65) });
+    const root = active(c).branches.get(a.rootBranchId).points[0];
+    assert.ok(Math.abs(root.x - 1.19) < 1e-10, 'right bowl does not hand over to left bowl');
+    c.pointerCancel(1); assert.equal(serializePlantGraph(c.getDocumentSnapshot().plants.get('a')), before);
+    c.beginBase(2, spec, { base: point(1.65) }); c.updateBase(2, { base: point(2.0) });
+    assert.ok(Math.abs(active(c).branches.get(a.rootBranchId).points[0].x - 2) < 1e-10);
+    c.release(2); c.commandUndo(); assert.equal(serializePlantGraph(c.getDocumentSnapshot().plants.get('a')), before);
+  }
+  const a = stem('a', [{x:1.3,y:.55,z:0},{x:1.3,y:2.5,z:0}], .02);
+  const b = stem('b', [{x:1.7,y:.55,z:0},{x:1.7,y:2.5,z:0}], .02);
+  const h = harness('vessel-pair', new Map([['a',a],['b',b]]), true);
+  h.c.beginBase(1, {plantId:'a',context:{}}, {base:point(1.3)});
+  h.c.updateBase(1, {base:point(2)});
+  assert.equal(h.protection.feedback.reason, 'contact');
+  assert.ok(active(h.c).branches.get(a.rootBranchId).points[0].x < 1.7);
+});
+
+test('long bed admits its distant ends while rejecting narrow-side water', () => {
+  const p = profile('long-bed');
+  assert.ok(inPlantingArea(point(-1.74, -.22), p));
+  assert.ok(inPlantingArea(point(1.14, -.22), p));
+  assert.equal(inPlantingArea(point(-.3, -.22 + .161), p), false);
+  const a = createReed('a',8278,point(-1.6,-.22)), {c}=harness('long-bed',new Map([['a',a]]),true);
+  const before=serializePlantGraph(a);
+  c.beginBase(1,{plantId:'a',context:{}},{base:point(-1.6,-.22)});
+  assert.equal(serializePlantGraph(active(c)),before);
+  c.updateBase(1,{base:point(-1.7,-.22)});
+  assert.ok(Math.abs(active(c).branches.get(a.rootBranchId).points[0].x+1.7)<1e-10);
 });

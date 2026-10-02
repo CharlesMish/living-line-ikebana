@@ -45,7 +45,7 @@ try {
   await material('reed'); await page.getByTestId('material-source').focus(); await page.keyboard.press('Enter');
   const oldSave = await bridge(() => localStorage.getItem('ikebana-web-alpha:studio-v1'));
   const oldGraph = await snapshot();
-  for (const id of ['original', 'compact', 'petite', 'offset', 'islands']) {
+  for (const id of ['original', 'compact', 'petite', 'offset', 'islands', 'long-bed', 'vessel-pair']) {
     await page.goto(baseURL + `?test=1&vesselStudy=${id}`); await ready();
     assert.equal((await state()).successfulSeatOrdinal, 0, 'ordinary bowl must not leak into studies');
     await view('above');
@@ -54,8 +54,9 @@ try {
     await page.screenshot({ path: `${output}/${id}-footprint.png` });
     await bridge(() => window.__IKEBANA_TEST__.interruptForTest('pointercancel')); await page.mouse.up();
     await material('reed');
-    const center = { x: id === 'islands' ? -.75 : id === 'offset' ? -.45 : 0, y: .55, z: 0 };
-    const invalid = { x: id === 'islands' ? 0 : 1.8, y: .55, z: 0 };
+    const area = await page.evaluate(async id => (await import('/src/study/vesselProfiles.ts')).VESSEL_PROFILES.find(p => p.id === id).areas[0], id);
+    const center = { x: area.x, y: .55, z: area.z };
+    const invalid = { x: ['islands','vessel-pair'].includes(id) ? 0 : 4, y: .55, z: 0 };
     await dragSeat(invalid); assert.equal((await state()).successfulSeatOrdinal, 0); assert.equal(await writes(), 0);
     await dragSeat(center, true); assert.equal((await state()).successfulSeatOrdinal, 0); assert.equal(await writes(), 0);
     await dragSeat(center); assert.equal((await state()).successfulSeatOrdinal, 1);
@@ -76,6 +77,21 @@ try {
     assert.notDeepEqual(await snapshot(), beforeShape);
     await page.getByTestId('edit-toggle').click(); await page.getByTestId('undo-edit').click();
     assert.deepEqual(await snapshot(), beforeShape);
+    const baseScreen = await project(center), movedBase = await project({ ...center, x: center.x + .15 });
+    await page.mouse.move(baseScreen.x, baseScreen.y); await page.mouse.down();
+    assert.equal((await state()).transaction.operation, 'base');
+    await page.mouse.move(movedBase.x, movedBase.y, {steps:8}); await page.mouse.up();
+    assert.notDeepEqual(await snapshot(), beforeShape);
+    await page.getByTestId('edit-toggle').click(); await page.getByTestId('undo-edit').click(); assert.deepEqual(await snapshot(), beforeShape);
+    const aimPoint = await page.evaluate(async () => {
+      const { fromCanonicalPlantGraph, sampleBranch } = await import('/src/core/index.ts');
+      const graph=fromCanonicalPlantGraph(window.__IKEBANA_TEST__.getCanonicalSnapshot().plants[0]);
+      const branch=graph.branches.get(graph.rootBranchId); return sampleBranch(branch,branch.activeLength * .84).position;
+    });
+    const aim = await project(aimPoint);
+    await page.mouse.move(aim.x,aim.y); await page.mouse.down(); assert.equal((await state()).transaction.operation,'aim');
+    await page.mouse.move(aim.x+18,aim.y+5,{steps:8}); await page.mouse.up(); assert.notDeepEqual(await snapshot(),beforeShape);
+    await page.getByTestId('edit-toggle').click(); await page.getByTestId('undo-edit').click(); assert.deepEqual(await snapshot(), beforeShape);
     await page.getByTestId('tool-prune').click();
     const cutPoint = await page.evaluate(async () => {
       const { fromCanonicalPlantGraph, sampleBranch } = await import('/src/core/index.ts');
@@ -93,6 +109,17 @@ try {
     await material('fern-frond'); await page.getByTestId('material-source').focus(); await page.keyboard.press('Enter');
     assert.equal((await state()).successfulSeatOrdinal, 3);
     const canonical = await snapshot();
+    const beforeAppearanceState=await state(), beforeAppearanceWrites=await writes();
+    await page.getByTestId('more-toggle').click(); await page.getByTestId('vessel-appearance-open').click();
+    await page.getByTestId('vessel-color').selectOption('celadon'); await page.getByTestId('vessel-finish').selectOption('stoneware');
+    assert.deepEqual(await snapshot(),canonical); assert.equal(await writes(),beforeAppearanceWrites);
+    assert.equal((await state()).cameraHash,beforeAppearanceState.cameraHash);
+    await page.locator('#vessel-appearance-close').click();
+    await page.reload(); await ready(); assert.deepEqual(await snapshot(),canonical);
+    assert.deepEqual((await bridge(()=>window.__IKEBANA_TEST__.getVesselPresentation())).vessels[0].appearance,{colorId:'celadon',finishId:'stoneware'});
+    await page.getByTestId('more-toggle').click(); await page.getByTestId('vessel-appearance-open').click();
+    await page.getByTestId('vessel-color').selectOption('sand'); await page.getByTestId('vessel-finish').selectOption('glaze');
+    await page.locator('#vessel-appearance-close').click();
     await page.getByTestId('posture-step-back').click();
     for (const name of ['front', 'three-quarter', 'above']) {
       await view(name); await page.screenshot({ path: `${output}/${id}-${name}.png` });
@@ -112,12 +139,12 @@ try {
     assert.deepEqual(await snapshot(), canonical);
     assert.equal(await bridge(() => localStorage.getItem('ikebana-web-alpha:studio-v1')), oldSave);
     await writeFile(`${output}/${id}-arrangement.json`, JSON.stringify(canonical, null, 2));
-    results.push({ id, pointerInsertion: 'pass', protectedBendPruneUndo: 'pass', invalidSeat: 'pass', cancelNoSave: 'pass', keyboardInsertion: 'pass', reload: 'pass', gardenViewReturnCompare: 'pass', oldBowlUntouched: 'pass' });
+    results.push({ id, pointerInsertion: 'pass', protectedAimBaseBendPruneUndo: 'pass', appearanceNoGraphOrSaveChange: 'pass', appearanceURLReload: 'pass', invalidSeat: 'pass', cancelNoSave: 'pass', keyboardInsertion: 'pass', reload: 'pass', gardenViewReturnCompare: 'pass', oldBowlUntouched: 'pass' });
     await writeFile(`${output}/checks.json`, JSON.stringify({ results, errors, physicalPhoneTested:false }, null, 2));
     console.log('PASS', id);
   }
   await page.goto(baseURL + '?test=1'); await ready(); assert.deepEqual(await snapshot(), oldGraph);
-  for (const id of ['petite','offset','islands']) {
+  for (const id of ['petite','long-bed','vessel-pair']) {
     await page.setViewportSize({width:320,height:640});
     await page.goto(baseURL + `?test=1&vesselStudy=${id}`); await ready();
     await page.getByTestId('view-toggle').click();
@@ -131,6 +158,10 @@ try {
     await page.getByTestId('view-toggle').click();
     await page.getByTestId('posture-step-back').click();
     await page.screenshot({ path: `${output}/${id}-phone.png` });
+    await page.getByTestId('more-toggle').click(); await page.getByTestId('vessel-appearance-open').click();
+    await page.getByTestId('vessel-color').selectOption('charcoal'); await page.getByTestId('vessel-finish').selectOption('stoneware');
+    await page.screenshot({path:`${output}/${id}-phone-appearance.png`});
+    await page.locator('#vessel-appearance-close').click();
   }
   assert.deepEqual(errors, []);
   await writeFile(`${output}/checks.json`, JSON.stringify({ viewport:[1100,850], phoneViewport:[320,640], results, errors, physicalPhoneTested:false }, null, 2));

@@ -1,0 +1,4 @@
+.vessel-appearance-dialog { width: min(30rem, calc(100vw - 1.5rem)); }
+.vessel-appearance-dialog label { display: grid; gap: .4rem; margin-block: 1rem; font-weight: 600; }
+.vessel-appearance-dialog select { width: 100%; }
+.vessel-appearance-dialog .panel-note { line-height: 1.5; }

@@ -1,3 +1,5 @@
+import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
+import { readVesselAppearance, vesselAppearanceURL, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint, vesselStudyStorageKey } from "../study/vesselProfiles.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
@@ -190,6 +192,7 @@ interface IkebanaTestBridge {
   getCanonicalSnapshot(): unknown;
   getRenderInventory(): unknown[];
   getStageLens(): unknown;
+  getVesselPresentation(): unknown;
   getScreenTargets(): unknown[];
   resolveHitForTest(candidates: TestHitCandidate[]): { stableId: string } | null;
   getMetrics(): unknown;
@@ -258,6 +261,8 @@ export class IkebanaApp {
   private readonly canvas: HTMLCanvasElement;
   private readonly studio: ThreeStudio;
   private readonly config = readExperimentConfig();
+  private vesselAppearance: VesselAppearanceChoice = readVesselAppearance(new URL(window.location.href));
+  private vesselAppearanceUI?: VesselAppearanceUI;
   private readonly store = new CommittedStore<CanonicalPlantGraph>(vesselStudyStorageKey(this.config.vesselProfile, "studio", this.config.workbench));
   private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
@@ -333,6 +338,7 @@ export class IkebanaApp {
       pinnateDraw: this.config.pinnateDraw,
       fanLeafDraw: this.config.fanLeafDraw,
       vesselProfile: this.config.vesselProfile,
+      vesselAppearance: this.config.vesselProfile ? this.vesselAppearance : undefined,
       stageLens: true,
       onCanvasResize: () => this.onViewportChanged(),
     });
@@ -352,6 +358,19 @@ export class IkebanaApp {
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
     }, this.config.workbench);
+    if (this.config.vesselProfile) this.vesselAppearanceUI = new VesselAppearanceUI(root,
+      this.config.vesselProfile.label, this.vesselAppearance,
+      () => {
+        this.interruptActive("view-command");
+        this.ui.setState({ moreMenuOpen: false, editMenuOpen: false, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });
+      },
+      choice => {
+        this.interruptActive("view-command");
+        this.vesselAppearance = choice;
+        this.studio.setVesselAppearance(choice);
+        history.replaceState(null, "", vesselAppearanceURL(choice, new URL(location.href)));
+      });
+
   }
 
   start() {
@@ -408,6 +427,7 @@ export class IkebanaApp {
     this.removeUIListener = null;
     this.endGardenComparisonView();
     this.gardenUI?.destroy();
+    this.vesselAppearanceUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
     if (window.__IKEBANA_TEST__) delete window.__IKEBANA_TEST__;
@@ -628,9 +648,9 @@ export class IkebanaApp {
   private createComparisonViewports(
     canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement },
   ): [ComparisonViewport, ComparisonViewport] {
-    const left = createStudioComparisonViewport(canvases.left, this.config.vesselProfile);
+    const left = createStudioComparisonViewport(canvases.left, this.config.vesselProfile, this.config.vesselProfile ? this.vesselAppearance : undefined);
     try {
-      return [left, createStudioComparisonViewport(canvases.right, this.config.vesselProfile)];
+      return [left, createStudioComparisonViewport(canvases.right, this.config.vesselProfile, this.config.vesselProfile ? this.vesselAppearance : undefined)];
     } catch (error) {
       left.destroy();
       throw error;
@@ -2007,6 +2027,7 @@ export class IkebanaApp {
       getCanonicalSnapshot: () => clonePlain(this.canonicalSnapshot()),
       getRenderInventory: () => this.studio.getRenderInventory(),
       getStageLens: () => this.studio.getStageLens(),
+      getVesselPresentation: () => this.studio.getVesselPresentation(),
       getScreenTargets: () => this.screenTargets(),
       resolveHitForTest: (candidates) => {
         const tier = { "selected-handle": 0, "selected-plant": 1, "other-plant": 2 } as const;

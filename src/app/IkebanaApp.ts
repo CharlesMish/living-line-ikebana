@@ -1,3 +1,4 @@
+import { Photograph } from "./photograph.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -288,6 +289,7 @@ export class IkebanaApp {
   private hovering = false;
   private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
   private gardenUI!: GardenUI;
+  private photograph: Photograph | null = null;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean } | null = null;
   private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
 
@@ -346,6 +348,14 @@ export class IkebanaApp {
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
     }, this.config.workbench);
+    if (new URL(location.href).searchParams.get("photo") === "1") {
+      this.photograph = new Photograph(root, {
+        pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
+        snapshot: () => this.arrangementSnapshot(),
+        canKeep: () => !this.workingSession,
+        keep: (snapshot, thumbnail, title) => this.gardenUI.keepPhotograph(snapshot, thumbnail, title),
+      });
+    }
   }
 
   start() {
@@ -401,6 +411,7 @@ export class IkebanaApp {
     this.removeUIListener?.();
     this.removeUIListener = null;
     this.endGardenComparisonView();
+    this.photograph?.destroy();
     this.gardenUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();

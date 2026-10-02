@@ -1,3 +1,5 @@
+import { createPhotoPerch, PHOTO_COLORS, type PhotoBackdrop, type PhotoPerch } from "./photoStage.ts";
+import { attachStemSurface, installStemSurface } from "./stemSurface.ts";
 import type { StemOverlap } from "../core/stemOverlaps.ts";
 import { createVesselGeometry } from "./vessel.ts";
 import { StemOverlapOverlay } from "./stemOverlapOverlay.ts";
@@ -134,6 +136,8 @@ export interface GraphUpdateHints {
 }
 
 export interface ThreeStudioOptions {
+  /** Isolated photo renderer only. Ordinary play retains the accepted draw. */
+  photography?: boolean;
   maxPixelRatio?: number;
   debugHitTargets?: boolean;
   onViewChange?: (view: StudioView) => void;
@@ -344,7 +348,10 @@ export class ThreeStudio {
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize">;
+    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize" | "photography">;
+  private photoPerch: THREE.Group | null = null;
+  private stemFibers = false;
+  private readonly fiberSetters = new WeakMap<THREE.MeshStandardMaterial, (enabled: boolean) => void>();
   private lastCanvasSize: { width: number; height: number } | null = null;
   private baseVerticalFov = STUDIO_VERTICAL_FOV;
   private stageTopInset = 0;
@@ -376,6 +383,7 @@ export class ThreeStudio {
       pinnateDraw: options.pinnateDraw,
       fanLeafDraw: options.fanLeafDraw,
       stageLens: options.stageLens ?? false,
+      photography: options.photography ?? false,
       onCanvasResize: options.onCanvasResize,
     };
     this.canvas.style.touchAction = "none";
@@ -383,7 +391,7 @@ export class ThreeStudio {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      alpha: false,
+      alpha: options.photography ?? false,
       powerPreference: "high-performance",
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -444,6 +452,7 @@ export class ThreeStudio {
       new THREE.CircleGeometry(20, 96),
       new THREE.MeshStandardMaterial({ color: 0xe3dccf, roughness: 1 }),
     );
+    floor.name = "studio-floor";
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = -0.02;
     floor.receiveShadow = true;
@@ -521,6 +530,7 @@ export class ThreeStudio {
       new THREE.ConeGeometry(0.11, 0.24, 3),
       new THREE.MeshStandardMaterial({ color: 0x9e5844, roughness: 0.8 }),
     );
+    front.visible = !this.options.photography;
     front.rotation.x = Math.PI / 2;
     front.position.set(0, 0.48, 2.57);
     this.scene.add(front);
@@ -647,6 +657,9 @@ export class ThreeStudio {
       opacity: pending ? 0.44 : 1,
       depthWrite: !pending,
     });
+    if (this.options.photography && ["trunk", "lateral", "twig"].includes(branch.kind)) {
+      this.fiberSetters.set(material, installStemSurface(material, this.stemFibers));
+    }
     const mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
     mesh.castShadow = !pending;
     mesh.receiveShadow = !pending;
@@ -931,6 +944,7 @@ export class ThreeStudio {
             10, true,
           );
         }
+        if (this.options.photography && !isCutBranch) attachStemSurface(branchVisual.mesh.geometry, branch);
         branchVisual.mainSignature = mainSignature;
       }
 
@@ -1853,6 +1867,57 @@ export class ThreeStudio {
       this.renderFrame = null;
       this.renderNow();
     });
+  }
+
+  /** Session-only scene dressing. The vessel and all plants keep world coordinates. */
+  setPhotoStage(backdrop: PhotoBackdrop, perch: PhotoPerch) {
+    if (!this.options.photography) throw new Error("Photo staging requires an isolated photo studio.");
+    const floor = this.scene.getObjectByName("studio-floor") as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+    if (this.photoPerch) { this.scene.remove(this.photoPerch); disposeObject(this.photoPerch); }
+    const created = createPhotoPerch(perch); this.photoPerch = created.group;
+    this.scene.add(created.group); created.group.visible = backdrop !== "transparent";
+    floor.visible = backdrop !== "transparent"; floor.position.y = created.floorY;
+    if (backdrop === "transparent") {
+      this.scene.background = null; this.scene.fog = null; this.renderer.setClearColor(0x000000, 0);
+    } else {
+      const colors = PHOTO_COLORS[backdrop];
+      this.scene.background = new THREE.Color(colors.wall);
+      this.scene.fog = new THREE.Fog(colors.wall, 13, 27);
+      floor.material.color.setHex(colors.floor); this.renderer.setClearColor(colors.wall, 1);
+    }
+    this.requestRender();
+  }
+
+  setStemFibers(enabled: boolean) {
+    if (!this.options.photography) return;
+    this.stemFibers = enabled;
+    for (const plant of this.plants.values()) for (const visual of plant.branches.values()) {
+      this.fiberSetters.get(visual.mesh.material)?.(enabled);
+    }
+    this.requestRender();
+  }
+
+  /** Exact photo pixels, independent of device DPR. Copy immediately before
+   * restoring the preview renderer/projection, including on export failure. */
+  capturePhotoFrame(width: number, height: number): HTMLCanvasElement {
+    if (!this.options.photography || !Number.isInteger(width) || !Number.isInteger(height)
+      || width < 1 || height < 1 || width > 2048 || height > 2048) throw new Error("Invalid photo size.");
+    if (this.renderer.getContext().isContextLost()) throw new Error("Graphics are unavailable. Close Photograph and reopen it.");
+    const size = this.renderer.getSize(new THREE.Vector2());
+    const ratio = this.renderer.getPixelRatio(); const aspect = this.camera.aspect;
+    const projection = this.camera.projectionMatrix.clone();
+    const inverse = this.camera.projectionMatrixInverse.clone();
+    try {
+      this.renderer.setPixelRatio(1); this.renderer.setSize(width, height, false);
+      this.camera.aspect = width / height; this.camera.updateProjectionMatrix(); this.renderNow();
+      const output = document.createElement("canvas"); output.width = width; output.height = height;
+      const context = output.getContext("2d"); if (!context) throw new Error("This browser cannot prepare a photo.");
+      context.drawImage(this.canvas, 0, 0); return output;
+    } finally {
+      this.renderer.setPixelRatio(ratio); this.renderer.setSize(size.x, size.y, false);
+      this.camera.aspect = aspect; this.camera.projectionMatrix.copy(projection); this.camera.projectionMatrixInverse.copy(inverse);
+      this.renderNow();
+    }
   }
 
   /** Small actual-view JPEG; thumbnail failure never prevents keeping the graph. */

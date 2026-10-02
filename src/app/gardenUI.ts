@@ -237,6 +237,13 @@ export class GardenUI {
       card.append(view, actions); grid.append(card);
     }
   }
+  /** Explicit photo bookmark in the existing v1 format; no migration or rewriting old entries. */
+  keepPhotograph(arrangement: ArrangementSnapshot, thumbnail: string | null, title: string): string {
+    this.store.load();
+    const id = createGardenEntryId();
+    this.store.keep({ id, title: title.trim().slice(0, 80), keptAt: new Date().toISOString(), thumbnail, arrangement });
+    return id;
+  }
   private keep() {
     if (this.actions.isViewing()) throw new Error("Make a working copy before keeping another version.");
     const entry: GardenEntry = {

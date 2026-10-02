@@ -1048,3 +1048,27 @@ noscript {
 }
 /* Respect native/explicit visibility even on components with display layouts. */
 .garden-host [hidden], #workbench-open[hidden] { display: none !important; }
+
+/* Opt-in Photograph study. All controls remain inside a scrollable native dialog. */
+.photo-dialog { width: min(1080px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 20px; border: 1px solid #a79f8e; border-radius: 18px; background: #f5f0e5; color: #303b32; overflow: auto; }
+.photo-dialog::backdrop { background: rgb(24 30 27 / 60%); }
+.photo-dialog h1 { margin: 0; font-size: 1.5rem; }
+.photo-layout { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 24px; margin-top: 18px; }
+.photo-preview { min-width: 0; }
+.photo-frame { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 9px; overflow: hidden; background: repeating-conic-gradient(#ddd8ce 0% 25%, #f4efe5 0% 50%) 50% / 18px 18px; }
+#photo-canvas { display: block; width: 100%; height: 100%; }
+.photo-controls { display: grid; gap: 10px; align-content: start; }
+.photo-controls label { display: grid; gap: 5px; font-size: 0.88rem; }
+.photo-controls select, .photo-controls input[type=text] { min-width: 0; width: 100%; min-height: 44px; font: inherit; color: inherit; background: #fffaf0; border: 1px solid #c1b9a8; border-radius: 6px; padding: 6px; }
+.photo-controls input[type=range] { width: 100%; min-height: 28px; accent-color: #536d52; }
+.photo-controls .photo-check { display: flex; align-items: center; min-height: 44px; }
+.photo-controls button, #photo-close { min-height: 44px; font: inherit; color: inherit; background: #e7e1d4; border: 1px solid #b8ad98; border-radius: 7px; padding: 8px 12px; cursor: pointer; }
+#photo-export { background: #344b3b; color: #fff9eb; }
+#photo-message { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+.photo-controls .panel-note { margin: 0; font-size: 0.78rem; }
+@media(max-width: 700px) { .photo-dialog { padding: 12px; } .photo-layout { grid-template-columns: 1fr; gap: 12px; } }
+.photo-dialog .panel-heading { flex-wrap: wrap; gap: 8px; }
+.photo-dialog .panel-heading > div, .photo-controls { min-width: 0; }
+.photo-dialog h1, .photo-controls button, .photo-controls p { overflow-wrap: anywhere; }
+.photo-controls select { max-width: 100%; }
+.photo-controls button { white-space: normal; }

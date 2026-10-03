@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Living Line — independent candidate study</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e9e4dc;color:#343c35;font:14px system-ui,sans-serif}main{display:grid;grid-template-columns:280px 1fr;height:100vh}aside{padding:28px 22px;overflow:auto;background:#f8f5ef;border-right:1px solid #d8d3c7}h1{font:normal 28px Georgia,serif;margin:10px 0 20px}h2{font:normal 20px Georgia,serif;margin:25px 0 10px}p{line-height:1.5;color:#667065}.eyebrow{font-size:10px;letter-spacing:.15em;text-transform:uppercase}label{display:block;margin:12px 0}select,input,button{font:inherit;color:inherit}select,input[type=number]{width:100%;padding:8px;border:1px solid #c8ccc0;background:#fffdf9;border-radius:6px}button{padding:9px 12px;background:#f8f5ef;border:1px solid #b9c1b0;border-radius:6px;cursor:pointer}button:hover,button[aria-pressed=true]{background:#dde6d4}button:disabled{opacity:.4;cursor:default}.row{display:flex;gap:7px;flex-wrap:wrap}.stage{position:relative;min-width:0}canvas{width:100%;height:100%;display:block;touch-action:none}.views{position:absolute;right:24px;top:24px;display:flex;gap:8px}.caption{position:absolute;bottom:25px;left:30px;pointer-events:none;background:#f8f5efe0;border-radius:7px;padding:12px 18px;max-width:520px;line-height:1.5}#status{min-height:50px;font-size:12px}small{font-size:11px;line-height:1.5;color:#73796e}input[type=range]{width:100%}@media(max-width:650px){main{grid-template-columns:210px 1fr}aside{padding:18px 14px}.views{right:8px;top:8px;gap:3px}.views button{padding:7px}.caption{left:8px;bottom:8px;margin-right:8px}}
+</style></head><body><main>
+<aside><div class="eyebrow">Independent candidate study</div><h1>Line &amp; interval</h1>
+<p>Two cuttings to try beside the existing materials. This bowl lives only in this tab.</p>
+<label>Choose a cutting<select id="material"><option value="sparse-cane">Sparse cane · candidate</option><option value="paired-leaf">Paired leaf · candidate</option><option value="flowering-branch">Flowering branch · reference</option><option value="leafy-shoot">Leafy shoot · reference</option><option value="reed">Reed · comparison</option></select></label>
+<label>Seed<input id="seed" type="number" value="8278" min="0" max="4294967295"></label>
+<div class="row"><button id="insert">Insert</button><button id="pair">Candidate pair</button><button id="mixed">Mixed bowl</button></div>
+<p id="intent"></p>
+<h2>Shape the interval</h2><label>Selected branch<select id="branch"></select></label>
+<div class="row"><button id="aim">Aim</button><button id="bend">Bend</button><button id="prune">Prune</button><button id="look">Look</button></div>
+<p>Drag a stem or leaf. Bend uses one middle station; Prune previews the distal material. Release commits. Escape cancels.</p>
+<label>Cut preview <input id="cut" type="range" min="10" max="95" value="65"></label>
+<div class="row"><button id="apply-cut">Apply cut</button><button id="cancel">Cancel</button><button id="undo">Undo</button><button id="clear">Clear bowl</button></div>
+<p id="status" role="status"></p>
+<small>Source main: 07ea79b299eb106a080472fadc4688cb86c059ae.<br>Requested lane: Sol6.1. Exact backend model ID is not exposed to this worker. Diagnostic creative work; not a controlled benchmark.</small>
+</aside><div class="stage"><canvas id="canvas" aria-label="Candidate stem bowl"></canvas>
+<div class="views"><button data-view="front">Front</button><button data-view="angle">Angle</button><button data-view="back">Back</button></div>
+<div class="caption" id="caption">Sparse cane · quiet line, two airy branchlets</div></div></main>
+<script type="module" src="/src/experiments/candidateStudy.ts"></script></body></html>

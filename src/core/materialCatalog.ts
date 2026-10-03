@@ -1,4 +1,5 @@
 import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
+import { createSparseCane, createPairedLeaf, SPARSE_CANE_VERSION, PAIRED_LEAF_VERSION } from "./candidateStems.ts";
 import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
 import { createFernFrond, FERN_FROND_VERSION } from "./fernFrond.ts";
@@ -133,6 +134,9 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   fernFrondV2,
   blossomSprayV2,
   noddingFlowerV2,
+  // Validation/round-trip support only. Candidates do not enter materialCatalog.
+  Object.freeze({ generatorVersion: SPARSE_CANE_VERSION, generate: createSparseCane }),
+  Object.freeze({ generatorVersion: PAIRED_LEAF_VERSION, generate: createPairedLeaf }),
 ]);
 
 /**

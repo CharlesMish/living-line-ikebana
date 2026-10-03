@@ -990,6 +990,8 @@ noscript {
 }
 .garden-viewer p { margin: 0 .5rem 0 0; }
 .garden-viewer strong { display: block; max-width: 18rem; overflow-wrap: anywhere; font: 1.15rem Georgia, serif; }
+/* Keep toolbar disclosures above the kept-arrangement banner. */
+.app-shell[data-garden-viewing="true"] .top-chrome { z-index: 13; }
 .app-shell[data-garden-viewing="true"] .posture-control { display: none; }
 .app-shell[data-workbench="true"] .wordmark::after { content: "workbench"; font: .65rem system-ui; text-transform: uppercase; letter-spacing: .1em; color: #647153; }
 .workbench-dialog { max-width: 36rem; line-height: 1.5; }

@@ -123,10 +123,10 @@ These are acquisition/readability bounds, not physical-phone acceptance.
 
 ## 6. Persistence and recovery
 
-- Local storage key: `ikebana-web-alpha:studio-v1`.
-- Payload version: `storageVersion: 1` with `savedAt`, `nextSuccessfulOrdinal`, and canonical plants.
-- Autosave contains only committed canonical graphs and the next successful ordinal. It excludes renderer objects, live previews, pending graphs, pointer ownership, hit candidates, camera tweens, and gesture state.
-- Graph commits save. With current coordinator options, camera gestures and canonical-view changes do not write persistence.
+- Local storage key: `ikebana-web-alpha:studio-v2`; studio-v1 is a preserved read-only fallback.
+- Payload version: `storageVersion: 2` with `savedAt`, `nextSuccessfulOrdinal`, and canonical plants.
+- Autosave v2 contains committed canonical graphs, the next successful ordinal, the committed camera, and a versioned presentation scene. It excludes renderer objects, live previews, pending graphs, pointer ownership, hit candidates, camera tweens, and gesture state.
+- Graph commits save. Ordinary owner releases of camera gestures and explicit canonical-view commands save the committed camera to v2. Camera previews/cancellation never save. Legacy v1 keys are read-only fallbacks; merely opening a save does not rewrite it.
 - Invalid/cancelled insertion and every cancelled edit write nothing.
 - Corrupt or unsupported stored data fails closed to an empty session with a terse warning; it never partially hydrates a graph.
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
@@ -306,7 +306,7 @@ If those interaction thresholds still fail after two focused gesture-tuning pass
 
 This section is provisional: it documents diagnostic instrumentation, not a craft law, and any claim in it that a future implementation cannot substantiate should be retracted rather than defended. It is strictly observational — it never gates, delays, or alters any craft operation, transaction, or camera law above, is not consulted by any core geometry or transaction code, and `src/core/` remains untouched by it.
 
-- Local storage key: `ikebana-web-alpha:telemetry-v1`, distinct from the `ikebana-web-alpha:studio-v1` autosave key. Corrupt or unsupported stored data fails closed (malformed individual records are dropped; a fully corrupt payload, or one written by a different `instrumentVersion`, fails closed to an empty session rather than mixing schemas), mirroring autosave's recovery law; it never partially hydrates a record.
+- Local storage key: `ikebana-web-alpha:telemetry-v1`, distinct from the `ikebana-web-alpha:studio-v2` autosave key. Corrupt or unsupported stored data fails closed (malformed individual records are dropped; a fully corrupt payload, or one written by a different `instrumentVersion`, fails closed to an empty session rather than mixing schemas), mirroring autosave's recovery law; it never partially hydrates a record.
 - Payload version `storageVersion: 1` plus an `instrumentVersion` **persisted with the dataset itself** (not only the export envelope), `savedAt`, and per-variant (`bead`, `touch`) acquisition arrays. Every hydrated and appended record is canonicalized — reconstructed field-by-field from an explicit allowlist — never a pass-through of parsed JSON, so undeclared/tampered fields are always dropped, never retained. Canonicalization enforces bucket/variant agreement (a record's own `bendVariant` must match the bucket it is stored under), the resolved-hit requirement (a `"hit"` is only ever valid with a final, non-null `outcome`), miss invariants (a `"miss"` never carries an `outcome` or a timing), and the semantic combination rules below. A hit's outcome resolves at most once (resolve-once); a later attempt to resolve it again is a no-op.
 - **Semantic combination rules**, enforced at canonicalization (an invalid combination is dropped, never partially trusted): a hit always carries an `operation`; camera may resolve only `released` or `cancelled`; a graph edit (aim/bend/base/prune) may resolve only `committed` or `cancelled`; only insertion may resolve `declined` — this is the honest, enforceable rule at the storage layer, which has no way to independently verify "invalid": the production app alone is responsible for only ever producing `declined` on an invalid release (see `IkebanaApp.ts`), and this layer does not add a separate validity field to check that claim; `insert` always carries both `materialId` and `inputMethod` together, and no other operation carries either; `cancelReason` is only ever valid alongside `outcome === "cancelled"` (rejected on a miss or any other outcome), and a `cancelled` outcome always carries a nonempty one; every timing value (`at`, `wallClockMs`, `timeToAcquireMs`, `transactionDurationMs`) is finite and nonnegative.
 - The complete persisted payload (both variants, every field) is bounded to 256 KiB. When appending would exceed that, the globally oldest record (by wall-clock time, across both buckets) is dropped repeatedly until it fits; a payload that cannot serialize under the cap is never left in storage.
@@ -408,3 +408,21 @@ Normal kenzan validity remains required. No new storage field or generator law.
 The [implementation report](development/reports/stem-prevention/README.md) defines
 motion bounds, approximation, bounded-work behavior and unrun phone gates. This
 study does not establish exact mesh collision or accepted default phone feel.
+
+### Vessel-footprint study and combined release (October 2)
+
+Recognized `?vesselStudy=` profiles intentionally replace the ordinary circular
+insertion/base boundary with explicit elliptical components in separate study
+storage. All graph, stock-length, transaction, protection and recovery laws
+remain unchanged. Base acquisition locks a component; imported out-of-field
+roots retain a documented per-grab legacy allowance. No stored graph is scaled
+or moved by selecting a layout. The default layout remains Original. The combined release exposes layouts through More → Vessel and persists their identity in the separate v2 envelope described below. See the [profile definitions, exact exceptions,
+compatibility limits and evidence](development/reports/vessel-study/README.md).
+
+## Combined presentation and save version 2
+
+Vessel layout and appearance are presentation metadata alongside the canonical botanical document. Layout changes cancel owned previews first, retain every graph/history record, and never fit/scale/relocate existing plants. The same coordinator retains its Undo checkpoint. Footprint laws use the acquired connected planting area; existing protection and overlap markers remain authoritative.
+
+Garden v2 and studio v2 retain sceneVersion1, stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, fixed lighting and exact output pixels.
+
+New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte intact; missing presentation defaults to Original/Sand/Glaze/Paper/Ground. v1 Garden backups import through validation; v2 backups fail closed in older clients. Invalid/future data blocks writes instead of being overwritten. Stale guards include both v2 and legacy keys. A still-open older client has a separate legacy document; reload the updated app before continuing. No automatic personal-data rewrite or external creation upload occurs.

@@ -1,3 +1,4 @@
+import { constrainBaseToProfile, inPlantingArea, profileBaseRadius, type VesselProfile } from "../study/vesselProfiles.ts";
 import type { StemPrevention } from "./stemPrevention.ts";
 import {
   aimBranch,
@@ -44,7 +45,7 @@ function placePendingAt(graph: PlantGraph, base: Vec3): PlantGraph {
   return translatePendingGraph(graph, base);
 }
 
-export function createDomainAdapters(prevention?: StemPrevention): TransactionAdapters<
+export function createDomainAdapters(prevention?: StemPrevention, profile?: VesselProfile | (() => VesselProfile | undefined)): TransactionAdapters<
   PlantGraph,
   CameraPose,
   CutPlan,
@@ -56,9 +57,10 @@ export function createDomainAdapters(prevention?: StemPrevention): TransactionAd
     graphEquals: (left, right) => serializePlantGraph(left) === serializePlantGraph(right),
     cloneCamera: cloneCameraPose,
     placePending(graph, _spec, input) {
+      const vesselProfile = typeof profile === "function" ? profile() : profile;
       const placed = placePendingAt(graph, input.base);
       const clear = prevention?.enabled() ? prevention.insert(placed) : true;
-      return { graph: placed, isValid: input.valid && clear };
+      return { graph: placed, isValid: input.valid && (!vesselProfile || inPlantingArea(input.base, vesselProfile)) && clear };
     },
     aim(graph, spec, input) {
       const branch = graph.branches.get(spec.branchId);
@@ -76,7 +78,11 @@ export function createDomainAdapters(prevention?: StemPrevention): TransactionAd
       });
     },
     moveBase(graph, spec, input) {
-      return prevention?.enabled() ? prevention.base(graph, spec, input.base) : translatePlantBase(graph, input.base);
+      const vesselProfile = typeof profile === "function" ? profile() : profile;
+      const root = graph.branches.get(graph.rootBranchId)?.points[0];
+      const base = vesselProfile && root ? constrainBaseToProfile(input.base, root, vesselProfile) : input.base;
+      const radius = vesselProfile ? profileBaseRadius(vesselProfile) : 1.22;
+      return prevention?.enabled() ? prevention.base(graph, spec, base, radius) : translatePlantBase(graph, base, radius);
     },
     previewPrune(graph, spec, input) {
       return previewPrune(graph, spec.branchId, input.distance);

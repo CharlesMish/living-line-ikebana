@@ -1,5 +1,11 @@
+import { createPhotoPerch, PHOTO_COLORS, type PhotoBackdrop, type PhotoPerch } from "./photoStage.ts";
+import { attachStemSurface, installStemSurface } from "./stemSurface.ts";
+import { applyVesselAppearance, createVesselGrain } from "./vesselAppearance.ts";
+import { DEFAULT_VESSEL_APPEARANCE, resolveVesselAppearance, resolveVesselPresentation, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import type { StemOverlap } from "../core/stemOverlaps.ts";
 import { createVesselGeometry } from "./vessel.ts";
+import { plantingOutline } from "./plantingOutline.ts";
+import { ORIGINAL_VESSEL, inPlantingArea, nearestPlantingPoint, inVesselWater, vesselParts, plantingPins, type VesselProfile } from "../study/vesselProfiles.ts";
 import { StemOverlapOverlay } from "./stemOverlapOverlay.ts";
 import { computeStageLens, fogRangeForDistance, type StageLens } from "./stageLens.ts";
 import { innerWallRadiusAt, KENZAN_TOP_Y, WATER_Y, waterlineCrossings } from "./waterline.ts";
@@ -134,6 +140,10 @@ export interface GraphUpdateHints {
 }
 
 export interface ThreeStudioOptions {
+  /** Isolated photo renderer only. Ordinary play retains the accepted draw. */
+  photography?: boolean;
+  vesselProfile?: VesselProfile;
+  vesselAppearance?: VesselAppearanceChoice;
   maxPixelRatio?: number;
   debugHitTargets?: boolean;
   onViewChange?: (view: StudioView) => void;
@@ -184,7 +194,6 @@ type HandleVisual = {
 };
 
 const KENZAN_Y = 0.55;
-const KENZAN_RADIUS = 1.22;
 const EPSILON = 1e-8;
 const CAMERA_RADIUS_MIN = 5.7;
 const CAMERA_RADIUS_MAX = 15.5;
@@ -336,15 +345,21 @@ export class ThreeStudio {
    */
   private waterline?: { marks: Map<string, THREE.Group>; parts: ReturnType<typeof createWaterlineParts> };
   private stemOverlaps?: StemOverlapOverlay;
+  private vesselSurfaces: Array<{ body: THREE.MeshPhysicalMaterial; rim: THREE.MeshStandardMaterial }> = [];
+  private vesselGrain?: THREE.DataTexture;
+  private vesselAppearance: VesselAppearanceChoice = { ...DEFAULT_VESSEL_APPEARANCE };
   private readonly plants = new Map<string, PlantVisual>();
   private readonly cameraTarget = new THREE.Vector3();
-  private readonly kenzanGlow: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
+  private readonly kenzanGlow: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
   private readonly baseHandle: HandleVisual;
   private readonly bendHandle: HandleVisual;
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize">;
+    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize" | "photography" | "vesselProfile" | "vesselAppearance">;
+  private photoPerch: THREE.Group | null = null;
+  private stemFibers = false;
+  private fiberSetters = new WeakMap<THREE.MeshStandardMaterial, (enabled: boolean) => void>();
   private lastCanvasSize: { width: number; height: number } | null = null;
   private baseVerticalFov = STUDIO_VERTICAL_FOV;
   private stageTopInset = 0;
@@ -375,7 +390,10 @@ export class ThreeStudio {
       onViewChange: options.onViewChange,
       pinnateDraw: options.pinnateDraw,
       fanLeafDraw: options.fanLeafDraw,
+      vesselProfile: options.vesselProfile,
+      vesselAppearance: options.vesselAppearance,
       stageLens: options.stageLens ?? false,
+      photography: options.photography ?? false,
       onCanvasResize: options.onCanvasResize,
     };
     this.canvas.style.touchAction = "none";
@@ -383,7 +401,7 @@ export class ThreeStudio {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      alpha: false,
+      alpha: true,
       powerPreference: "high-performance",
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -416,6 +434,7 @@ export class ThreeStudio {
   }
 
   private buildStudio() {
+    const profile = this.options.vesselProfile ?? ORIGINAL_VESSEL;
     this.scene.background = new THREE.Color(0xeee9dd);
     this.scene.fog = new THREE.Fog(0xeee9dd, 13, 27);
 
@@ -444,64 +463,83 @@ export class ThreeStudio {
       new THREE.CircleGeometry(20, 96),
       new THREE.MeshStandardMaterial({ color: 0xe3dccf, roughness: 1 }),
     );
+    floor.name = "studio-floor";
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = -0.02;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    const vessel = new THREE.Mesh(
-      createVesselGeometry(),
-      new THREE.MeshPhysicalMaterial({ color: 0xbcb09b, roughness: 0.38, clearcoat: 0.65 }),
-    );
-    vessel.castShadow = true;
-    vessel.receiveShadow = true;
-    this.scene.add(vessel);
+    for (const part of vesselParts(profile)) {
+      const vessel = new THREE.Mesh(
+        createVesselGeometry(),
+        new THREE.MeshPhysicalMaterial({ color: 0xbcb09b, roughness: 0.38, clearcoat: 0.65 }),
+      );
+      vessel.scale.set(part.scaleX, 1, part.scaleZ);
+      vessel.position.set(part.x, 0, part.z);
+      vessel.name = `vessel:${part.partId}`;
+      vessel.castShadow = true;
+      vessel.receiveShadow = true;
+      this.scene.add(vessel);
 
-    // The water fills the basin to just below the lip and covers the kenzan
-    // top, so stems are read from the waterline. Graph insertion height is unchanged.
-    const water = new THREE.Mesh(
-      new THREE.CircleGeometry(innerWallRadiusAt(WATER_Y), 96),
-      new THREE.MeshPhysicalMaterial({
-        color: 0x2f5d60,
-        opacity: 0.84,
-        transparent: true,
-        depthWrite: false,
-        roughness: 0.12,
-        clearcoat: 1,
-        clearcoatRoughness: 0.08,
-      }),
-    );
-    applyWaterFresnel(water.material);
-    water.rotation.x = -Math.PI / 2;
-    water.position.y = WATER_Y;
-    water.receiveShadow = true;
-    water.renderOrder = 1;
-    this.scene.add(water);
+      // The water fills the basin to just below the lip and covers the kenzan
+      // top, so stems are read from the waterline. Graph insertion height is unchanged.
+      const water = new THREE.Mesh(
+        new THREE.CircleGeometry(innerWallRadiusAt(WATER_Y), 96),
+        new THREE.MeshPhysicalMaterial({
+          color: 0x2f5d60,
+          opacity: 0.84,
+          transparent: true,
+          depthWrite: false,
+          roughness: 0.12,
+          clearcoat: 1,
+          clearcoatRoughness: 0.08,
+        }),
+      );
+      water.scale.set(part.scaleX, part.scaleZ, 1);
+      water.name = `vessel-water:${part.partId}`;
+      applyWaterFresnel(water.material);
+      water.rotation.x = -Math.PI / 2;
+      water.position.set(part.x, WATER_Y, part.z);
+      water.receiveShadow = true;
+      water.renderOrder = 1;
+      this.scene.add(water);
 
-    const rim = new THREE.Mesh(
-      new THREE.TorusGeometry(2.48, 0.035, 10, 72),
-      new THREE.MeshStandardMaterial({ color: 0xd2c7b3, roughness: 0.35 }),
-    );
-    rim.rotation.x = Math.PI / 2;
-    rim.position.y = 0.635;
-    this.scene.add(rim);
+      const rim = new THREE.Mesh(
+        new THREE.TorusGeometry(2.48, 0.035, 10, 72),
+        new THREE.MeshStandardMaterial({ color: 0xd2c7b3, roughness: 0.35 }),
+      );
+      rim.scale.set(part.scaleX, part.scaleZ, 1);
+      rim.name = `vessel-rim:${part.partId}`;
+      rim.rotation.x = Math.PI / 2;
+      rim.position.set(part.x, 0.635, part.z);
+      this.scene.add(rim);
+
+      (this.vesselSurfaces ??= []).push({ body: vessel.material, rim: rim.material });
+      const front = new THREE.Mesh(
+        new THREE.ConeGeometry(0.11, 0.24, 3),
+        new THREE.MeshStandardMaterial({ color: 0x9e5844, roughness: 0.8 }),
+      );
+      front.visible = !this.options.photography;
+      front.rotation.x = Math.PI / 2;
+      front.position.set(part.x, 0.48, part.z + 2.57 * part.scaleZ);
+      this.scene.add(front);
+    }
+    this.setVesselAppearance(this.options.vesselAppearance ?? DEFAULT_VESSEL_APPEARANCE);
 
     // A quiet, submerged pin frog: matte and low, seen through the water as
     // the seating field rather than as the darkest object in the composition.
-    const kenzan = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.34, 1.36, 0.36, 64),
-      new THREE.MeshStandardMaterial({ color: 0x20221f, roughness: 0.9, metalness: 0.1 }),
-    );
-    kenzan.position.y = KENZAN_TOP_Y - 0.18;
-    kenzan.receiveShadow = true;
-    this.scene.add(kenzan);
-
-    const pinCoordinates: Array<[number, number]> = [];
-    for (let x = -1.155; x <= 1.1551; x += 0.11) {
-      for (let z = -1.155; z <= 1.1551; z += 0.11) {
-        if (Math.hypot(x, z) <= KENZAN_RADIUS) pinCoordinates.push([x, z]);
-      }
+    for (const area of profile.areas) {
+      const kenzan = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.34, 1.36, 0.36, 64),
+        new THREE.MeshStandardMaterial({ color: 0x20221f, roughness: 0.9, metalness: 0.1 }),
+      );
+      kenzan.scale.set(area.rx / 1.22, 1, area.rz / 1.22);
+      kenzan.position.set(area.x, KENZAN_TOP_Y - 0.18, area.z);
+      kenzan.receiveShadow = true;
+      this.scene.add(kenzan);
     }
+
+    const pinCoordinates = plantingPins(profile);
     const pinHeight = WATER_Y - 0.018 - KENZAN_TOP_Y;
     const pins = new THREE.InstancedMesh(
       // Open four-sided pins: seen only through water, so caps and facets add nothing.
@@ -517,16 +555,8 @@ export class ThreeStudio {
     pins.instanceMatrix.needsUpdate = true;
     this.scene.add(pins);
 
-    const front = new THREE.Mesh(
-      new THREE.ConeGeometry(0.11, 0.24, 3),
-      new THREE.MeshStandardMaterial({ color: 0x9e5844, roughness: 0.8 }),
-    );
-    front.rotation.x = Math.PI / 2;
-    front.position.set(0, 0.48, 2.57);
-    this.scene.add(front);
-
     const kenzanGlow = new THREE.Mesh(
-      new THREE.TorusGeometry(KENZAN_RADIUS, 0.035, 8, 64),
+      plantingOutline(profile, 0.035),
       new THREE.MeshBasicMaterial({
         color: 0xc47a4c,
         opacity: 0.86,
@@ -538,7 +568,7 @@ export class ThreeStudio {
     // Draw through the water at the actual insertion plane: the centre of this
     // line is the usable boundary, rather than a larger, misleading bowl target.
     const underOutline = new THREE.Mesh(
-      new THREE.TorusGeometry(KENZAN_RADIUS, 0.065, 8, 64),
+      plantingOutline(profile, 0.065),
       new THREE.MeshBasicMaterial({ color: 0xfff9e9, transparent: true, opacity: 0.95,
         depthTest: false, depthWrite: false }),
     );
@@ -550,6 +580,19 @@ export class ThreeStudio {
     kenzanGlow.visible = false;
     this.scene.add(kenzanGlow);
     return { kenzanGlow };
+  }
+
+  /** Presentation-only; callers cancel any active gesture before changing UI settings. */
+  setVesselAppearance(choice: VesselAppearanceChoice) {
+    const settings = resolveVesselAppearance(choice);
+    this.vesselAppearance = settings.choice;
+    if (settings.grain) this.vesselGrain ??= createVesselGrain();
+    for (const surface of this.vesselSurfaces ?? []) applyVesselAppearance(surface.body, surface.rim, settings.choice, this.vesselGrain);
+    this.requestRender();
+  }
+
+  getVesselPresentation() {
+    return resolveVesselPresentation(this.options.vesselProfile ?? ORIGINAL_VESSEL, this.vesselAppearance ?? DEFAULT_VESSEL_APPEARANCE);
   }
 
   private buildBaseHandle(): HandleVisual {
@@ -647,6 +690,9 @@ export class ThreeStudio {
       opacity: pending ? 0.44 : 1,
       depthWrite: !pending,
     });
+    if (["trunk", "lateral", "twig"].includes(branch.kind)) {
+      (this.fiberSetters ??= new WeakMap()).set(material, installStemSurface(material, this.stemFibers));
+    }
     const mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
     mesh.castShadow = !pending;
     mesh.receiveShadow = !pending;
@@ -931,6 +977,7 @@ export class ThreeStudio {
             10, true,
           );
         }
+        if (!isCutBranch) attachStemSurface(branchVisual.mesh.geometry, branch);
         branchVisual.mainSignature = mainSignature;
       }
 
@@ -1029,7 +1076,9 @@ export class ThreeStudio {
       marks.set(key, group);
       (visual.pending ? this.pendingRoot : this.botanicalRoot).add(group);
     }
-    const crossings = waterlineCrossings(visual.graph);
+    const profile = this.options.vesselProfile ?? ORIGINAL_VESSEL;
+    const waterRadius = innerWallRadiusAt(WATER_Y);
+    const crossings = waterlineCrossings(visual.graph, WATER_Y, point => inVesselWater(point, profile, waterRadius));
     while (group.children.length > crossings.length) group.remove(group.children[group.children.length - 1]);
     while (group.children.length < crossings.length) {
       const mark = new THREE.Group();
@@ -1534,12 +1583,11 @@ export class ThreeStudio {
   intersectKenzanPlane(clientX: number, clientY: number): KenzanIntersection | null {
     const point = this.intersectClientPlane(clientX, clientY, this.kenzanPlane());
     if (!point) return null;
-    const radialLength = Math.hypot(point.x, point.z);
-    const scale = radialLength > KENZAN_RADIUS ? KENZAN_RADIUS / radialLength : 1;
+    const profile = this.options.vesselProfile ?? ORIGINAL_VESSEL;
     return {
       point,
-      clampedPoint: { x: point.x * scale, y: KENZAN_Y, z: point.z * scale },
-      valid: radialLength <= KENZAN_RADIUS,
+      clampedPoint: nearestPlantingPoint(point, profile),
+      valid: inPlantingArea(point, profile),
     };
   }
 
@@ -1855,6 +1903,55 @@ export class ThreeStudio {
     });
   }
 
+  /** Session-only scene dressing. The vessel and all plants keep world coordinates. */
+  setPhotoStage(backdrop: PhotoBackdrop, perch: PhotoPerch) {
+    const floor = this.scene.getObjectByName("studio-floor") as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+    if (this.photoPerch) { this.scene.remove(this.photoPerch); disposeObject(this.photoPerch); }
+    const created = createPhotoPerch(perch, this.getVesselPresentation().vessels); this.photoPerch = created.group;
+    this.scene.add(created.group); created.group.visible = backdrop !== "transparent";
+    floor.visible = backdrop !== "transparent"; floor.position.y = created.floorY;
+    if (backdrop === "transparent") {
+      this.scene.background = null; this.scene.fog = null; this.renderer.setClearColor(0x000000, 0);
+    } else {
+      const colors = PHOTO_COLORS[backdrop];
+      this.scene.background = new THREE.Color(colors.wall);
+      this.scene.fog = new THREE.Fog(colors.wall, 13, 27);
+      floor.material.color.setHex(colors.floor); this.renderer.setClearColor(colors.wall, 1);
+    }
+    this.requestRender();
+  }
+
+  setStemFibers(enabled: boolean) {
+    this.stemFibers = enabled;
+    for (const plant of this.plants.values()) for (const visual of plant.branches.values()) {
+      this.fiberSetters.get(visual.mesh.material)?.(enabled);
+    }
+    this.requestRender();
+  }
+
+  /** Exact photo pixels, independent of device DPR. Copy immediately before
+   * restoring the preview renderer/projection, including on export failure. */
+  capturePhotoFrame(width: number, height: number): HTMLCanvasElement {
+    if (!this.options.photography || !Number.isInteger(width) || !Number.isInteger(height)
+      || width < 1 || height < 1 || width > 2048 || height > 2048) throw new Error("Invalid photo size.");
+    if (this.renderer.getContext().isContextLost()) throw new Error("Graphics are unavailable. Close Photograph and reopen it.");
+    const size = this.renderer.getSize(new THREE.Vector2());
+    const ratio = this.renderer.getPixelRatio(); const aspect = this.camera.aspect;
+    const projection = this.camera.projectionMatrix.clone();
+    const inverse = this.camera.projectionMatrixInverse.clone();
+    try {
+      this.renderer.setPixelRatio(1); this.renderer.setSize(width, height, false);
+      this.camera.aspect = width / height; this.camera.updateProjectionMatrix(); this.renderNow();
+      const output = document.createElement("canvas"); output.width = width; output.height = height;
+      const context = output.getContext("2d"); if (!context) throw new Error("This browser cannot prepare a photo.");
+      context.drawImage(this.canvas, 0, 0); return output;
+    } finally {
+      this.renderer.setPixelRatio(ratio); this.renderer.setSize(size.x, size.y, false);
+      this.camera.aspect = aspect; this.camera.projectionMatrix.copy(projection); this.camera.projectionMatrixInverse.copy(inverse);
+      this.renderNow();
+    }
+  }
+
   /** Small actual-view JPEG; thumbnail failure never prevents keeping the graph. */
   captureThumbnail(): string | null {
     const selection = this.getSelection();
@@ -2005,6 +2102,7 @@ export class ThreeStudio {
     this.renderFrame = null;
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
+    this.vesselGrain?.dispose();
     this.stemOverlaps?.dispose();
     disposeObject(this.scene);
     this.renderer.dispose();

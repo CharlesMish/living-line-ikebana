@@ -54,9 +54,10 @@ export const WATERLINE_SURFACE_TOLERANCE = 1e-9;
  * the attachment and is skipped; at a root it takes the kind of the side it
  * leads into.
  */
-export function waterlineCrossings(graph: PlantGraph, waterY = WATER_Y): WaterlineCrossing[] {
+export function waterlineCrossings(graph: PlantGraph, waterY = WATER_Y,
+  contains: (point: Vec3) => boolean = point => Math.hypot(point.x, point.z) <= innerWallRadiusAt(waterY),
+): WaterlineCrossing[] {
   const crossings: WaterlineCrossing[] = [];
-  const basinRadius = innerWallRadiusAt(waterY);
   const branches = [...graph.branches.values()]
     .filter((branch) => branch.active && branch.points.length >= 2)
     .sort((a, b) => a.id.localeCompare(b.id));
@@ -74,7 +75,7 @@ export function waterlineCrossings(graph: PlantGraph, waterY = WATER_Y): Waterli
       return height > WATERLINE_SURFACE_TOLERANCE ? 1 : height < -WATERLINE_SURFACE_TOLERANCE ? -1 : 0;
     });
     const push = (point: Vec3, from: Vec3, to: Vec3, distance: number, kind: WaterlineContactKind) => {
-      if (Math.hypot(point.x, point.z) > basinRadius) return;
+      if (!contains(point)) return;
       const dx = to.x - from.x;
       const dy = to.y - from.y;
       const dz = to.z - from.z;

@@ -51,7 +51,7 @@ export class GardenUI {
   private compareMode: ComparisonDragMode = "orbit";
   private compareDrag: ComparisonDrag | null = null;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
-  constructor(private readonly root: HTMLElement, private readonly store: GardenStore, private readonly actions: GardenActions, workbench = false) {
+  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false) {
     const host = document.createElement("div");
     host.className = "garden-host";
     host.innerHTML = `
@@ -236,6 +236,13 @@ export class GardenUI {
       actions.append(remove);
       card.append(view, actions); grid.append(card);
     }
+  }
+  /** Explicit photo bookmark in the existing v1 format; no migration or rewriting old entries. */
+  keepPhotograph(arrangement: ArrangementSnapshot, thumbnail: string | null, title: string): string {
+    this.store.load();
+    const id = createGardenEntryId();
+    this.store.keep({ id, title: title.trim().slice(0, 80), keptAt: new Date().toISOString(), thumbnail, arrangement });
+    return id;
   }
   private keep() {
     if (this.actions.isViewing()) throw new Error("Make a working copy before keeping another version.");

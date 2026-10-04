@@ -1,4 +1,5 @@
 import type { Vec3 } from "../core/math.ts";
+import { PINBED_PROFILES } from "./pinbedProfiles.ts";
 
 /** Domain-unit footprint, independent of vessel silhouette and camera framing. */
 export interface PlantingArea { readonly x: number; readonly z: number; readonly rx: number; readonly rz: number }
@@ -28,6 +29,7 @@ export const VESSEL_PROFILES: readonly VesselProfile[] = [
   { id: "islands", label: "Two islands", description: "The original bowl with two separate beds. Slide a base within its own island.", scaleX: 1, scaleZ: 1, areas: [{ x: -.75, z: 0, rx: .42, rz: .42 }, { x: .75, z: 0, rx: .42, rz: .42 }] },
   { id: "long-bed", label: "Long offset bed", description: "A long, almost linear bed in the oval bowl, set slightly to one side.", scaleX: .98, scaleZ: .68, areas: [{ x: -.3, z: -.22, rx: 1.45, rz: .16 }] },
   { id: "vessel-pair", label: "Separate small bowls", description: "Two small vessels, each with its own water and planting bed. The gap is empty.", scaleX: 1, scaleZ: 1, areas: [{ x: -1.65, z: 0, rx: .46, rz: .46 }, { x: 1.65, z: 0, rx: .46, rz: .46 }], vessels: [{ partId: "left", x: -1.65, z: 0, scaleX: .54, scaleZ: .54 }, { partId: "right", x: 1.65, z: 0, scaleX: .54, scaleZ: .54 }] },
+  ...PINBED_PROFILES,
 ];
 export const ORIGINAL_VESSEL = VESSEL_PROFILES[0];
 
@@ -41,8 +43,16 @@ export function inVesselWater(point: Pick<Vec3, "x" | "z">, profile: VesselProfi
 
 /** Secondary outer guard for the existing translation adapter; the actual
  * permitted area is still the acquired ellipse, not this enclosing circle. */
-export function profileBaseRadius(profile: VesselProfile) {
-  return Math.max(1.22, ...profile.areas.map(area => Math.hypot(area.x, area.z) + Math.max(area.rx, area.rz)));
+export function profileBaseRadius(profile: VesselProfile, acquiredBase?: Vec3) {
+  const profileRadius = Math.max(1.22, ...profile.areas.map(area => Math.hypot(area.x, area.z) + Math.max(area.rx, area.rz)));
+  if (!acquiredBase) return profileRadius;
+  // The secondary origin-centred guard must enclose the same legacy ellipse
+  // as constrainBaseToProfile. Otherwise acquisition itself translates a root
+  // left outside a newly selected layout, and can push it into protection.
+  const area = nearestArea(acquiredBase, profile);
+  const extent = Math.max(1, radiusInArea(acquiredBase, area));
+  return Math.max(profileRadius, Math.hypot(acquiredBase.x, acquiredBase.z),
+    Math.hypot(area.x, area.z) + Math.max(area.rx, area.rz) * extent);
 }
 
 /** Same globally aligned 0.11 grid as the original field, extended only when
@@ -77,7 +87,8 @@ export function inPlantingArea(point: Pick<Vec3, "x" | "z">, profile = ORIGINAL_
 
 function projectToArea(point: Vec3, area: PlantingArea, radius = 1): Vec3 {
   const size = radiusInArea(point, area);
-  const scale = size > radius ? radius / size : 1;
+  if (size <= radius) return { ...point };
+  const scale = radius / size;
   return { x: area.x + (point.x - area.x) * scale, y: point.y, z: area.z + (point.z - area.z) * scale };
 }
 

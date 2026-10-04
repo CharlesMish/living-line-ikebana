@@ -81,7 +81,7 @@ export function createDomainAdapters(prevention?: StemPrevention, profile?: Vess
       const vesselProfile = typeof profile === "function" ? profile() : profile;
       const root = graph.branches.get(graph.rootBranchId)?.points[0];
       const base = vesselProfile && root ? constrainBaseToProfile(input.base, root, vesselProfile) : input.base;
-      const radius = vesselProfile ? profileBaseRadius(vesselProfile) : 1.22;
+      const radius = vesselProfile ? profileBaseRadius(vesselProfile, root) : 1.22;
       return prevention?.enabled() ? prevention.base(graph, spec, base, radius) : translatePlantBase(graph, base, radius);
     },
     previewPrune(graph, spec, input) {

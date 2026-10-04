@@ -2,7 +2,7 @@ import { VESSEL_PROFILES } from "./vesselProfiles.ts";
 import { resolveVesselAppearance, VESSEL_COLORS, VESSEL_FINISHES, type VesselAppearanceChoice } from "./vesselAppearance.ts";
 import "./vesselAppearance.css";
 
-/** Study-only chrome. Opening cancels before any appearance command can run. */
+/** Opening cancels before any layout or appearance command can run. */
 export class VesselAppearanceUI {
   private readonly button = document.createElement("button");
   private readonly dialog = document.createElement("dialog");

@@ -1,5 +1,6 @@
 import "./styles.css";
 import { IkebanaApp } from "./app/IkebanaApp";
+import { installStudioMenus } from "./app/studioMenus";
 
 const mount = document.querySelector<HTMLElement>("#app");
 if (!mount) throw new Error("Missing #app mount");
@@ -8,6 +9,7 @@ let app: IkebanaApp | undefined;
 try {
   app = new IkebanaApp(mount);
   app.start();
+  installStudioMenus(mount);
 } catch (error) {
   try { app?.dispose(); } catch { /* The startup explanation must still appear. */ }
   console.error("Living Line could not start.", error);

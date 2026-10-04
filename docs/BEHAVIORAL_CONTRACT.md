@@ -10,7 +10,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 - Successful seat ordinal `N`, starting at 1, reserves `plant-N` with seed `(7301 + N * 977) >>> 0`. Thus `plant-1` is seed `8278` and `plant-2` is seed `9255`.
 - A cancelled or invalid insertion does not advance `N`.
 - The pending ghost is the complete reserved graph, including branch continuations, petioles, pedicels, leaves, buds, and blooms. A valid release commits that graph at the exact valid previewed translation. It does not regenerate it.
-- A pending graph may follow the pointer outside the usable pin field so invalidity remains legible. That preview cannot be committed. Base editing of an already seated plant is separately clamped to the usable kenzan radius.
+- A pending graph may follow the pointer outside the usable pin field so invalidity remains legible. That preview cannot be committed. Base editing of an already seated plant follows its acquired planting component and legacy allowance (see Slide the base).
 - Procedural detail is seeded and stable. Editing one record cannot reroll or relocate unrelated detail.
 - Canonical serialization includes active and inactive records, sorts branches and organs lexicographically by ID, and preserves every domain field.
 - `fixtures/plant-1-one-branch-v1.json` is the golden `plant-1` graph at base `(0, 0.55, 0)`: 15 branches, 10 organs, and 94 total branch points.
@@ -40,7 +40,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Each preview is a translation of the acquisition graph.
 - A valid release commits, selects the plant, advances the ordinal once, and autosaves committed graph state.
 - An invalid release or interruption discards the ghost, leaves the document and ordinal unchanged, and does not autosave.
-- The insertion target remains the pin field at radius `1.22` on the insertion plane. A destination outline follows that exact boundary throughout a tray drag, including while the source is over the rail or above the plane horizon and its ghost is hidden. Colour/text show validity; neither an outline nor the wider visible water changes the hit test. There is no whole-basin snapping.
+- The insertion target is the selected layout’s explicit planting areas on the insertion plane (radius `1.22` for Original). A destination outline follows that exact boundary throughout a tray drag, including while the source is over the rail or above the plane horizon and its ghost is hidden. Colour/text show validity; neither an outline nor the wider visible water changes the hit test. There is no whole-basin snapping.
 
 ### Aim
 
@@ -67,7 +67,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 
 ### Slide the base
 
-- Base movement keeps the root height and clamps the requested radial position to the usable kenzan radius, currently `1.22` domain units.
+- Base movement keeps the root height and clamps the request to the planting component nearest the acquired base. Original has radius `1.22`. An existing base outside a newly selected layout receives a per-grab ellipse expanded just enough to contain that base; the secondary origin-centred guard must enclose that same ellipse. Acquisition and no-motion release retain the exact acquired coordinates, including remote bases from Separate small bowls. Deliberate movement can recover them onto the new field; layout selection never fits or moves them automatically.
 - It translates every active point by one coherent vector and does not mutate inactive history.
 
 ### Prune
@@ -263,7 +263,7 @@ and spacing own pointer hits, so a press between controls cannot acquire
 material behind the rail. Scene acquisition still requires a canvas press;
 moving from a normal control into the scene does not acquire or retarget.
 
-Front, three-quarter and Above are available in a downward-opening View
+Front, three-quarter and Above are available in a downward-opening Angles
 disclosure. Opening it cancels any acquired gesture before showing choices,
 without changing the camera. Choosing a view retains cancel-then-command;
 selection, Escape, outside press and focus leaving the disclosure close it.
@@ -350,7 +350,7 @@ or materials are gated, and no cut, view visit, angle or water threshold is requ
 
 ### Optional stem-overlap inspection — September 28 presentation study
 
-`View → Stem overlaps` is off by default and session-only. It marks approximate
+`Angles → Stem overlaps` is off by default and session-only. It marks approximate
 3D penetration between active structural stems (trunk/lateral/twig) of separate
 cuttings using their current points and radii. Same-plant contact, organs/stalks,
 vessel and floor are not checked. Capsule envelopes are approximate at end caps
@@ -369,9 +369,9 @@ inspected read-only. Off-state hides all marks and avoids detection work.
 The presentation uses four angular corners with an open centre, distinct from
 the round bend bead. The two-tone mark denotes a possible stem overlap or a
 contact stop; it is never an acquisition target. Phone chrome groups Arrange /
-Step Back above Edit / View / More. More contains Garden and the cutting guide;
+Step Back above Edit / Angles / Studio. Studio contains Vessel, Photograph, Garden and the cutting guide;
 opening it cancels a live preview, and closing a secondary destination returns
-focus to the visible More disclosure. This changes presentation only, not the
+focus to the visible Studio disclosure. This changes presentation only, not the
 gesture, persistence, geometry, or independently optional study laws.
 
 See [scope, evidence and phone checks](development/reports/stem-overlaps/README.md)
@@ -379,7 +379,7 @@ and the [separate prevention audit](development/reports/stem-overlaps/PREVENTION
 
 ### Opt-in stem prevention study
 
-**View → Prevent overlaps (study)** is default-off, session-only, and separate
+**Angles → Prevent overlaps (study)** is default-off, session-only, and separate
 from overlap inspection. Toggling cancels active work first. While on, Aim, Bend
 and base translation limit motion against the capsule envelopes of separate active
 trunk/lateral/twig branches. Petioles, pedicels, organs, same-cutting contact, floor
@@ -416,7 +416,7 @@ insertion/base boundary with explicit elliptical components in separate study
 storage. All graph, stock-length, transaction, protection and recovery laws
 remain unchanged. Base acquisition locks a component; imported out-of-field
 roots retain a documented per-grab legacy allowance. No stored graph is scaled
-or moved by selecting a layout. The default layout remains Original. The combined release exposes layouts through More → Vessel and persists their identity in the separate v2 envelope described below. See the [profile definitions, exact exceptions,
+or moved by selecting a layout. The default layout remains Original. The combined release exposes layouts through Studio → Vessel and persists their identity in the separate v2 envelope described below. See the [profile definitions, exact exceptions,
 compatibility limits and evidence](development/reports/vessel-study/README.md).
 
 ## Combined presentation and save version 2
@@ -426,3 +426,7 @@ Vessel layout and appearance are presentation metadata alongside the canonical b
 Garden v2 and studio v2 retain sceneVersion1, stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, fixed lighting and exact output pixels.
 
 New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte intact; missing presentation defaults to Original/Sand/Glaze/Paper/Ground. v1 Garden backups import through validation; v2 backups fail closed in older clients. Invalid/future data blocks writes instead of being overwritten. Stale guards include both v2 and legacy keys. A still-open older client has a separate legacy document; reload the updated app before continuing. No automatic personal-data rewrite or external creation upload occurs.
+
+### Smaller pinbeds and base recovery (October 4)
+
+Small bed, Single small bowl and Medium oval add three stable layout IDs to the existing seven; Original remains the default. No graph schema, storage envelope or legacy fallback changes. Angles groups presets and stem checks; Studio groups Vessel/Photograph and Garden/Guide. A contact or bounded-work stop names Prevent overlaps during the grab and after release, with the Angles escape route. Actual collision protection is unchanged. See [release evidence and owner checks](development/PINBED_RELEASE.md).

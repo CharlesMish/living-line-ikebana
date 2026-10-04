@@ -222,6 +222,11 @@ declare global {
 
 const TOUCH_BEND_START = 0.24;
 const TOUCH_BEND_END = 0.72;
+const PREVENTION_MESSAGES = {
+  contact: "Prevent overlaps stopped this move. Try another direction, or turn it off in Angles.",
+  budget: "Prevent overlaps paused this move. Try a smaller move, or turn it off in Angles.",
+  insertion: "Prevent overlaps blocked this seat. Choose another pin, or turn it off in Angles.",
+};
 
 export function placementInputFromIntersection(intersection: KenzanIntersection | null) {
   return intersection
@@ -1026,12 +1031,13 @@ export class IkebanaApp {
       region: "top",
     });
     this.lastSaveSucceeded = true;
+    const blockedByProtection = this.activePreventionFeedback()?.reason === "insertion";
     const released = this.coordinator.release(owner);
     if (!released.ok) return;
     const seatedGraph = this.coordinator.getDocumentSnapshot().plants.get(prepared.plantId);
     if (!seatedGraph) {
       this.resolvePendingAcquisition("declined");
-      this.ui.setStatus("No clear seat here. Drag the cutting to another pin.");
+      this.ui.setStatus(blockedByProtection ? PREVENTION_MESSAGES.insertion : "No clear seat here. Drag the cutting to another pin.");
       return;
     }
     this.assignSelectedBranch(seatedGraph ? selectedBranchIdForSeatedGraph(seatedGraph) : null);
@@ -1509,6 +1515,7 @@ export class IkebanaApp {
     }
     const activeBefore = this.coordinator.getDebugState().active;
     const insertionWasValid = activeBefore?.kind === "insert" && activeBefore.isValid;
+    const protectionAtRelease = this.activePreventionFeedback()?.reason;
     this.gesture = null;
     this.lastSaveSucceeded = true;
     this.coordinator.release(gesture.owner);
@@ -1527,7 +1534,7 @@ export class IkebanaApp {
         // cancellation for it either; that ambiguity would otherwise leave this
         // acquisition's transaction unresolved forever.
         this.resolvePendingAcquisition("declined");
-        this.ui.setStatus("Returned to the tray.");
+        this.ui.setStatus(protectionAtRelease === "insertion" ? PREVENTION_MESSAGES.insertion : "Returned to the tray.");
       }
     } else if (gesture.kind === "prune") {
       this.sound.cut();
@@ -1537,7 +1544,8 @@ export class IkebanaApp {
       // resolves as released; committed is reserved for actual graph edits.
       this.resolvePendingAcquisition("released");
     } else {
-      if (this.lastSaveSucceeded) this.ui.setStatus("Set.");
+      if (this.lastSaveSucceeded) this.ui.setStatus(protectionAtRelease === "contact" || protectionAtRelease === "budget"
+        ? PREVENTION_MESSAGES[protectionAtRelease] : "Set.");
     }
     this.syncPresentation();
   }
@@ -1895,7 +1903,7 @@ export class IkebanaApp {
 
   private placementStatus(valid: boolean) {
     return this.activePreventionFeedback()?.reason === "insertion"
-      ? "Stem meets another cutting. Choose a clear pin."
+      ? PREVENTION_MESSAGES.insertion
       : valid ? "Over the pins." : "Find the pins.";
   }
 
@@ -1987,8 +1995,7 @@ export class IkebanaApp {
     } else if (active && ["aim", "bend", "base"].includes(active.kind) && selectedBranch) {
       const cue = shapeCue(selectedBranch, active.kind as "aim" | "bend" | "base", true, selectedGraph ?? undefined);
       const protection = this.activePreventionFeedback();
-      if (protection?.reason === "contact") cue.detail = "At a movement limit. Ease back or try another direction.";
-      else if (protection?.reason === "budget") cue.detail = "Movement paused. Try a smaller move, or turn protection off in View.";
+      if (protection?.reason === "contact" || protection?.reason === "budget") cue.detail = PREVENTION_MESSAGES[protection.reason];
       else if (protection?.existingPairs) cue.detail = "Existing overlaps stay free during this grab. Orbit to separate them.";
       this.ui.setCraftCue(cue, true);
     } else {

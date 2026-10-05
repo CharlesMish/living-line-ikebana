@@ -821,7 +821,9 @@ noscript {
   .wordmark { display: none; }
   .top-row { justify-content: space-between; }
   .segmented button { padding-inline: 0.6rem; letter-spacing: 0; }
-  .material-card { grid-template-columns: minmax(0, 1fr) auto; }
+  /* Narrower inset lets "drag to the pins" stay on one line in the phone tray. */
+  .material-card { grid-template-columns: minmax(0, 1fr) auto; padding-inline: 0.45rem; }
+  .material-verb { text-wrap: balance; }
   .cutting-silhouette { display: none; }
   .material-options button { grid-template-columns: minmax(0, 1fr); }
 }

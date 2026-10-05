@@ -1,6 +1,6 @@
 [data-studio-menus="true"] #more-toggle { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 0; padding: .2rem .35rem; min-height: 2.75rem; }
 [data-studio-menus="true"] #more-toggle > svg { display: none; }
-[data-studio-menus="true"] .studio-destinations { display: flex; flex-wrap: wrap; justify-content: center; column-gap: .2rem; font: .625rem/1.2 system-ui; color: var(--ink-muted); }
+[data-studio-menus="true"] .studio-destinations { display: flex; flex-wrap: wrap; justify-content: center; column-gap: .2rem; font-family: inherit; font-size: .6875rem; line-height: 1.15; letter-spacing: .01em; color: var(--ink-muted); }
 [data-studio-menus="true"] .studio-destinations span { white-space: nowrap; }
 [data-studio-menus="true"] .studio-menu-heading { margin: .4rem .35rem .15rem; font: 600 .67rem/1.4 system-ui; color: var(--ink-muted); letter-spacing: .06em; text-transform: uppercase; }
 [data-studio-menus="true"] #more-options { min-width: min(18rem, calc(100vw - 2rem)); }

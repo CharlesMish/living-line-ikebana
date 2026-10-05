@@ -1,0 +1,6 @@
+[data-camera-views="true"] #view-options { width: min(18rem, calc(100vw - var(--safe-left) - var(--safe-right) - 2rem)); }
+#camera-views { border-top: 1px solid var(--line); margin-top: .3rem; padding: .2rem 0 .5rem; }
+.camera-view-slots { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .4rem; }
+.camera-view-slots > div { display: grid; gap: .25rem; }
+.camera-view-slots button { white-space: normal; padding: .5rem .35rem; min-height: 2.75rem; }
+.camera-view-slots button[id^="camera-store-"] { font-size: .8rem; border: 1px solid var(--line); }

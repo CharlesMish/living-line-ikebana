@@ -430,3 +430,11 @@ New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte int
 ### Smaller pinbeds and base recovery (October 4)
 
 Small bed, Single small bowl and Medium oval add three stable layout IDs to the existing seven; Original remains the default. No graph schema, storage envelope or legacy fallback changes. Angles groups presets and stem checks; Studio groups Vessel/Photograph and Garden/Guide. A contact or bounded-work stop names Prevent overlaps during the grab and after release, with the Angles escape route. Actual collision protection is unchanged. See [release evidence and owner checks](development/PINBED_RELEASE.md).
+
+### Camera A/B study (October 5, opt-in)
+
+`?cameraViews=1` adds two user-stored camera slots inside Angles. A slot copies the committed position, target and up vector, retaining angle, world-space focus and camera distance. Store/Replace cancels any held gesture first and writes no save. Recall cancels first, then uses the existing explicit camera-command boundary: only the active camera is saved in the unchanged v2 envelope. Botanical geometry, selection, ordinal, Undo, posture and tool are unchanged by recall. Slots never contain a live preview, graph or photo recipe.
+
+The two slots are session-only and belong to the working bowl. They survive ordinary editing, preset/gesture camera moves, vessel changes and Garden View/Return. Both actions are disabled while viewing a kept entry; the viewer keeps its existing independent camera. Successful fresh/copy replacement and reload clear both slots. A failed replacement retains them. Photograph starts from the current committed camera and keeps its existing independent frame and saved Garden camera; it never reads the slots. Responsive projection still depends on the current viewport, so a stored world-space pose is not a promised pixel crop across screen sizes.
+
+The study uses separate `ikebana-camera-views-study:*` keys with no ordinary/legacy fallback. It does not migrate or write personal saves. Ordinary URLs retain existing behavior. See [scope, evidence and owner trial](development/CAMERA_AB_STUDY.md).

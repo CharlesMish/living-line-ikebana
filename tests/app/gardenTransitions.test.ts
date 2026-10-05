@@ -1,3 +1,5 @@
+import { CameraViews } from "../../src/app/cameraViews.ts";
+import { canonicalCameraPose } from "../../src/app/camera.ts";
 import { DEFAULT_SCENE, sceneProfile } from "../../src/app/scene.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -10,6 +12,7 @@ function harness(workbench = false) {
   const writes: unknown[] = [];
   const state = { posture: "arrange", tool: "shape", view: "front", cameraMode: "orbit" };
   const app = Object.assign(Object.create(IkebanaApp.prototype), {
+    cameraViews: new CameraViews(),
     scene: { ...DEFAULT_SCENE }, applyScene(value: any) { this.scene = structuredClone(value); this.config.vesselProfile = sceneProfile(value); },
     workingSession: null, config: { workbench }, bendVariant: "bead", selectedBranchId: "plant-1:trunk", cameraIsFree: false,
     hovering: false, gesture: null, autosaveWrites: [],
@@ -241,4 +244,19 @@ test("a65-cutting legacy working bowl can change scene without becoming a Garden
  app.setupVesselUI=()=>{};
  app.changeScene({...DEFAULT_SCENE,colorId:"celadon"});
  assert.equal(savedCount,65);assert.equal(app.arrangementSnapshot().plants.length,65);
+});
+
+
+test("working camera slots survive Garden View/Return and clear only after a successful bowl replacement", () => {
+  const { app } = harness();
+  const a = canonicalCameraPose("above"), b = canonicalCameraPose("three-quarter");
+  app.cameraViews.store("A", a); app.cameraViews.store("B", b);
+  app.viewGardenEntry({ arrangement: createWorkbenchFixture("leafy-shoot", 9255, 2) });
+  assert.deepEqual(app.cameraViews.recall("A"), a);
+  app.returnToWorkingBowl(); assert.deepEqual(app.cameraViews.recall("B"), b);
+  const save = app.store.save; app.store.save = () => false;
+  assert.throws(() => app.replaceWorkingBowl(null), /could not be saved/);
+  assert.deepEqual(app.cameraViews.recall("A"), a);
+  app.store.save = save; app.replaceWorkingBowl(null);
+  assert.equal(app.cameraViews.recall("A"), null); assert.equal(app.cameraViews.recall("B"), null);
 });

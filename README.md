@@ -141,3 +141,10 @@ With `?debug=1`, the guide's **Testing tools → Export local study data** butto
 The export is named "local study data," not "session data," because it is not scoped to the current session: it is the full accumulated cross-session history for this device/browser, which is the point of persisting it in the first place. The exported file includes the same `instrumentVersion` persisted with the dataset and a precise disclosure: it contains timestamps and a randomly generated session ID, but no direct identifier (name, email, account) and none of the arrangement's actual botanical content.
 
 This diagnostic layer is intentionally separate from the botanical graph: it never touches `src/core/`, never gates a craft operation, and a cancelled edit's telemetry can never read as a committed one.
+
+## License
+
+CharlesMish's original contributions to this project are available under the
+[MIT License](LICENSE). Third-party software remains under its own licenses;
+retain the existing [Third-party notices](THIRD_PARTY_NOTICES.md), including
+the Three.js copyright and MIT notice, when redistributing it.

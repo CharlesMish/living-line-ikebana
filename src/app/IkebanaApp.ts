@@ -1,3 +1,5 @@
+import { CameraViews, type CameraSlot } from "./cameraViews.ts";
+import { CameraViewsUI } from "./cameraViewsUI.ts";
 import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
 import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
@@ -274,6 +276,8 @@ export class IkebanaApp {
   private readonly storageKeys = sceneStorageKeys(new URL(location.href), this.config.workbench, this.config.vesselProfile?.id);
   private suppressSave = false;
   private vesselAppearanceUI?: VesselAppearanceUI;
+  private readonly cameraViews = new CameraViews();
+  private cameraViewsUI?: CameraViewsUI;
   private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
   private readonly initialSaved = this.store.load();
   private readonly sound = new CraftSound();
@@ -377,7 +381,43 @@ export class IkebanaApp {
       });
     }
     this.setupVesselUI();
+    if (this.config.cameraViewsStudy) {
+      this.cameraViewsUI = new CameraViewsUI(root, {
+        store: slot => this.storeCameraView(slot), recall: slot => this.recallCameraView(slot),
+      });
+      this.syncPresentation();
+    }
 
+  }
+
+  private finishCameraViewCommand(message: string) {
+    this.ui.setState({ viewMenuOpen: false });
+    this.root.querySelector<HTMLButtonElement>("#view-toggle")?.focus({ preventScroll: true });
+    this.syncPresentation();
+    this.ui.setStatus(message);
+  }
+
+  private storeCameraView(slot: CameraSlot) {
+    if (!this.config.cameraViewsStudy || this.workingSession) return;
+    // Cancel first: neither live camera motion nor a botanical preview enters a slot.
+    this.interruptActive("view-command", false);
+    this.metrics.resetAttempt();
+    this.cameraViews.store(slot, this.coordinator.getDocumentSnapshot().camera);
+    this.finishCameraViewCommand(`Camera ${slot} stored for this session.`);
+  }
+
+  private recallCameraView(slot: CameraSlot) {
+    if (!this.config.cameraViewsStudy || this.workingSession) return;
+    const pose = this.cameraViews.recall(slot);
+    if (!pose) return;
+    this.interruptActive("view-command", false);
+    this.metrics.resetAttempt();
+    this.cameraIsFree = true;
+    this.lastSaveSucceeded = true;
+    // Same explicit camera-command/save boundary as a preset; no posture/tool change.
+    this.coordinator.commandView(this.coordinator.getDebugState().view, pose);
+    this.finishCameraViewCommand(this.lastSaveSucceeded
+      ? `Camera ${slot}.` : `Camera ${slot} shown, but this view could not be saved.`);
   }
 
   private createStudio() {
@@ -478,6 +518,7 @@ export class IkebanaApp {
     this.removeUIListener = null;
     this.endGardenComparisonView();
     this.photograph?.destroy();
+    this.cameraViewsUI?.destroy();
     this.gardenUI?.destroy();
     this.vesselAppearanceUI?.destroy();
     this.ui.destroy();
@@ -722,6 +763,7 @@ export class IkebanaApp {
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene: snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene), camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    this.cameraViews.clear();
     this.applyScene(snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene));
     const loaded = getLastWorkbenchFixtureLoad();
     if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
@@ -2007,6 +2049,7 @@ export class IkebanaApp {
       : presentation.document.camera;
     const view: StudioView = this.cameraIsFree ? "orbit" : debug.view;
     this.studio.setCameraPose(camera, view, false);
+    this.cameraViewsUI?.render(this.cameraViews, presentation.document.camera, !this.workingSession);
 
     this.syncStemOverlaps();
 
@@ -2112,6 +2155,7 @@ export class IkebanaApp {
         if (options.clearTelemetry) this.telemetryStore.clear();
         this.autosaveWrites.length = 0;
         this.metrics.reset();
+        this.cameraViews.clear();
         this.bendStationPreference = DEFAULT_BEND_STATION;
         this.selectedBranchId = null;
         this.cameraIsFree = false;

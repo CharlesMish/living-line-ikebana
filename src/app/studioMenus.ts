@@ -10,8 +10,9 @@ export function installStudioMenus(root: HTMLElement) {
   hint.innerHTML = "<span>Vessel ·</span> <span>Photo</span>"; more.append(hint);
   const views = root.querySelector<HTMLElement>("#view-options")!;
   root.querySelector("#view-toggle span")!.textContent = "Angles";
-  root.querySelector("#view-toggle")!.setAttribute("aria-label", "Angles — preset views and stem checks");
-  views.setAttribute("aria-label", "Preset angles and stem checks");
+  const hasCameraViews = root.dataset.cameraViews === "true";
+  root.querySelector("#view-toggle")!.setAttribute("aria-label", hasCameraViews ? "Angles — preset views, camera A/B and stem checks" : "Angles — preset views and stem checks");
+  views.setAttribute("aria-label", hasCameraViews ? "Preset angles, camera A/B and stem checks" : "Preset angles and stem checks");
   const heading = (label: string) => { const h = document.createElement("p"); h.className = "studio-menu-heading"; h.textContent = label; return h; };
   views.prepend(heading("Preset angles"));
   views.insertBefore(heading("Stem checks"), root.querySelector("#stem-overlaps-toggle"));

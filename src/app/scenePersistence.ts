@@ -118,6 +118,7 @@ export class SceneGardenStore {
 }
 
 export function sceneStorageKeys(url: URL, workbench: boolean, vesselStudy?: string) {
+  if (url.searchParams.get("cameraViews") === "1") return { studio: "ikebana-camera-views-study:studio-v2", garden: "ikebana-camera-views-study:garden-v2", telemetry: "ikebana-camera-views-study:telemetry-v1" };
   if (url.searchParams.get("combinedPreview") === "1") return { studio: "ikebana-integration-preview:studio-v2", garden: "ikebana-integration-preview:garden-v2", telemetry: "ikebana-integration-preview:telemetry-v1" };
   const prefix = vesselStudy ? `ikebana-web-alpha:vessel-study-v1:${vesselStudy}:${workbench ? "workbench-" : ""}` : `ikebana-web-alpha:${workbench ? "workbench-" : ""}`;
   return { studio: `${prefix}studio-v2`, garden: `${prefix}garden-v2`, telemetry: vesselStudy ? `${prefix}telemetry` : `${prefix}telemetry-v1`,

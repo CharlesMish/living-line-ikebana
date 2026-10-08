@@ -14,6 +14,8 @@ function drawParam<T extends string>(url: URL, key: string, allowed: readonly T[
 
 export type ExperimentConfig = {
   vesselProfile?: VesselProfile;
+  /** Isolated, session-only A/B camera study. */
+  cameraViewsStudy: boolean;
   bendVariant: BendVariant;
   bendStationsRequested: boolean;
   bendStationsMode: BendStationsMode;
@@ -42,6 +44,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
   const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
   return {
     vesselProfile: readVesselStudy(url),
+    cameraViewsStudy: url.searchParams.get("cameraViews") === "1",
     bendVariant,
     bendStationsRequested,
     bendStationsMode: bendStationsMode(bendStationsRequested, bendVariant),

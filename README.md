@@ -1,22 +1,16 @@
 # Living Line — Three.js web alpha
 
+**[Open Living Line in your browser](https://charlesmish.github.io/living-line-ikebana/)**
+
 A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and twelve persistent cutting materials. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
 
 A quiet botanical arrangement study influenced by shallow-vessel moribana and the
 expressive openness of modern ikebana. These are influences, not a school curriculum.
 The current experience has no score, progression, shop or correctness judgment.
 
-The [looking refinement and phone card](docs/LOOKING_REFINEMENT.md) records what
-changed after the combined review, what remains a hypothesis, and what to observe
-before choosing a third material.
-
-The bend now has 20% more range at the end of a drag, with the same small-drag
-sensitivity. The shallow vessel has an open basin and raised lip, with a more
-distinct teal water surface. These are initial feel/readability adjustments.
-
 ## Current alpha
 
-The protected baseline contains a deterministic flowering branch and leafy shoot, repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. Garden now adds a first creative loop: keep a moment, revisit it, make a working copy, or begin a fresh bowl.
+The current palette contains twelve cutting materials, built on the protected flowering-branch and leafy-shoot reference pair. It supports repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. Garden now adds a first creative loop: keep a moment, revisit it, make a working copy, or begin a fresh bowl.
 
 Future flowers, branch structures, and a calm core loop should extend this baseline without replacing its identity, length, pruning, transaction, or camera-ownership laws. Those laws are collected in [`docs/BEHAVIORAL_CONTRACT.md`](docs/BEHAVIORAL_CONTRACT.md); contributors and coding agents should also read [`AGENTS.md`](AGENTS.md).
 
@@ -26,7 +20,7 @@ Appearance tuning is an initial pass; numeric checks do not establish phone feel
 See [material extension notes](docs/MATERIAL_REFERENCES.md) and the
 [short direction brief for external review](docs/DIRECTION_REVIEW.md).
 
-## Garden and development handoff
+## Garden and developer workbench
 
 Open **Garden** in the top rail to keep the current arrangement and view with an
 optional name. Saved cards open in a read-only 3D view; **Make a working copy**
@@ -37,10 +31,9 @@ See [Garden behavior and phone checks](docs/GARDEN.md).
 Developers can add `?workbench=1` to the app URL for a separate saved bowl, named
 fixture profiles, fixed seeds and rendering reports. See [Workbench](docs/development/WORKBENCH.md)
 and the [fixture-profile contract](docs/development/WORKBENCH_FIXTURE_PROFILES.md).
-The [Grok Bot handoff](docs/development/GROK_BOT_HANDOFF.md) commissions two bounded
-candidates using [material briefs](docs/development/MATERIAL_BRIEFS.md), an
-[independent review template](docs/development/REVIEW_TEMPLATE.md), and a
-[proposed learning direction](docs/development/DIRECTION.md).
+Historical commissioning prompts and reviews are indexed in
+[development history](docs/development/README.md). They record earlier material
+rounds; they are not new assignments or the current palette definition.
 
 ## Run it
 
@@ -56,8 +49,9 @@ An optional **Line and water** prompt lives in the guide; open play remains the 
 Bend comparison and telemetry export controls appear only with `?debug=1`, under
 **Testing tools**. `?test=1` alone does not expose them.
 
-The fixed-point bend default remains in this experiment. Both materials use the same craft verbs.
-Draft PR #4's broader touch-default/contextual-control proposal is separate.
+The fixed-point bend default remains in this experiment. The cutting materials
+share the same craft verbs; use the bend experiment section below for the
+current comparison controls.
 The Above camera is aligned with its orbit meridian to avoid acquisition roll.
 Unavailable graphics now has an explanatory startup state, and unavailable
 audio cannot block editing.
@@ -141,6 +135,15 @@ With `?debug=1`, the guide's **Testing tools → Export local study data** butto
 The export is named "local study data," not "session data," because it is not scoped to the current session: it is the full accumulated cross-session history for this device/browser, which is the point of persisting it in the first place. The exported file includes the same `instrumentVersion` persisted with the dataset and a precise disclosure: it contains timestamps and a randomly generated session ID, but no direct identifier (name, email, account) and none of the arrangement's actual botanical content.
 
 This diagnostic layer is intentionally separate from the botanical graph: it never touches `src/core/`, never gates a craft operation, and a cancelled edit's telemetry can never read as a committed one.
+
+## Contributing
+
+Start a focused branch from `main`, read the [agent/contributor rules](AGENTS.md)
+and [behavioral contract](docs/BEHAVIORAL_CONTRACT.md), and run `npm run verify`
+before opening a pull request. Keep automated results separate from browser and
+physical-phone observations. Preserve existing graphs, fixtures, cancellation
+rules, Garden storage and local-only study data; a new material must be additive.
+See the [development index](docs/development/README.md) for workbench and review records.
 
 ## License
 

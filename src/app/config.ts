@@ -1,4 +1,5 @@
 import { readVesselStudy, type VesselProfile } from "../study/vesselProfiles.ts";
+import { readCampaignPaletteSidecarRaw } from "../study/campaignPaletteStudy.ts";
 import type { FanLeafDraw, PinnateDraw } from "../presentation/botanicalGeometry.ts";
 import { bendStationsMode, type BendStationsMode } from "./bendStations.ts";
 
@@ -34,6 +35,8 @@ export type ExperimentConfig = {
    * silently delete the comparison data those blocks exist to produce.
    */
   clearStudyData: boolean;
+  campaignC1: boolean;
+  campaignPaletteSidecar: string | null;
 };
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
@@ -49,6 +52,8 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
+    campaignC1: url.searchParams.get("campaignC1") === "1",
+    campaignPaletteSidecar: readCampaignPaletteSidecarRaw(url),
     pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
   };

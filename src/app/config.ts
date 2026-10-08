@@ -34,6 +34,7 @@ export type ExperimentConfig = {
    * silently delete the comparison data those blocks exist to produce.
    */
   clearStudyData: boolean;
+  campaignD1: boolean;
 };
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
@@ -49,6 +50,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
+    campaignD1: url.searchParams.get("campaignD1") === "1",
     pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
   };

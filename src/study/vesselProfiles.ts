@@ -1,5 +1,5 @@
 import type { Vec3 } from "../core/math.ts";
-import { PINBED_PROFILES } from "./pinbedProfiles.ts";
+import { EXPERIMENTAL_PINBED_PROFILES, PINBED_PROFILES } from "./pinbedProfiles.ts";
 
 /** Domain-unit footprint, independent of vessel silhouette and camera framing. */
 export interface PlantingArea { readonly x: number; readonly z: number; readonly rx: number; readonly rz: number }
@@ -31,7 +31,16 @@ export const VESSEL_PROFILES: readonly VesselProfile[] = [
   { id: "vessel-pair", label: "Separate small bowls", description: "Two small vessels, each with its own water and planting bed. The gap is empty.", scaleX: 1, scaleZ: 1, areas: [{ x: -1.65, z: 0, rx: .46, rz: .46 }, { x: 1.65, z: 0, rx: .46, rz: .46 }], vessels: [{ partId: "left", x: -1.65, z: 0, scaleX: .54, scaleZ: .54 }, { partId: "right", x: 1.65, z: 0, scaleX: .54, scaleZ: .54 }] },
   ...PINBED_PROFILES,
 ];
+export const EXPERIMENTAL_VESSEL_PROFILES: readonly VesselProfile[] = [
+  ...EXPERIMENTAL_PINBED_PROFILES,
+];
 export const ORIGINAL_VESSEL = VESSEL_PROFILES[0];
+
+export function findVesselProfileById(id?: string | null): VesselProfile | undefined {
+  if (!id) return undefined;
+  return VESSEL_PROFILES.find(profile => profile.id === id)
+    ?? EXPERIMENTAL_VESSEL_PROFILES.find(profile => profile.id === id);
+}
 
 export function vesselParts(profile = ORIGINAL_VESSEL): readonly VesselPart[] {
   return profile.vessels ?? [{ partId: "bowl", x: 0, z: 0, scaleX: profile.scaleX, scaleZ: profile.scaleZ }];
@@ -74,7 +83,22 @@ export function plantingPins(profile: VesselProfile): Array<[number, number]> {
 
 /** Only explicit study URLs opt in. Unknown values leave ordinary play alone. */
 export function readVesselStudy(url: URL): VesselProfile | undefined {
-  return VESSEL_PROFILES.find(profile => profile.id === url.searchParams.get("vesselStudy"));
+  const id = url.searchParams.get("vesselStudy");
+  const profile = VESSEL_PROFILES.find(candidate => candidate.id === id);
+  if (profile) return profile;
+  if (!campaignA2Enabled(url)) return undefined;
+  return EXPERIMENTAL_VESSEL_PROFILES.find(candidate => candidate.id === id);
+}
+
+export function campaignA2Enabled(url: URL): boolean {
+  return url.searchParams.get("campaignA2") === "1";
+}
+
+export function vesselProfilesForSelection(showExperimental: boolean, selectedLayoutId?: string): readonly VesselProfile[] {
+  if (showExperimental) return [...VESSEL_PROFILES, ...EXPERIMENTAL_VESSEL_PROFILES];
+  if (!selectedLayoutId) return VESSEL_PROFILES;
+  const selected = EXPERIMENTAL_VESSEL_PROFILES.find(profile => profile.id === selectedLayoutId);
+  return selected ? [...VESSEL_PROFILES, selected] : VESSEL_PROFILES;
 }
 
 function radiusInArea(point: Pick<Vec3, "x" | "z">, area: PlantingArea) {

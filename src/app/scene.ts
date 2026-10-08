@@ -1,4 +1,4 @@
-import { ORIGINAL_VESSEL, VESSEL_PROFILES } from "../study/vesselProfiles.ts";
+import { ORIGINAL_VESSEL, findVesselProfileById } from "../study/vesselProfiles.ts";
 import { VESSEL_COLORS, VESSEL_FINISHES } from "../study/vesselAppearance.ts";
 import type { PhotoBackdrop, PhotoFormat, PhotoPerch } from "../presentation/photoStage.ts";
 
@@ -20,7 +20,7 @@ export const DEFAULT_SCENE: SceneSettings = {
 export function validateScene(value: unknown): SceneSettings {
   if (!value || typeof value !== "object") throw new Error("Invalid saved scene.");
   const s = value as SceneSettings;
-  if (s.sceneVersion !== 1 || !VESSEL_PROFILES.some(p => p.id === s.layoutId)
+  if (s.sceneVersion !== 1 || !findVesselProfileById(s.layoutId)
     || !VESSEL_COLORS.some(c => c.id === s.colorId) || !VESSEL_FINISHES.some(f => f.id === s.finishId)
     || !["paper", "sage", "dusk", "transparent"].includes(s.backdropId)
     || !["ground", "stone", "bench"].includes(s.perchId)
@@ -30,5 +30,5 @@ export function validateScene(value: unknown): SceneSettings {
     backdropId: s.backdropId, perchId: s.perchId, photoFormat: s.photoFormat, stemFibers: s.stemFibers };
 }
 export function sceneProfile(scene?: SceneSettings) {
-  return VESSEL_PROFILES.find(p => p.id === scene?.layoutId) ?? ORIGINAL_VESSEL;
+  return findVesselProfileById(scene?.layoutId) ?? ORIGINAL_VESSEL;
 }

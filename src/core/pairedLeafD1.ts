@@ -82,7 +82,7 @@ export function createPairedLeafD1(id: string, seed: number, base: Vec3): PlantG
       vec3(hand * 0.19, 0, 0.07),
     ),
     radius: 0.036,
-    stiffness: 0.5,
+    stiffness: 0.44,
   });
   for (let pair = 0; pair < 4; pair += 1) {
     const fraction = 0.31 + pair * 0.205;

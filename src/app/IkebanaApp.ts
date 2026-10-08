@@ -9,7 +9,7 @@ import { Photograph } from "./photograph.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
-import { configureCampaignD1Study } from "../study/campaignD1PairedLeaf.ts";
+import { loadCampaignD1StartupDocument } from "./startupOrdering.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -321,11 +321,15 @@ export class IkebanaApp {
     this.bendVariant = this.config.bendVariant;
     this.bendStationsRequested = this.config.bendStationsRequested;
     this.bendStationsMode = this.config.bendStationsMode;
-    // The D1 generator must be registered before any persisted scene bytes are parsed.
-    // Field-order loading would parse before this registration and fail closed.
-    configureCampaignD1Study(root, this.config.campaignD1);
-    this.initialSaved = this.store.load();
-    if (!this.config.fresh && this.initialSaved) this.scene = this.initialSaved.scene;
+    const startup = loadCampaignD1StartupDocument({
+      root,
+      campaignD1: this.config.campaignD1,
+      fresh: this.config.fresh,
+      store: this.store,
+      defaultScene: this.scene,
+    });
+    this.initialSaved = startup.initialSaved;
+    this.scene = startup.scene;
     this.config.vesselProfile = sceneProfile(this.scene);
     this.vesselAppearance = this.scene;
     this.loadWarning = this.store.error;

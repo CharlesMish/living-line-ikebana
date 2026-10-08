@@ -4,9 +4,11 @@ import test from "node:test";
 import { canonicalCameraPose } from "../../src/app/camera.ts";
 import { SceneCommittedStore } from "../../src/app/scenePersistence.ts";
 import { DEFAULT_SCENE } from "../../src/app/scene.ts";
+import { loadCampaignD1StartupDocument } from "../../src/app/startupOrdering.ts";
 import { prepareMaterialInsertion, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import {
   CAMPAIGN_D1_MATERIAL_ID,
+  configureCampaignD1Study,
   configureCampaignD1Runtime,
 } from "../../src/study/campaignD1PairedLeaf.ts";
 
@@ -38,7 +40,11 @@ function makeSavedStudioRaw() {
   return JSON.stringify(value);
 }
 
-function loadWithOrder(order: "old-order" | "fixed-order") {
+function createStubRoot() {
+  return { querySelector: () => null } as unknown as HTMLElement;
+}
+
+function oldOrderLoad() {
   const key = "ikebana-web-alpha:studio-v2";
   const raw = makeSavedStudioRaw();
   const store = new SceneCommittedStore(
@@ -51,25 +57,42 @@ function loadWithOrder(order: "old-order" | "fixed-order") {
     memoryStorage({ [key]: raw }) as never,
   );
   configureCampaignD1Runtime(false);
-  if (order === "old-order") {
-    const loaded = store.load();
-    configureCampaignD1Runtime(true);
-    return { loaded, error: store.error };
-  }
+  const loaded = store.load();
   configureCampaignD1Runtime(true);
-  return { loaded: store.load(), error: store.error };
+  return { loaded, error: store.error };
 }
 
 test("old startup ordering reproduces the D1 load failure", () => {
-  const result = loadWithOrder("old-order");
+  const result = oldOrderLoad();
   assert.equal(result.loaded, null);
   assert.equal(result.error, true);
 });
 
-test("fixed startup ordering loads the same D1 bytes under campaignD1=1", () => {
-  const forceOldOrder = process.env.D1_STARTUP_ORDER_EXPECT_SUCCESS === "old-order";
-  const result = loadWithOrder(forceOldOrder ? "old-order" : "fixed-order");
-  assert.equal(result.error, false);
-  assert.ok(result.loaded);
-  assert.equal(result.loaded?.plants[0]?.generatorVersion, "paired-leaf-d1-v1");
+test("IkebanaApp startup path registers campaign D1 before parsing persisted studio bytes", () => {
+  const key = "ikebana-web-alpha:studio-v2";
+  const raw = makeSavedStudioRaw();
+  const store = new SceneCommittedStore(
+    key,
+    undefined,
+    () => ({
+      scene: { ...DEFAULT_SCENE },
+      camera: canonicalCameraPose("front"),
+    }),
+    memoryStorage({ [key]: raw }) as never,
+  );
+
+  configureCampaignD1Runtime(false);
+  const startup = loadCampaignD1StartupDocument({
+    root: createStubRoot(),
+    campaignD1: true,
+    fresh: false,
+    store,
+    defaultScene: { ...DEFAULT_SCENE },
+  });
+
+  assert.equal(store.error, false);
+  assert.ok(startup.initialSaved);
+  assert.equal(startup.initialSaved?.plants[0]?.generatorVersion, "paired-leaf-d1-v1");
+  assert.equal(startup.scene.layoutId, DEFAULT_SCENE.layoutId);
+  configureCampaignD1Study(createStubRoot(), false);
 });

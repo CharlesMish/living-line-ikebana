@@ -1,5 +1,10 @@
 import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
-import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
+import {
+  SceneCommittedStore,
+  SceneGardenStore,
+  sceneStorageKeys,
+  type SceneStudioDocument,
+} from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
@@ -276,7 +281,7 @@ export class IkebanaApp {
   private suppressSave = false;
   private vesselAppearanceUI?: VesselAppearanceUI;
   private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
-  private readonly initialSaved = this.store.load();
+  private readonly initialSaved: SceneStudioDocument | null;
   private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
   private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
@@ -313,6 +318,13 @@ export class IkebanaApp {
 
   constructor(root: HTMLElement) {
     this.root = root;
+    this.bendVariant = this.config.bendVariant;
+    this.bendStationsRequested = this.config.bendStationsRequested;
+    this.bendStationsMode = this.config.bendStationsMode;
+    // The D1 generator must be registered before any persisted scene bytes are parsed.
+    // Field-order loading would parse before this registration and fail closed.
+    configureCampaignD1Study(root, this.config.campaignD1);
+    this.initialSaved = this.store.load();
     if (!this.config.fresh && this.initialSaved) this.scene = this.initialSaved.scene;
     this.config.vesselProfile = sceneProfile(this.scene);
     this.vesselAppearance = this.scene;
@@ -321,10 +333,6 @@ export class IkebanaApp {
       root.dataset.vesselStudy = this.config.vesselProfile.id;
       document.title = `Living Line · ${this.config.vesselProfile.label}`;
     }
-    this.bendVariant = this.config.bendVariant;
-    this.bendStationsRequested = this.config.bendStationsRequested;
-    this.bendStationsMode = this.config.bendStationsMode;
-    configureCampaignD1Study(root, this.config.campaignD1);
     // A fresh specimen (?fresh=1) never implies clearing study data; that is
     // a distinct, explicit action (?clearStudyData=1). See config.ts. It is
     // also one-shot: act on it once, then strip it from the URL so an

@@ -13,9 +13,9 @@ import { assertRestLengthsPreserved } from "../core/helpers.ts";
 const at = (x=0,z=0) => ({x,y:.55,z});
 
 test("approved profiles use ordinary v2 saves, retain all earlier layouts and keep the default",()=>{
-  assert.equal(VESSEL_PROFILES.length,10);
+  assert.equal(VESSEL_PROFILES.length,11);
   assert.equal(VESSEL_PROFILES[0].id,"original");
-  assert.deepEqual(PINBED_PROFILES.map(p=>p.id),["pinbed-small","pinbed-single","pinbed-medium-oval"]);
+  assert.deepEqual(PINBED_PROFILES.map(p=>p.id),["pinbed-small","pinbed-small-a1","pinbed-single","pinbed-medium-oval"]);
   const normal=sceneStorageKeys(new URL("https://example.test/"),false);
   assert.equal(normal.studio,"ikebana-web-alpha:studio-v2");
   assert.equal(normal.legacyStudio,"ikebana-web-alpha:studio-v1");

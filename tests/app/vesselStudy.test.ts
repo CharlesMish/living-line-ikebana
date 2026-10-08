@@ -25,6 +25,8 @@ const active = (c: any) => c.getPresentationState().active.graph;
 test('profile opt-in and namespaces preserve normal play and isolate every study', () => {
   assert.equal(readVesselStudy(new URL('https://example.test/?vesselStudy=unknown')), undefined);
   assert.equal(readVesselStudy(new URL('https://example.test/')), undefined);
+  assert.equal(readVesselStudy(new URL('https://example.test/?vesselStudy=pinbed-small-a1')), undefined);
+  assert.equal(readVesselStudy(new URL('https://example.test/?vesselStudy=pinbed-small-a1&campaignA1=1'))?.id, 'pinbed-small-a1');
   assert.equal(vesselStudyStorageKey(undefined, 'studio'), undefined);
   const keys = VESSEL_PROFILES.flatMap(p => ['studio', 'garden', 'telemetry'].flatMap(k => [false, true].map(w => vesselStudyStorageKey(p, k as any, w))));
   assert.equal(new Set(keys).size, VESSEL_PROFILES.length * 6);

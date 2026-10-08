@@ -32,6 +32,7 @@ export const VESSEL_PROFILES: readonly VesselProfile[] = [
   ...PINBED_PROFILES,
 ];
 export const ORIGINAL_VESSEL = VESSEL_PROFILES[0];
+const EXPERIMENTAL_PROFILE_IDS = new Set(["pinbed-small-a1"]);
 
 export function vesselParts(profile = ORIGINAL_VESSEL): readonly VesselPart[] {
   return profile.vessels ?? [{ partId: "bowl", x: 0, z: 0, scaleX: profile.scaleX, scaleZ: profile.scaleZ }];
@@ -74,7 +75,25 @@ export function plantingPins(profile: VesselProfile): Array<[number, number]> {
 
 /** Only explicit study URLs opt in. Unknown values leave ordinary play alone. */
 export function readVesselStudy(url: URL): VesselProfile | undefined {
-  return VESSEL_PROFILES.find(profile => profile.id === url.searchParams.get("vesselStudy"));
+  const profile = VESSEL_PROFILES.find(candidate => candidate.id === url.searchParams.get("vesselStudy"));
+  if (!profile) return undefined;
+  if (isExperimentalVesselProfileId(profile.id) && !campaignA1Enabled(url)) return undefined;
+  return profile;
+}
+
+export function campaignA1Enabled(url: URL): boolean {
+  return url.searchParams.get("campaignA1") === "1";
+}
+
+export function isExperimentalVesselProfileId(id: string): boolean {
+  return EXPERIMENTAL_PROFILE_IDS.has(id);
+}
+
+export function vesselProfilesForSelection(showExperimental: boolean, selectedLayoutId?: string): readonly VesselProfile[] {
+  return VESSEL_PROFILES.filter(profile =>
+    showExperimental
+    || !isExperimentalVesselProfileId(profile.id)
+    || profile.id === selectedLayoutId);
 }
 
 function radiusInArea(point: Pick<Vec3, "x" | "z">, area: PlantingArea) {

@@ -23,6 +23,11 @@ const SEEDS = [7301, 8278, 9255, 10232, 11209] as const;
 
 function normalizedGraph(graph: ReturnType<typeof createReed>) {
   const branch = graph.branches.get(graph.rootBranchId)!;
+  const roundedNormal = {
+    x: Number(branch.referenceNormal.x.toPrecision(12)),
+    y: Number(branch.referenceNormal.y.toPrecision(12)),
+    z: Number(branch.referenceNormal.z.toPrecision(12)),
+  };
   return {
     schemaVersion: graph.schemaVersion,
     id: graph.id,
@@ -37,7 +42,7 @@ function normalizedGraph(graph: ReturnType<typeof createReed>) {
       parentDistance: branch.parentDistance,
       radius: branch.radius,
       stiffness: branch.stiffness,
-      referenceNormal: branch.referenceNormal,
+      referenceNormal: roundedNormal,
       active: branch.active,
       pointCount: branch.points.length,
       restCount: branch.restLengths.length,

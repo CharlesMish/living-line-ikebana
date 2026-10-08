@@ -29,17 +29,19 @@ test("approved profiles use ordinary v2 saves, retain all earlier layouts and ke
 });
 
 test("round candidates change usable field independently of ceramic and retain the physical pin grid",()=>{
-  const small=PINBED_PROFILES.slice(0,2),reference=VESSEL_PROFILES.find(p=>p.id==="vessel-pair")!.areas[0];
-  for(const p of small){
-    assert.deepEqual(vesselParts(p),vesselParts(small[0]));
+  const small = PINBED_PROFILES.find(profile => profile.id === "pinbed-small")!;
+  const single = PINBED_PROFILES.find(profile => profile.id === "pinbed-single")!;
+  const reference=VESSEL_PROFILES.find(p=>p.id==="vessel-pair")!.areas[0];
+  for(const p of [small, single]){
+    assert.deepEqual(vesselParts(p),vesselParts(small));
     for(const [x,z] of plantingPins(p)){
       assert.ok(inPlantingArea(at(x,z),p));
       assert.ok(Math.abs((x+1.155)/.11-Math.round((x+1.155)/.11))<1e-8);
     }
     for(let n=1;n<=100;n++)assert.ok(inPlantingArea(keyboardPlantingPoint(n,p),p));
   }
-  assert.equal(small[1].areas[0].rx,reference.rx);
-  assert.ok(plantingPins(small[0]).length<plantingPins(small[1]).length);
+  assert.equal(single.areas[0].rx,reference.rx);
+  assert.ok(plantingPins(small).length<plantingPins(single).length);
 });
 
 for(const profile of PINBED_PROFILES)test(`${profile.id}: boundary/cancel, protected edits and v2 history remain exact`,()=>{

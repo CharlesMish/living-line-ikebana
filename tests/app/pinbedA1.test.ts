@@ -25,10 +25,10 @@ test("A1 geometry changes only ceramic X/Z scale; Small bed field remains identi
 
   const outerWidth = (candidate: VesselProfile) => 2 * 2.64 * candidate.scaleX;
   const outerDepth = (candidate: VesselProfile) => 2 * 2.64 * candidate.scaleZ;
-  assert.equal(outerWidth(control), 2.8512);
-  assert.equal(outerDepth(control), 2.8512);
-  assert.equal(outerWidth(a1), 2.56608);
-  assert.equal(outerDepth(a1), 2.56608);
+  assert.ok(Math.abs(outerWidth(control) - 2.8512) < 1e-12);
+  assert.ok(Math.abs(outerDepth(control) - 2.8512) < 1e-12);
+  assert.ok(Math.abs(outerWidth(a1) - 2.56608) < 1e-12);
+  assert.ok(Math.abs(outerDepth(a1) - 2.56608) < 1e-12);
 });
 
 test("A1 keeps pin grid, planting validity, keyboard placement and outline identical to Small bed", () => {

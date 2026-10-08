@@ -3,7 +3,7 @@ import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scene
 import { Photograph } from "./photograph.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
-import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
+import { isExperimentalVesselProfileId, keyboardPlantingPoint, vesselProfilesForSelection } from "../study/vesselProfiles.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -399,6 +399,10 @@ export class IkebanaApp {
     this.setupVesselUI();
   }
   private setupVesselUI() {
+    const vesselProfiles = vesselProfilesForSelection(
+      this.config.campaignA1 || isExperimentalVesselProfileId(this.scene.layoutId),
+      this.scene.layoutId,
+    );
     if (this.vesselAppearanceUI) {
       this.vesselAppearanceUI.update(sceneProfile(this.scene).label, this.scene, this.scene.layoutId, !this.workingSession);
       return;
@@ -406,7 +410,8 @@ export class IkebanaApp {
     this.vesselAppearanceUI = new VesselAppearanceUI(this.root, sceneProfile(this.scene).label, this.scene,
       () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
       choice => this.changeScene({ ...this.scene, ...choice }),
-      this.scene.layoutId, layoutId => this.changeScene({ ...this.scene, layoutId }));
+      this.scene.layoutId, layoutId => this.changeScene({ ...this.scene, layoutId }),
+      vesselProfiles);
     this.root.querySelector<HTMLButtonElement>("#vessel-appearance-open")!.disabled = Boolean(this.workingSession);
   }
   private changeScene(scene: SceneSettings) {

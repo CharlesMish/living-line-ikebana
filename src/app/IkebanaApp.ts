@@ -4,6 +4,7 @@ import { Photograph } from "./photograph.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
+import { configureCampaignD2Study } from "../study/campaignD2SpacedPodLine.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -323,6 +324,7 @@ export class IkebanaApp {
     this.bendVariant = this.config.bendVariant;
     this.bendStationsRequested = this.config.bendStationsRequested;
     this.bendStationsMode = this.config.bendStationsMode;
+    configureCampaignD2Study(root, this.config.campaignD2);
     // A fresh specimen (?fresh=1) never implies clearing study data; that is
     // a distinct, explicit action (?clearStudyData=1). See config.ts. It is
     // also one-shot: act on it once, then strip it from the URL so an

@@ -1,4 +1,5 @@
 import type { BranchKind } from "../core/types.ts";
+import { SPACED_POD_LINE_D2_VERSION } from "../core/spacedPodLineD2.ts";
 import type { BloomForm, FanLeafDraw, LeafForm } from "./botanicalGeometry.ts";
 
 /** Rebuildable appearance keyed by the durable generator version, never topology
@@ -163,6 +164,7 @@ const foliageFan: MaterialAppearance = Object.freeze({
   bloom: flowering.bloom,
 });
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
+  [SPACED_POD_LINE_D2_VERSION]: berryTwig,
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "bare-branch-v1": bare,

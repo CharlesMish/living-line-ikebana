@@ -1,4 +1,5 @@
 import type { BranchKind } from "../core/types.ts";
+import { resolveCampaignPaletteAppearance } from "../study/campaignPaletteStudy.ts";
 import type { BloomForm, FanLeafDraw, LeafForm } from "./botanicalGeometry.ts";
 
 /** Rebuildable appearance keyed by the durable generator version, never topology
@@ -185,5 +186,5 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
 export function getMaterialAppearance(generatorVersion: string): MaterialAppearance {
   const appearance = appearances[generatorVersion];
   if (!appearance) throw new Error(`Missing material appearance: ${generatorVersion}`);
-  return appearance;
+  return resolveCampaignPaletteAppearance(generatorVersion, appearance);
 }

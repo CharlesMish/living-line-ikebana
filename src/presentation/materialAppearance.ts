@@ -163,6 +163,18 @@ const foliageFan: MaterialAppearance = Object.freeze({
   bloom: flowering.bloom,
 });
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
+  "study-sol61-sparse-cane-v1": Object.freeze({
+    ...leafy,
+    branchColors: Object.freeze({ trunk: 0x7b8550, lateral: 0x7b8550,
+      twig: 0x718349, petiole: 0x718349, pedicel: 0x718349 }),
+    leaf: Object.freeze({ ...leafy.leaf, color: 0x546b43, veinColor: 0xa3b27d }),
+  }),
+  "study-sol61-paired-leaf-v1": Object.freeze({
+    ...leafy,
+    branchColors: Object.freeze({ trunk: 0x72765c, lateral: 0x72765c,
+      twig: 0x72765c, petiole: 0x7a826a, pedicel: 0x7a826a }),
+    leaf: Object.freeze({ ...flowering.leaf, color: 0x78958b, veinColor: 0xc1cfb4, roughness: 0.83 }),
+  }),
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "bare-branch-v1": bare,

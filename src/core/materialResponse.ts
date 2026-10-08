@@ -42,3 +42,6 @@ export const BERRY_TWIG_RESPONSE = Object.freeze({ wood: 0.78, cluster: 0.52, st
  * Pinna stalks are petioles, so the shared solver bends the rachis only.
  */
 export const FERN_FROND_RESPONSE = Object.freeze({ rachis: 0.43, stalk: 0.18 });
+/** Candidate study only: cane holds a quiet line; paired cutting yields readily. */
+export const CANDIDATE_CANE_RESPONSE = Object.freeze({ cane: 0.64, twig: 0.4 });
+export const CANDIDATE_PAIRED_RESPONSE = Object.freeze({ stem: 0.44 });

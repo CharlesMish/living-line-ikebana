@@ -6,6 +6,7 @@ export * from "./generator.ts";
 export * from "./graph.ts";
 export * from "./math.ts";
 export * from "./materialCatalog.ts";
+export * from "./pairedLeafD1.ts";
 export * from "./prng.ts";
 export * from "./prune.ts";
 export * from "./serialization.ts";

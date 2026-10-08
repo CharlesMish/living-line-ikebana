@@ -15,6 +15,7 @@ export * from "./leafyShoot.ts";
 export * from "./bareBranch.ts";
 export * from "./singleFlower.ts";
 export * from "./reed.ts";
+export * from "./reedShortB1.ts";
 export * from "./flowerVolume.ts";
 export * from "./archingTrailer.ts";
 export * from "./foliageFan.ts";

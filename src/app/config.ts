@@ -17,6 +17,7 @@ export type ExperimentConfig = {
   bendVariant: BendVariant;
   bendStationsRequested: boolean;
   bendStationsMode: BendStationsMode;
+  campaignB1: boolean;
   debug: boolean;
   workbench: boolean;
   /** Starts a clean specimen/arrangement session. Never touches study telemetry. */
@@ -45,6 +46,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     bendVariant,
     bendStationsRequested,
     bendStationsMode: bendStationsMode(bendStationsRequested, bendVariant),
+    campaignB1: url.searchParams.get("campaignB1") === "1",
     debug: url.searchParams.get("debug") === "1",
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",

@@ -5,6 +5,8 @@ import { Mulberry32 } from "./prng.ts";
 import { SCHEMA_VERSION, type PlantGraph } from "./types.ts";
 
 export const REED_VERSION = "reed-v1" as const;
+const REED_MIN_LENGTH = 3.35;
+const REED_LENGTH_SPAN = 2.9;
 
 /**
  * One reed cutting: a single slender culm. Several insertions make the line
@@ -16,6 +18,10 @@ export const REED_VERSION = "reed-v1" as const;
  * not a species simulation.
  */
 export function createReed(id: string, seed: number, base: Vec3): PlantGraph {
+  return createReedWithLengthScale(id, seed, base, 1);
+}
+
+export function createReedWithLengthScale(id: string, seed: number, base: Vec3, lengthScale: number): PlantGraph {
   const random = new Mulberry32(seed);
   const graph: PlantGraph = {
     schemaVersion: SCHEMA_VERSION,
@@ -32,7 +38,7 @@ export function createReed(id: string, seed: number, base: Vec3): PlantGraph {
   // cuttings are not the same height. 3.35..6.25, still one rising line.
   const azimuth = random.next() * Math.PI * 2;
   const lean = 0.06 + random.next() * 0.2;
-  const length = 3.35 + random.next() * 2.9;
+  const length = (REED_MIN_LENGTH + random.next() * REED_LENGTH_SPAN) * lengthScale;
   const bowAzimuth = azimuth + (random.next() < 0.5 ? 1 : -1) * (0.65 + random.next() * 0.7);
   const bow = 0.1 + random.next() * 0.14;
 

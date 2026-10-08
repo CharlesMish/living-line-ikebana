@@ -73,6 +73,7 @@ import {
   prepareMaterialInsertionForApp,
   selectedBranchIdForSeatedGraph,
 } from "./materialInsertion.ts";
+import { installCampaignB2MaterialOption } from "./campaignB2.ts";
 import {
   createSessionId,
   SessionMetrics,
@@ -337,6 +338,7 @@ export class IkebanaApp {
     // pass itself. clear() above already leaves the cache primed (empty);
     // this call is what primes it from storage on an ordinary load.
     this.telemetryStore.prime();
+    if (this.config.campaignB2) installCampaignB2MaterialOption(root);
     this.ui = createUIBindings({
       root,
       initialState: {
@@ -1881,6 +1883,7 @@ export class IkebanaApp {
     const prepared = prepareMaterialInsertionForApp(
       materialId,
       this.coordinator.getDebugState().successfulPlantOrdinal,
+      { campaignB2: this.config.campaignB2 },
     );
     if (!prepared.ok) {
       this.ui.setStatus(

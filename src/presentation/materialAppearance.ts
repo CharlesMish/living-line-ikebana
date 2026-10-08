@@ -168,6 +168,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,
+  "reed-fine-b2-v1": reed,
   "flower-volume-v1": flowerVolume,
   "arching-trailer-v1": archingTrailer,
   "foliage-fan-v1": foliageFan,

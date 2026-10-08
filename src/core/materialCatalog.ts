@@ -12,6 +12,7 @@ import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
 import { createReed, REED_VERSION } from "./reed.ts";
+import { createReedFineB2, REED_FINE_B2_VERSION } from "./reedFineB2.ts";
 import { createSingleFlower, SINGLE_FLOWER_VERSION } from "./singleFlower.ts";
 import type { Vec3 } from "./math.ts";
 import { GENERATOR_VERSION, type PlantGraph } from "./types.ts";
@@ -74,6 +75,10 @@ const reedV1: GeneratorDefinition = Object.freeze({
   generatorVersion: REED_VERSION,
   generate: createReed,
 });
+const reedFineB2V1: GeneratorDefinition = Object.freeze({
+  generatorVersion: REED_FINE_B2_VERSION,
+  generate: createReedFineB2,
+});
 
 const flowerVolumeV1: GeneratorDefinition = Object.freeze({
   generatorVersion: FLOWER_VOLUME_VERSION,
@@ -123,6 +128,7 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   bareBranchV1,
   singleFlowerV1,
   reedV1,
+  reedFineB2V1,
   flowerVolumeV1,
   archingTrailerV1,
   foliageFanV1,

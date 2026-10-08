@@ -1,6 +1,7 @@
 import { readVesselStudy, type VesselProfile } from "../study/vesselProfiles.ts";
 import type { FanLeafDraw, PinnateDraw } from "../presentation/botanicalGeometry.ts";
 import { bendStationsMode, type BendStationsMode } from "./bendStations.ts";
+import { campaignB2Enabled } from "./campaignB2.ts";
 
 export type BendVariant = "bead" | "touch";
 
@@ -34,6 +35,7 @@ export type ExperimentConfig = {
    * silently delete the comparison data those blocks exist to produce.
    */
   clearStudyData: boolean;
+  campaignB2: boolean;
 };
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
@@ -49,6 +51,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
+    campaignB2: campaignB2Enabled(url),
     pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
   };

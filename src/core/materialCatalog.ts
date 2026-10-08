@@ -12,6 +12,7 @@ import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
 import { createReed, REED_VERSION } from "./reed.ts";
+import { createReedShortB1, REED_SHORT_B1_VERSION } from "./reedShortB1.ts";
 import { createSingleFlower, SINGLE_FLOWER_VERSION } from "./singleFlower.ts";
 import type { Vec3 } from "./math.ts";
 import { GENERATOR_VERSION, type PlantGraph } from "./types.ts";
@@ -75,6 +76,11 @@ const reedV1: GeneratorDefinition = Object.freeze({
   generate: createReed,
 });
 
+const reedShortB1V1: GeneratorDefinition = Object.freeze({
+  generatorVersion: REED_SHORT_B1_VERSION,
+  generate: createReedShortB1,
+});
+
 const flowerVolumeV1: GeneratorDefinition = Object.freeze({
   generatorVersion: FLOWER_VOLUME_VERSION,
   generate: createFlowerVolume,
@@ -123,6 +129,7 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   bareBranchV1,
   singleFlowerV1,
   reedV1,
+  reedShortB1V1,
   flowerVolumeV1,
   archingTrailerV1,
   foliageFanV1,
@@ -158,6 +165,10 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "fern-frond", generator: fernFrondV2 }),
 ]);
 
+const experimentalMaterialCatalog: readonly MaterialDefinition[] = Object.freeze([
+  Object.freeze({ materialId: "reed-short-b1", generator: reedShortB1V1 }),
+]);
+
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {
   return generatorRegistry.find((definition) => definition.generatorVersion === generatorVersion) ?? null;
 }
@@ -168,8 +179,23 @@ export function isSupportedGeneratorVersion(generatorVersion: string): boolean {
 
 export function getMaterialDefinitions(): readonly MaterialDefinition[] { return materialCatalog; }
 
+export function getExperimentalMaterialDefinitions(): readonly MaterialDefinition[] {
+  return experimentalMaterialCatalog;
+}
+
+export function getMaterialDefinitionsForCampaignB1(enabled: boolean): readonly MaterialDefinition[] {
+  return enabled ? [...materialCatalog, ...experimentalMaterialCatalog] : materialCatalog;
+}
+
+function getMaterialDefinitionFromCatalog(
+  materialId: string,
+  catalog: readonly MaterialDefinition[],
+): MaterialDefinition | null {
+  return catalog.find((definition) => definition.materialId === materialId) ?? null;
+}
+
 export function getMaterialDefinition(materialId: string): MaterialDefinition | null {
-  return materialCatalog.find((definition) => definition.materialId === materialId) ?? null;
+  return getMaterialDefinitionFromCatalog(materialId, materialCatalog);
 }
 
 /**
@@ -181,8 +207,9 @@ export function prepareMaterialInsertion(
   materialId: string,
   ordinal: number,
   base: Vec3,
+  catalog: readonly MaterialDefinition[] = materialCatalog,
 ): MaterialInsertionPreparation {
-  const material = getMaterialDefinition(materialId);
+  const material = getMaterialDefinitionFromCatalog(materialId, catalog);
   if (!material) return { ok: false, reason: "unknown-material", materialId };
   if (!isSupportedGeneratorVersion(material.generator.generatorVersion)) {
     return { ok: false, reason: "unsupported-generator-version", materialId };

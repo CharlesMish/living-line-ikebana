@@ -1,5 +1,6 @@
 import {
   prepareMaterialInsertion,
+  type MaterialDefinition,
   type MaterialInsertionPreparation,
   type PlantGraph,
   type Vec3,
@@ -15,11 +16,13 @@ export const KENZAN_BASE: Vec3 = { x: 0, y: 0.55, z: 0 };
 export function prepareMaterialInsertionForApp(
   materialId: string,
   successfulPlantOrdinal: number,
+  catalog?: readonly MaterialDefinition[],
 ): MaterialInsertionPreparation {
   return prepareMaterialInsertion(
     materialId,
     successfulPlantOrdinal + 1,
     KENZAN_BASE,
+    catalog,
   );
 }
 

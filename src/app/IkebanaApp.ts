@@ -13,6 +13,7 @@ import {
   bendStationAtFraction,
   fromCanonicalPlantGraph,
   getMaterialDefinitions,
+  getMaterialDefinitionsForCampaignB1,
   legalBendStation,
   normalize,
   previewPrune,
@@ -269,6 +270,7 @@ export class IkebanaApp {
   private readonly canvas: HTMLCanvasElement;
   private studio: ThreeStudio;
   private readonly config = readExperimentConfig();
+  private readonly materialDefinitions = getMaterialDefinitionsForCampaignB1(this.config.campaignB1);
   private scene: SceneSettings = { ...DEFAULT_SCENE, layoutId: this.config.vesselProfile?.id ?? "original", ...readVesselAppearance(new URL(window.location.href)) };
   private vesselAppearance: VesselAppearanceChoice = this.scene;
   private readonly storageKeys = sceneStorageKeys(new URL(location.href), this.config.workbench, this.config.vesselProfile?.id);
@@ -337,12 +339,13 @@ export class IkebanaApp {
     // pass itself. clear() above already leaves the cache primed (empty);
     // this call is what primes it from storage on an ordinary load.
     this.telemetryStore.prime();
+    this.ensureCampaignB1MaterialUI();
     this.ui = createUIBindings({
       root,
       initialState: {
         bendVariant: uiVariant(this.bendVariant),
         bendStationsMode: this.bendStationsMode,
-        selectedMaterialId: getMaterialDefinitions()[0]?.materialId ?? "flowering-branch",
+        selectedMaterialId: this.config.campaignB1 ? "reed-short-b1" : getMaterialDefinitions()[0]?.materialId ?? "flowering-branch",
       },
     });
     this.canvas = document.createElement("canvas");
@@ -1875,12 +1878,38 @@ export class IkebanaApp {
     return target.closest<HTMLElement>("[data-material-id]");
   }
 
+  private ensureCampaignB1MaterialUI() {
+    if (!this.config.campaignB1) return;
+    const options = this.root.querySelector<HTMLElement>("#material-options");
+    const templates = this.root.querySelector<HTMLElement>("#material-templates");
+    const reedChoice = this.root.querySelector<HTMLButtonElement>("[data-material-choice='reed']");
+    const reedTemplate = this.root.querySelector<HTMLTemplateElement>("#material-template-reed");
+    if (!options || !templates || !reedChoice || !reedTemplate) return;
+    if (this.root.querySelector("[data-material-choice='reed-short-b1']")) return;
+
+    const choice = reedChoice.cloneNode(true) as HTMLButtonElement;
+    choice.dataset.materialChoice = "reed-short-b1";
+    choice.dataset.testid = "material-choice-reed-short-b1";
+    choice.setAttribute("aria-pressed", "false");
+    const title = choice.querySelector("strong");
+    const detail = choice.querySelector(".material-detail");
+    if (title) title.textContent = "reed (short B1)";
+    if (detail) detail.textContent = "Campaign B1 study";
+    options.append(choice);
+
+    const template = reedTemplate.cloneNode(true) as HTMLTemplateElement;
+    template.id = "material-template-reed-short-b1";
+    template.dataset.materialLabel = "reed (short B1)";
+    templates.append(template);
+  }
+
   private preventDefault = (event: Event) => event.preventDefault();
 
   private prepareMaterialInsertion(materialId: string) {
     const prepared = prepareMaterialInsertionForApp(
       materialId,
       this.coordinator.getDebugState().successfulPlantOrdinal,
+      this.materialDefinitions,
     );
     if (!prepared.ok) {
       this.ui.setStatus(

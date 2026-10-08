@@ -1,4 +1,5 @@
 import { VESSEL_PROFILES } from "./vesselProfiles.ts";
+import type { VesselProfile } from "./vesselProfiles.ts";
 import { resolveVesselAppearance, VESSEL_COLORS, VESSEL_FINISHES, type VesselAppearanceChoice } from "./vesselAppearance.ts";
 import "./vesselAppearance.css";
 
@@ -9,7 +10,8 @@ export class VesselAppearanceUI {
   private readonly abort = new AbortController();
 
   constructor(root: HTMLElement, label: string, current: VesselAppearanceChoice, beforeOpen: () => void,
-    change: (choice: VesselAppearanceChoice) => void, layoutId?: string, layoutChange?: (id: string) => void) {
+    change: (choice: VesselAppearanceChoice) => void, layoutId?: string, layoutChange?: (id: string) => void,
+    profiles: readonly VesselProfile[] = VESSEL_PROFILES) {
     this.button.type = "button"; this.button.id = "vessel-appearance-open";
     this.button.dataset.testid = "vessel-appearance-open";
     this.button.setAttribute("aria-haspopup", "dialog");
@@ -28,7 +30,7 @@ export class VesselAppearanceUI {
       <p class="panel-note">Your Garden remembers the vessel, surface and scene setting.</p>`;
     this.dialog.querySelector("h1")!.textContent = label;
     const layout = this.dialog.querySelector<HTMLSelectElement>("#vessel-layout")!;
-    for (const item of VESSEL_PROFILES) layout.add(new Option(item.label, item.id));
+    for (const item of profiles) layout.add(new Option(item.label, item.id));
     layout.value = layoutId ?? "original"; layout.closest("label")!.hidden = !layoutChange;
     layout.addEventListener("change", event => { event.stopPropagation(); layoutChange?.(layout.value); }, { signal: this.abort.signal });
     const color = this.dialog.querySelector<HTMLSelectElement>("#vessel-color")!;

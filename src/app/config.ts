@@ -1,4 +1,4 @@
-import { readVesselStudy, type VesselProfile } from "../study/vesselProfiles.ts";
+import { campaignA2Enabled, readVesselStudy, type VesselProfile } from "../study/vesselProfiles.ts";
 import type { FanLeafDraw, PinnateDraw } from "../presentation/botanicalGeometry.ts";
 import { bendStationsMode, type BendStationsMode } from "./bendStations.ts";
 
@@ -17,6 +17,7 @@ export type ExperimentConfig = {
   bendVariant: BendVariant;
   bendStationsRequested: boolean;
   bendStationsMode: BendStationsMode;
+  campaignA2: boolean;
   debug: boolean;
   workbench: boolean;
   /** Starts a clean specimen/arrangement session. Never touches study telemetry. */
@@ -45,6 +46,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     bendVariant,
     bendStationsRequested,
     bendStationsMode: bendStationsMode(bendStationsRequested, bendVariant),
+    campaignA2: campaignA2Enabled(url),
     debug: url.searchParams.get("debug") === "1",
     workbench: url.searchParams.get("workbench") === "1",
     fresh: url.searchParams.get("fresh") === "1",

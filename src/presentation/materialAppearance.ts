@@ -1,5 +1,6 @@
 import type { BranchKind } from "../core/types.ts";
 import { resolveCampaignPaletteAppearance } from "../study/campaignPaletteStudy.ts";
+import "../study/campaignPaletteRecipes.ts";
 import type { BloomForm, FanLeafDraw, LeafForm } from "./botanicalGeometry.ts";
 
 /** Rebuildable appearance keyed by the durable generator version, never topology

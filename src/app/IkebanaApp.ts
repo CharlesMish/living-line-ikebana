@@ -223,7 +223,7 @@ declare global {
 
 const TOUCH_BEND_START = 0.24;
 const TOUCH_BEND_END = 0.72;
-const CAMPAIGN_PALETTE_EXPECTED_BUILD = "campaign-01-c1";
+const CAMPAIGN_PALETTE_EXPECTED_BUILD = "campaign-01-c3";
 const PREVENTION_MESSAGES = {
   contact: "Prevent overlaps stopped this move. Try another direction, or turn it off in Angles.",
   budget: "Prevent overlaps paused this move. Try a smaller move, or turn it off in Angles.",
@@ -326,9 +326,9 @@ export class IkebanaApp {
     this.bendStationsRequested = this.config.bendStationsRequested;
     this.bendStationsMode = this.config.bendStationsMode;
     configureCampaignPaletteStudy({
-      flagEnabled: this.config.campaignC1,
+      flagEnabled: this.config.campaignC3,
       expectedBuild: CAMPAIGN_PALETTE_EXPECTED_BUILD,
-      defaultRecipeId: this.config.campaignC1 ? "c1-warm-mineral" : null,
+      defaultRecipeId: this.config.campaignC3 ? "c3-ink-citrus" : null,
       sidecarRaw: this.config.campaignPaletteSidecar,
     });
     // A fresh specimen (?fresh=1) never implies clearing study data; that is

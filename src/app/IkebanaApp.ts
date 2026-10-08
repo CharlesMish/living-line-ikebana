@@ -1,9 +1,15 @@
 import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
-import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
+import {
+  SceneCommittedStore,
+  SceneGardenStore,
+  sceneStorageKeys,
+  type SceneStudioDocument,
+} from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
+import { loadCampaignD1StartupDocument } from "./startupOrdering.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -275,7 +281,7 @@ export class IkebanaApp {
   private suppressSave = false;
   private vesselAppearanceUI?: VesselAppearanceUI;
   private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
-  private readonly initialSaved = this.store.load();
+  private readonly initialSaved: SceneStudioDocument | null;
   private readonly sound = new CraftSound();
   private readonly sessionId = createSessionId();
   private readonly metrics = new SessionMetrics(this.sessionId, this.config.bendVariant);
@@ -312,7 +318,18 @@ export class IkebanaApp {
 
   constructor(root: HTMLElement) {
     this.root = root;
-    if (!this.config.fresh && this.initialSaved) this.scene = this.initialSaved.scene;
+    this.bendVariant = this.config.bendVariant;
+    this.bendStationsRequested = this.config.bendStationsRequested;
+    this.bendStationsMode = this.config.bendStationsMode;
+    const startup = loadCampaignD1StartupDocument({
+      root,
+      campaignD1: this.config.campaignD1,
+      fresh: this.config.fresh,
+      store: this.store,
+      defaultScene: this.scene,
+    });
+    this.initialSaved = startup.initialSaved;
+    this.scene = startup.scene;
     this.config.vesselProfile = sceneProfile(this.scene);
     this.vesselAppearance = this.scene;
     this.loadWarning = this.store.error;
@@ -320,9 +337,6 @@ export class IkebanaApp {
       root.dataset.vesselStudy = this.config.vesselProfile.id;
       document.title = `Living Line · ${this.config.vesselProfile.label}`;
     }
-    this.bendVariant = this.config.bendVariant;
-    this.bendStationsRequested = this.config.bendStationsRequested;
-    this.bendStationsMode = this.config.bendStationsMode;
     // A fresh specimen (?fresh=1) never implies clearing study data; that is
     // a distinct, explicit action (?clearStudyData=1). See config.ts. It is
     // also one-shot: act on it once, then strip it from the URL so an

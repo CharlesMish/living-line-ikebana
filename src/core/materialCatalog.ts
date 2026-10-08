@@ -158,18 +158,63 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "fern-frond", generator: fernFrondV2 }),
 ]);
 
+const experimentalGenerators = new Map<string, GeneratorDefinition>();
+const enabledExperimentalGenerators = new Set<string>();
+const experimentalMaterials = new Map<string, MaterialDefinition>();
+const enabledExperimentalMaterials = new Set<string>();
+
+function isBuiltinGeneratorVersion(generatorVersion: string) {
+  return generatorRegistry.some((definition) => definition.generatorVersion === generatorVersion);
+}
+
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {
-  return generatorRegistry.find((definition) => definition.generatorVersion === generatorVersion) ?? null;
+  return generatorRegistry.find((definition) => definition.generatorVersion === generatorVersion)
+    ?? (enabledExperimentalGenerators.has(generatorVersion) ? experimentalGenerators.get(generatorVersion) ?? null : null);
 }
 
 export function isSupportedGeneratorVersion(generatorVersion: string): boolean {
   return getGeneratorDefinition(generatorVersion) !== null;
 }
 
-export function getMaterialDefinitions(): readonly MaterialDefinition[] { return materialCatalog; }
+export function getMaterialDefinitions(): readonly MaterialDefinition[] {
+  const study = [...enabledExperimentalMaterials].map((materialId) => experimentalMaterials.get(materialId))
+    .filter((value): value is MaterialDefinition => Boolean(value));
+  if (study.length === 0) return materialCatalog;
+  return Object.freeze([...materialCatalog, ...study]);
+}
 
 export function getMaterialDefinition(materialId: string): MaterialDefinition | null {
-  return materialCatalog.find((definition) => definition.materialId === materialId) ?? null;
+  return materialCatalog.find((definition) => definition.materialId === materialId)
+    ?? (enabledExperimentalMaterials.has(materialId) ? experimentalMaterials.get(materialId) ?? null : null);
+}
+
+export function registerExperimentalGenerator(definition: GeneratorDefinition): void {
+  if (isBuiltinGeneratorVersion(definition.generatorVersion)) return;
+  if (experimentalGenerators.has(definition.generatorVersion)) return;
+  experimentalGenerators.set(definition.generatorVersion, Object.freeze({ ...definition }));
+}
+
+export function registerExperimentalMaterial(definition: MaterialDefinition): void {
+  if (materialCatalog.some((material) => material.materialId === definition.materialId)) return;
+  if (experimentalMaterials.has(definition.materialId)) return;
+  experimentalMaterials.set(definition.materialId, Object.freeze({
+    materialId: definition.materialId,
+    generator: Object.freeze({ ...definition.generator }),
+  }));
+}
+
+export function setExperimentalGeneratorEnabled(generatorVersion: string, enabled: boolean): void {
+  if (!experimentalGenerators.has(generatorVersion)) return;
+  if (enabled) enabledExperimentalGenerators.add(generatorVersion);
+  else enabledExperimentalGenerators.delete(generatorVersion);
+}
+
+export function setExperimentalMaterialEnabled(materialId: string, enabled: boolean): void {
+  const material = experimentalMaterials.get(materialId);
+  if (!material) return;
+  setExperimentalGeneratorEnabled(material.generator.generatorVersion, enabled);
+  if (enabled) enabledExperimentalMaterials.add(materialId);
+  else enabledExperimentalMaterials.delete(materialId);
 }
 
 /**

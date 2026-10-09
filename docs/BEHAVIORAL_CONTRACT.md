@@ -430,3 +430,24 @@ New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte int
 ### Smaller pinbeds and base recovery (October 4)
 
 Small bed, Single small bowl and Medium oval add three stable layout IDs to the existing seven; Original remains the default. No graph schema, storage envelope or legacy fallback changes. Angles groups presets and stem checks; Studio groups Vessel/Photograph and Garden/Guide. A contact or bounded-work stop names Prevent overlaps during the grab and after release, with the Angles escape route. Actual collision protection is unchanged. See [release evidence and owner checks](development/PINBED_RELEASE.md).
+
+## 10. Opt-in invitation experiment (Campaign 02)
+
+This experiment asks what makes another arrangement worth beginning. It does not revise sections 1–9. Open play, with no `invite` parameter, is unchanged: no card, no command, and no save.
+
+`?invite=material` (E1) and `?invite=occasion` (E2) show one card. Both use the same position, size, heading ("An invitation"), one sentence, and the buttons Begin, Another, and Not now. Another cycles the sentence. Not now dismisses the card in one action. The card carries `data-invite-mode` and `data-invite-id` so an external observer can record which sentence was shown. Those attributes are not telemetry. The invitation is not written to `studio-v2`, `garden-v2`, or telemetry, and it does not change their keys, versions, or shapes.
+
+The card appears in two moments only:
+
+- On an empty working bowl at load, and again after the existing Start a fresh bowl path empties the bowl.
+- Inside the Garden dialog after a successful Keep this bowl, as an invitation to begin another bowl. Closing Garden or choosing Not now leaves the working bowl and the Garden as they were.
+
+It does not appear on a non-empty bowl except in that Garden-after-Keep moment, and it does not appear without a flag. It does not cover Shape, Keep, Garden, or Photograph. It never clears or replaces a bowl by itself.
+
+**The one disclosed difference is E1 preselection.** On an empty bowl, E2 Begin only dismisses the card. E1 Begin dismisses the card and selects that invitation's existing material through the existing `select-material` command. Selection does not place a cutting.
+
+In the Garden-after-Keep moment, Begin for either flag dismisses the card and uses the existing Start a fresh bowl path (`GardenUI.offerReplacement(null)`), including the existing Keep first / Replace without keeping / Cancel safeguard. Cancel leaves the working bowl and the Garden unchanged. E1's material selection runs only after that path has produced the new empty bowl. E2 never selects a material.
+
+The first sentence is `garden entry count mod list length`, using a read-only count. Six material sentences and six occasion sentences are fixed in `src/app/invitations.ts`. Material ids are the existing catalog ids (`reed`, `bare-branch`, `arching-trailer`, `fern-frond`, `berry-twig`, `flowering-branch`).
+
+Remembering which invitation a kept bowl answered is not built. That would add a field to the Garden entry and would require a `gardenVersion` bump. `gardenVersion` stays 2.

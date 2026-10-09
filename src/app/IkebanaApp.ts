@@ -12,6 +12,7 @@ import {
   assertValidPlantGraph,
   bendStationAtFraction,
   fromCanonicalPlantGraph,
+  getMaterialDefinition,
   getMaterialDefinitions,
   legalBendStation,
   normalize,
@@ -91,6 +92,16 @@ import {
 } from "./gardenCompare.ts";
 import { createStudioComparisonViewport } from "./gardenCompareView.ts";
 import { GardenUI } from "./gardenUI.ts";
+import { mountInvitationCard, type InvitationCardHandle } from "./invitationCard.ts";
+import {
+  CLOSED_INVITATION,
+  readInviteMode,
+  reduceInvitation,
+  type InvitationCommand,
+  type InvitationEffect,
+  type InvitationSession,
+  type InviteMode,
+} from "./invitations.ts";
 import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
 
@@ -306,6 +317,9 @@ export class IkebanaApp {
   private hovering = false;
   private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
   private gardenUI!: GardenUI;
+  private readonly inviteMode: InviteMode | null = readInviteMode(globalThis.location?.search ?? "");
+  private inviteSession: InvitationSession = CLOSED_INVITATION;
+  private invitationCard: InvitationCardHandle | null = null;
   private photograph: Photograph | null = null;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean; scene: SceneSettings } | null = null;
   private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
@@ -368,6 +382,18 @@ export class IkebanaApp {
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
     }, this.config.workbench);
+    this.gardenUI.onKept = () => {
+      if (!this.inviteMode) return;
+      this.commitInvite({ type: "show-after-keep", gardenEntryCount: this.gardenUI.entryCount() });
+    };
+    this.gardenUI.onGardenClosed = () => {
+      if (!this.inviteMode) return;
+      this.commitInvite({ type: "garden-closed" });
+    };
+    this.gardenUI.onFreshBowlDeclined = () => {
+      if (!this.inviteMode) return;
+      this.commitInvite({ type: "replacement-declined" });
+    };
     {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
@@ -460,6 +486,7 @@ export class IkebanaApp {
     // Web fonts can change the rail's height once; measure again then.
     void document.fonts?.ready.then(() => this.scheduleStageMeasure());
     this.syncPresentation();
+    this.offerOpeningInvitation();
     this.root.dataset.ready = "true";
     if (new URL(location.href).searchParams.get("test") === "1") this.installTestBridge();
   }
@@ -477,6 +504,8 @@ export class IkebanaApp {
     this.removeUIListener?.();
     this.removeUIListener = null;
     this.endGardenComparisonView();
+    this.invitationCard?.destroy();
+    this.invitationCard = null;
     this.photograph?.destroy();
     this.gardenUI?.destroy();
     this.vesselAppearanceUI?.destroy();
@@ -733,6 +762,90 @@ export class IkebanaApp {
     this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false, materialMenuOpen: false });
     this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : "A fresh bowl. Place a cutting.");
     this.syncPresentation();
+    if (!value) this.onFreshBowlCreated();
+  }
+
+  private offerOpeningInvitation() {
+    if (!this.inviteMode || this.workingPlantCount() !== 0) return;
+    this.commitInvite({ type: "show-empty-bowl", gardenEntryCount: this.gardenUI.entryCount() });
+  }
+
+  private onFreshBowlCreated() {
+    if (!this.inviteMode) return;
+    const created = reduceInvitation(this.inviteSession, { type: "fresh-bowl-created" }, this.inviteMode);
+    this.inviteSession = created.session;
+    this.applyInviteEffects(created.effects);
+    const count = this.gardenUI.entryCount();
+    const shown = reduceInvitation(this.inviteSession, { type: "show-empty-bowl", gardenEntryCount: count }, this.inviteMode);
+    this.inviteSession = shown.session;
+    this.renderInvitation();
+  }
+
+  private noteWorkingBowlFilled() {
+    if (!this.inviteMode || this.inviteSession.card?.moment !== "empty-bowl") return;
+    if (this.workingPlantCount() === 0) return;
+    const step = reduceInvitation(this.inviteSession, { type: "bowl-gained-material" }, this.inviteMode);
+    this.inviteSession = step.session;
+    this.renderInvitation();
+  }
+
+  private workingPlantCount(): number {
+    const coordinator = this.workingSession?.coordinator ?? this.coordinator;
+    return coordinator.getDocumentSnapshot().plants.size;
+  }
+
+  private commitInvite(command: InvitationCommand) {
+    if (!this.inviteMode) return;
+    const step = reduceInvitation(this.inviteSession, command, this.inviteMode);
+    this.inviteSession = step.session;
+    this.applyInviteEffects(step.effects);
+    this.renderInvitation();
+  }
+
+  private applyInviteEffects(effects: readonly InvitationEffect[]) {
+    for (const effect of effects) {
+      if (effect.type === "select-material") this.selectInvitedMaterial(effect.materialId);
+      else if (effect.type === "request-fresh-bowl") this.gardenUI.startFreshBowl();
+    }
+  }
+
+  private selectInvitedMaterial(materialId: string) {
+    if (!getMaterialDefinition(materialId)) return;
+    this.handleUICommand({ kind: "select-material", materialId }, new Event("click"));
+  }
+
+  private renderInvitation() {
+    if (!this.inviteMode || this.disposed) return;
+    const card = this.ensureInvitationCard();
+    if (!card) return;
+    if (!this.inviteSession.card) {
+      card.hide();
+      return;
+    }
+    const studio = this.root.querySelector("#status");
+    const garden = this.root.querySelector(".garden-tools");
+    if (!studio) {
+      card.hide();
+      return;
+    }
+    card.show(
+      this.inviteSession,
+      this.inviteMode,
+      this.inviteSession.card.moment === "garden-after-keep" ? "garden" : "studio",
+      { studio, garden },
+    );
+  }
+
+  private ensureInvitationCard(): InvitationCardHandle | null {
+    if (!this.inviteMode) return null;
+    if (!this.invitationCard) {
+      this.invitationCard = mountInvitationCard({
+        onBegin: () => this.commitInvite({ type: "begin" }),
+        onAnother: () => this.commitInvite({ type: "another" }),
+        onNotNow: () => this.commitInvite({ type: "not-now" }),
+      });
+    }
+    return this.invitationCard;
   }
 
   private workbenchReport() {
@@ -2022,6 +2135,7 @@ export class IkebanaApp {
     ) {
       this.ui.setTrayDragging(dragging, activeMaterialId);
     }
+    this.noteWorkingBowlFilled();
   }
 
   private canonicalSnapshot() {

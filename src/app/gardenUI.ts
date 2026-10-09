@@ -1,4 +1,5 @@
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
+import { parseSceneGarden } from "./scenePersistence.ts";
 import {
   comparisonCanvasSlots,
   equalCanvasBox,
@@ -50,6 +51,11 @@ export class GardenUI {
   private comparison: GardenComparison | null = null;
   private compareMode: ComparisonDragMode = "orbit";
   private compareDrag: ComparisonDrag | null = null;
+  private freshRequestArmed = false;
+  private freshRequestSettling = false;
+  onKept: (() => void) | null = null;
+  onGardenClosed: (() => void) | null = null;
+  onFreshBowlDeclined: (() => void) | null = null;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
   constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false) {
     const host = document.createElement("div");
@@ -155,6 +161,7 @@ export class GardenUI {
     }, { signal: this.controller.signal });
     this.dialog.addEventListener("close", () => {
       this.clearChoice();
+      this.onGardenClosed?.();
       if (!this.comparing) this.find<HTMLButtonElement>("#more-toggle").focus();
     }, { signal: this.controller.signal });
     on("#garden-compare-go", () => this.startComparison());
@@ -173,7 +180,12 @@ export class GardenUI {
   private message(value: unknown) { this.error.textContent = value instanceof Error ? value.message : String(value); }
   private run(action: () => void) { try { action(); } catch (error) { this.message(error); } }
   open() {
-    this.actions.pause(); this.clearChoice(); this.message(""); this.reload();
+    this.actions.pause();
+    this.pending = null;
+    this.freshRequestArmed = false;
+    this.find("#garden-choice").hidden = true;
+    this.message("");
+    this.reload();
     if (!this.dialog.open) this.dialog.showModal();
   }
   private reload() {
@@ -252,6 +264,7 @@ export class GardenUI {
     };
     this.store.keep(entry);
     this.find<HTMLInputElement>("#garden-name").value = ""; this.reload();
+    if (!this.freshRequestArmed) this.onKept?.();
   }
   private view(entry: GardenEntry) {
     this.actions.view(entry); this.viewedEntry = entry;
@@ -264,9 +277,19 @@ export class GardenUI {
     delete this.root.dataset.gardenViewing;
     this.find<HTMLButtonElement>("#more-toggle").focus();
   }
+  /** Same path as Start a fresh bowl, including Keep first / Replace / Cancel. */
+  startFreshBowl(): void {
+    this.run(() => this.offerReplacement(null));
+  }
+  /** Readable Garden length only. A missing or unreadable collection counts as zero and is not written. */
+  entryCount(): number {
+    try { return parseSceneGarden(this.store.exportRaw()).entries.length; }
+    catch { return 0; }
+  }
   private offerReplacement(snapshot: ArrangementSnapshot | null) {
     this.returnToWork(); this.open();
     this.pending = () => { this.actions.replace(snapshot); this.dialog.close(); };
+    if (snapshot === null) this.freshRequestArmed = true;
     if (!this.actions.snapshot().plants.length) { this.finishReplacement(); return; }
     this.find("#garden-choice-title").textContent = "What about your current bowl?";
     this.find("#garden-choice p").textContent = "Keep it first, or replace it. Your existing Garden entries will stay as they are.";
@@ -276,8 +299,29 @@ export class GardenUI {
     this.find("#garden-choice").hidden = false;
     this.find<HTMLButtonElement>("#garden-cancel-choice").focus();
   }
-  private finishReplacement() { const action = this.pending; action?.(); this.clearChoice(); }
-  private clearChoice() { this.pending = null; this.find("#garden-choice").hidden = true; }
+  private finishReplacement() {
+    const action = this.pending;
+    this.pending = null;
+    this.freshRequestSettling = true;
+    try { action?.(); }
+    catch (error) {
+      if (this.freshRequestArmed) this.onFreshBowlDeclined?.();
+      throw error;
+    }
+    finally {
+      this.freshRequestSettling = false;
+      this.freshRequestArmed = false;
+      this.find("#garden-choice").hidden = true;
+    }
+  }
+  private clearChoice() {
+    const decline = this.freshRequestArmed && !this.freshRequestSettling && this.pending !== null;
+    this.pending = null;
+    this.find("#garden-choice").hidden = true;
+    if (!decline) return;
+    this.freshRequestArmed = false;
+    this.onFreshBowlDeclined?.();
+  }
   private setupWorkbench(on: (selector: string, action: () => void) => void) {
     const dialog = this.find<HTMLDialogElement>("#workbench-dialog");
     this.find("#workbench-open").hidden = false; this.root.dataset.workbench = "true";

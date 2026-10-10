@@ -4,6 +4,10 @@ import { Photograph } from "./photograph.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
+import { BeginCard } from "./beginCard.ts";
+import { insertBeginLine, planBeginSeat, type BeginInvitation } from "./beginLines.ts";
+import { BeginSession, nextStartPlantSignal, type BeginSurface } from "./beginStudy.ts";
+import { stemProtectionStatus } from "./researchCopy.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -324,6 +328,11 @@ export class IkebanaApp {
   private suppressPlantingCue = false;
   /** Set in the window capture phase, before menus close on the same press. */
   private chromeDismissPress = false;
+  private beginSession: BeginSession | null = null;
+  private beginCard: BeginCard | null = null;
+  private pendingBegin: { lineId: string; surface: BeginSurface } | null = null;
+  private seatedCanonical: string | null = null;
+  private startRemovalLogged = false;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -355,6 +364,7 @@ export class IkebanaApp {
     this.ui = createUIBindings({
       root,
       placeTap: this.config.placeTap,
+      researchBake: this.config.beginBake !== null,
       initialState: {
         bendVariant: uiVariant(this.bendVariant),
         bendStationsMode: this.bendStationsMode,
@@ -379,11 +389,28 @@ export class IkebanaApp {
       view: (entry) => this.viewGardenEntry(entry),
       returnToWork: () => this.returnToWorkingBowl(),
       replace: (snapshot) => this.replaceWorkingBowl(snapshot),
+      kept: () => {
+        if (!this.beginSession) return;
+        this.beginSession.afterKeepArmed = true;
+        this.syncBegin();
+      },
+      closed: () => this.syncBegin(),
+      replacementSettled: (applied) => {
+        const pending = this.pendingBegin;
+        if (!pending) return;
+        this.pendingBegin = null;
+        if (!applied) {
+          this.beginSession?.recordCancelled(pending.lineId, pending.surface);
+          this.syncBegin();
+          return;
+        }
+        this.finishSeatedLine(pending.lineId, "plant-1", pending.surface);
+      },
       beginComparison: (left, right, canvases) => this.beginGardenComparisonView(left, right, canvases),
       syncComparison: (session) => this.syncGardenComparisonView(session),
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
-    }, this.config.workbench);
+    }, this.config.workbench, this.config.beginBake !== null);
     {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
@@ -393,6 +420,7 @@ export class IkebanaApp {
       });
     }
     this.setupVesselUI();
+    this.installBegin();
 
   }
 
@@ -488,6 +516,8 @@ export class IkebanaApp {
     if (this.disposed) return;
     this.disposed = true;
     this.interruptActive("system-interruption", false);
+    this.beginCard = null;
+    this.beginSession = null;
     // Not the craft-critical commit path: a synchronous flush here is safe
     // and reduces the chance of losing a just-buffered telemetry write.
     this.telemetryStore.flush();
@@ -576,7 +606,10 @@ export class IkebanaApp {
           }
           // Recorded only after the graph save (and any eviction/retry) has
           // been fully attempted, and never allowed to block, delay, or fail it.
-          if (event.domain === "graph") this.resolvePendingAcquisition("committed");
+          if (event.domain === "graph") {
+            this.resolvePendingAcquisition("committed");
+            this.observeBeginPlant(event.document.plants, event.operation);
+          }
         },
       },
     );
@@ -762,6 +795,176 @@ export class IkebanaApp {
     this.syncPresentation();
   }
 
+  private installBegin() {
+    const kind = this.config.beginLine ? "line" : this.config.beginFor ? "for" : null;
+    if (!kind) return;
+    this.beginSession = new BeginSession({
+      kind,
+      seed: this.config.beginSeed,
+      storage: {
+        getItem: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
+        setItem: (key, value) => { try { localStorage.setItem(key, value); } catch { /* The card still shows the last event. */ } },
+      },
+    });
+    this.beginCard = new BeginCard(this.root, this.abortController.signal, {
+      begin: (surface) => this.pressBegin(surface),
+      another: (surface) => this.pressBeginAnother(surface),
+      notNow: (surface) => this.pressBeginNotNow(surface),
+      stop: () => this.pressBeginStop(),
+      toggleNote: () => this.pressBeginNote(),
+      presentation: () => this.pressBeginPresentation(),
+    });
+    this.captureSeatedBaseline();
+  }
+
+  private pressBegin(surface: BeginSurface) {
+    const session = this.beginSession;
+    if (!session || this.pendingBegin) return;
+    const item = session.item(surface);
+    session.recordPressed(item.id, surface);
+    if (session.kind === "for") {
+      session.chooseInvitation(item.id);
+      session.recordBegin(item.id, surface);
+      session.commitUse(item.id);
+      session.afterKeepArmed = false;
+      this.ui.setStatus("That note stays while you arrange.");
+      this.syncBegin();
+      return;
+    }
+    const plants = this.coordinator.getDocumentSnapshot().plants;
+    const nextOrdinal = this.coordinator.getDebugState().successfulPlantOrdinal + 1;
+    const plan = planBeginSeat(item.id, plants.size, nextOrdinal);
+    if (plan.mode === "insert") {
+      const seated = insertBeginLine(this.coordinator, item.id);
+      if (seated.ok) {
+        this.finishSeatedLine(item.id, seated.plantId, surface);
+        return;
+      }
+    }
+    this.pendingBegin = { lineId: item.id, surface };
+    try {
+      this.gardenUI.offerBowlReplacement(plan.snapshot);
+    } catch (error) {
+      this.pendingBegin = null;
+      session.recordCancelled(item.id, surface);
+      this.ui.setStatus(error instanceof Error ? error.message : "The bowl could not be changed.", "warning");
+      this.syncBegin();
+    }
+  }
+
+  private finishSeatedLine(lineId: string, plantId: string, surface: BeginSurface) {
+    const graph = this.coordinator.getDocumentSnapshot().plants.get(plantId);
+    if (graph) {
+      this.coordinator.commandSelection(plantId);
+      this.assignSelectedBranch(graph.rootBranchId);
+    }
+    this.beginSession?.recordBegin(lineId, surface);
+    this.beginSession?.rememberSeat(lineId, plantId);
+    this.beginSession?.commitUse(lineId);
+    if (this.beginSession) this.beginSession.afterKeepArmed = false;
+    this.captureSeatedBaseline();
+    this.sound.seat();
+    this.ui.setStatus(this.bendVariant === "bead"
+      ? "Drag a branch to aim. Use the pale point to bend."
+      : "Drag to aim. Bend the middle of a selected branch.");
+    this.syncBegin();
+  }
+
+  private pressBeginAnother(surface: BeginSurface) {
+    this.beginSession?.another(surface);
+    this.syncBegin();
+  }
+
+  private pressBeginNotNow(surface: BeginSurface) {
+    this.beginSession?.notNow(surface);
+    if (surface === "opening") this.ui.setStatus("Place a cutting.");
+    this.syncBegin();
+  }
+
+  private pressBeginStop() {
+    this.beginSession?.stop();
+    this.syncBegin();
+  }
+
+  private pressBeginNote() {
+    if (this.beginCard && !this.beginCard.offer.hidden) return;
+    this.beginSession?.toggleNote();
+    this.syncBegin();
+  }
+
+  private pressBeginPresentation() {
+    const invitation: BeginInvitation | null = this.beginSession?.chosenInvitation() ?? null;
+    if (!invitation?.presentation) return;
+    this.changeScene({ ...this.scene, ...invitation.presentation.scene });
+  }
+
+  private captureSeatedBaseline() {
+    const seated = this.beginSession?.seatedLine();
+    if (!seated || !this.coordinator) {
+      this.seatedCanonical = null;
+      return;
+    }
+    const graph = this.coordinator.getDocumentSnapshot().plants.get(seated.plantId);
+    this.seatedCanonical = graph ? JSON.stringify(toCanonicalPlantGraph(graph)) : null;
+    this.startRemovalLogged = graph === undefined;
+  }
+
+  private observeBeginPlant(plants: ReadonlyMap<string, PlantGraph>, operation?: string) {
+    const session = this.beginSession;
+    if (!session?.seatedLine()) return;
+    const seated = session.seatedLine();
+    if (!seated) return;
+    const graph = plants.get(seated.plantId);
+    const next = nextStartPlantSignal(
+      { canonical: this.seatedCanonical, removalLogged: this.startRemovalLogged },
+      graph ? JSON.stringify(toCanonicalPlantGraph(graph)) : null,
+      operation,
+    );
+    this.seatedCanonical = next.canonical;
+    this.startRemovalLogged = next.removalLogged;
+    if (next.signal === "edited") session.recordEdited();
+    else if (next.signal === "removed") session.recordRemoved();
+    else if (next.signal === "undone") session.recordUndone();
+    else if (next.signal === "restored") session.recordRestored();
+    if (next.signal) this.beginCard?.setToken(session.token());
+  }
+
+  private syncBegin() {
+    const session = this.beginSession;
+    const card = this.beginCard;
+    if (!session || !card || !this.coordinator || this.disposed) return;
+    const viewing = Boolean(this.workingSession);
+    const plants = this.coordinator.getDocumentSnapshot().plants.size;
+    const invitation = session.chosenInvitation();
+    const gardenOpen = this.gardenUI?.isDialogOpen() === true;
+    let surface: BeginSurface | null = viewing
+      ? null
+      : session.afterKeepArmed && plants > 0
+        ? "after-keep"
+        : plants === 0 && !session.openingDismissed && !invitation
+          ? "opening"
+          : null;
+    if (surface === "after-keep" && gardenOpen) surface = null;
+    const offerUp = surface !== null;
+    if (!viewing && invitation) card.showNote(invitation, offerUp ? true : session.noteCollapsed());
+    else card.hideNote();
+    if (!surface) {
+      session.clearShown();
+      card.hideOffer();
+      card.setToken(session.token());
+      return;
+    }
+    const item = session.item(surface);
+    card.showOffer({
+      surface,
+      text: item.text,
+      accept: session.kind === "line" ? "Begin from this line" : "Begin",
+      another: session.kind === "line" ? "Another line" : "Another",
+    });
+    session.noteShown(surface, item.id);
+    card.setToken(session.token());
+  }
+
   private workbenchReport() {
     this.pauseForGarden();
     const snapshot = this.arrangementSnapshot();
@@ -868,9 +1071,7 @@ export class IkebanaApp {
         this.cancelPlaceReadiness("interrupt");
         this.interruptActive("experiment-command", false);
         this.ui.setState({ preventStemOverlaps: command.enabled, viewMenuOpen: false });
-        this.ui.setStatus(command.enabled
-          ? "Stem protection study on. Existing overlaps can move freely."
-          : "Stem protection off. Shape freely.");
+        this.ui.setStatus(stemProtectionStatus(command.enabled, this.config.beginBake !== null));
         this.syncPresentation();
         break;
       }
@@ -1891,7 +2092,7 @@ export class IkebanaApp {
       privacyStatement:
         "Generated locally on this device from this browser's local storage. Nothing is " +
         "uploaded automatically; you chose to export this file. It contains acquisition, " +
-        "timing, and outcome diagnostics for this study, including timestamps and a " +
+        `timing, and outcome diagnostics for ${this.config.beginBake !== null ? "this session" : "this study"}, including timestamps and a ` +
         "randomly generated session ID. It does not contain any direct identifier (name, " +
         "email, account) or your arrangement's actual botanical content.",
       exportedAt: new Date().toISOString(),
@@ -1908,11 +2109,12 @@ export class IkebanaApp {
   private async exportTelemetry(): Promise<void> {
     const payload = this.telemetryExportPayload();
     const json = JSON.stringify(payload, null, 2);
-    const filename = `living-line-study-data-${payload.sessionId}.json`;
+    const research = this.config.beginBake !== null;
+    const filename = `${research ? "living-line-local-data" : "living-line-study-data"}-${payload.sessionId}.json`;
 
     const shareResult = await this.shareTelemetry(json, filename);
     if (shareResult === "shared") {
-      this.ui.setStatus("Shared local study data.");
+      this.ui.setStatus(research ? "Shared local data." : "Shared local study data.");
       return;
     }
     if (shareResult === "cancelled") {
@@ -1923,11 +2125,13 @@ export class IkebanaApp {
       return;
     }
     if (this.downloadTelemetry(json, filename)) {
-      this.ui.setStatus("Downloaded local study data.");
+      this.ui.setStatus(research ? "Downloaded local data." : "Downloaded local study data.");
       return;
     }
     this.ui.showTelemetryFallback(json);
-    this.ui.setStatus("Select all, then copy the local study data below.");
+    this.ui.setStatus(research
+      ? "Select all, then copy the local data below."
+      : "Select all, then copy the local study data below.");
   }
 
   /**
@@ -1948,7 +2152,10 @@ export class IkebanaApp {
     try {
       const file = new File([json], filename, { type: "application/json" });
       if (!nav.canShare({ files: [file] })) return "unavailable";
-      await nav.share({ files: [file], title: "Living Line local study data" });
+      await nav.share({
+        files: [file],
+        title: this.config.beginBake !== null ? "Living Line local data" : "Living Line local study data",
+      });
       return "shared";
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return "cancelled";
@@ -2189,6 +2396,7 @@ export class IkebanaApp {
       this.ui.setTrayDragging(dragging, activeMaterialId);
     }
     this.syncPlantingCue();
+    this.syncBegin();
   }
 
   /** Drag keeps the validity outline. Ready uses the stronger idle line. */

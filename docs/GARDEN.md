@@ -35,7 +35,7 @@ mission system, or school curriculum.
    stays in comparison. Escape with no drag leaves. Both canvases stay the same
    size when one title is longer or wraps.
 
-**Optional study · Across the table.** The guide and Garden include this brief. Research files that bake `__LL_BEGIN__` (`open`, `line`, or `for`) omit this Garden line so that page does not show the word “study”. Ordinary play, including a begin URL flag with no bake, still includes it. The brief is:
+**Optional study · Across the table.** The guide and Garden include this brief. Research files that bake `__LL_BEGIN__` (`open`, `line`, or `for`) omit this Garden line and the Guide’s copy of this brief. Ordinary play, including a begin URL flag with no bake, still includes it. The brief is:
 “Make a lower arrangement for a table where people will talk across it.” It is
 for a person to interpret. The optional perch is presentation only and defines no sightline, so the app
 does not calculate whether an arrangement passes. One way to look again is the

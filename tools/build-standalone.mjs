@@ -313,7 +313,7 @@ const PLACE_FILES = {
 /**
  * Begin study packets. Every file also bakes tap-to-place.
  * Filenames do not name the condition. `open` marks placement-only.
- * `line:N` / `for:N` set the first index. Any of these hides the older Garden study line.
+ * `line:N` / `for:N` set the first index. Any of these hides the older Garden and Guide study lines.
  */
 function withBeginBake(html, token) {
   if (!token) return html;

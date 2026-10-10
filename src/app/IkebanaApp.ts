@@ -7,6 +7,7 @@ import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
 import { BeginCard } from "./beginCard.ts";
 import { insertBeginLine, planBeginSeat, type BeginInvitation } from "./beginLines.ts";
 import { BeginSession, nextStartPlantSignal, type BeginSurface } from "./beginStudy.ts";
+import { stemProtectionStatus } from "./researchCopy.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -363,6 +364,7 @@ export class IkebanaApp {
     this.ui = createUIBindings({
       root,
       placeTap: this.config.placeTap,
+      researchBake: this.config.beginBake !== null,
       initialState: {
         bendVariant: uiVariant(this.bendVariant),
         bendStationsMode: this.bendStationsMode,
@@ -1069,9 +1071,7 @@ export class IkebanaApp {
         this.cancelPlaceReadiness("interrupt");
         this.interruptActive("experiment-command", false);
         this.ui.setState({ preventStemOverlaps: command.enabled, viewMenuOpen: false });
-        this.ui.setStatus(command.enabled
-          ? "Stem protection study on. Existing overlaps can move freely."
-          : "Stem protection off. Shape freely.");
+        this.ui.setStatus(stemProtectionStatus(command.enabled, this.config.beginBake !== null));
         this.syncPresentation();
         break;
       }
@@ -2092,7 +2092,7 @@ export class IkebanaApp {
       privacyStatement:
         "Generated locally on this device from this browser's local storage. Nothing is " +
         "uploaded automatically; you chose to export this file. It contains acquisition, " +
-        "timing, and outcome diagnostics for this study, including timestamps and a " +
+        `timing, and outcome diagnostics for ${this.config.beginBake !== null ? "this session" : "this study"}, including timestamps and a ` +
         "randomly generated session ID. It does not contain any direct identifier (name, " +
         "email, account) or your arrangement's actual botanical content.",
       exportedAt: new Date().toISOString(),
@@ -2109,11 +2109,12 @@ export class IkebanaApp {
   private async exportTelemetry(): Promise<void> {
     const payload = this.telemetryExportPayload();
     const json = JSON.stringify(payload, null, 2);
-    const filename = `living-line-study-data-${payload.sessionId}.json`;
+    const research = this.config.beginBake !== null;
+    const filename = `${research ? "living-line-local-data" : "living-line-study-data"}-${payload.sessionId}.json`;
 
     const shareResult = await this.shareTelemetry(json, filename);
     if (shareResult === "shared") {
-      this.ui.setStatus("Shared local study data.");
+      this.ui.setStatus(research ? "Shared local data." : "Shared local study data.");
       return;
     }
     if (shareResult === "cancelled") {
@@ -2124,11 +2125,13 @@ export class IkebanaApp {
       return;
     }
     if (this.downloadTelemetry(json, filename)) {
-      this.ui.setStatus("Downloaded local study data.");
+      this.ui.setStatus(research ? "Downloaded local data." : "Downloaded local study data.");
       return;
     }
     this.ui.showTelemetryFallback(json);
-    this.ui.setStatus("Select all, then copy the local study data below.");
+    this.ui.setStatus(research
+      ? "Select all, then copy the local data below."
+      : "Select all, then copy the local study data below.");
   }
 
   /**
@@ -2149,7 +2152,10 @@ export class IkebanaApp {
     try {
       const file = new File([json], filename, { type: "application/json" });
       if (!nav.canShare({ files: [file] })) return "unavailable";
-      await nav.share({ files: [file], title: "Living Line local study data" });
+      await nav.share({
+        files: [file],
+        title: this.config.beginBake !== null ? "Living Line local data" : "Living Line local study data",
+      });
       return "shared";
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return "cancelled";

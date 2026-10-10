@@ -1074,7 +1074,7 @@ noscript {
   .view-switcher, .more-options { max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8rem); }
 }
 /* Respect native/explicit visibility even on components with display layouts. */
-.garden-host [hidden], #workbench-open[hidden] { display: none !important; }
+.garden-host [hidden], #workbench-open[hidden], .looking-study[hidden], #guide-study-choice[hidden] { display: none !important; }
 
 /* Opt-in Photograph study. All controls remain inside a scrollable native dialog. */
 .photo-dialog { width: min(1080px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 20px; border: 1px solid #a79f8e; border-radius: 18px; background: #f5f0e5; color: #303b32; overflow: auto; }

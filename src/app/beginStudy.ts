@@ -133,11 +133,8 @@ export class BeginSession {
   private readonly key: string;
   private readonly now: () => string;
   private document: BeginStudyDocument;
+  /** The offer currently on screen. A return after this clears can log again. */
   private shownKey: string | null = null;
-  /** Surface+item already written during this page view. */
-  private loggedThisView = new Set<string>();
-  /** Surfaces whose offer left and may come back. A return is a reshow. */
-  private hiddenSurfaces = new Set<BeginSurface>();
   /** Session only. A reload of an empty bowl may offer again. */
   openingDismissed = false;
   /** Session only. Set when Keep finishes, cleared when the player stops or begins. */
@@ -197,16 +194,9 @@ export class BeginSession {
 
   noteShown(surface: BeginSurface, itemId: string) {
     const key = `${surface}:${itemId}`;
-    if (this.loggedThisView.has(key)) {
-      this.shownKey = key;
-      this.hiddenSurfaces.delete(surface);
-      return;
-    }
-    this.loggedThisView.add(key);
+    if (this.shownKey === key) return;
     const seenBefore = this.document.events.some((event) =>
       event.type === "offer-shown" && event.surface === surface && event.itemId === itemId);
-    const reshow = seenBefore || this.hiddenSurfaces.has(surface);
-    this.hiddenSurfaces.delete(surface);
     this.shownKey = key;
     this.record({
       type: "offer-shown",
@@ -214,14 +204,11 @@ export class BeginSession {
       surface,
       kind: this.kind,
       itemId,
-      ...(reshow ? { reshow: true as const } : {}),
+      ...(seenBefore ? { reshow: true as const } : {}),
     });
   }
 
   clearShown() {
-    if (this.shownKey) {
-      this.hiddenSurfaces.add(this.shownKey.startsWith("after-keep") ? "after-keep" : "opening");
-    }
     this.shownKey = null;
   }
 
@@ -231,7 +218,6 @@ export class BeginSession {
     const toIndex = (fromIndex + 1) % this.count;
     const catalog = catalogOf(this.kind);
     this.document[key] = toIndex;
-    this.hiddenSurfaces.delete(surface);
     this.shownKey = null;
     this.record({
       type: "another",

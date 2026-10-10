@@ -220,16 +220,14 @@ test("a start plant logs an edit or a removal once", () => {
   assert.equal(nextStartPlantSignal(seated, null, "undo").signal, null);
 });
 
-test("an offer is logged once per page view, and a return is a reshow", () => {
+test("an offer still on screen is not logged again", () => {
   const { begun, storage } = session("line", 0);
   begun.noteShown("opening", "lean-left");
   begun.noteShown("opening", "lean-left");
   begun.another("opening");
   begun.noteShown("opening", "reed-forward");
-  begun.clearShown();
-  begun.noteShown("opening", "flower-back");
   const shown = begun.snapshot().events.filter((event) => event.type === "offer-shown");
-  assert.equal(shown.length, 3);
+  assert.equal(shown.length, 2);
   assert.equal(shown[0].type, "offer-shown");
   assert.equal("reshow" in shown[0], false);
   assert.equal(shown[1].type, "offer-shown");
@@ -237,8 +235,6 @@ test("an offer is logged once per page view, and a return is a reshow", () => {
     assert.equal(shown[1].itemId, "reed-forward");
     assert.equal(shown[1].reshow, undefined);
   }
-  assert.equal(shown[2].type, "offer-shown");
-  if (shown[2].type === "offer-shown") assert.equal(shown[2].reshow, true);
 
   const again = new BeginSession({ kind: "line", seed: 0, storage, now: () => "reload" });
   again.noteShown("opening", "lean-left");
@@ -248,6 +244,33 @@ test("an offer is logged once per page view, and a return is a reshow", () => {
   assert.equal(reloaded[0].type, "offer-shown");
   if (reloaded[0].type === "offer-shown") assert.equal(reloaded[0].reshow, true);
   assert.equal(again.openingDismissed, false);
+});
+
+test("reshow marks only an item already in the log, including a return in the same page view", () => {
+  const { begun } = session("line", 0);
+  begun.noteShown("opening", "lean-left");
+  begun.another("opening");
+  begun.noteShown("opening", "reed-forward");
+  begun.clearShown();
+  begun.noteShown("opening", "flower-back");
+  const firsts = begun.snapshot().events.filter((event) => event.type === "offer-shown");
+  assert.equal(firsts.length, 3);
+  for (const event of firsts) {
+    assert.equal(event.type, "offer-shown");
+    if (event.type === "offer-shown") assert.equal(event.reshow, undefined);
+  }
+  begun.clearShown();
+  begun.noteShown("opening", "lean-left");
+  const returned = begun.snapshot().events.filter((event) => event.type === "offer-shown");
+  assert.equal(returned.length, 4);
+  const again = returned[3];
+  assert.equal(again.type, "offer-shown");
+  if (again.type === "offer-shown") {
+    assert.equal(again.itemId, "lean-left");
+    assert.equal(again.surface, "opening");
+    assert.equal(again.reshow, true);
+  }
+  assert.equal(beginEventToken(again), "offer-shown:opening:lean-left:reshow");
 });
 
 test("begin flags stay off for the placement build and do not join the bowl schema", () => {

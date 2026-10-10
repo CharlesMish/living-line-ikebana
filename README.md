@@ -126,7 +126,7 @@ Ordinary play omits both flags. Nothing is offered, and the saved bowl is unchan
 - `?beginLine=1` — an optional line already composed from an existing cutting. **Begin from this line** seats it. **Another line** shows the next one first. **Not now** leaves the empty bowl. A bowl that already has cuttings asks before it is replaced.
 - `?beginFor=1` — an optional occasion. **Begin** keeps that note on the screen while arranging. It can be closed and opened again. It may offer a backdrop or perch that is already in the app.
 - `?beginSeed=0` — which offer appears first. `0` and `1` are the two study seeds. A baked file can set the same thing. Progress after that is stored separately from the bowl, under `ikebana-web-alpha:begin-study-v1`. Deleting that key applies the seed again. `?fresh=1` does not delete it. Not now is remembered only until reload.
-- A baked `__LL_BEGIN__` of `open`, `line:N`, or `for:N` also hides the older Garden line “Optional study · Across the table”. Opening the app with `?beginLine=1` or `?beginFor=1` and no bake leaves that line in place.
+- A baked `__LL_BEGIN__` of `open`, `line:N`, or `for:N` also hides the older Garden line “Optional study · Across the table”, the Guide’s optional-study briefs and “Choose any study” line, and the “(study)” label on Prevent overlaps. Opening the app with `?beginLine=1` or `?beginFor=1` and no bake leaves that copy in place.
 
 If both begin flags are present, the line is used. The research files also include tap-to-place. After `npm run build`:
 

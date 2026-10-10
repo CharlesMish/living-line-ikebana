@@ -1099,3 +1099,71 @@ noscript {
 .photo-dialog h1, .photo-controls button, .photo-controls p { overflow-wrap: anywhere; }
 .photo-controls select { max-width: 100%; }
 .photo-controls button { white-space: normal; }
+
+.begin-offer,
+.begin-note {
+  position: absolute;
+  z-index: 14;
+  width: min(17.5rem, calc(100vw - var(--safe-left) - var(--safe-right) - 1.4rem));
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  pointer-events: auto;
+}
+.begin-offer {
+  left: calc(var(--safe-left) + 0.7rem);
+  bottom: calc(var(--safe-bottom) + 4.6rem);
+  padding: 0.7rem 0.75rem 0.75rem;
+}
+.begin-note {
+  top: calc(var(--safe-top) + 0.55rem);
+  right: calc(var(--safe-right) + 0.7rem);
+  bottom: auto;
+  width: min(12.5rem, 42vw);
+  padding: 0.4rem 0.55rem 0.5rem;
+}
+.begin-offer[hidden],
+.begin-note[hidden],
+.begin-stop[hidden],
+#begin-note-panel[hidden],
+#begin-presentation[hidden] { display: none; }
+.begin-stop p,
+.begin-choice p,
+#begin-note-copy {
+  margin: 0 0 0.45rem;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+.begin-stop p { font-size: 1rem; }
+.begin-offer[data-surface="after-keep"] .begin-choice {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--line);
+}
+.begin-offer[data-surface="after-keep"] .begin-choice p { font-size: 0.82rem; color: var(--ink-muted); }
+.begin-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.begin-actions button,
+.begin-stop button,
+.begin-note button {
+  min-height: 2.5rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--line);
+  background: #f7f4ec;
+  color: var(--ink);
+  padding: 0.25rem 0.65rem;
+  font: inherit;
+  cursor: pointer;
+}
+#begin-stop,
+#begin-accept { background: #e4eadc; }
+#begin-note-toggle { width: 100%; text-align: left; }
+@media (max-width: 700px) {
+  .begin-note {
+    top: auto;
+    bottom: calc(var(--safe-bottom) + 0.7rem);
+    width: min(16rem, calc(100vw - var(--safe-left) - var(--safe-right) - 1.4rem));
+  }
+  .begin-offer { bottom: calc(var(--safe-bottom) + 7.5rem); }
+}

@@ -22,6 +22,10 @@ export interface GardenActions {
   view(entry: GardenEntry): void;
   returnToWork(): void;
   replace(snapshot: ArrangementSnapshot | null): void;
+  /** The keep form finished. Bowl replacement does not call this. */
+  kept?(): void;
+  /** True when the pending bowl was applied. False when the player cancelled. */
+  replacementSettled?(applied: boolean): void;
   beginComparison(left: GardenEntry, right: GardenEntry, canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement }): GardenComparison;
   syncComparison(session: GardenComparison): GardenComparison;
   endComparison(): void;
@@ -50,6 +54,7 @@ export class GardenUI {
   private comparison: GardenComparison | null = null;
   private compareMode: ComparisonDragMode = "orbit";
   private compareDrag: ComparisonDrag | null = null;
+  private replacementSettling = false;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
   constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false) {
     const host = document.createElement("div");
@@ -151,7 +156,11 @@ export class GardenUI {
       input.value = "";
     }, { signal: this.controller.signal });
     this.find("#garden-keep-form").addEventListener("submit", (event) => {
-      event.preventDefault(); this.run(() => { this.keep(); this.message("Kept. You can leave it here, or keep working."); });
+      event.preventDefault(); this.run(() => {
+        this.keep();
+        this.message("Kept. You can leave it here, or keep working.");
+        this.actions.kept?.();
+      });
     }, { signal: this.controller.signal });
     this.dialog.addEventListener("close", () => {
       this.clearChoice();
@@ -264,6 +273,10 @@ export class GardenUI {
     delete this.root.dataset.gardenViewing;
     this.find<HTMLButtonElement>("#more-toggle").focus();
   }
+  /** The existing keep / replace / cancel prompt. An empty bowl applies at once. */
+  offerBowlReplacement(snapshot: ArrangementSnapshot | null) {
+    this.offerReplacement(snapshot);
+  }
   private offerReplacement(snapshot: ArrangementSnapshot | null) {
     this.returnToWork(); this.open();
     this.pending = () => { this.actions.replace(snapshot); this.dialog.close(); };
@@ -276,8 +289,23 @@ export class GardenUI {
     this.find("#garden-choice").hidden = false;
     this.find<HTMLButtonElement>("#garden-cancel-choice").focus();
   }
-  private finishReplacement() { const action = this.pending; action?.(); this.clearChoice(); }
-  private clearChoice() { this.pending = null; this.find("#garden-choice").hidden = true; }
+  private finishReplacement() {
+    const action = this.pending;
+    this.replacementSettling = true;
+    try {
+      action?.();
+    } finally {
+      this.replacementSettling = false;
+    }
+    this.clearChoice();
+    if (action) this.actions.replacementSettled?.(true);
+  }
+  private clearChoice() {
+    const pending = this.pending !== null;
+    this.pending = null;
+    this.find("#garden-choice").hidden = true;
+    if (pending && !this.replacementSettling) this.actions.replacementSettled?.(false);
+  }
   private setupWorkbench(on: (selector: string, action: () => void) => void) {
     const dialog = this.find<HTMLDialogElement>("#workbench-dialog");
     this.find("#workbench-open").hidden = false; this.root.dataset.workbench = "true";

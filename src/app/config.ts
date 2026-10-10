@@ -44,6 +44,20 @@ export type ExperimentConfig = {
    * Absent keeps pointerdown on the source card as an immediate drag.
    */
   placeTap: boolean;
+  /**
+   * Optional start from a fixed line already seated. Absent shows no offer.
+   * If both this and `beginFor` are set, this one is used.
+   */
+  beginLine: boolean;
+  /**
+   * Optional invitation for a setting or occasion. Absent shows no offer.
+   */
+  beginFor: boolean;
+  /**
+   * First offer index. Study files bake it; `?beginSeed=` overrides.
+   * Later Another / Keep progress lives in the begin study key, not here.
+   */
+  beginSeed: number;
 };
 
 /**
@@ -58,6 +72,40 @@ export function bakedPlaceMode(scope: typeof globalThis = globalThis): "off" | "
   return "off";
 }
 
+/**
+ * Opaque bake for the begin study files. `line:N` and `for:N` select the
+ * offer and the first index. Anything else, including absence, is no offer.
+ */
+export function bakedBegin(scope: typeof globalThis = globalThis): { beginLine: boolean; beginFor: boolean; beginSeed: number } | null {
+  const token = (scope as { __LL_BEGIN__?: unknown }).__LL_BEGIN__;
+  if (typeof token !== "string") return null;
+  const match = /^(line|for):(\d+)$/.exec(token);
+  if (!match) return null;
+  return { beginLine: match[1] === "line", beginFor: match[1] === "for", beginSeed: Number(match[2]) };
+}
+
+export function beginFlagsFrom(
+  url: URL,
+  baked: { beginLine: boolean; beginFor: boolean; beginSeed: number } | null = bakedBegin(),
+): { beginLine: boolean; beginFor: boolean; beginSeed: number } {
+  const urlLine = url.searchParams.get("beginLine") === "1";
+  const urlFor = url.searchParams.get("beginFor") === "1";
+  let beginLine = urlLine;
+  let beginFor = urlFor;
+  let beginSeed = baked?.beginSeed ?? 0;
+  if (!urlLine && !urlFor && baked) {
+    beginLine = baked.beginLine;
+    beginFor = baked.beginFor;
+  }
+  if (beginLine && beginFor) beginFor = false;
+  const seed = url.searchParams.get("beginSeed");
+  if (seed !== null && /^-?\d+$/.test(seed)) {
+    const parsed = Number(seed);
+    if (Number.isSafeInteger(parsed)) beginSeed = parsed;
+  }
+  return { beginLine, beginFor, beginSeed };
+}
+
 export function placeFlagsFrom(url: URL, baked = bakedPlaceMode()): { placeCue: boolean; placeTap: boolean } {
   const placeTap = url.searchParams.get("placeTap") === "1" || baked === "tap";
   const placeCue = placeTap || url.searchParams.get("placeCue") === "1" || baked === "cue";
@@ -69,6 +117,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
   const bendVariant = bend === "touch" ? "touch" : "bead";
   const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
   const place = placeFlagsFrom(url);
+  const begin = beginFlagsFrom(url);
   return {
     vesselProfile: readVesselStudy(url),
     bendVariant,
@@ -82,6 +131,9 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
     placeCue: place.placeCue,
     placeTap: place.placeTap,
+    beginLine: begin.beginLine,
+    beginFor: begin.beginFor,
+    beginSeed: begin.beginSeed,
   };
 }
 

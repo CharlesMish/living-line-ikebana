@@ -119,6 +119,30 @@ LIVING_LINE_PLACE=all npm run build
 
 The filenames and the page do not name the condition. `dist/ikebana-web-alpha-standalone.html` stays the unflagged build.
 
+## Beginning from a line, or for an occasion
+
+Ordinary play omits both flags. Nothing is offered, and the saved bowl is unchanged.
+
+- `?beginLine=1` — an optional line already composed from an existing cutting. **Begin from this line** seats it. **Another line** shows the next one first. **Not now** leaves the empty bowl. A bowl that already has cuttings asks before it is replaced.
+- `?beginFor=1` — an optional occasion. **Begin** keeps that note on the screen while arranging. It can be closed and opened again. It may offer a backdrop or perch that is already in the app.
+- `?beginSeed=0` — which offer appears first. `0` and `1` are the two study seeds. A baked file can set the same thing. Progress after that is stored separately from the bowl, under `ikebana-web-alpha:begin-study-v1`. Deleting that key applies the seed again. `?fresh=1` does not delete it.
+
+If both begin flags are present, the line is used. The research files also include tap-to-place. After `npm run build`:
+
+```bash
+LIVING_LINE_BEGIN=all npm run build
+```
+
+| File | What it is |
+| --- | --- |
+| `dist/bowl-1.html` | Tap-to-place, with no begin offer. |
+| `dist/bowl-2a.html` | A starting line, first index 0. |
+| `dist/bowl-2b.html` | A starting line, first index 1. |
+| `dist/bowl-3a.html` | An occasion, first index 0. |
+| `dist/bowl-3b.html` | An occasion, first index 1. |
+
+The filenames and the page do not name the condition. After Keep, stopping is the primary choice. A further offer is secondary and does not open a new bowl.
+
 ## Architecture
 
 - `src/core/` — deterministic renderer-free botanical graph and edit laws.

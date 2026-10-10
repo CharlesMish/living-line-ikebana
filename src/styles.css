@@ -1168,16 +1168,16 @@ noscript {
 .begin-stack:has(#begin-offer:not([hidden])) #begin-note-panel { display: none; }
 @media (max-width: 700px) {
   .begin-note {
-    top: calc(var(--safe-top) + 11.4rem);
-    right: calc(var(--safe-right) + 0.45rem);
+    top: calc(var(--safe-top) + 13.6rem);
+    left: calc(var(--safe-left) + 0.45rem);
+    right: auto;
     bottom: auto;
-    left: auto;
-    width: min(12rem, calc(100vw - var(--safe-left) - var(--safe-right) - 1rem));
+    width: min(12rem, 46vw);
     max-height: 28vh;
     overflow: auto;
   }
   .begin-offer {
-    top: calc(var(--safe-top) + 11.4rem);
+    top: calc(var(--safe-top) + 13.6rem);
     bottom: auto;
     left: calc(var(--safe-left) + 0.45rem);
     width: min(16.75rem, calc(100vw - var(--safe-left) - var(--safe-right) - 0.9rem));
@@ -1191,7 +1191,11 @@ noscript {
     overflow: visible;
   }
   .begin-stack:has(#begin-offer:not([hidden])):has(#begin-note:not([hidden])) .begin-offer {
-    top: calc(var(--safe-top) + 14.6rem);
-    max-height: 26vh;
+    top: calc(var(--safe-top) + 16.5rem);
+    max-height: none;
+    overflow: visible;
   }
+  .begin-offer .begin-actions { gap: 0.3rem; }
+  .begin-offer .begin-actions button,
+  .begin-offer .begin-stop button { min-height: 2.35rem; padding-block: 0.15rem; }
 }

@@ -34,12 +34,41 @@ export type ExperimentConfig = {
    * silently delete the comparison data those blocks exist to produce.
    */
   clearStudyData: boolean;
+  /**
+   * Readable planting boundary. Absent leaves the plate and the drag-only
+   * outline exactly as ordinary play. See the named experiment in the contract.
+   */
+  placeCue: boolean;
+  /**
+   * Source-card tap to ready, then tap the scene to seat. Implies `placeCue`.
+   * Absent keeps pointerdown on the source card as an immediate drag.
+   */
+  placeTap: boolean;
 };
+
+/**
+ * Opaque bake for standalone study files. `tools/build-standalone.mjs` may set
+ * `globalThis.__LL_PLACE__` to `"1"` (boundary cue) or `"2"` (cue and tap).
+ * Any other value, including absence, is ordinary play. URL flags still work.
+ */
+export function bakedPlaceMode(scope: typeof globalThis = globalThis): "off" | "cue" | "tap" {
+  const token = (scope as { __LL_PLACE__?: unknown }).__LL_PLACE__;
+  if (token === "1") return "cue";
+  if (token === "2") return "tap";
+  return "off";
+}
+
+export function placeFlagsFrom(url: URL, baked = bakedPlaceMode()): { placeCue: boolean; placeTap: boolean } {
+  const placeTap = url.searchParams.get("placeTap") === "1" || baked === "tap";
+  const placeCue = placeTap || url.searchParams.get("placeCue") === "1" || baked === "cue";
+  return { placeCue, placeTap };
+}
 
 export function readExperimentConfig(url = new URL(window.location.href)): ExperimentConfig {
   const bend = url.searchParams.get("bend");
   const bendVariant = bend === "touch" ? "touch" : "bead";
   const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
+  const place = placeFlagsFrom(url);
   return {
     vesselProfile: readVesselStudy(url),
     bendVariant,
@@ -51,6 +80,8 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
     pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
+    placeCue: place.placeCue,
+    placeTap: place.placeTap,
   };
 }
 

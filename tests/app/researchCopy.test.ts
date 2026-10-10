@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import test from "node:test";
 import {
   preventionToggleLabel,
@@ -7,7 +8,7 @@ import {
   stemProtectionStatus,
 } from "../../src/app/researchCopy.ts";
 
-const html = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
+const html = readFileSync(join(process.cwd(), "index.html"), "utf8");
 const BRIEF = "Make a lower arrangement for a table where people will talk across it.";
 
 test("a baked research shell renders no study copy and drops the table brief", () => {

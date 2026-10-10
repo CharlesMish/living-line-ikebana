@@ -78,10 +78,10 @@ test("the same starting line is an identical ordinary plant", () => {
     return { base: root.points[0], tip: root.points[root.points.length - 1] };
   };
   const poses = Object.fromEntries(BEGIN_LINES.map((line) => [line.id, pose(line.id)]));
-  assert.ok(poses["lean-left"].tip.x < -1, JSON.stringify(poses));
-  assert.ok(poses["reed-forward"].tip.z > poses["flower-back"].tip.z, JSON.stringify(poses));
-  assert.ok(poses["flower-back"].base.z < -0.3, JSON.stringify(poses));
-  assert.ok(poses["bare-arc"].tip.x > 1.05, JSON.stringify(poses));
+  assert.ok(poses["lean-left"].tip.x < -1 && poses["lean-left"].tip.y > 3, JSON.stringify(poses));
+  assert.ok(poses["reed-forward"].tip.y < 2.2 && poses["reed-forward"].tip.z > 2, JSON.stringify(poses));
+  assert.ok(poses["flower-back"].base.z < -0.3 && poses["flower-back"].tip.y > 4, JSON.stringify(poses));
+  assert.ok(poses["bare-arc"].tip.x > 1.4 && poses["bare-arc"].tip.x < 4, JSON.stringify(poses));
 });
 
 test("a seated line can be aimed, pruned, undone, and removed", () => {

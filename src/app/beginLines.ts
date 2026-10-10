@@ -54,8 +54,8 @@ export const BEGIN_LINES: readonly BeginLine[] = Object.freeze([
     text: "A low reed reaching forward.",
     materialId: "reed",
     base: Object.freeze({ x: 0.06, y: 0.55, z: 0.62 }),
-    aim: Object.freeze({ x: 0.15, y: 1.05, z: 4.8 }),
-    bend: Object.freeze({ fraction: 0.62, target: Object.freeze({ x: 0.1, y: 0.42, z: 3.6 }) }),
+    aim: Object.freeze({ x: 1.45, y: 1.55, z: 2.35 }),
+    bend: Object.freeze({ fraction: 0.56, target: Object.freeze({ x: 1.2, y: 0.95, z: 2.05 }) }),
   }),
   Object.freeze({
     id: "flower-back",
@@ -70,8 +70,8 @@ export const BEGIN_LINES: readonly BeginLine[] = Object.freeze([
     text: "A bare branch bent over the rim.",
     materialId: "bare-branch",
     base: Object.freeze({ x: 0.62, y: 0.55, z: 0.18 }),
-    aim: Object.freeze({ x: 3.1, y: 2.6, z: 0.35 }),
-    bend: Object.freeze({ fraction: 0.46, target: Object.freeze({ x: 2.5, y: 0.85, z: 0.4 }) }),
+    aim: Object.freeze({ x: 1.7, y: 4.6, z: 0.22 }),
+    bend: Object.freeze({ fraction: 0.48, target: Object.freeze({ x: 2.3, y: 1.35, z: 0.35 }) }),
   }),
 ]);
 

@@ -139,6 +139,7 @@ test("opening and after-keep cursors advance independently and skip the item jus
   first.begun.another("opening");
   assert.equal(first.begun.item("opening").id, "reed-forward");
   assert.equal(first.begun.item("after-keep").id, "lean-left");
+  first.begun.recordPressed("reed-forward", "opening");
   first.begun.recordBegin("reed-forward", "opening");
   first.begun.commitUse("reed-forward");
   assert.notEqual(first.begun.item("opening").id, "reed-forward");
@@ -159,6 +160,7 @@ test("each press is stored on the begin key and as the last event token", () => 
   const { begun, storage } = session("line", 0);
   begun.noteShown("opening", begun.item("opening").id);
   begun.noteShown("opening", begun.item("opening").id);
+  begun.recordPressed("lean-left", "opening");
   begun.recordBegin("lean-left", "opening");
   begun.another("opening");
   begun.notNow("opening");
@@ -170,14 +172,22 @@ test("each press is stored on the begin key and as the last event token", () => 
   begun.recordRemoved();
   const events = begun.snapshot().events.map((event) => event.type);
   assert.deepEqual(events, [
-    "offer-shown", "begin", "another", "not-now", "offer-shown", "stop", "start-edited", "start-removed",
+    "offer-shown", "begin-pressed", "begin", "another", "not-now", "offer-shown", "stop", "start-edited", "start-removed",
   ]);
   assert.equal(begun.token(), "start-removed:lean-left:plant-1");
-  assert.equal(beginEventToken(begun.snapshot().events[1]), "begin:lean-left");
+  assert.equal(beginEventToken(begun.snapshot().events[2]), "begin:lean-left");
+  assert.equal(beginEventToken(begun.snapshot().events[1]), "begin-pressed:lean-left");
+  const cancelled = session("line", 1);
+  cancelled.begun.recordPressed("reed-forward", "after-keep");
+  cancelled.begun.recordCancelled("reed-forward", "after-keep");
+  assert.deepEqual(cancelled.begun.snapshot().events.map((event) => event.type), ["begin-pressed", "begin-cancelled"]);
+  assert.equal(cancelled.begun.token(), "begin-cancelled:reed-forward");
+  assert.equal(cancelled.begun.item("after-keep").id, "reed-forward");
   assert.equal(storage.values.has(BEGIN_STUDY_KEY), true);
   assert.equal(JSON.parse(storage.values.get(BEGIN_STUDY_KEY)!).version, 1);
 
   const invited = session("for", 2);
+  invited.begun.recordPressed("autumn", "opening");
   invited.begun.recordBegin("autumn", "opening");
   invited.begun.chooseInvitation("autumn");
   invited.begun.toggleNote();
@@ -199,12 +209,45 @@ test("a start plant logs an edit or a removal once", () => {
   assert.equal(edited.signal, "edited");
   const same = nextStartPlantSignal(edited, "pose-b");
   assert.equal(same.signal, null);
-  const removed = nextStartPlantSignal(same, null);
+  const removed = nextStartPlantSignal(same, null, "remove");
   assert.equal(removed.signal, "removed");
-  assert.equal(nextStartPlantSignal(removed, null).signal, null);
-  const back = nextStartPlantSignal(removed, "pose-b");
-  assert.equal(back.signal, null);
-  assert.equal(back.canonical, "pose-b");
+  assert.equal(nextStartPlantSignal(removed, null, "remove").signal, null);
+  const restored = nextStartPlantSignal(removed, "pose-b", "undo");
+  assert.equal(restored.signal, "restored");
+  assert.equal(restored.canonical, "pose-b");
+  const seated = nextStartPlantSignal({ canonical: "pose-a", removalLogged: false }, null, "undo");
+  assert.equal(seated.signal, "undone");
+  assert.equal(nextStartPlantSignal(seated, null, "undo").signal, null);
+});
+
+test("an offer is logged once per page view, and a return is a reshow", () => {
+  const { begun, storage } = session("line", 0);
+  begun.noteShown("opening", "lean-left");
+  begun.noteShown("opening", "lean-left");
+  begun.another("opening");
+  begun.noteShown("opening", "reed-forward");
+  begun.clearShown();
+  begun.noteShown("opening", "flower-back");
+  const shown = begun.snapshot().events.filter((event) => event.type === "offer-shown");
+  assert.equal(shown.length, 3);
+  assert.equal(shown[0].type, "offer-shown");
+  assert.equal("reshow" in shown[0], false);
+  assert.equal(shown[1].type, "offer-shown");
+  if (shown[1].type === "offer-shown") {
+    assert.equal(shown[1].itemId, "reed-forward");
+    assert.equal(shown[1].reshow, undefined);
+  }
+  assert.equal(shown[2].type, "offer-shown");
+  if (shown[2].type === "offer-shown") assert.equal(shown[2].reshow, true);
+
+  const again = new BeginSession({ kind: "line", seed: 0, storage, now: () => "reload" });
+  again.noteShown("opening", "lean-left");
+  again.noteShown("opening", "lean-left");
+  const reloaded = again.snapshot().events.filter((event) => event.type === "offer-shown" && event.at === "reload");
+  assert.equal(reloaded.length, 1);
+  assert.equal(reloaded[0].type, "offer-shown");
+  if (reloaded[0].type === "offer-shown") assert.equal(reloaded[0].reshow, true);
+  assert.equal(again.openingDismissed, false);
 });
 
 test("begin flags stay off for the placement build and do not join the bowl schema", () => {
@@ -213,6 +256,7 @@ test("begin flags stay off for the placement build and do not join the bowl sche
   assert.equal(open.placeCue, true);
   assert.equal(open.beginLine, false);
   assert.equal(open.beginFor, false);
+  assert.equal(open.beginBake, null);
   const line = beginFlagsFrom(new URL("http://localhost/?beginLine=1&beginFor=1&beginSeed=3"));
   assert.equal(line.beginLine, true);
   assert.equal(line.beginFor, false);
@@ -222,6 +266,33 @@ test("begin flags stay off for the placement build and do not join the bowl sche
     beginLine: false, beginFor: true, beginSeed: 0,
   });
   assert.equal(bakedBegin({} as typeof globalThis), null);
+  const openBake = bakedBegin({ __LL_BEGIN__: "open" } as typeof globalThis);
+  assert.equal(openBake?.kind, "open");
+  assert.equal(openBake?.beginLine, false);
+  assert.equal(openBake?.beginFor, false);
+  assert.equal(readExperimentConfig(new URL("http://localhost/?beginLine=1")).beginBake, null);
+  const previousBegin = (globalThis as { __LL_BEGIN__?: unknown }).__LL_BEGIN__;
+  (globalThis as { __LL_BEGIN__?: unknown }).__LL_BEGIN__ = "open";
+  try {
+    const bakedOpen = readExperimentConfig(new URL("http://localhost/?placeTap=1"));
+    assert.equal(bakedOpen.beginBake, "open");
+    assert.equal(bakedOpen.beginLine, false);
+    assert.equal(bakedOpen.beginFor, false);
+    const urlOnOpenBake = readExperimentConfig(new URL("http://localhost/?beginLine=1"));
+    assert.equal(urlOnOpenBake.beginBake, "open");
+    assert.equal(urlOnOpenBake.beginLine, true);
+    (globalThis as { __LL_BEGIN__?: unknown }).__LL_BEGIN__ = "line:0";
+    const fromLine = readExperimentConfig(new URL("http://localhost/"));
+    assert.equal(fromLine.beginBake, "line");
+    assert.equal(fromLine.beginLine, true);
+    (globalThis as { __LL_BEGIN__?: unknown }).__LL_BEGIN__ = "for:1";
+    const fromFor = readExperimentConfig(new URL("http://localhost/"));
+    assert.equal(fromFor.beginBake, "for");
+    assert.equal(fromFor.beginFor, true);
+  } finally {
+    if (previousBegin === undefined) delete (globalThis as { __LL_BEGIN__?: unknown }).__LL_BEGIN__;
+    else (globalThis as { __LL_BEGIN__?: unknown }).__LL_BEGIN__ = previousBegin;
+  }
 
   const keys = sceneStorageKeys(new URL("http://localhost/"), false);
   assert.equal(BEGIN_STUDY_KEY, "ikebana-web-alpha:begin-study-v1");
@@ -237,6 +308,8 @@ test("begin flags stay off for the placement build and do not join the bowl sche
   }));
   assert.deepEqual(Object.keys(saved).sort(), ["camera", "nextSuccessfulOrdinal", "plants", "savedAt", "scene", "storageVersion"]);
   for (const invitation of BEGIN_INVITATIONS) {
-    assert.equal(/study|experiment|score|timer|currency/i.test(invitation.text), false);
+    assert.equal(/study|experiment|score|timer|currency/i.test(invitation.text + invitation.summary), false);
+    assert.notEqual(invitation.summary, "Across the table");
   }
+  assert.equal(BEGIN_INVITATIONS.find((item) => item.id === "table")?.summary, "Two at a table");
 });

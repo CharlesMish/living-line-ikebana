@@ -312,7 +312,8 @@ const PLACE_FILES = {
 
 /**
  * Begin study packets. Every file also bakes tap-to-place.
- * Filenames do not name the condition. `line:N` / `for:N` set the first index.
+ * Filenames do not name the condition. `open` marks placement-only.
+ * `line:N` / `for:N` set the first index. Any of these hides the older Garden study line.
  */
 function withBeginBake(html, token) {
   if (!token) return html;
@@ -321,7 +322,7 @@ function withBeginBake(html, token) {
 }
 
 const BEGIN_FILES = {
-  open: { file: "bowl-1.html", place: "2", begin: "" },
+  open: { file: "bowl-1.html", place: "2", begin: "open" },
   "line-a": { file: "bowl-2a.html", place: "2", begin: "line:0" },
   "line-b": { file: "bowl-2b.html", place: "2", begin: "line:1" },
   "for-a": { file: "bowl-3a.html", place: "2", begin: "for:0" },

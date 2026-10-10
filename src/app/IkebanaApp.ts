@@ -329,7 +329,7 @@ export class IkebanaApp {
   private chromeDismissPress = false;
   private beginSession: BeginSession | null = null;
   private beginCard: BeginCard | null = null;
-  private pendingBeginLine: string | null = null;
+  private pendingBegin: { lineId: string; surface: BeginSurface } | null = null;
   private seatedCanonical: string | null = null;
   private startRemovalLogged = false;
 
@@ -392,21 +392,23 @@ export class IkebanaApp {
         this.beginSession.afterKeepArmed = true;
         this.syncBegin();
       },
+      closed: () => this.syncBegin(),
       replacementSettled: (applied) => {
-        const lineId = this.pendingBeginLine;
-        if (!lineId) return;
-        this.pendingBeginLine = null;
+        const pending = this.pendingBegin;
+        if (!pending) return;
+        this.pendingBegin = null;
         if (!applied) {
+          this.beginSession?.recordCancelled(pending.lineId, pending.surface);
           this.syncBegin();
           return;
         }
-        this.finishSeatedLine(lineId, "plant-1");
+        this.finishSeatedLine(pending.lineId, "plant-1", pending.surface);
       },
       beginComparison: (left, right, canvases) => this.beginGardenComparisonView(left, right, canvases),
       syncComparison: (session) => this.syncGardenComparisonView(session),
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
-    }, this.config.workbench);
+    }, this.config.workbench, this.config.beginBake !== null);
     {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
@@ -604,7 +606,7 @@ export class IkebanaApp {
           // been fully attempted, and never allowed to block, delay, or fail it.
           if (event.domain === "graph") {
             this.resolvePendingAcquisition("committed");
-            this.observeBeginPlant(event.document.plants);
+            this.observeBeginPlant(event.document.plants, event.operation);
           }
         },
       },
@@ -815,11 +817,12 @@ export class IkebanaApp {
 
   private pressBegin(surface: BeginSurface) {
     const session = this.beginSession;
-    if (!session) return;
+    if (!session || this.pendingBegin) return;
     const item = session.item(surface);
-    session.recordBegin(item.id, surface);
+    session.recordPressed(item.id, surface);
     if (session.kind === "for") {
       session.chooseInvitation(item.id);
+      session.recordBegin(item.id, surface);
       session.commitUse(item.id);
       session.afterKeepArmed = false;
       this.ui.setStatus("That note stays while you arrange.");
@@ -832,24 +835,28 @@ export class IkebanaApp {
     if (plan.mode === "insert") {
       const seated = insertBeginLine(this.coordinator, item.id);
       if (seated.ok) {
-        this.finishSeatedLine(item.id, seated.plantId);
+        this.finishSeatedLine(item.id, seated.plantId, surface);
         return;
       }
     }
-    this.pendingBeginLine = item.id;
+    this.pendingBegin = { lineId: item.id, surface };
     try {
       this.gardenUI.offerBowlReplacement(plan.snapshot);
     } catch (error) {
+      this.pendingBegin = null;
+      session.recordCancelled(item.id, surface);
       this.ui.setStatus(error instanceof Error ? error.message : "The bowl could not be changed.", "warning");
+      this.syncBegin();
     }
   }
 
-  private finishSeatedLine(lineId: string, plantId: string) {
+  private finishSeatedLine(lineId: string, plantId: string, surface: BeginSurface) {
     const graph = this.coordinator.getDocumentSnapshot().plants.get(plantId);
     if (graph) {
       this.coordinator.commandSelection(plantId);
       this.assignSelectedBranch(graph.rootBranchId);
     }
+    this.beginSession?.recordBegin(lineId, surface);
     this.beginSession?.rememberSeat(lineId, plantId);
     this.beginSession?.commitUse(lineId);
     if (this.beginSession) this.beginSession.afterKeepArmed = false;
@@ -878,6 +885,7 @@ export class IkebanaApp {
   }
 
   private pressBeginNote() {
+    if (this.beginCard && !this.beginCard.offer.hidden) return;
     this.beginSession?.toggleNote();
     this.syncBegin();
   }
@@ -899,7 +907,7 @@ export class IkebanaApp {
     this.startRemovalLogged = graph === undefined;
   }
 
-  private observeBeginPlant(plants: ReadonlyMap<string, PlantGraph>) {
+  private observeBeginPlant(plants: ReadonlyMap<string, PlantGraph>, operation?: string) {
     const session = this.beginSession;
     if (!session?.seatedLine()) return;
     const seated = session.seatedLine();
@@ -908,11 +916,14 @@ export class IkebanaApp {
     const next = nextStartPlantSignal(
       { canonical: this.seatedCanonical, removalLogged: this.startRemovalLogged },
       graph ? JSON.stringify(toCanonicalPlantGraph(graph)) : null,
+      operation,
     );
     this.seatedCanonical = next.canonical;
     this.startRemovalLogged = next.removalLogged;
     if (next.signal === "edited") session.recordEdited();
     else if (next.signal === "removed") session.recordRemoved();
+    else if (next.signal === "undone") session.recordUndone();
+    else if (next.signal === "restored") session.recordRestored();
     if (next.signal) this.beginCard?.setToken(session.token());
   }
 
@@ -923,15 +934,18 @@ export class IkebanaApp {
     const viewing = Boolean(this.workingSession);
     const plants = this.coordinator.getDocumentSnapshot().plants.size;
     const invitation = session.chosenInvitation();
-    if (!viewing && invitation) card.showNote(invitation, session.noteCollapsed());
-    else card.hideNote();
-    const surface: BeginSurface | null = viewing
+    const gardenOpen = this.gardenUI?.isDialogOpen() === true;
+    let surface: BeginSurface | null = viewing
       ? null
       : session.afterKeepArmed && plants > 0
         ? "after-keep"
         : plants === 0 && !session.openingDismissed && !invitation
           ? "opening"
           : null;
+    if (surface === "after-keep" && gardenOpen) surface = null;
+    const offerUp = surface !== null;
+    if (!viewing && invitation) card.showNote(invitation, offerUp ? true : session.noteCollapsed());
+    else card.hideNote();
     if (!surface) {
       session.clearShown();
       card.hideOffer();

@@ -58,6 +58,12 @@ export type ExperimentConfig = {
    * Later Another / Keep progress lives in the begin study key, not here.
    */
   beginSeed: number;
+  /**
+   * Set only by a build-time `__LL_BEGIN__` bake (`open`, `line`, or `for`).
+   * URL flags do not set it. Research files use it to omit the older Garden
+   * study line. Ordinary play leaves it null.
+   */
+  beginBake: "open" | "line" | "for" | null;
 };
 
 /**
@@ -73,15 +79,23 @@ export function bakedPlaceMode(scope: typeof globalThis = globalThis): "off" | "
 }
 
 /**
- * Opaque bake for the begin study files. `line:N` and `for:N` select the
- * offer and the first index. Anything else, including absence, is no offer.
+ * Opaque bake for the begin study files. `open` marks the placement-only
+ * research file. `line:N` and `for:N` select the offer and the first index.
+ * Anything else, including absence, is ordinary play.
  */
-export function bakedBegin(scope: typeof globalThis = globalThis): { beginLine: boolean; beginFor: boolean; beginSeed: number } | null {
+export function bakedBegin(scope: typeof globalThis = globalThis): {
+  beginLine: boolean;
+  beginFor: boolean;
+  beginSeed: number;
+  kind: "open" | "line" | "for";
+} | null {
   const token = (scope as { __LL_BEGIN__?: unknown }).__LL_BEGIN__;
+  if (token === "open") return { beginLine: false, beginFor: false, beginSeed: 0, kind: "open" };
   if (typeof token !== "string") return null;
   const match = /^(line|for):(\d+)$/.exec(token);
   if (!match) return null;
-  return { beginLine: match[1] === "line", beginFor: match[1] === "for", beginSeed: Number(match[2]) };
+  const kind = match[1] === "line" ? "line" : "for";
+  return { beginLine: kind === "line", beginFor: kind === "for", beginSeed: Number(match[2]), kind };
 }
 
 export function beginFlagsFrom(
@@ -117,7 +131,8 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
   const bendVariant = bend === "touch" ? "touch" : "bead";
   const bendStationsRequested = url.searchParams.get("experiment") === "bend-stations";
   const place = placeFlagsFrom(url);
-  const begin = beginFlagsFrom(url);
+  const baked = bakedBegin();
+  const begin = beginFlagsFrom(url, baked);
   return {
     vesselProfile: readVesselStudy(url),
     bendVariant,
@@ -134,6 +149,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     beginLine: begin.beginLine,
     beginFor: begin.beginFor,
     beginSeed: begin.beginSeed,
+    beginBake: baked?.kind ?? null,
   };
 }
 

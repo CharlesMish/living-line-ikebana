@@ -85,7 +85,7 @@ export const BEGIN_INVITATIONS: readonly BeginInvitation[] = Object.freeze([
   Object.freeze({
     id: "table",
     text: "For a table where two people will talk across it.",
-    summary: "Across the table",
+    summary: "Two at a table",
     presentation: null,
   }),
   Object.freeze({

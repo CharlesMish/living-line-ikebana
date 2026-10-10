@@ -33,7 +33,7 @@ class El extends EventTarget {
   showModal() { this.open = true; }
   close() {
     this.open = false;
-    this.dispatchEvent(new Event("close"));
+    queueMicrotask(() => this.dispatchEvent(new Event("close")));
   }
   setAttribute(name: string, value: string) {
     if (name === "id") this.id = value;
@@ -68,7 +68,7 @@ class El extends EventTarget {
   querySelectorAll() { return []; }
 }
 
-test("a non-empty bowl asks before replacement and cancel leaves it intact", () => {
+test("a non-empty bowl asks before replacement and an async close still settles once", async () => {
   const previousWindow = globalThis.window;
   const previousDocument = globalThis.document;
   const previousObserver = globalThis.ResizeObserver;
@@ -81,6 +81,8 @@ test("a non-empty bowl asks before replacement and cancel leaves it intact", () 
   root.append(toggle, opener);
   const replaced: unknown[] = [];
   const settled: boolean[] = [];
+  const kept: string[] = [];
+  const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
   const working = {
     plants: [{ id: "plant-9" }],
     successfulPlantOrdinal: 3,
@@ -118,10 +120,11 @@ test("a non-empty bowl asks before replacement and cancel leaves it intact", () 
     const garden = new GardenUI(root as unknown as HTMLElement, {
       load: () => ({ entries: [] }),
       exportRaw: () => "{}",
-      keep() {},
+      keep(entry) { kept.push(entry.title); },
       remove() {},
       importBackup: () => 0,
     }, actions);
+    assert.ok(root.querySelector(".looking-study"));
     const incoming = beginLineSnapshot("lean-left");
     garden.offerBowlReplacement(incoming);
     const choice = root.querySelector("#garden-choice");
@@ -131,18 +134,52 @@ test("a non-empty bowl asks before replacement and cancel leaves it intact", () 
     assert.equal(replaced.length, 0);
     assert.equal(working.plants[0].id, "plant-9");
     root.querySelector("#garden-cancel-choice")?.dispatchEvent(new Event("click"));
+    await flush();
     assert.equal(replaced.length, 0);
     assert.equal(choice.hidden, true);
     assert.deepEqual(settled, [false]);
     assert.equal(working.plants[0].id, "plant-9");
 
-    const empty = { ...working, plants: [] as { id: string }[] };
-    actions.snapshot = () => empty as unknown as ReturnType<GardenActions["snapshot"]>;
     garden.offerBowlReplacement(incoming);
+    root.querySelector("#garden-replace")?.dispatchEvent(new Event("click"));
+    await flush();
     assert.equal(replaced.length, 1);
     assert.equal((replaced[0] as { plants: { id: string }[] }).plants[0].id, "plant-1");
     assert.deepEqual(settled, [false, true]);
+
+    garden.offerBowlReplacement(incoming);
+    root.querySelector("#garden-keep-first")?.dispatchEvent(new Event("click"));
+    await flush();
+    assert.equal(kept.length, 1);
+    assert.equal(replaced.length, 2);
+    assert.deepEqual(settled, [false, true, true]);
+
+    const empty = { ...working, plants: [] as { id: string }[] };
+    actions.snapshot = () => empty as unknown as ReturnType<GardenActions["snapshot"]>;
+    garden.offerBowlReplacement(incoming);
+    await flush();
+    assert.equal(replaced.length, 3);
+    assert.equal((replaced[2] as { plants: { id: string }[] }).plants[0].id, "plant-1");
+    assert.deepEqual(settled, [false, true, true, true]);
     assert.equal(empty.plants.length, 0);
+    assert.equal(settled.filter((applied) => applied === false).length, 1);
+
+    const quiet = new El("main");
+    quiet.dataset = {};
+    const quietToggle = new El("button");
+    quietToggle.id = "more-toggle";
+    const quietOpener = new El("button");
+    quietOpener.id = "garden-open";
+    quiet.append(quietToggle, quietOpener);
+    new GardenUI(quiet as unknown as HTMLElement, {
+      load: () => ({ entries: [] }),
+      exportRaw: () => "{}",
+      keep() {},
+      remove() {},
+      importBackup: () => 0,
+    }, actions, false, true);
+    assert.equal(quiet.querySelector(".looking-study"), null);
+    assert.equal(quiet.textContent.includes("study"), false);
   } finally {
     globalThis.window = previousWindow;
     globalThis.document = previousDocument;

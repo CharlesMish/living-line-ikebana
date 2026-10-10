@@ -9,15 +9,19 @@ export type BeginKind = "line" | "for";
 export type BeginSurface = "opening" | "after-keep";
 
 export type BeginEvent =
-  | { type: "offer-shown"; at: string; surface: BeginSurface; kind: BeginKind; itemId: string }
+  | { type: "offer-shown"; at: string; surface: BeginSurface; kind: BeginKind; itemId: string; reshow?: true }
+  | { type: "begin-pressed"; at: string; kind: BeginKind; itemId: string; surface: BeginSurface }
   | { type: "begin"; at: string; kind: BeginKind; itemId: string; surface: BeginSurface }
+  | { type: "begin-cancelled"; at: string; kind: BeginKind; itemId: string; surface: BeginSurface }
   | { type: "another"; at: string; surface: BeginSurface; kind: BeginKind; from: string; to: string }
   | { type: "not-now"; at: string; surface: BeginSurface; kind: BeginKind; itemId: string }
   | { type: "stop"; at: string; surface: "after-keep" }
   | { type: "note-opened"; at: string; itemId: string }
   | { type: "note-closed"; at: string; itemId: string }
   | { type: "start-edited"; at: string; itemId: string; plantId: string }
-  | { type: "start-removed"; at: string; itemId: string; plantId: string };
+  | { type: "start-removed"; at: string; itemId: string; plantId: string }
+  | { type: "start-undone"; at: string; itemId: string; plantId: string }
+  | { type: "start-restored"; at: string; itemId: string; plantId: string };
 
 export interface BeginStudyDocument {
   version: 1;
@@ -42,8 +46,12 @@ export function beginIndex(seed: number, count: number): number {
 
 export function beginEventToken(event: BeginEvent): string {
   switch (event.type) {
-    case "offer-shown": return `offer-shown:${event.surface}:${event.itemId}`;
+    case "offer-shown": return event.reshow
+      ? `offer-shown:${event.surface}:${event.itemId}:reshow`
+      : `offer-shown:${event.surface}:${event.itemId}`;
+    case "begin-pressed": return `begin-pressed:${event.itemId}`;
     case "begin": return `begin:${event.itemId}`;
+    case "begin-cancelled": return `begin-cancelled:${event.itemId}`;
     case "another": return `another:${event.from}>${event.to}`;
     case "not-now": return `not-now:${event.surface}:${event.itemId}`;
     case "stop": return "stop:after-keep";
@@ -51,6 +59,8 @@ export function beginEventToken(event: BeginEvent): string {
     case "note-closed": return `note-closed:${event.itemId}`;
     case "start-edited": return `start-edited:${event.itemId}:${event.plantId}`;
     case "start-removed": return `start-removed:${event.itemId}:${event.plantId}`;
+    case "start-undone": return `start-undone:${event.itemId}:${event.plantId}`;
+    case "start-restored": return `start-restored:${event.itemId}:${event.plantId}`;
   }
 }
 
@@ -61,12 +71,17 @@ export function beginEventToken(event: BeginEvent): string {
 export function nextStartPlantSignal(
   state: { canonical: string | null; removalLogged: boolean },
   plantCanonical: string | null,
-): { signal: "edited" | "removed" | null; canonical: string | null; removalLogged: boolean } {
+  operation?: string,
+): { signal: "edited" | "removed" | "undone" | "restored" | null; canonical: string | null; removalLogged: boolean } {
   if (plantCanonical === null) {
     if (state.removalLogged) return { signal: null, canonical: null, removalLogged: true };
+    if (operation === "undo") return { signal: "undone", canonical: null, removalLogged: true };
     return { signal: "removed", canonical: null, removalLogged: true };
   }
   if (state.canonical === null || state.removalLogged) {
+    if (state.removalLogged && operation === "undo") {
+      return { signal: "restored", canonical: plantCanonical, removalLogged: false };
+    }
     return { signal: null, canonical: plantCanonical, removalLogged: false };
   }
   if (plantCanonical === state.canonical) {
@@ -119,6 +134,10 @@ export class BeginSession {
   private readonly now: () => string;
   private document: BeginStudyDocument;
   private shownKey: string | null = null;
+  /** Surface+item already written during this page view. */
+  private loggedThisView = new Set<string>();
+  /** Surfaces whose offer left and may come back. A return is a reshow. */
+  private hiddenSurfaces = new Set<BeginSurface>();
   /** Session only. A reload of an empty bowl may offer again. */
   openingDismissed = false;
   /** Session only. Set when Keep finishes, cleared when the player stops or begins. */
@@ -178,12 +197,31 @@ export class BeginSession {
 
   noteShown(surface: BeginSurface, itemId: string) {
     const key = `${surface}:${itemId}`;
-    if (this.shownKey === key) return;
+    if (this.loggedThisView.has(key)) {
+      this.shownKey = key;
+      this.hiddenSurfaces.delete(surface);
+      return;
+    }
+    this.loggedThisView.add(key);
+    const seenBefore = this.document.events.some((event) =>
+      event.type === "offer-shown" && event.surface === surface && event.itemId === itemId);
+    const reshow = seenBefore || this.hiddenSurfaces.has(surface);
+    this.hiddenSurfaces.delete(surface);
     this.shownKey = key;
-    this.record({ type: "offer-shown", at: this.now(), surface, kind: this.kind, itemId });
+    this.record({
+      type: "offer-shown",
+      at: this.now(),
+      surface,
+      kind: this.kind,
+      itemId,
+      ...(reshow ? { reshow: true as const } : {}),
+    });
   }
 
   clearShown() {
+    if (this.shownKey) {
+      this.hiddenSurfaces.add(this.shownKey.startsWith("after-keep") ? "after-keep" : "opening");
+    }
     this.shownKey = null;
   }
 
@@ -193,6 +231,7 @@ export class BeginSession {
     const toIndex = (fromIndex + 1) % this.count;
     const catalog = catalogOf(this.kind);
     this.document[key] = toIndex;
+    this.hiddenSurfaces.delete(surface);
     this.shownKey = null;
     this.record({
       type: "another",
@@ -218,8 +257,17 @@ export class BeginSession {
     this.record({ type: "stop", at: this.now(), surface: "after-keep" });
   }
 
+  recordPressed(itemId: string, surface: BeginSurface) {
+    this.record({ type: "begin-pressed", at: this.now(), kind: this.kind, itemId, surface });
+  }
+
+  /** The line was seated, or the invitation note was applied. */
   recordBegin(itemId: string, surface: BeginSurface) {
     this.record({ type: "begin", at: this.now(), kind: this.kind, itemId, surface });
+  }
+
+  recordCancelled(itemId: string, surface: BeginSurface) {
+    this.record({ type: "begin-cancelled", at: this.now(), kind: this.kind, itemId, surface });
   }
 
   chooseInvitation(itemId: string) {
@@ -253,6 +301,18 @@ export class BeginSession {
     const seated = this.seatedLine();
     if (!seated) return;
     this.record({ type: "start-removed", at: this.now(), itemId: seated.lineId, plantId: seated.plantId });
+  }
+
+  recordUndone() {
+    const seated = this.seatedLine();
+    if (!seated) return;
+    this.record({ type: "start-undone", at: this.now(), itemId: seated.lineId, plantId: seated.plantId });
+  }
+
+  recordRestored() {
+    const seated = this.seatedLine();
+    if (!seated) return;
+    this.record({ type: "start-restored", at: this.now(), itemId: seated.lineId, plantId: seated.plantId });
   }
 
   /**

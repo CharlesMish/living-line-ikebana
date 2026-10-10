@@ -32,6 +32,8 @@ export class BeginCard {
     toggleNote(): void;
     presentation(): void;
   }) {
+    const stack = document.createElement("div");
+    stack.className = "begin-stack";
     this.offer = document.createElement("aside");
     this.offer.id = "begin-offer";
     this.offer.className = "begin-offer";
@@ -63,7 +65,8 @@ export class BeginCard {
         <p id="begin-note-copy"></p>
         <button type="button" id="begin-presentation" hidden></button>
       </div>`;
-    parent.append(this.offer, this.note);
+    stack.append(this.offer, this.note);
+    parent.append(stack);
     this.copy = this.offer.querySelector<HTMLElement>("#begin-copy")!;
     this.accept = this.offer.querySelector<HTMLButtonElement>("#begin-accept")!;
     this.another = this.offer.querySelector<HTMLButtonElement>("#begin-another")!;

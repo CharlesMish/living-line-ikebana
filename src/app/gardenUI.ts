@@ -26,6 +26,8 @@ export interface GardenActions {
   kept?(): void;
   /** True when the pending bowl was applied. False when the player cancelled. */
   replacementSettled?(applied: boolean): void;
+  /** The Garden dialog finished closing. */
+  closed?(): void;
   beginComparison(left: GardenEntry, right: GardenEntry, canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement }): GardenComparison;
   syncComparison(session: GardenComparison): GardenComparison;
   endComparison(): void;
@@ -56,7 +58,7 @@ export class GardenUI {
   private compareDrag: ComparisonDrag | null = null;
   private replacementSettling = false;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
-  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false) {
+  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false, hideOptionalStudy = false) {
     const host = document.createElement("div");
     host.className = "garden-host";
     host.innerHTML = `
@@ -69,12 +71,12 @@ export class GardenUI {
         <div class="panel-heading"><div><p class="eyebrow">A place for enough</p><h1 id="garden-title">Your Garden</h1></div>
           <button id="garden-close" class="icon-button" type="button" aria-label="Close Garden">×</button></div>
         <p class="garden-intro">Keep a moment you want to return to. No score, no required finish.</p>
-        <details class="looking-study garden-study">
+        ${hideOptionalStudy ? "" : `<details class="looking-study garden-study">
           <summary>Optional study · Across the table</summary>
           <p class="looking-prompt">${TABLE_TALK_STUDY_PROMPT}</p>
           <p class="panel-note">${TABLE_TALK_STUDY_NOTE}</p>
           <p class="panel-note">Keep one, copy it, revise it, and keep the revision. Then compare them here.</p>
-        </details>
+        </details>`}
         <p class="panel-note">Saved in this browser on this device. Download a backup to keep your collection elsewhere.</p>
         <p id="garden-error" class="garden-message" role="status" aria-live="polite"></p>
         <section id="garden-choice" class="garden-choice" hidden aria-labelledby="garden-choice-title">
@@ -164,6 +166,7 @@ export class GardenUI {
     }, { signal: this.controller.signal });
     this.dialog.addEventListener("close", () => {
       this.clearChoice();
+      this.actions.closed?.();
       if (!this.comparing) this.find<HTMLButtonElement>("#more-toggle").focus();
     }, { signal: this.controller.signal });
     on("#garden-compare-go", () => this.startComparison());
@@ -277,6 +280,9 @@ export class GardenUI {
   offerBowlReplacement(snapshot: ArrangementSnapshot | null) {
     this.offerReplacement(snapshot);
   }
+  isDialogOpen(): boolean {
+    return this.dialog.open;
+  }
   private offerReplacement(snapshot: ArrangementSnapshot | null) {
     this.returnToWork(); this.open();
     this.pending = () => { this.actions.replace(snapshot); this.dialog.close(); };
@@ -291,14 +297,25 @@ export class GardenUI {
   }
   private finishReplacement() {
     const action = this.pending;
+    if (!action) {
+      this.clearChoice();
+      return;
+    }
+    // Drop the pending choice before close. A browser fires dialog `close`
+    // after this stack returns, and that must not look like Cancel.
+    this.pending = null;
+    let applied = false;
     this.replacementSettling = true;
     try {
-      action?.();
+      action();
+      applied = true;
+    } catch (error) {
+      this.message(error);
     } finally {
       this.replacementSettling = false;
     }
     this.clearChoice();
-    if (action) this.actions.replacementSettled?.(true);
+    this.actions.replacementSettled?.(applied);
   }
   private clearChoice() {
     const pending = this.pending !== null;

@@ -1100,10 +1100,15 @@ noscript {
 .photo-controls select { max-width: 100%; }
 .photo-controls button { white-space: normal; }
 
+.begin-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+}
 .begin-offer,
 .begin-note {
   position: absolute;
-  z-index: 14;
   width: min(17.5rem, calc(100vw - var(--safe-left) - var(--safe-right) - 1.4rem));
   border: 1px solid var(--line);
   border-radius: 0.9rem;
@@ -1159,11 +1164,34 @@ noscript {
 #begin-stop,
 #begin-accept { background: #e4eadc; }
 #begin-note-toggle { width: 100%; text-align: left; }
+/* While an offer is up, the note stays a single line so it cannot cover the offer. */
+.begin-stack:has(#begin-offer:not([hidden])) #begin-note-panel { display: none; }
 @media (max-width: 700px) {
   .begin-note {
-    top: auto;
-    bottom: calc(var(--safe-bottom) + 0.7rem);
-    width: min(16rem, calc(100vw - var(--safe-left) - var(--safe-right) - 1.4rem));
+    top: calc(var(--safe-top) + 11.4rem);
+    right: calc(var(--safe-right) + 0.45rem);
+    bottom: auto;
+    left: auto;
+    width: min(12rem, calc(100vw - var(--safe-left) - var(--safe-right) - 1rem));
+    max-height: 28vh;
+    overflow: auto;
   }
-  .begin-offer { bottom: calc(var(--safe-bottom) + 7.5rem); }
+  .begin-offer {
+    top: calc(var(--safe-top) + 11.4rem);
+    bottom: auto;
+    left: calc(var(--safe-left) + 0.45rem);
+    width: min(16.75rem, calc(100vw - var(--safe-left) - var(--safe-right) - 0.9rem));
+    max-height: 28vh;
+    overflow: auto;
+  }
+  .begin-stack:has(#begin-offer:not([hidden])):has(#begin-note:not([hidden])) .begin-note {
+    width: auto;
+    max-width: calc(100vw - var(--safe-left) - var(--safe-right) - 0.9rem);
+    max-height: none;
+    overflow: visible;
+  }
+  .begin-stack:has(#begin-offer:not([hidden])):has(#begin-note:not([hidden])) .begin-offer {
+    top: calc(var(--safe-top) + 14.6rem);
+    max-height: 26vh;
+  }
 }

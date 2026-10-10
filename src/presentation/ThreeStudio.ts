@@ -5,6 +5,11 @@ import { DEFAULT_VESSEL_APPEARANCE, resolveVesselAppearance, resolveVesselPresen
 import type { StemOverlap } from "../core/stemOverlaps.ts";
 import { createVesselGeometry } from "./vessel.ts";
 import { plantingOutline } from "./plantingOutline.ts";
+import {
+  PLANTING_BED_RADIUS,
+  PLANTING_PLATE_TOP_RADIUS,
+  supportPlateRadii,
+} from "./plantingCue.ts";
 import { ORIGINAL_VESSEL, inPlantingArea, nearestPlantingPoint, inVesselWater, vesselParts, plantingPins, type VesselProfile } from "../study/vesselProfiles.ts";
 import { StemOverlapOverlay } from "./stemOverlapOverlay.ts";
 import { computeStageLens, fogRangeForDistance, type StageLens } from "./stageLens.ts";
@@ -163,6 +168,11 @@ export interface ThreeStudioOptions {
    * missed window resize event cannot leave a preview on a changed projection.
    */
   onCanvasResize?: () => void;
+  /**
+   * Show the accepted planting ellipses before a drag, and draw the plate
+   * beyond that ellipse as a rim. Absent preserves the ordinary plate.
+   */
+  placeCue?: boolean;
 }
 
 type BranchVisual = {
@@ -351,12 +361,13 @@ export class ThreeStudio {
   private readonly plants = new Map<string, PlantVisual>();
   private readonly cameraTarget = new THREE.Vector3();
   private readonly kenzanGlow: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
+  private plantingCue: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial> | null = null;
   private readonly baseHandle: HandleVisual;
   private readonly bendHandle: HandleVisual;
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize" | "photography" | "vesselProfile" | "vesselAppearance">;
+    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize" | "photography" | "vesselProfile" | "vesselAppearance" | "placeCue">;
   private photoPerch: THREE.Group | null = null;
   private stemFibers = false;
   private fiberSetters = new WeakMap<THREE.MeshStandardMaterial, (enabled: boolean) => void>();
@@ -395,6 +406,7 @@ export class ThreeStudio {
       stageLens: options.stageLens ?? false,
       photography: options.photography ?? false,
       onCanvasResize: options.onCanvasResize,
+      placeCue: options.placeCue === true,
     };
     this.canvas.style.touchAction = "none";
 
@@ -528,15 +540,37 @@ export class ThreeStudio {
 
     // A quiet, submerged pin frog: matte and low, seen through the water as
     // the seating field rather than as the darkest object in the composition.
+    // With the planting cue, the dark cylinder stops at the accepted ellipse
+    // and the wider annulus is a stone rim, so the plate does not read as pins.
+    const showRim = this.options.placeCue === true;
+    const plate = supportPlateRadii(showRim);
     for (const area of profile.areas) {
       const kenzan = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.34, 1.36, 0.36, 64),
+        new THREE.CylinderGeometry(plate.top, plate.bottom, 0.36, 64),
         new THREE.MeshStandardMaterial({ color: 0x20221f, roughness: 0.9, metalness: 0.1 }),
       );
-      kenzan.scale.set(area.rx / 1.22, 1, area.rz / 1.22);
+      kenzan.scale.set(area.rx / PLANTING_BED_RADIUS, 1, area.rz / PLANTING_BED_RADIUS);
       kenzan.position.set(area.x, KENZAN_TOP_Y - 0.18, area.z);
       kenzan.receiveShadow = true;
+      if (showRim) kenzan.name = "planting-bed";
       this.scene.add(kenzan);
+      if (showRim) {
+        const rim = new THREE.Mesh(
+          new THREE.RingGeometry(PLANTING_BED_RADIUS, PLANTING_PLATE_TOP_RADIUS, 64),
+          new THREE.MeshStandardMaterial({
+            color: 0xc4b49a,
+            roughness: 0.72,
+            metalness: 0.02,
+            side: THREE.DoubleSide,
+          }),
+        );
+        rim.name = "planting-rim";
+        rim.rotation.x = -Math.PI / 2;
+        rim.scale.set(area.rx / PLANTING_BED_RADIUS, area.rz / PLANTING_BED_RADIUS, 1);
+        rim.position.set(area.x, KENZAN_TOP_Y + 0.006, area.z);
+        rim.renderOrder = 2;
+        this.scene.add(rim);
+      }
     }
 
     const pinCoordinates = plantingPins(profile);
@@ -579,7 +613,60 @@ export class ThreeStudio {
     kenzanGlow.renderOrder = 5;
     kenzanGlow.visible = false;
     this.scene.add(kenzanGlow);
+    this.plantingCue = null;
+    if (showRim) {
+      const cue = new THREE.Mesh(
+        plantingOutline(profile, 0.02),
+        new THREE.MeshBasicMaterial({
+          color: 0xd9c7a4,
+          opacity: 0.38,
+          transparent: true,
+          depthTest: false,
+          depthWrite: false,
+        }),
+      );
+      const under = new THREE.Mesh(
+        plantingOutline(profile, 0.012),
+        new THREE.MeshBasicMaterial({
+          color: 0xfff9e9,
+          transparent: true,
+          opacity: 0.2,
+          depthTest: false,
+          depthWrite: false,
+        }),
+      );
+      under.renderOrder = 3;
+      cue.add(under);
+      cue.name = "planting-cue";
+      cue.rotation.x = Math.PI / 2;
+      cue.position.y = KENZAN_Y;
+      cue.renderOrder = 4;
+      cue.visible = false;
+      this.scene.add(cue);
+      this.plantingCue = cue;
+    }
     return { kenzanGlow };
+  }
+
+  /**
+   * Idle Arrange keeps a thin line on the accepted ellipses. Ready makes that
+   * line stronger. Off hides it (Step Back, Photograph, and ordinary play).
+   * A live drag still uses the separate validity outline.
+   */
+  setPlantingCue(mode: "off" | "quiet" | "strong") {
+    const cue = this.plantingCue;
+    if (!cue) return;
+    if (mode === "off") {
+      cue.visible = false;
+    } else {
+      const strong = mode === "strong";
+      cue.visible = true;
+      cue.material.opacity = strong ? 0.94 : 0.38;
+      cue.material.color.setHex(strong ? 0xc47a4c : 0xd9c7a4);
+      const under = cue.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial> | undefined;
+      if (under?.material && "opacity" in under.material) under.material.opacity = strong ? 0.85 : 0.2;
+    }
+    this.requestRender();
   }
 
   /** Presentation-only; callers cancel any active gesture before changing UI settings. */

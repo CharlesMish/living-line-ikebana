@@ -719,6 +719,31 @@ button:focus-visible {
   transform: scale(0.992);
 }
 
+.material-card[aria-pressed="true"] {
+  border-color: #53634c;
+  background: #e7efe0;
+  box-shadow: inset 0 0 0 2px #73906d;
+  transform: scale(0.992);
+}
+
+.place-cancel {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 3.4rem);
+  min-height: 2.75rem;
+  padding: 0.45rem 1.1rem;
+  transform: translateX(-50%);
+  border: 1px solid #394635;
+  border-radius: 999px;
+  background: #f7f4ec;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(50, 45, 32, 0.12);
+}
+
+.place-cancel[hidden] { display: none; }
+
 .material-card:disabled {
   cursor: default;
   opacity: 0.48;

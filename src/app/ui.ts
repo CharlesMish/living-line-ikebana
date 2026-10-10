@@ -35,6 +35,8 @@ export interface UIState {
   activeMaterialId: string | null;
   status: string;
   statusTone: StatusTone;
+  /** Source card is armed for a scene tap. Only used when tap placement is on. */
+  placeReady: boolean;
 }
 
 export type UICommand =
@@ -63,6 +65,14 @@ export type UICommand =
       clientY: number;
     }
   | { kind: "activate-material"; materialId: string }
+  | {
+      kind: "arm-material-pointer";
+      materialId: string;
+      pointerId: number;
+      clientX: number;
+      clientY: number;
+    }
+  | { kind: "cancel-place" }
   | { kind: "export-telemetry" };
 
 export type UICommandListener = (command: UICommand, sourceEvent: Event) => void;
@@ -78,6 +88,8 @@ export interface UIBindings {
   setExperimentPanelOpen(open: boolean): void;
   setTrayEnabled(enabled: boolean): void;
   setTrayDragging(dragging: boolean, materialId?: string | null): void;
+  focusSourceCard(): void;
+  focusStatus(): void;
   /** Shows the manual-copy telemetry panel with `text`, or hides it when `null`. */
   showTelemetryFallback(text: string | null): void;
   destroy(): void;
@@ -87,6 +99,8 @@ export interface CreateUIBindingsOptions {
   root?: HTMLElement;
   initialState?: Partial<UIState>;
   search?: string;
+  /** Source-card tap placement. Absent keeps the immediate drag. */
+  placeTap?: boolean;
 }
 
 /** Whether a scrollport still has rows past either edge. Subpixel remainder is not another row. */
@@ -130,6 +144,7 @@ const DEFAULT_STATE: UIState = {
   activeMaterialId: null,
   status: "Place a cutting.",
   statusTone: "quiet",
+  placeReady: false,
 };
 
 function requireElement<T extends Element>(scope: ParentNode, selector: string): T {
@@ -147,12 +162,28 @@ export function bendVariantFromSearch(search: string): BendVariant {
     : "fixed-bead";
 }
 
+function createPlaceCancel(root: HTMLElement): HTMLButtonElement {
+  const existing = root.querySelector<HTMLButtonElement>("#place-cancel");
+  if (existing) return existing;
+  const button = root.ownerDocument.createElement("button");
+  button.type = "button";
+  button.id = "place-cancel";
+  button.className = "place-cancel";
+  button.dataset.testid = "place-cancel";
+  button.textContent = "Cancel";
+  button.setAttribute("aria-label", "Cancel placement");
+  button.hidden = true;
+  root.append(button);
+  return button;
+}
+
 export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindings {
   const rootCandidate = options.root ?? document.querySelector<HTMLElement>("#app");
   if (!rootCandidate) {
     throw new Error("UI shell is missing required element: #app");
   }
   const root: HTMLElement = rootCandidate;
+  const placeTap = options.placeTap === true;
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
@@ -191,6 +222,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   if (!sourceCard.dataset.materialId) {
     throw new Error("UI shell is missing required element: [data-material-id]");
   }
+  const placeCancel = placeTap ? createPlaceCancel(root) : null;
+  if (placeTap) status.tabIndex = -1;
   const paletteChoices = [...root.querySelectorAll<HTMLButtonElement>("[data-material-choice]")];
   if (paletteChoices.length === 0) {
     throw new Error("UI shell is missing required element: [data-material-choice]");
@@ -387,6 +420,17 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       fillSourceCard(currentState.selectedMaterialId);
     } else if (sourceCard.dataset.materialId !== currentState.selectedMaterialId && !currentState.trayDragging) {
       sourceCard.dataset.materialId = currentState.selectedMaterialId;
+    }
+    if (placeTap) {
+      const ready = currentState.placeReady;
+      const label = sourceCard.querySelector(".material-name")?.textContent?.trim() || "cutting";
+      sourceCard.setAttribute("aria-pressed", String(ready));
+      sourceCard.setAttribute("aria-label", ready
+        ? `${label}. Ready to place. Tap inside the pins.`
+        : `Drag ${label} to the pins, or tap to ready it`);
+      const verb = sourceCard.querySelector(".material-verb");
+      if (verb) verb.textContent = ready ? "tap inside the pins" : "drag to the pins";
+      if (placeCancel) placeCancel.hidden = !ready;
     }
 
     status.textContent = currentState.status;
@@ -614,15 +658,32 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       ) return;
       event.preventDefault();
       emit(
-        {
-          kind: "begin-material-drag",
-          materialId,
-          pointerId: event.pointerId,
-          clientX: event.clientX,
-          clientY: event.clientY,
-        },
+        placeTap
+          ? {
+              kind: "arm-material-pointer",
+              materialId,
+              pointerId: event.pointerId,
+              clientX: event.clientX,
+              clientY: event.clientY,
+            }
+          : {
+              kind: "begin-material-drag",
+              materialId,
+              pointerId: event.pointerId,
+              clientX: event.clientX,
+              clientY: event.clientY,
+            },
         event,
       );
+    },
+    listenerOptions,
+  );
+
+  placeCancel?.addEventListener(
+    "click",
+    (event) => {
+      emit({ kind: "cancel-place" }, event);
+      sourceCard.focus({ preventScroll: true });
     },
     listenerOptions,
   );
@@ -631,9 +692,16 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       const materialId = sourceCard.dataset.materialId;
-      // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
+      // Pointer presses are owned by pointerdown. detail === 0 remains the
+      // keyboard path in every build. Only tap-to-place also ignores a
+      // mouse, touch, or pen click, because those clicks can report detail 0.
+      const pointerType = "pointerType" in event ? event.pointerType : "";
+      const placeTapPointerClick = placeTap && (
+        pointerType === "mouse" || pointerType === "touch" || pointerType === "pen"
+      );
       if (
         !currentState.trayEnabled
+        || placeTapPointerClick
         || event.detail !== 0
         || !materialId
         || materialId.trim().length === 0
@@ -679,6 +747,12 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
         trayDragging: dragging,
         activeMaterialId: dragging ? materialId : null,
       });
+    },
+    focusSourceCard() {
+      sourceCard.focus({ preventScroll: true });
+    },
+    focusStatus() {
+      status.focus({ preventScroll: true });
     },
     showTelemetryFallback(text) {
       telemetryExportPanel.hidden = text === null;

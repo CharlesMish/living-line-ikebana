@@ -2242,7 +2242,7 @@ export class IkebanaApp {
     if (!input.valid) {
       this.ui.setStatus(intersection
         ? "Outside the pins. Tap inside the outline to place."
-        : "The pins are on the water. Tap inside the outline to place.");
+        : "Tap inside the outline to place.");
       return;
     }
     this.beginMaterialDrag({

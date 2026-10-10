@@ -137,6 +137,26 @@ test("tap mode arms on pointerdown, ignores the following click, and keeps keybo
   } finally { h.close(); }
 });
 
+test("without tap-to-place, a detail-0 pointer click still activates like the baseline card", () => {
+  const h = setup(false);
+  try {
+    pointerDown(h.source);
+    click(h.source, 1);
+    for (const pointerType of ["mouse", "touch", "pen"]) {
+      const event = new Event("click", { cancelable: true });
+      Object.defineProperty(event, "detail", { value: 0 });
+      Object.defineProperty(event, "pointerType", { value: pointerType });
+      h.source.dispatchEvent(event);
+    }
+    assert.deepEqual(h.commands.map((command) => command.kind), [
+      "begin-material-drag",
+      "activate-material",
+      "activate-material",
+      "activate-material",
+    ]);
+  } finally { h.close(); }
+});
+
 test("ordinary play still begins a drag on pointerdown and has no cancel control", () => {
   const h = setup(false);
   try {

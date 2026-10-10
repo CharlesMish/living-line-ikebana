@@ -257,7 +257,7 @@ test("an invalid or missed scene tap stays ready and writes nothing", () => {
     assert.equal(h.coordinator.getDebugState().active, null);
     assert.equal(h.statuses.at(-1), hit === "invalid"
       ? "Outside the pins. Tap inside the outline to place."
-      : "The pins are on the water. Tap inside the outline to place.");
+      : "Tap inside the outline to place.");
   }
 });
 

@@ -692,15 +692,16 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       const materialId = sourceCard.dataset.materialId;
-      // Pointer presses are owned by pointerdown. A following click must not
-      // seat, including a touch click whose detail is 0. Keyboard activation
-      // is a click that is not a mouse, touch, or pen pointer.
+      // Pointer presses are owned by pointerdown. detail === 0 remains the
+      // keyboard path in every build. Only tap-to-place also ignores a
+      // mouse, touch, or pen click, because those clicks can report detail 0.
       const pointerType = "pointerType" in event ? event.pointerType : "";
+      const placeTapPointerClick = placeTap && (
+        pointerType === "mouse" || pointerType === "touch" || pointerType === "pen"
+      );
       if (
         !currentState.trayEnabled
-        || pointerType === "mouse"
-        || pointerType === "touch"
-        || pointerType === "pen"
+        || placeTapPointerClick
         || event.detail !== 0
         || !materialId
         || materialId.trim().length === 0

@@ -692,9 +692,15 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       const materialId = sourceCard.dataset.materialId;
-      // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
+      // Pointer presses are owned by pointerdown. A following click must not
+      // seat, including a touch click whose detail is 0. Keyboard activation
+      // is a click that is not a mouse, touch, or pen pointer.
+      const pointerType = "pointerType" in event ? event.pointerType : "";
       if (
         !currentState.trayEnabled
+        || pointerType === "mouse"
+        || pointerType === "touch"
+        || pointerType === "pen"
         || event.detail !== 0
         || !materialId
         || materialId.trim().length === 0

@@ -981,6 +981,9 @@ export class IkebanaApp {
           capture,
           exceeded: false,
         };
+        // Capture before the 8px decision. Otherwise the browser can take the
+        // touch for scrolling and cancel the drag that follows.
+        this.capturePointer(capture, command.pointerId);
         break;
       }
       case "cancel-place": {
@@ -1134,6 +1137,7 @@ export class IkebanaApp {
         capture: this.canvas,
         exceeded: false,
       };
+      this.capturePointer(this.canvas, event.pointerId);
       return;
     }
     this.clearHover();
@@ -1427,7 +1431,7 @@ export class IkebanaApp {
     const arm = this.placeArm;
     if (arm && arm.pointerId === event.pointerId && !this.gesture) {
       if (event.pointerType === "mouse" && (event.buttons & 1) === 0) {
-        this.placeArm = null;
+        this.takePlaceArm(true);
         return;
       }
       if (placePointerKind(placePointerTravel(arm.x, arm.y, event.clientX, event.clientY)) === "drag") {
@@ -1435,6 +1439,8 @@ export class IkebanaApp {
           arm.exceeded = true;
           return;
         }
+        // Keep the capture. Releasing it here would cancel the drag that is
+        // about to acquire the same pointer.
         this.placeArm = null;
         this.endPlaceReadiness();
         this.beginMaterialDrag({
@@ -1577,8 +1583,8 @@ export class IkebanaApp {
 
   private handlePointerUp(event: PointerEvent) {
     if (this.placeArm && this.placeArm.pointerId === event.pointerId && !this.gesture) {
-      const arm = this.placeArm;
-      this.placeArm = null;
+      const arm = this.takePlaceArm(true);
+      if (!arm) return;
       event.preventDefault();
       if (arm.origin === "scene") {
         if (arm.exceeded) {
@@ -1683,7 +1689,7 @@ export class IkebanaApp {
   private handlePointerCancel(event: PointerEvent) {
     if (this.placeArm?.pointerId === event.pointerId) {
       const origin = this.placeArm.origin;
-      this.placeArm = null;
+      this.takePlaceArm(true);
       if (origin === "scene" && this.placeReadyMaterialId) this.ui.setStatus("Tap inside the pins to place.");
       return;
     }
@@ -1701,7 +1707,6 @@ export class IkebanaApp {
   };
 
   private notePageHidden() {
-    this.placeArm = null;
     this.cancelPlaceReadiness("visibility");
     this.interruptActive("visibility-hidden", false);
     // Not the craft-critical commit path: safe to flush synchronously
@@ -1710,7 +1715,6 @@ export class IkebanaApp {
   }
 
   private onPageHide = () => {
-    this.placeArm = null;
     this.cancelPlaceReadiness("visibility");
     this.interruptActive("system-interruption", false);
     this.telemetryStore.flush();
@@ -1722,14 +1726,12 @@ export class IkebanaApp {
     this.noteViewportChange();
   };
   private noteViewportChange() {
-    this.placeArm = null;
     this.cancelPlaceReadiness("resize");
     this.interruptActive("system-interruption", false);
     this.scheduleStageMeasure();
   }
   private handleWindowBlur() {
     if (!this.config?.placeTap) return;
-    this.placeArm = null;
     this.cancelPlaceReadiness("blur");
   }
   private onWindowPointerDown = () => {
@@ -2209,8 +2211,15 @@ export class IkebanaApp {
     this.syncPlantingCue();
   }
 
-  private cancelPlaceReadiness(reason: "escape" | "card" | "cancel" | "interrupt" | "blur" | "visibility" | "resize") {
+  private takePlaceArm(release: boolean) {
+    const arm = this.placeArm;
     this.placeArm = null;
+    if (release && arm) this.releasePointer(arm.capture, arm.pointerId);
+    return arm;
+  }
+
+  private cancelPlaceReadiness(reason: "escape" | "card" | "cancel" | "interrupt" | "blur" | "visibility" | "resize") {
+    this.takePlaceArm(true);
     if (!this.placeReadyMaterialId) return;
     this.placeReadyMaterialId = null;
     this.ui.setState({ placeReady: false });

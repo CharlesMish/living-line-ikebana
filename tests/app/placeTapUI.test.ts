@@ -127,6 +127,13 @@ test("tap mode arms on pointerdown, ignores the following click, and keeps keybo
 
     click(h.source, 0);
     assert.equal(h.commands.at(-1)?.kind, "activate-material");
+
+    const touchClick = new Event("click", { cancelable: true });
+    Object.defineProperty(touchClick, "detail", { value: 0 });
+    Object.defineProperty(touchClick, "pointerType", { value: "touch" });
+    const before = h.commands.length;
+    h.source.dispatchEvent(touchClick);
+    assert.equal(h.commands.length, before);
   } finally { h.close(); }
 });
 

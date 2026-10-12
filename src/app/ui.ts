@@ -1,5 +1,6 @@
 import type { BendStationId, BendStationsMode } from "./bendStations.ts";
 import type { CraftCue } from "./craftCues.ts";
+import { applyResearchStudyCopy, preventionToggleLabel } from "./researchCopy.ts";
 
 /** Idle card copy when tap-to-place is on. Builds without tap keep "drag to the pins". */
 export const PLACE_TAP_IDLE_VERB = "drag to the pins, or tap to place";
@@ -104,6 +105,8 @@ export interface CreateUIBindingsOptions {
   search?: string;
   /** Source-card tap placement. Absent keeps the immediate drag. */
   placeTap?: boolean;
+  /** A baked `__LL_BEGIN__` file. Ordinary play leaves the study wording. */
+  researchBake?: boolean;
 }
 
 /** Whether a scrollport still has rows past either edge. Subpixel remainder is not another row. */
@@ -187,6 +190,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
   const root: HTMLElement = rootCandidate;
   const placeTap = options.placeTap === true;
+  const researchBake = options.researchBake === true;
+  if (researchBake) applyResearchStudyCopy(root);
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
@@ -338,7 +343,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   function render(): void {
     preventionToggle.setAttribute("aria-pressed", String(currentState.preventStemOverlaps));
-    preventionToggle.textContent = `Prevent overlaps (study): ${currentState.preventStemOverlaps ? "on" : "off"}`;
+    preventionToggle.textContent = preventionToggleLabel(currentState.preventStemOverlaps, researchBake);
     preventionNote.hidden = !currentState.preventStemOverlaps;
     overlapsToggle.setAttribute("aria-pressed", String(currentState.showStemOverlaps));
     overlapsToggle.textContent = `Stem overlaps: ${currentState.showStemOverlaps ? "on" : "off"}`;

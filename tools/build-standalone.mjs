@@ -310,6 +310,25 @@ const PLACE_FILES = {
   tap: { file: "arrangement-3.html", token: "2" },
 };
 
+/**
+ * Begin study packets. Every file also bakes tap-to-place.
+ * Filenames do not name the condition. `open` marks placement-only.
+ * `line:N` / `for:N` set the first index. Any of these hides the older Garden and Guide study lines.
+ */
+function withBeginBake(html, token) {
+  if (!token) return html;
+  const injection = `<script>globalThis.__LL_BEGIN__=${JSON.stringify(token)};</script>\n`;
+  return html.replace(/<script\b/i, `${injection}<script`);
+}
+
+const BEGIN_FILES = {
+  open: { file: "bowl-1.html", place: "2", begin: "open" },
+  "line-a": { file: "bowl-2a.html", place: "2", begin: "line:0" },
+  "line-b": { file: "bowl-2b.html", place: "2", begin: "line:1" },
+  "for-a": { file: "bowl-3a.html", place: "2", begin: "for:0" },
+  "for-b": { file: "bowl-3b.html", place: "2", begin: "for:1" },
+};
+
 try {
   let html = await readFile(inputHtmlPath, "utf8");
   html = await inlineStylesheets(html);
@@ -335,6 +354,16 @@ try {
     if (!entry) throw new Error(`LIVING_LINE_PLACE must be baseline, cue, tap, or all (got ${requested}).`);
     const target = path.join(distributionDirectory, entry.file);
     await writeFile(target, withPlaceBake(html, entry.token), "utf8");
+    console.log(`Wrote ${path.relative(projectDirectory, target)}.`);
+  }
+
+  const beginRequested = process.env.LIVING_LINE_BEGIN ?? "";
+  const beginNames = beginRequested === "all" ? Object.keys(BEGIN_FILES) : beginRequested ? [beginRequested] : [];
+  for (const name of beginNames) {
+    const entry = BEGIN_FILES[name];
+    if (!entry) throw new Error(`LIVING_LINE_BEGIN must be open, line-a, line-b, for-a, for-b, or all (got ${beginRequested}).`);
+    const target = path.join(distributionDirectory, entry.file);
+    await writeFile(target, withBeginBake(withPlaceBake(html, entry.place), entry.begin), "utf8");
     console.log(`Wrote ${path.relative(projectDirectory, target)}.`);
   }
 } catch (error) {

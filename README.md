@@ -142,7 +142,7 @@ LIVING_LINE_BEGIN=all npm run build
 | `dist/bowl-3a.html` | An occasion, first index 0. |
 | `dist/bowl-3b.html` | An occasion, first index 1. |
 
-The filenames and the page do not name the condition. After Keep, stopping is the primary choice. A further offer is secondary and does not open a new bowl.
+The filenames and the page do not name the condition. After Keep, stopping is the primary choice. A further offer is secondary and does not open a new bowl. The stopping point and the optional offer appear inside the Garden, under the Keep confirmation, without closing it.
 
 ## Architecture
 

@@ -164,6 +164,34 @@ test("a non-empty bowl asks before replacement and an async close still settles 
     assert.equal(empty.plants.length, 0);
     assert.equal(settled.filter((applied) => applied === false).length, 1);
 
+    // r2: the after-Keep slot sits in the Garden, starts hidden, and Keep does not close the Garden.
+    const opened: number[] = [];
+    const closed: number[] = [];
+    const keptCalls: number[] = [];
+    actions.opened = () => { opened.push(1); };
+    actions.closed = () => { closed.push(1); };
+    actions.kept = () => { keptCalls.push(1); };
+    actions.snapshot = () => working as unknown as ReturnType<GardenActions["snapshot"]>;
+    const slot = garden.afterKeepSlot();
+    assert.equal(slot.id, "garden-after-keep");
+    assert.equal(slot.hidden, true);
+    garden.open();
+    assert.equal(opened.length, 1);
+    const dialog = root.querySelector("#garden-dialog")!;
+    assert.equal(dialog.open, true);
+    root.querySelector("#garden-keep-form")?.dispatchEvent(Object.assign(new Event("submit"), { preventDefault() {} }));
+    await flush();
+    assert.equal(keptCalls.length, 1);
+    assert.equal(dialog.open, true, "Keep leaves the Garden open");
+    assert.equal(root.querySelector("#garden-error")?.textContent, "Kept. You can leave it here, or keep working.");
+    garden.close();
+    await flush();
+    assert.equal(dialog.open, false);
+    assert.equal(closed.length, 1);
+    garden.close();
+    await flush();
+    assert.equal(closed.length, 1, "closing a closed Garden is a no-op");
+
     const quiet = new El("main");
     quiet.dataset = {};
     const quietToggle = new El("button");

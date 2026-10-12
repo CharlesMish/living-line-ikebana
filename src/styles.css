@@ -1199,3 +1199,16 @@ noscript {
   .begin-offer .begin-actions button,
   .begin-offer .begin-stop button { min-height: 2.35rem; padding-block: 0.15rem; }
 }
+
+/* After Keep, inside the open Garden: the same card, laid out in the dialog flow. */
+.garden-after-keep[hidden] { display: none; }
+.garden-after-keep { margin: 0.25rem 0 0.75rem; }
+.garden-after-keep .begin-offer {
+  position: static;
+  inset: auto;
+  width: auto;
+  max-width: 34rem;
+  max-height: none;
+  overflow: visible;
+  box-shadow: none;
+}

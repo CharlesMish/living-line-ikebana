@@ -23,6 +23,7 @@ export class BeginCard {
   private readonly notePanel: HTMLElement;
   private readonly noteCopy: HTMLElement;
   private readonly presentation: HTMLButtonElement;
+  private readonly stack: HTMLElement;
 
   constructor(parent: HTMLElement, signal: AbortSignal, handlers: {
     begin(surface: BeginSurface): void;
@@ -67,6 +68,7 @@ export class BeginCard {
       </div>`;
     stack.append(this.offer, this.note);
     parent.append(stack);
+    this.stack = stack;
     this.copy = this.offer.querySelector<HTMLElement>("#begin-copy")!;
     this.accept = this.offer.querySelector<HTMLButtonElement>("#begin-accept")!;
     this.another = this.offer.querySelector<HTMLButtonElement>("#begin-another")!;
@@ -110,6 +112,19 @@ export class BeginCard {
 
   hideOffer() {
     this.offer.hidden = true;
+  }
+
+  /**
+   * Move the offer into another container (the open Garden, right under the
+   * Keep confirmation) or back over the bowl with `null`. The node and its
+   * handlers stay the same, so the log is identical wherever it is shown.
+   */
+  placeIn(host: HTMLElement | null) {
+    const target = host ?? this.stack;
+    if (this.offer.parentElement === target) return;
+    if (host) host.append(this.offer);
+    else this.stack.insertBefore(this.offer, this.note);
+    this.offer.dataset.place = host ? "garden" : "bowl";
   }
 
   showNote(invitation: BeginInvitation, collapsed: boolean) {

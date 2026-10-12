@@ -395,6 +395,7 @@ export class IkebanaApp {
         this.syncBegin();
       },
       closed: () => this.syncBegin(),
+      opened: () => this.syncBegin(),
       replacementSettled: (applied) => {
         const pending = this.pendingBegin;
         if (!pending) return;
@@ -828,6 +829,8 @@ export class IkebanaApp {
       session.commitUse(item.id);
       session.afterKeepArmed = false;
       this.ui.setStatus("That note stays while you arrange.");
+      // The player chose to begin at the bowl, so the Garden steps aside.
+      if (surface === "after-keep") this.gardenUI.close();
       this.syncBegin();
       return;
     }
@@ -842,6 +845,7 @@ export class IkebanaApp {
       }
     }
     this.pendingBegin = { lineId: item.id, surface };
+    this.syncBegin();
     try {
       this.gardenUI.offerBowlReplacement(plan.snapshot);
     } catch (error) {
@@ -944,8 +948,22 @@ export class IkebanaApp {
         : plants === 0 && !session.openingDismissed && !invitation
           ? "opening"
           : null;
-    if (surface === "after-keep" && gardenOpen) surface = null;
-    const offerUp = surface !== null;
+    // Inside the open Garden the after-Keep card sits under the Keep
+    // confirmation. Nothing else is offered over the Garden, and the card
+    // steps out of the way while a bowl-replacement choice is pending.
+    const inGarden = surface === "after-keep" && gardenOpen;
+    const slot = this.gardenUI?.afterKeepSlot();
+    if (inGarden && this.pendingBegin) {
+      // Hidden, not dismissed: the same offer returns if the choice is cancelled
+      // and is not logged as shown a second time.
+      card.hideOffer();
+      if (slot) slot.hidden = true;
+      card.setToken(session.token());
+      return;
+    }
+    card.placeIn(inGarden ? slot ?? null : null);
+    if (slot) slot.hidden = !inGarden;
+    const offerUp = surface !== null && !inGarden;
     if (!viewing && invitation) card.showNote(invitation, offerUp ? true : session.noteCollapsed());
     else card.hideNote();
     if (!surface) {

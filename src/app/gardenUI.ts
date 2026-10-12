@@ -28,6 +28,8 @@ export interface GardenActions {
   replacementSettled?(applied: boolean): void;
   /** The Garden dialog finished closing. */
   closed?(): void;
+  /** The Garden dialog was opened (or reopened). */
+  opened?(): void;
   beginComparison(left: GardenEntry, right: GardenEntry, canvases: { left: HTMLCanvasElement; right: HTMLCanvasElement }): GardenComparison;
   syncComparison(session: GardenComparison): GardenComparison;
   endComparison(): void;
@@ -79,6 +81,7 @@ export class GardenUI {
         </details>`}
         <p class="panel-note">Saved in this browser on this device. Download a backup to keep your collection elsewhere.</p>
         <p id="garden-error" class="garden-message" role="status" aria-live="polite"></p>
+        <div id="garden-after-keep" class="garden-after-keep" hidden></div>
         <section id="garden-choice" class="garden-choice" hidden aria-labelledby="garden-choice-title">
           <h2 id="garden-choice-title">What about your current bowl?</h2>
           <p>Keep it first, or replace it. Your existing Garden entries will stay as they are.</p>
@@ -187,6 +190,15 @@ export class GardenUI {
   open() {
     this.actions.pause(); this.clearChoice(); this.message(""); this.reload();
     if (!this.dialog.open) this.dialog.showModal();
+    this.actions.opened?.();
+  }
+  /** Where an optional after-Keep card can sit while the Garden is open. */
+  afterKeepSlot(): HTMLElement {
+    return this.find("#garden-after-keep");
+  }
+  /** Close the Garden because the player chose something that happens at the bowl. */
+  close() {
+    if (this.dialog.open) this.dialog.close();
   }
   private reload() {
     this.loaded = false;

@@ -1,6 +1,9 @@
 import type { BendStationId, BendStationsMode } from "./bendStations.ts";
 import type { CraftCue } from "./craftCues.ts";
 
+/** Idle card copy when tap-to-place is on. Builds without tap keep "drag to the pins". */
+export const PLACE_TAP_IDLE_VERB = "drag to the pins, or tap to place";
+
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
 // The retained internal "move" token is labeled Pan in the interface.
@@ -429,7 +432,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
         ? `${label}. Ready to place. Tap inside the pins.`
         : `Drag ${label} to the pins, or tap to ready it`);
       const verb = sourceCard.querySelector(".material-verb");
-      if (verb) verb.textContent = ready ? "tap inside the pins" : "drag to the pins";
+      if (verb) verb.textContent = ready ? "tap inside the pins" : PLACE_TAP_IDLE_VERB;
       if (placeCancel) placeCancel.hidden = !ready;
     }
 

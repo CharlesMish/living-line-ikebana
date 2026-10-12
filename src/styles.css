@@ -1212,3 +1212,5 @@ noscript {
   overflow: visible;
   box-shadow: none;
 }
+/* An open top menu sits over any begin card, so Studio → Garden stays reachable on narrow screens. */
+.app-shell:has(#more-options:not([hidden]), #view-options:not([hidden]), #edit-options:not([hidden])) .begin-stack { z-index: 9; }

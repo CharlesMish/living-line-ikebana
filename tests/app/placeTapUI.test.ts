@@ -99,7 +99,7 @@ test("tap mode arms on pointerdown, ignores the following click, and keeps keybo
   try {
     assert.equal(h.source.getAttribute("aria-pressed"), "false");
     assert.equal(h.source.getAttribute("aria-label"), "Drag Camellia to the pins, or tap to ready it");
-    assert.equal(h.document.element(".material-verb").textContent, "drag to the pins");
+    assert.equal(h.document.element(".material-verb").textContent, "drag to the pins, or tap to place");
     const cancel = h.document.elements.get("#place-cancel")!;
     assert.equal(cancel.hidden, true);
     assert.equal(cancel.textContent, "Cancel");
@@ -162,6 +162,9 @@ test("ordinary play still begins a drag on pointerdown and has no cancel control
   try {
     assert.equal(h.document.elements.has("#place-cancel"), false);
     assert.equal(h.source.getAttribute("aria-pressed"), null);
+    h.document.element(".material-verb").textContent = "drag to the pins";
+    h.ui.setState({ placeReady: false });
+    assert.equal(h.document.element(".material-verb").textContent, "drag to the pins");
     pointerDown(h.source);
     click(h.source, 1);
     click(h.source, 0);

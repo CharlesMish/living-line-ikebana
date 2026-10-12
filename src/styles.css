@@ -981,7 +981,7 @@ noscript {
   border-radius: .55rem; border: 1px solid #d5d8c9; background: #eee9dd; touch-action: none;
 }
 .garden-compare-controls button { flex: 1 1 6.5rem; }
-.garden-empty { padding: 2rem; border: 1px dashed #b8c0aa; border-radius: .7rem; line-height: 1.7; }
+.garden-empty { padding: 1.6rem 1.4rem; border: 1px dashed #c5cdb8; border-radius: .85rem; line-height: 1.75; color: var(--ink-muted); background: rgba(246, 243, 235, 0.45); }
 .garden-choice { padding: 1rem; border: 1px solid #b6a688; border-radius: .7rem; background: #f1ebdc; margin-block: 1rem; }
 .garden-choice h2 { margin-top: 0; }
 .garden-viewer { position: absolute; z-index: 12; top: calc(7.5rem + env(safe-area-inset-top)); left: .75rem; right: .75rem;

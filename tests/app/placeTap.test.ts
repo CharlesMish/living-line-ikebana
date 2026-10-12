@@ -496,3 +496,127 @@ test("a press that only closes chrome does not seat, and a mouse release without
   assert.equal(slip.state.placeReady, false);
   assert.equal(plantsOf(slip.coordinator).length, 0);
 });
+
+test("held card and scene taps keep their original pointer owner", () => {
+  for (const origin of ["card", "scene"]) {
+    const h = harness();
+    if (origin === "scene") h.release(h.arm());
+    const down = (pointerId: number) => origin === "card"
+      ? h.arm({ pointerId })
+      : h.app.handleCanvasPointerDown(pointer({ pointerId }));
+    down(10);
+    down(11);
+    h.app.handlePointerUp(pointer({ pointerId: 11, buttons: 0 }));
+    assert.equal(h.app.placeArm?.pointerId, 10, `${origin}: secondary cannot replace owner`);
+    assert.equal(h.storage.writes.length, 0);
+    h.app.handlePointerUp(pointer({ pointerId: 10, buttons: 0 }));
+    assert.equal(plantsOf(h.coordinator).length, origin === "scene" ? 1 : 0);
+    assert.equal(h.state.placeReady, origin === "card");
+  }
+});
+
+test("keyboard activation cannot place alongside an already held scene tap", () => {
+  const h = harness();
+  h.release(h.arm());
+  h.app.handleCanvasPointerDown(pointer({ pointerId: 10 }));
+  h.app.handleUICommand({ kind: "activate-material", materialId: "flowering-branch" }, pointer());
+  assert.equal(h.app.placeArm?.pointerId, 10);
+  assert.equal(plantsOf(h.coordinator).length, 0);
+  assert.equal(h.storage.writes.length, 0);
+  h.app.handlePointerUp(pointer({ pointerId: 10, buttons: 0 }));
+  assert.equal(plantsOf(h.coordinator).length, 1);
+  assert.equal(h.storage.writes.length, 1);
+  assert.equal(h.coordinator.getDebugState().successfulPlantOrdinal, 1);
+});
+
+test("view and system commands discard held taps before a later release", () => {
+  for (const origin of ["card", "scene"]) {
+    for (const command of ["view", "system", "context-loss"]) {
+      const h = harness();
+      if (origin === "scene") {
+        h.release(h.arm());
+        h.app.handleCanvasPointerDown(pointer({ pointerId: 10 }));
+      } else h.arm({ pointerId: 10 });
+      if (command === "view") h.app.handleUICommand({ kind: "set-view", view: "above" }, pointer({ pointerId: 11 }));
+      else if (command === "context-loss") h.app.handleContextLost({ preventDefault() {} });
+      else h.app.interruptActive("system-interruption", false);
+      assert.equal(h.app.placeArm, null, `${origin}/${command}: discard held pointer`);
+      const writesAfterCommand = h.storage.writes.length;
+      h.app.handlePointerUp(pointer({ pointerId: 10, buttons: 0 }));
+      assert.equal(plantsOf(h.coordinator).length, 0);
+      assert.equal(h.storage.writes.length, writesAfterCommand, "late release saves nothing");
+      assert.equal(h.coordinator.getDebugState().successfulPlantOrdinal, 0);
+      assert.equal(h.coordinator.canUndo(), false);
+      assert.equal(h.state.placeReady, origin === "scene", "idle readiness is distinct from a held tap");
+    }
+  }
+});
+
+test("lost capture cancels only the owning held tap; ordinary release then capture loss is harmless", () => {
+  const h = harness();
+  h.release(h.arm());
+  h.app.handleCanvasPointerDown(pointer({ pointerId: 10 }));
+  h.app.handleLostPointerCapture(pointer({ pointerId: 11 }));
+  assert.equal(h.app.placeArm?.pointerId, 10);
+  h.app.handleLostPointerCapture(pointer({ pointerId: 10 }));
+  assert.equal(h.app.placeArm, null);
+  h.app.handlePointerUp(pointer({ pointerId: 10, buttons: 0 }));
+  assert.equal(h.state.placeReady, true);
+  assert.equal(h.storage.writes.length, 0);
+  h.app.handleCanvasPointerDown(pointer({ pointerId: 12 }));
+  h.app.handlePointerUp(pointer({ pointerId: 12, buttons: 0 }));
+  h.app.handleLostPointerCapture(pointer({ pointerId: 12 }));
+  assert.equal(plantsOf(h.coordinator).length, 1);
+  assert.equal(h.storage.writes.length, 1);
+});
+
+test("release checks tap travel even when no pointermove was delivered", () => {
+  for (const origin of ["card", "scene"]) {
+    const h = harness();
+    if (origin === "scene") {
+      h.release(h.arm());
+      h.app.handleCanvasPointerDown(pointer({ pointerId: 10, clientX: 100 }));
+    } else h.arm({ pointerId: 10, clientX: 100 });
+    h.app.handlePointerUp(pointer({ pointerId: 10, clientX: 130, buttons: 0 }));
+    assert.equal(plantsOf(h.coordinator).length, 0);
+    assert.equal(h.storage.writes.length, 0);
+    assert.equal(h.state.placeReady, origin === "scene");
+  }
+});
+
+test("a CSS resize before the resize event cancels a held tap at release", () => {
+  const h = harness();
+  const size = { width: 390, height: 844 };
+  h.app.canvas.getBoundingClientRect = () => ({ ...size });
+  h.release(h.arm());
+  h.app.handleCanvasPointerDown(pointer({ pointerId: 10 }));
+  size.height = 700;
+  h.app.handlePointerUp(pointer({ pointerId: 10, buttons: 0 }));
+  assert.equal(h.state.placeReady, false);
+  assert.equal(plantsOf(h.coordinator).length, 0);
+  assert.equal(h.storage.writes.length, 0);
+  assert.equal(h.coordinator.getDebugState().successfulPlantOrdinal, 0);
+});
+
+test("a projection-changing stage measurement clears the arm before changing the lens", () => {
+  const h = harness();
+  const calls: string[] = [];
+  let changes = false;
+  h.app.root = { querySelector: () => ({ getBoundingClientRect: () => ({ bottom: 240 }) }) };
+  h.app.canvas.getBoundingClientRect = () => ({ top: 0, width: 390, height: 844 });
+  h.app.studio.stageTopInsetChangesProjection = () => changes;
+  h.app.studio.setStageTopInset = () => {
+    calls.push(h.app.placeArm ? "held" : "cancelled");
+  };
+  h.release(h.arm());
+  h.app.handleCanvasPointerDown(pointer({ pointerId: 10 }));
+  // Call the production measurement, not the harness's no-op stub.
+  IkebanaApp.prototype["measureStage"].call(h.app);
+  assert.equal(h.app.placeArm?.pointerId, 10, "unchanged lens retains owner");
+  changes = true;
+  IkebanaApp.prototype["measureStage"].call(h.app);
+  assert.deepEqual(calls, ["held", "cancelled"]);
+  h.app.handlePointerUp(pointer({ pointerId: 10, buttons: 0 }));
+  assert.equal(plantsOf(h.coordinator).length, 0);
+  assert.equal(h.storage.writes.length, 0);
+});

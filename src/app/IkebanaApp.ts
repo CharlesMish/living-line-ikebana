@@ -318,6 +318,8 @@ export class IkebanaApp {
     y: number;
     capture: HTMLElement;
     exceeded: boolean;
+    canvasSize: { width: number; height: number } | null;
+    projection: { viewportHeight: number; verticalFov: number } | null;
   } | null = null;
   private placeReadyMaterialId: string | null = null;
   /** Photograph, Garden, and Vessel cover the arranging view, so the cue stays quiet. */
@@ -968,7 +970,7 @@ export class IkebanaApp {
       }
       case "arm-material-pointer": {
         if (!this.config.placeTap || !(sourceEvent instanceof PointerEvent)) return;
-        if (this.gesture || this.coordinator.getDebugState().posture !== "arrange") return;
+        if (this.gesture || this.placeArm || this.coordinator.getDebugState().posture !== "arrange") return;
         const capture = this.materialCaptureElement(sourceEvent)
           ?? this.ui.root.querySelector<HTMLElement>("[data-material-id]");
         if (!capture) return;
@@ -980,6 +982,8 @@ export class IkebanaApp {
           y: command.clientY,
           capture,
           exceeded: false,
+          canvasSize: this.currentCanvasSize(),
+          projection: this.currentProjection(),
         };
         // Capture before the 8px decision. Otherwise the browser can take the
         // touch for scrolling and cancel the drag that follows.
@@ -1064,7 +1068,7 @@ export class IkebanaApp {
   }
 
   private activateMaterial(materialId: string) {
-    if (this.gesture || this.coordinator.getDebugState().posture !== "arrange") return;
+    if (this.gesture || this.placeArm || this.coordinator.getDebugState().posture !== "arrange") return;
     const prepared = this.prepareMaterialInsertion(materialId);
     if (!prepared) return;
     const reservation = {
@@ -1124,6 +1128,8 @@ export class IkebanaApp {
       if (this.gesture.kind === "camera") this.addCameraPointer(event);
       return;
     }
+    // A held card/scene tap has the same single-owner rule as an edit.
+    if (this.placeArm) return;
     if (this.placeReadyMaterialId && this.config.placeTap) {
       // A press that is only closing a menu must not seat the ready cutting.
       if (this.chromeDismissPress || this.coordinator.getDebugState().posture !== "arrange" || this.workingSession) return;
@@ -1136,6 +1142,8 @@ export class IkebanaApp {
         y: event.clientY,
         capture: this.canvas,
         exceeded: false,
+        canvasSize: this.currentCanvasSize(),
+        projection: this.currentProjection(),
       };
       this.capturePointer(this.canvas, event.pointerId);
       return;
@@ -1568,13 +1576,14 @@ export class IkebanaApp {
    * delivered its resize events. Layout is current here, so compare directly:
    * a changed canvas cancels instead of committing a preview made on the old one.
    */
-  private canvasChangedSinceAcquisition() {
-    const acquired = this.gestureCanvasSize;
+  private canvasChangedSinceAcquisition(
+    acquired = this.gestureCanvasSize,
+    projection = this.gestureProjection,
+  ) {
     const now = this.currentCanvasSize();
     if (acquired && now && (now.width !== acquired.width || now.height !== acquired.height)) return true;
     // Defence in depth: any projection change (for example an inset-only
     // remeasure) since acquisition also refuses to commit.
-    const projection = this.gestureProjection;
     const current = this.currentProjection();
     return Boolean(projection && current && (
       Math.abs(projection.viewportHeight - current.viewportHeight) > 1e-6
@@ -1586,14 +1595,23 @@ export class IkebanaApp {
       const arm = this.takePlaceArm(true);
       if (!arm) return;
       event.preventDefault();
+      if (this.canvasChangedSinceAcquisition(arm.canvasSize, arm.projection)) {
+        this.cancelPlaceReadiness("resize");
+        this.scheduleStageMeasure();
+        return;
+      }
+      // Some input providers deliver down/up without the intermediate move.
+      // Such a release still must not turn a drag into a placement tap.
+      const travelled = placePointerKind(placePointerTravel(arm.x, arm.y, event.clientX, event.clientY)) === "drag";
       if (arm.origin === "scene") {
-        if (arm.exceeded) {
+        if (arm.exceeded || travelled) {
           this.ui.setStatus("Tap inside the pins to place.");
           return;
         }
         this.commitPlaceTap(arm.materialId, event.pointerId, event.clientX, event.clientY);
         return;
       }
+      if (travelled) return;
       if (this.placeReadyMaterialId === arm.materialId) {
         this.cancelPlaceReadiness("card");
         return;
@@ -1698,9 +1716,18 @@ export class IkebanaApp {
   }
 
   private onLostPointerCapture = (event: Event) => {
-    if (!(event instanceof PointerEvent) || !this.gestureOwnsPointer(event.pointerId)) return;
-    this.interruptActive("lost-capture");
+    this.handleLostPointerCapture(event);
   };
+
+  private handleLostPointerCapture(event: Event) {
+    if (!(event instanceof PointerEvent)) return;
+    if (this.placeArm?.pointerId === event.pointerId) {
+      this.takePlaceArm(false);
+      return;
+    }
+    if (!this.gestureOwnsPointer(event.pointerId)) return;
+    this.interruptActive("lost-capture");
+  }
 
   private onVisibilityChange = () => {
     if (typeof document !== "undefined" && document.hidden) this.notePageHidden();
@@ -1775,17 +1802,21 @@ export class IkebanaApp {
     const canvas = this.canvas.getBoundingClientRect();
     const inset = Math.max(0, chrome ? chrome.getBoundingClientRect().bottom - canvas.top : 0);
     if (this.studio.stageTopInsetChangesProjection(inset)
-      && (this.gesture || this.coordinator.getDebugState().active)) {
+      && (this.placeArm || this.gesture || this.coordinator.getDebugState().active)) {
       this.interruptActive("system-interruption", false);
     }
     this.studio.setStageTopInset(inset);
   }
 
   private onContextLost = (event: Event) => {
+    this.handleContextLost(event);
+  };
+
+  private handleContextLost(event: Event) {
     event.preventDefault();
     this.interruptActive("system-interruption", false);
     this.ui.setStatus("Keeping the arrangement safe.");
-  };
+  }
 
   private onContextRestored = () => {
     this.syncPresentation();
@@ -1987,6 +2018,9 @@ export class IkebanaApp {
   }
 
   private interruptActive(reason: CancelReason, announce = true) {
+    // Preserve idle readiness across Angles commands, but discard any held
+    // pointer before commands, graphics recovery, or projection changes.
+    this.takePlaceArm(true);
     this.clearHover();
     const gesture = this.gesture;
     if (gesture) {

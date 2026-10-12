@@ -91,7 +91,7 @@ test("the across-the-table prompt is a human brief, not a measured result", () =
   assert.match(ui, /TABLE_TALK_STUDY_NOTE/);
   assert.match(ui, /Same view for both\. Nothing is saved\./);
   assert.match(ui, /Drag either one\. Both move together\./);
-  assert.match(ui, /Choose two, then look at them together\./);
+  assert.match(ui, /Choose Compare on two moments\./);
   assert.match(ui, /reduceComparisonGesture/);
   assert.match(ui, /comparisonCanvasSlots/);
   assert.doesNotMatch(ui, /starting from Front rather than either saved framing/);

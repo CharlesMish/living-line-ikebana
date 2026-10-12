@@ -1729,21 +1729,30 @@ export class ThreeStudio {
       // Matrices are already current for this acquisition. Projecting each
       // endpoint directly avoids a full scene-matrix update per point during
       // the bounded screen-space fallback across a mixed bowl.
-      const startProjection = toThree(branch.points[index]).project(this.camera);
-      const endProjection = toThree(branch.points[index + 1]).project(this.camera);
+      const startPoint = branch.points[index];
+      const endPoint = branch.points[index + 1];
+      // Retain clip W: a screen-space fraction is not a world/rest-arc
+      // fraction when a segment changes depth under a perspective camera.
+      const startProjection = new THREE.Vector4(startPoint.x, startPoint.y, startPoint.z, 1)
+        .applyMatrix4(this.camera.matrixWorldInverse).applyMatrix4(this.camera.projectionMatrix);
+      const endProjection = new THREE.Vector4(endPoint.x, endPoint.y, endPoint.z, 1)
+        .applyMatrix4(this.camera.matrixWorldInverse).applyMatrix4(this.camera.projectionMatrix);
       const start = new THREE.Vector2(
-        (startProjection.x * 0.5 + 0.5) * rect.width,
-        (-startProjection.y * 0.5 + 0.5) * rect.height,
+        (startProjection.x / startProjection.w * 0.5 + 0.5) * rect.width,
+        (-startProjection.y / startProjection.w * 0.5 + 0.5) * rect.height,
       );
       const end = new THREE.Vector2(
-        (endProjection.x * 0.5 + 0.5) * rect.width,
-        (-endProjection.y * 0.5 + 0.5) * rect.height,
+        (endProjection.x / endProjection.w * 0.5 + 0.5) * rect.width,
+        (-endProjection.y / endProjection.w * 0.5 + 0.5) * rect.height,
       );
       const segment = end.clone().sub(start);
-      const t = segment.lengthSq() <= EPSILON
+      const screenT = segment.lengthSq() <= EPSILON
         ? 0
         : THREE.MathUtils.clamp(touch.clone().sub(start).dot(segment) / segment.lengthSq(), 0, 1);
-      const screenPoint = start.clone().addScaledVector(segment, t);
+      const screenPoint = start.clone().addScaledVector(segment, screenT);
+      const weightedW = (1 - screenT) * endProjection.w + screenT * startProjection.w;
+      const t = Math.abs(weightedW) <= EPSILON ? screenT
+        : THREE.MathUtils.clamp(screenT * startProjection.w / weightedW, 0, 1);
       const worldPoint = toThree(branch.points[index]).lerp(toThree(branch.points[index + 1]), t);
       const rayDepth = worldPoint.clone().sub(toThree(pointerRay.origin)).dot(toThree(pointerRay.direction));
       const candidate: ProjectedBranchPoint = {

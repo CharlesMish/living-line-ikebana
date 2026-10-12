@@ -107,6 +107,11 @@ distance is zero and depth comes from that surface. Enlarged hit proxies still
 admit nearby misses, ranked by their projected branch or organ attachment.
 Surface ranking never changes the acquired graph station: branches keep their
 projected arc distance, and organs keep their supporting-branch attachment.
+Branch projection converts the closest screen-segment fraction through the
+camera's perspective before deriving world position and rest-arc distance. The
+acquired station therefore projects back under that point of the visible line;
+preview and committed pruning use the same corrected station. This does not
+change acquisition envelopes or selected-target priority.
 
 Base and bend handles may acquire only for the already selected plant. Shape acquisition of a branch or organ may select its plant. Temporary handles are subordinate and appear only where they resolve ambiguity.
 
@@ -437,7 +442,7 @@ This is a named experiment. With neither flag, ordinary play is unchanged: the s
 
 `?placeCue=1` draws the accepted planting ellipses in Arrange before any drag, using `profile.areas` / `inPlantingArea` / the same outline as validation. Sample points inside an ellipse are accepted and points outside are not; multi-area layouts keep a gap that is not a bed. The line is quiet while idle and stronger while a cutting is ready. It is hidden in Step Back, while Garden, Photograph, or Vessel covers Arrange, and during a drag, when the existing validity outline is the boundary. The Photograph canvas is built without the cue. The dark pin bed stops at the valid ellipse. The wider plate annulus is a stone rim, so the support plate does not promise its whole footprint. Acceptance is unchanged: no snapping and no relocation of a rejected point.
 
-`?placeTap=1` implies the cue. A tap on the source card (not the Materials menu) readies one cutting: the card is pressed, the boundary strengthens, and the status reads “Tap inside the pins to place.” A later tap at a valid scene position seats that cutting once through the ordinary `beginInsert` / `release` path. An invalid tap leaves it ready and says where the pins are. Tapping the card again, the Cancel button, or Escape cancels. Success ends readiness. It does not repeat. While idle, the source card reads “drag to the pins, or tap to place” so the tap is discoverable; builds without `placeTap` keep “drag to the pins”.
+`?placeTap=1` implies the cue. A tap on the source card (not the Materials menu) readies one cutting: the card is pressed, the boundary strengthens, and the status reads “Tap inside the pins to place.” A later tap at a valid scene position seats that cutting once through the ordinary `beginInsert` / `release` path. An invalid tap leaves it ready and says where the pins are. Tapping the card again, the Cancel button, or Escape cancels. Success ends readiness. It does not repeat. While idle, the source card reads “Drag or tap to place” so the tap is discoverable; builds without `placeTap` keep “drag to the pins”. Cancel occupies a reserved top-rail slot beside the source rather than covering bottom feedback. Idle and ready instructions share a layout footprint, so changing readiness alone does not resize the rail or change the stage projection.
 
 The card press captures its pointer immediately, before the 8px decision, and releases that capture if the press ends as a tap or a cancel. Travel is a drag only when it is strictly greater than 8 CSS pixels. That threshold sits in the 6–10px band: a slip of about 6px still readies or places, and an intentional drag is recognized before the cutting has moved far. The release that readies never also places. A scene drag past the threshold does not place on release. While a cutting is ready, a scene tap places instead of selecting; the status says so. Pointer and click do not both commit: placement listens to pointer release. Only in this tap build, a mouse, touch, or pen click does not activate the card, even when the touch click's detail is 0. Builds without tap-to-place keep the previous rule: a click activates only when its detail is 0. Keyboard activation remains that detail-0 click, and in the tap build it is also a click that is not a mouse, touch, or pen pointer.
 
@@ -446,3 +451,13 @@ Ready, cancel, an invalid tap, and interruption do not create a plant, consume t
 Readiness is cancelled, with no seat, before Garden, Photograph, or Vessel open; before a material change, a tool change, Undo, or Remove; before leaving Arrange (Step Back or Stop and look); and before Prevent overlaps is toggled, because that changes whether a seat is valid. Opening Angles or choosing Front, three-quarter, or Above does not cancel: those views do not change the planting areas. There is no redo. Blur, a hidden page, page hide, and resize or orientation change cancel readiness and an armed tap that has not become a drag; they do not seat. A pointer cancel during the arm does not ready and does not place. A pointer cancel during a scene tap leaves the cutting ready. An acquired drag still follows the existing interruption list; blur alone does not roll a drag back.
 
 A standalone study build may set `globalThis.__LL_PLACE__` to `"1"` or `"2"` instead of a URL flag. Players do not see flag names. See the README for the three files.
+
+An armed card or scene press has one pointer owner. A second pointer cannot
+replace that owner or place its cutting. Commands and system interruptions
+discard the held press before changing the camera or graphics; the later release
+cannot seat, save, consume an ordinal, or add an undo checkpoint. This is distinct
+from idle readiness: Angles can retain the ready cutting for a new tap. Premature
+capture loss cancels the held press; implicit loss after a completed release is a
+no-op. A projection-changing stage measurement clears the press before applying
+the lens. Release also checks current canvas size/projection and pointer travel,
+including when no intermediate move or resize event was delivered.

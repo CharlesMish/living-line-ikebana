@@ -2,7 +2,8 @@ import type { BendStationId, BendStationsMode } from "./bendStations.ts";
 import type { CraftCue } from "./craftCues.ts";
 
 /** Idle card copy when tap-to-place is on. Builds without tap keep "drag to the pins". */
-export const PLACE_TAP_IDLE_VERB = "drag to the pins, or tap to place";
+export const PLACE_TAP_IDLE_VERB = "Drag or tap to place";
+const PLACE_TAP_READY_VERB = "Tap inside the pins";
 
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
@@ -176,8 +177,32 @@ function createPlaceCancel(root: HTMLElement): HTMLButtonElement {
   button.textContent = "Cancel";
   button.setAttribute("aria-label", "Cancel placement");
   button.hidden = true;
-  root.append(button);
+  // Reserve a rail slot even while hidden. Showing Cancel must not change the
+  // measured stage inset and interrupt the placement that just became ready.
+  const slot = root.ownerDocument.createElement("div");
+  slot.className = "place-cancel-slot";
+  slot.append(button);
+  requireElement<HTMLElement>(root, ".material-dock").append(slot);
   return button;
+}
+
+function setPlacementInstruction(card: HTMLButtonElement, ready: boolean): void {
+  const verb = card.querySelector<HTMLElement>(".material-verb");
+  if (!verb) return;
+  if (verb.dataset.placeInstruction !== "true") {
+    const idleText = card.ownerDocument.createElement("span");
+    idleText.dataset.placeInstruction = "idle";
+    idleText.textContent = PLACE_TAP_IDLE_VERB;
+    const readyText = card.ownerDocument.createElement("span");
+    readyText.dataset.placeInstruction = "ready";
+    readyText.textContent = PLACE_TAP_READY_VERB;
+    verb.replaceChildren(idleText, readyText);
+    verb.dataset.placeInstruction = "true";
+  }
+  // Both copies occupy the same grid cell, so even enlarged text has the same
+  // height in idle and ready. Only the active instruction is exposed/readable.
+  verb.querySelector('[data-place-instruction="idle"]')?.setAttribute("aria-hidden", String(ready));
+  verb.querySelector('[data-place-instruction="ready"]')?.setAttribute("aria-hidden", String(!ready));
 }
 
 export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindings {
@@ -187,6 +212,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
   const root: HTMLElement = rootCandidate;
   const placeTap = options.placeTap === true;
+  root.dataset.placeTap = String(placeTap);
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
@@ -431,8 +457,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       sourceCard.setAttribute("aria-label", ready
         ? `${label}. Ready to place. Tap inside the pins.`
         : `Drag ${label} to the pins, or tap to ready it`);
-      const verb = sourceCard.querySelector(".material-verb");
-      if (verb) verb.textContent = ready ? "tap inside the pins" : PLACE_TAP_IDLE_VERB;
+      setPlacementInstruction(sourceCard, ready);
       if (placeCancel) placeCancel.hidden = !ready;
     }
 

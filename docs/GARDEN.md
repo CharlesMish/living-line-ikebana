@@ -13,7 +13,7 @@ mission system, or school curriculum.
 3. Optionally name the moment and select **Keep this bowl**. The committed graphs,
    cut history, camera pose and a small actual-view thumbnail are saved together.
    Keeping does not clear the working bowl. A missing thumbnail does not prevent
-   keeping the arrangement.
+   keeping the arrangement. The new card is marked **Just kept** and receives focus.
 4. Open a card to view it in 3D. Orbit, Pan, zoom and presets are available. Editing
    requires **Make a working copy**. **Return to my bowl** restores the working
    coordinator, its camera, posture, selection and current undo checkpoint. Looking
@@ -21,7 +21,8 @@ mission system, or school curriculum.
 5. **Start a fresh bowl** and **Make a working copy** offer Keep first / Replace
    without keeping / Cancel when the working bowl contains material. Copying
    leaves the Garden original intact. Replacement saves before changing memory;
-   if saving fails, the existing working bowl stays available.
+   if saving fails, the existing working bowl stays available. A working copy can
+   be started directly from a card or from the read-only viewer.
 6. **Compare** two kept moments when the Garden holds at least two. Choose
    Compare on two cards — the first selected is on the left — then **Look at
    both**. Both use one camera, the studio field of view, and world scale 1,
@@ -42,6 +43,10 @@ does not calculate whether an arrangement passes. One way to look again is the
 sequence above: keep a bowl, make a working copy, revise it, keep the revision,
 then compare the two. Generic Compare does not repeat this brief or imply that
 unrelated arrangements were made for it.
+
+The collection appears before the optional study and **Backups & storage**
+disclosure. Empty working bowls omit the inactive Keep form. The backup disclosure
+opens automatically if Garden storage cannot be read, so recovery stays available.
 
 **Download backup** exports all Garden entries, including graph history and
 thumbnails. **Import backup** merges compatible entries without replacing the

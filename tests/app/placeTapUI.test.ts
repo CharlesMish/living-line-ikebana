@@ -18,18 +18,27 @@ class ElementStub extends EventTarget {
   scrollHeight = 0;
   scrollTop = 0;
   parent: ElementStub | null = null;
+  children: ElementStub[] = [];
   constructor(readonly ownerDocument: DocumentStub) { super(); }
   setAttribute(name: string, value: string) { this.attributes.set(name, value); }
   getAttribute(name: string) { return this.attributes.get(name) ?? null; }
   focus() { this.ownerDocument.activeElement = this; }
   querySelector(selector: string) {
     if (selector === "#place-cancel") return this.ownerDocument.elements.get(selector) ?? null;
+    const instruction = /^\[data-place-instruction="(idle|ready)"\]$/.exec(selector);
+    if (instruction) return this.children.find((child) => child.dataset.placeInstruction === instruction[1]) ?? null;
     return this.ownerDocument.element(selector);
   }
   querySelectorAll(selector: string) { return this.ownerDocument.matches.get(selector) ?? []; }
   append(child: ElementStub) {
     child.parent = this;
+    this.children.push(child);
     if (child.id) this.ownerDocument.elements.set(`#${child.id}`, child);
+  }
+  replaceChildren(...children: ElementStub[]) {
+    this.children = [];
+    this.textContent = "";
+    children.forEach((child) => this.append(child));
   }
 }
 
@@ -99,11 +108,19 @@ test("tap mode arms on pointerdown, ignores the following click, and keeps keybo
   try {
     assert.equal(h.source.getAttribute("aria-pressed"), "false");
     assert.equal(h.source.getAttribute("aria-label"), "Drag Camellia to the pins, or tap to ready it");
-    assert.equal(h.document.element(".material-verb").textContent, "drag to the pins, or tap to place");
+    const verb = h.document.element(".material-verb");
+    const idleInstruction = verb.querySelector('[data-place-instruction="idle"]')!;
+    const readyInstruction = verb.querySelector('[data-place-instruction="ready"]')!;
+    assert.equal(idleInstruction.textContent, "Drag or tap to place");
+    assert.equal(idleInstruction.getAttribute("aria-hidden"), "false");
+    assert.equal(readyInstruction.getAttribute("aria-hidden"), "true");
     const cancel = h.document.elements.get("#place-cancel")!;
     assert.equal(cancel.hidden, true);
     assert.equal(cancel.textContent, "Cancel");
     assert.equal(cancel.getAttribute("aria-label"), "Cancel placement");
+    assert.equal(cancel.parent?.className, "place-cancel-slot");
+    assert.equal(cancel.parent?.parent, h.document.element(".material-dock"), "Cancel belongs to the source rail, not the bottom status region");
+    assert.equal(h.root.dataset.placeTap, "true");
 
     pointerDown(h.source);
     click(h.source, 1);
@@ -118,7 +135,10 @@ test("tap mode arms on pointerdown, ignores the following click, and keeps keybo
     h.ui.setState({ placeReady: true });
     assert.equal(h.source.getAttribute("aria-pressed"), "true");
     assert.equal(h.source.getAttribute("aria-label"), "Camellia. Ready to place. Tap inside the pins.");
-    assert.equal(h.document.element(".material-verb").textContent, "tap inside the pins");
+    assert.equal(readyInstruction.textContent, "Tap inside the pins");
+    assert.equal(idleInstruction.getAttribute("aria-hidden"), "true");
+    assert.equal(readyInstruction.getAttribute("aria-hidden"), "false");
+    assert.equal(verb.children.length, 2, "changing readiness keeps both text footprints rather than rebuilding the rail");
     assert.equal(cancel.hidden, false);
 
     click(cancel, 0);
@@ -161,6 +181,7 @@ test("ordinary play still begins a drag on pointerdown and has no cancel control
   const h = setup(false);
   try {
     assert.equal(h.document.elements.has("#place-cancel"), false);
+    assert.equal(h.root.dataset.placeTap, "false");
     assert.equal(h.source.getAttribute("aria-pressed"), null);
     h.document.element(".material-verb").textContent = "drag to the pins";
     h.ui.setState({ placeReady: false });

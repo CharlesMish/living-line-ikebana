@@ -89,3 +89,15 @@ node --check tests/browser/pinbed-release.mjs
 These optional scripts were not executed in a browser in this environment. Their
 existing recorded assertions are not new passed evidence. The separate screenshot
 CI script was untouched by this compatibility follow-up.
+
+
+## Rendered narrow-heading correction
+
+The remote screenshot run subsequently passed the four standard-size workspace
+cases but exposed a heading wrap at 320 pixels: the browser's native dialog
+`max-width` reduced our authored width, leaving a lone final letter. The CSS now
+sets `max-width` explicitly alongside the authored width in each viewport rule.
+The Photograph heading stays on one line; the adjacent Return button keeps its
+44-pixel minimum target and can wrap its label. This correction does not move the
+preview or alter the controls' scroll ownership. Root will rerun screenshot CI;
+this lane inspected the source and ran `git diff --check`, not a local browser.

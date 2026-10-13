@@ -52,7 +52,10 @@ pull request the checked-out SHA is usually GitHub's proposed merge commit;
 recording both avoids calling those two revisions identical.
 
 Cases: 320×640, 390×844, 844×390, 1280×800, and 390×844 with 150% root text.
-The text case asserts a computed 24px root size; this is a CSS text-layout probe,
+The text case measures the baseline root size, applies exactly 1.5 times that
+size as an important pixel declaration, waits for the computed size to match,
+and records baseline/requested/inline/computed values. For the present 16px
+baseline this requires an actual 24px root. This is a CSS text-layout probe,
 not complete operating-system/browser accessibility zoom emulation.
 
 Each case uses the real keyboard insertion path to place a flowering branch and
@@ -87,6 +90,14 @@ No browser, browser installation, preview server, GPU run, or physical phone
 test was performed in the authoring environment. The first rendered result must
 be read from the GitHub Actions job; until then this remains unexecuted browser
 automation rather than browser evidence.
+
+The first remote execution (Verify run 184) passed all four standard-size cases,
+including both PNGs and Turn/Undo. The enlarged-text case stopped before any
+product actions because its original percentage request still computed to 16px.
+That run provides no enlarged-text layout evidence. The revised probe above
+keeps the actual-size assertion and uses an explicit measured pixel target;
+the root cause of the ineffective percentage request is not established by the
+retained log. No product font rule is changed to make this check pass.
 
 Existing optional browser studies remain separate. Some predate explicit Prepare
 then Download or current menu/default state. This focused script does not imply

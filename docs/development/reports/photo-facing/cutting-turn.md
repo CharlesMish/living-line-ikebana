@@ -46,3 +46,11 @@ No local browser, GPU or physical-phone run was performed in this lane. Root
 integration owns the full verification and any separately available remote
 rendered evidence. Phone acceptance should check selecting a blossom spray,
 turning it toward Front, and whether 15-degree steps feel suitably fine.
+
+Follow-up from remote rendered run 184: the phone Edit disclosure covered the
+Single flower head while turning. The label and selected material now share one
+compact heading; Undo and Remove share one row of 44-pixel-minimum controls.
+All IDs, explicit accessible action names, command gates and disclosure behavior
+remain. This reduces menu height without moving the camera or adding rail rows.
+The existing production UI event tests pass; root will recapture the actual
+layout remotely before claiming the obstruction improved.

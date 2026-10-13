@@ -131,9 +131,26 @@ async function exercise(config) {
     assert.ok(response?.ok(), "The built app loads");
     await page.locator('[data-testid="app-root"][data-ready="true"]').waitFor();
     await page.waitForFunction(() => Boolean(window.__IKEBANA_TEST__));
-    if (config.text !== 1) await page.evaluate(scale => { document.documentElement.style.fontSize = `${scale * 100}%`; }, config.text);
-    result.rootFontSize = await page.evaluate(() => getComputedStyle(document.documentElement).fontSize);
-    if (config.text !== 1) assert.equal(result.rootFontSize, "24px");
+    const baselineFontSize = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+    assert.ok(Number.isFinite(baselineFontSize) && baselineFontSize > 0, "Root text has a measurable baseline size");
+    const requestedFontSize = Number((baselineFontSize * config.text).toFixed(6));
+    if (config.text !== 1) {
+      // Set an explicit, important pixel value based on the measured baseline.
+      // The first CI probe's percentage request still computed to 16px, so it
+      // did not exercise enlarged text. Never treat a requested scale as proof.
+      await page.evaluate(size => { document.documentElement.style.setProperty("font-size", `${size}px`, "important"); }, requestedFontSize);
+      await page.waitForFunction(size => Math.abs(parseFloat(getComputedStyle(document.documentElement).fontSize) - size) < .001, requestedFontSize);
+      await painted(page);
+    }
+    result.textProbe = await page.evaluate(({ baseline, requested }) => ({
+      baselinePx: baseline, requestedPx: requested,
+      inlineValue: document.documentElement.style.getPropertyValue("font-size"),
+      inlinePriority: document.documentElement.style.getPropertyPriority("font-size"),
+      computedValue: getComputedStyle(document.documentElement).fontSize,
+    }), { baseline: baselineFontSize, requested: requestedFontSize });
+    result.rootFontSize = result.textProbe.computedValue;
+    assert.ok(Math.abs(parseFloat(result.rootFontSize) - requestedFontSize) < .001, "Actual root text matches the requested scale");
+    if (config.text !== 1) assert.equal(result.textProbe.inlinePriority, "important");
     result.graphics = await page.locator('[data-testid="scene-canvas"]').evaluate(canvas => {
       const gl = canvas.getContext("webgl2"); if (!gl) return { available: false };
       const ext = gl.getExtension("WEBGL_debug_renderer_info");

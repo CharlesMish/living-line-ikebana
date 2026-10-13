@@ -280,8 +280,9 @@ button:focus-visible {
 }
 .edit-options[hidden] { display: none; }
 .edit-options { max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8rem); overflow-y: auto; overscroll-behavior: contain; }
-.cutting-turn-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; }
-.edit-options .cutting-turn-actions button { border: 1px solid var(--line); text-align: center; min-height: 44px; }
+.cutting-turn-actions, .cutting-recovery-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; }
+.edit-options .cutting-turn-actions button, .edit-options .cutting-recovery-actions button { border: 1px solid var(--line); text-align: center; min-height: 44px; }
+.cutting-turn-heading #turn-cutting-label { font-weight: 600; }
 .edit-options button {
   display: block;
   width: 100%;
@@ -1131,11 +1132,11 @@ noscript {
 .garden-host [hidden], #workbench-open[hidden] { display: none !important; }
 
 /* Photograph: a disposable camera studio; composition guides stay out of exports. */
-.photo-dialog { width: min(1160px, calc(100vw - 24px)); height: min(860px, calc(100dvh - 24px)); max-height: calc(100dvh - 24px); padding: 16px; border: 1px solid #bab3a4; border-radius: 20px; background: #f5f1e9; color: #303b32; overflow: hidden; overscroll-behavior: contain; }
+.photo-dialog { width: min(1160px, calc(100vw - 24px)); max-width: min(1160px, calc(100vw - 24px)); height: min(860px, calc(100dvh - 24px)); max-height: calc(100dvh - 24px); padding: 16px; border: 1px solid #bab3a4; border-radius: 20px; background: #f5f1e9; color: #303b32; overflow: hidden; overscroll-behavior: contain; }
 .photo-dialog[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; }
 .photo-dialog::backdrop { background: rgb(24 30 27 / 65%); }
 .photo-heading { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.photo-dialog h1 { margin: 0; flex: 1 1 auto; min-width: 0; font: 1.4rem Georgia, serif; }
+.photo-dialog h1 { margin: 0; flex: 1 0 auto; white-space: nowrap; font: 1.4rem Georgia, serif; }
 .photo-heading #photo-return { flex: 0 1 150px; min-width: 0; overflow-wrap: anywhere; font-size: .8rem; line-height: 1.2; }
 .photo-intro { margin: 0 0 12px; font-size: .84rem; line-height: 1.5; color: #657062; }
 .photo-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, 340px); gap: 18px; min-height: 0; min-width: 0; }
@@ -1189,7 +1190,7 @@ noscript {
 .photo-dialog h1, .photo-dialog h2, .photo-controls button, .photo-controls p, .photo-result p { overflow-wrap: anywhere; }
 .photo-dialog [hidden] { display: none !important; }
 @media(max-width: 740px) and (min-height: 521px) {
-  .photo-dialog { width: calc(100vw - 16px); height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); padding: 10px; border-radius: 14px; }
+  .photo-dialog { width: calc(100vw - 16px); max-width: calc(100vw - 16px); height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); padding: 10px; border-radius: 14px; }
   .photo-dialog h1 { font-size: 1.2rem; }
   .photo-heading #photo-return { flex-basis: 116px; }
   .photo-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(100px, 36%) minmax(0, 1fr); gap: 10px; }
@@ -1200,7 +1201,7 @@ noscript {
 /* A short landscape keeps preview and controls alongside one another. On
    text zoom the controls can still scroll without displacing the photograph. */
 @media(max-height: 520px) {
-  .photo-dialog { width: calc(100vw - 12px); height: calc(100dvh - 12px); max-height: calc(100dvh - 12px); padding: 8px; border-radius: 12px; }
+  .photo-dialog { width: calc(100vw - 12px); max-width: calc(100vw - 12px); height: calc(100dvh - 12px); max-height: calc(100dvh - 12px); padding: 8px; border-radius: 12px; }
   .photo-dialog[open] { gap: 8px; }
   .photo-dialog h1 { font-size: 1.2rem; }
   .photo-layout { grid-template-columns: minmax(0, 1fr) minmax(240px, 43%); gap: 10px; }

@@ -1,3 +1,9 @@
+import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
+import { PhotoGrade } from "./photoGrade.ts";
+import { neutralPhotoAdjustments, type PhotoAdjustments } from "./photoAdjustments.ts";
+import { createBellToneUpdater } from "./botanicalToneMaterials.ts";
+import { resolveBotanicalAppearance, validateBotanicalTones, type BotanicalAppearance, type BotanicalTones } from "./botanicalTones.ts";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { createPhotoPerch, PHOTO_COLORS, type PhotoBackdrop, type PhotoPerch } from "./photoStage.ts";
 import { disposePhotoPerch } from "./perchSurfaces.ts";
 import { attachStemSurface, installStemSurface } from "./stemSurface.ts";
@@ -148,8 +154,11 @@ export interface GraphUpdateHints {
 export interface ThreeStudioOptions {
   /** Isolated photo renderer only. Ordinary play retains the accepted draw. */
   photography?: boolean;
+  /** Photo appearance only; absent leaves the accepted renderer untouched. */
+  photoAdjustments?: PhotoAdjustments;
   vesselProfile?: VesselProfile;
   vesselAppearance?: VesselAppearanceChoice;
+  botanicalTones?: BotanicalTones;
   maxPixelRatio?: number;
   debugHitTargets?: boolean;
   onViewChange?: (view: StudioView) => void;
@@ -176,7 +185,13 @@ export interface ThreeStudioOptions {
   placeCue?: boolean;
 }
 
+type BroadBladeVisual = {
+  mesh: THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+  doomed: THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+};
+
 type BranchVisual = {
+  blade?: BroadBladeVisual;
   mesh: THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
   hit: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
   selection: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
@@ -187,8 +202,9 @@ type BranchVisual = {
 
 type OrganVisual = {
   group: THREE.Group;
-  hit: THREE.Mesh<THREE.SphereGeometry, THREE.MeshBasicMaterial>;
+  hit: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
   bodyMaterials: THREE.MeshStandardMaterial[];
+  applyTone: (appearance: BotanicalAppearance) => void;
 };
 
 type PlantVisual = {
@@ -361,6 +377,7 @@ export class ThreeStudio {
   private vesselFinishTextures?: Map<string, VesselFinishTextures>;
   private vesselAppearance: VesselAppearanceChoice = { ...DEFAULT_VESSEL_APPEARANCE };
   private readonly plants = new Map<string, PlantVisual>();
+  private botanicalTones?: BotanicalTones;
   private readonly cameraTarget = new THREE.Vector3();
   private readonly kenzanGlow: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>;
   private plantingCue: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial> | null = null;
@@ -371,6 +388,7 @@ export class ThreeStudio {
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
     & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize" | "photography" | "vesselProfile" | "vesselAppearance" | "placeCue">;
   private photoPerch: THREE.Group | null = null;
+  private photoGrade?: PhotoGrade;
   private stemFibers = false;
   private fiberSetters = new WeakMap<THREE.MeshStandardMaterial, (enabled: boolean) => void>();
   private lastCanvasSize: { width: number; height: number } | null = null;
@@ -397,6 +415,7 @@ export class ThreeStudio {
 
   constructor(canvas: HTMLCanvasElement, options: ThreeStudioOptions = {}) {
     this.canvas = canvas;
+    this.botanicalTones = validateBotanicalTones(options.botanicalTones);
     this.options = {
       maxPixelRatio: options.maxPixelRatio ?? 1.8,
       debugHitTargets: options.debugHitTargets ?? false,
@@ -438,6 +457,7 @@ export class ThreeStudio {
       this.cutCollar,
     );
 
+    this.setPhotoAdjustments(options.photoAdjustments);
     this.setCanonicalView("front", false);
     this.resize();
     if (typeof ResizeObserver !== "undefined") {
@@ -774,8 +794,32 @@ export class ThreeStudio {
     return collar;
   }
 
+  private botanicalAppearance(generatorVersion: string) {
+    return resolveBotanicalAppearance(generatorVersion, getMaterialAppearance(generatorVersion), this.botanicalTones);
+  }
+
+  /** Reuse material/geometry identities; no graph rebuild, re-seeding or proxy changes. */
+  setBotanicalTones(value?: BotanicalTones) {
+    this.botanicalTones = validateBotanicalTones(value);
+    const visuals = [...this.plants.values(), ...(this.pendingPlant ? [this.pendingPlant] : [])];
+    for (const visual of visuals) {
+      const appearance = this.botanicalAppearance(visual.graph.generatorVersion);
+      for (const [id, branch] of visual.branches) {
+        const kind = visual.graph.branches.get(id)!.kind;
+        branch.mesh.material.color.setHex(appearance.branchColors[kind]);
+        branch.doomed.material.color.setHex(appearance.branchColors[kind]);
+        if (branch.blade) {
+          branch.blade.mesh.material.color.setHex(appearance.leaf.color);
+          branch.blade.doomed.material.color.setHex(appearance.leaf.color);
+        }
+      }
+      for (const organ of visual.organs.values()) organ.applyTone(appearance);
+    }
+    this.requestRender();
+  }
+
   private createBranchVisual(graph: PlantGraph, branch: Branch, pending: boolean): BranchVisual {
-    const appearance = getMaterialAppearance(graph.generatorVersion);
+    const appearance = this.botanicalAppearance(graph.generatorVersion);
     const material = new THREE.MeshStandardMaterial({
       color: appearance.branchColors[branch.kind],
       vertexColors: true,
@@ -829,15 +873,37 @@ export class ThreeStudio {
     doomed.visible = false;
     doomed.renderOrder = 3;
 
-    return { mesh, hit, selection, doomed, geometrySignature: "", mainSignature: "" };
+    let blade: BroadBladeVisual | undefined;
+    if (isBroadBlade(graph, branch)) {
+      const bladeMaterial = new THREE.MeshStandardMaterial({
+        color: appearance.leaf.color, roughness: appearance.leaf.roughness,
+        side: THREE.DoubleSide, vertexColors: true,
+        transparent: pending, opacity: pending ? 0.44 : 1, depthWrite: !pending,
+      });
+      const bladeMesh = new THREE.Mesh(new THREE.BufferGeometry(), bladeMaterial);
+      bladeMesh.castShadow = !pending;
+      bladeMesh.receiveShadow = !pending;
+      bladeMesh.userData = { plantId: graph.id, branchId: branch.id, targetKind: "branch", broadBlade: true };
+      const removedMaterial = bladeMaterial.clone();
+      removedMaterial.transparent = true;
+      removedMaterial.opacity = 0.15;
+      removedMaterial.depthWrite = false;
+      const removedMesh = new THREE.Mesh(new THREE.BufferGeometry(), removedMaterial);
+      removedMesh.userData = { ...bladeMesh.userData };
+      removedMesh.renderOrder = 3;
+      removedMesh.visible = false;
+      blade = { mesh: bladeMesh, doomed: removedMesh };
+    }
+    return { mesh, hit, selection, doomed, blade, geometrySignature: "", mainSignature: "" };
   }
 
   private createOrganVisual(graph: PlantGraph, organ: Organ, pending: boolean): OrganVisual {
-    const appearance = getMaterialAppearance(graph.generatorVersion);
+    const appearance = this.botanicalAppearance(graph.generatorVersion);
     const group = new THREE.Group();
     const seed = botanicalSeed(organ.id, graph.seed);
     const bodyMaterials: THREE.MeshStandardMaterial[] = [];
-    const bodyMaterial = (color: number, roughness = 0.76, vertexColors = false) => {
+    const toneUpdates: Array<(appearance: BotanicalAppearance) => void> = [];
+    const bodyMaterial = (color: number, roughness = 0.76, vertexColors = false, role?: (appearance: BotanicalAppearance) => number) => {
       const material = new THREE.MeshStandardMaterial({
         color,
         roughness,
@@ -848,10 +914,12 @@ export class ThreeStudio {
         side: THREE.DoubleSide,
       });
       bodyMaterials.push(material);
+      if (role) toneUpdates.push(next => material.color.setHex(role(next)));
       return material;
     };
 
     let hitRadius: number;
+    let exactHitGeometry: THREE.BufferGeometry | undefined;
     if (organ.kind === "leaf") {
       const draw: LeafDrawOptions = {
         pinnate: this.options.pinnateDraw,
@@ -861,21 +929,32 @@ export class ThreeStudio {
       };
       const leaf = new THREE.Mesh(
         createLeafGeometry(seed, appearance.leaf.form, draw),
-        bodyMaterial(appearance.leaf.color, appearance.leaf.roughness, true),
+        bodyMaterial(appearance.leaf.color, appearance.leaf.roughness, true, next => next.leaf.color),
       );
       leaf.castShadow = !pending;
-      const vein = new THREE.Mesh(createLeafVeinGeometry(seed, appearance.leaf.form, draw), bodyMaterial(appearance.leaf.veinColor, 0.8, true));
+      const vein = new THREE.Mesh(createLeafVeinGeometry(seed, appearance.leaf.form, draw), bodyMaterial(appearance.leaf.veinColor, 0.8, true, next => next.leaf.veinColor));
       group.add(leaf, vein);
+      if (appearance.leaf.surfacePicking) {
+        // A separate owned copy of the actual lamina and its fine veins. Empty
+        // lobe notches are empty for acquisition as well as for rendering.
+        exactHitGeometry = mergeGeometries([leaf.geometry, vein.geometry])!;
+      }
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
       const bloom = appearance.bloom;
-      const bellPalette = bloom.form === "bell" && bloom.collarColor !== undefined
-        ? { petal: bloom.color, collar: bloom.collarColor } : undefined;
-      const petalMaterial = bodyMaterial(bellPalette ? 0xffffff : bloom.color, bloom.roughness, true);
+      const originalBloom = getMaterialAppearance(graph.generatorVersion).bloom;
+      const bellPalette = bloom.form === "bell" && originalBloom.collarColor !== undefined
+        ? { petal: originalBloom.color, collar: originalBloom.collarColor } : undefined;
+      const petalMaterial = bodyMaterial(bellPalette ? 0xffffff : bloom.color, bloom.roughness, true, next => bellPalette ? 0xffffff : next.bloom.color);
       if (bloom.form === "bell") {
         // One shell. Its mouth follows local +Y, the supporting tangent.
         // Cupped, open-face, and tufted blooms keep the radial path below.
         const bell = new THREE.Mesh(createBellGeometry(seed, bellPalette), petalMaterial);
+        if (bellPalette) {
+          const update = createBellToneUpdater(bell.geometry, bellPalette);
+          toneUpdates.push(next => update(next.bloom.color));
+          update(bloom.color);
+        }
         bell.castShadow = !pending;
         group.add(bell);
       } else {
@@ -948,7 +1027,7 @@ export class ThreeStudio {
       if (!berry) throw new Error(`Missing berry appearance: ${graph.generatorVersion}`);
       const fruit = new THREE.Mesh(
         createBerryGeometry(seed, berry.radius),
-        bodyMaterial(berry.color, berry.roughness, true),
+        bodyMaterial(berry.color, berry.roughness, true, next => next.berry!.color),
       );
       fruit.position.y = berry.centerY;
       fruit.castShadow = !pending;
@@ -957,7 +1036,7 @@ export class ThreeStudio {
     } else {
       const bud = new THREE.Mesh(
         new THREE.SphereGeometry(0.16, 13, 9),
-        bodyMaterial(0xa64f59, 0.76),
+        bodyMaterial(appearance.budColor, 0.76, false, next => next.budColor),
       );
       bud.scale.set(0.85, 1.3, 0.85);
       bud.position.y = 0.05;
@@ -967,10 +1046,10 @@ export class ThreeStudio {
     }
 
     const hit = new THREE.Mesh(
-      new THREE.SphereGeometry(hitRadius, 10, 8),
+      exactHitGeometry ?? new THREE.SphereGeometry(hitRadius, 10, 8),
       invisibleHitMaterial(this.options.debugHitTargets, 0xa96ab3),
     );
-    if (organ.kind === "leaf") hit.position.y = appearance.leaf.hitCenterY;
+    if (organ.kind === "leaf" && !exactHitGeometry) hit.position.y = appearance.leaf.hitCenterY;
     else if (organ.kind === "bloom" && appearance.bloom.hitCenterY) {
       hit.position.y = appearance.bloom.hitCenterY;
     } else if (organ.kind === "berry" && appearance.berry) {
@@ -983,7 +1062,7 @@ export class ThreeStudio {
       targetKind: "organ",
     };
     group.add(hit);
-    return { group, hit, bodyMaterials };
+    return { group, hit, bodyMaterials, applyTone: next => toneUpdates.forEach(update => update(next)) };
   }
 
   private createPlantVisual(graph: PlantGraph, pending: boolean) {
@@ -1021,6 +1100,7 @@ export class ThreeStudio {
           branchVisual.selection,
           branchVisual.doomed,
         );
+        if (branchVisual.blade) visual.group.add(branchVisual.blade.mesh, branchVisual.blade.doomed);
       }
 
       const active = branch.active && branch.points.length >= 2;
@@ -1028,6 +1108,10 @@ export class ThreeStudio {
       branchVisual.hit.visible = active && !pending;
       branchVisual.selection.visible = false;
       branchVisual.doomed.visible = false;
+      if (branchVisual.blade) {
+        branchVisual.blade.mesh.visible = active;
+        branchVisual.blade.doomed.visible = false;
+      }
       if (!active) continue;
 
       const geometrySignature = branchGeometrySignature(branch);
@@ -1072,6 +1156,12 @@ export class ThreeStudio {
           );
         }
         if (!isCutBranch) attachStemSurface(branchVisual.mesh.geometry, branch);
+        if (branchVisual.blade) {
+          updateBroadBladeGeometry(branchVisual.blade.mesh.geometry, branch, graph.seed,
+            0, isCutBranch ? plan!.distance : branch.activeLength);
+          if (isCutBranch) updateBroadBladeGeometry(branchVisual.blade.doomed.geometry,
+            branch, graph.seed, plan!.distance, branch.activeLength);
+        }
         branchVisual.mainSignature = mainSignature;
       }
 
@@ -1087,6 +1177,13 @@ export class ThreeStudio {
         branchVisual.mesh.material.emissive.setHex(selected ? 0x171009 : 0x000000);
         branchVisual.doomed.visible = isCutBranch && plan!.distance < branch.activeLength - EPSILON;
       }
+      if (branchVisual.blade) {
+        const blade = branchVisual.blade;
+        setOpacity(blade.mesh.material, branchVisual.mesh.material.opacity);
+        blade.mesh.material.emissive.copy(branchVisual.mesh.material.emissive);
+        blade.mesh.castShadow = branchVisual.mesh.castShadow;
+        blade.doomed.visible = branchVisual.doomed.visible;
+      }
     }
 
     for (const [branchId, branchVisual] of [...visual.branches]) {
@@ -1096,6 +1193,11 @@ export class ThreeStudio {
       disposeObject(branchVisual.hit);
       disposeObject(branchVisual.selection);
       disposeObject(branchVisual.doomed);
+      if (branchVisual.blade) {
+        visual.group.remove(branchVisual.blade.mesh, branchVisual.blade.doomed);
+        disposeObject(branchVisual.blade.mesh);
+        disposeObject(branchVisual.blade.doomed);
+      }
       visual.branches.delete(branchId);
     }
 
@@ -1716,8 +1818,24 @@ export class ThreeStudio {
     clientX: number,
     clientY: number,
   ): ProjectedBranchPoint | null {
-    const branch = this.plants.get(plantId)?.graph.branches.get(branchId);
-    return branch ? this.closestProjectedOnBranch(branch, clientX, clientY) : null;
+    const plant = this.plants.get(plantId);
+    const branch = plant?.graph.branches.get(branchId);
+    if (!branch) return null;
+    const blade = plant?.branches.get(branchId)?.blade;
+    if (blade) {
+      // While sliding a prune across the same acquired blade, retain exact
+      // surface stations even when the pointer is away from its midrib.
+      this.setRaycaster(clientX, clientY);
+      const hit = this.raycaster.intersectObjects(
+        [blade.mesh, blade.doomed].filter(mesh => mesh.visible), false,
+      )[0];
+      const distance = hit ? broadBladeSurfaceDistance(hit, branch) : null;
+      if (distance !== null && hit) return {
+        materialDistance: distance, worldPoint: sampleBranch(branch, distance).position,
+        screenDistancePx: 0, rayDepth: hit.distance,
+      };
+    }
+    return this.closestProjectedOnBranch(branch, clientX, clientY);
   }
 
   private closestProjectedOnBranch(
@@ -1788,7 +1906,13 @@ export class ThreeStudio {
     if (this.bendHandle.group.visible) targets.push(this.bendHandle.hit);
     for (const plant of this.plants.values()) {
       for (const branch of plant.graph.branches.values()) {
-        if (branch.active) targets.push(plant.branches.get(branch.id)!.hit);
+        if (branch.active) {
+          const visual = plant.branches.get(branch.id)!;
+          targets.push(visual.hit);
+          // Exact visible lamina, no broad proxy around its empty outline.
+          if (visual.blade?.mesh.visible) targets.push(visual.blade.mesh);
+          if (visual.blade?.doomed.visible) targets.push(visual.blade.doomed);
+        }
       }
       for (const organ of plant.graph.organs.values()) {
         const branch = plant.graph.branches.get(organ.branchId);
@@ -1893,7 +2017,8 @@ export class ThreeStudio {
         // is slightly beside that stem's projected centerline.
         this.raycaster.ray.copy(acquisitionRay);
         const surfaces = this.raycaster.intersectObjects(
-          [visual.mesh, visual.doomed].filter((mesh) => mesh.visible),
+          [visual.mesh, visual.doomed, ...(visual.blade ? [visual.blade.mesh, visual.blade.doomed] : [])]
+            .filter((mesh) => mesh.visible),
           false,
         );
         const surface = surfaces.reduce<THREE.Intersection | undefined>(
@@ -1901,13 +2026,16 @@ export class ThreeStudio {
           undefined,
         );
         directMaterialHit ||= Boolean(surface);
+        const bladeDistance = surface ? broadBladeSurfaceDistance(surface, branch) : null;
+        const bladeSample = bladeDistance !== null ? sampleBranch(branch, bladeDistance) : null;
         const candidate: HitCandidate = {
           kind: "branch",
           priorityTier,
           plantId: plant.graph.id,
           branchId: branch.id,
-          materialDistance: projected.materialDistance,
-          worldPoint: projected.worldPoint,
+          materialDistance: bladeDistance ?? projected.materialDistance,
+          worldPoint: bladeSample?.position ?? projected.worldPoint,
+          aimPoint: bladeSample && surface ? toVec3(surface.point) : undefined,
           screenDistancePx: surface ? 0 : projected.screenDistancePx,
           rayDepth: surface ? surface.distance : projected.rayDepth,
           stableId,
@@ -2024,6 +2152,12 @@ export class ThreeStudio {
     this.requestRender();
   }
 
+  setPhotoAdjustments(value?: PhotoAdjustments) {
+    if (!this.photoGrade && neutralPhotoAdjustments(value)) return;
+    this.photoGrade ??= new PhotoGrade();
+    this.photoGrade.set(value); this.requestRender();
+  }
+
   setStemFibers(enabled: boolean) {
     this.stemFibers = enabled;
     for (const plant of this.plants.values()) for (const visual of plant.branches.values()) {
@@ -2116,6 +2250,7 @@ export class ThreeStudio {
     }
     this.stemOverlaps?.update(this.camera, this.canvas.getBoundingClientRect().height);
     this.renderer.render(this.scene, this.camera);
+    this.photoGrade?.apply(this.renderer);
   }
 
   getPresentationInventory() {
@@ -2205,6 +2340,7 @@ export class ThreeStudio {
     this.renderFrame = null;
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
+    this.photoGrade?.dispose();
     this.vesselGrain?.dispose();
     for (const textures of this.vesselFinishTextures?.values() ?? []) textures.dispose();
     this.vesselFinishTextures?.clear();

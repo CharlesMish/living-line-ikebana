@@ -10,6 +10,8 @@ export interface MaterialAppearance {
   readonly leaf: Readonly<{
     form: LeafForm; color: number; veinColor: number; roughness: number;
     hitRadius: number; hitCenterY: number;
+    /** Use only the exact visible surfaces for deeply notched new blades. */
+    surfacePicking?: boolean;
     /**
      * Foliage-fan only. Omitted means the shared elliptic blade.
      * `spray` and `separated` are presentation draws; they do not change the graph.
@@ -110,6 +112,18 @@ const blossomSpray: MaterialAppearance = Object.freeze({
     tuftScatter: Object.freeze({ azimuth: 0.22, scale: 0.09, tilt: 0.08 }),
   }),
 });
+const compactFlower: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x526d4b, lateral: 0x526d4b,
+    twig: 0x617b53, pedicel: 0x617b53, petiole: 0x617b53 }),
+  stemRoughness: 0.71,
+  leaf: Object.freeze({ form: "elliptic", color: 0x436248, veinColor: 0x8b9d66,
+    roughness: 0.74, ...ellipticLeafHit }),
+  bloom: Object.freeze({
+    form: "tufted", color: 0xb8667a, roughness: 0.68, hitRadius: 0.56,
+    // One cup with a modestly uneven rim, rather than five overlapping cups.
+    tuftScatter: Object.freeze({ azimuth: 0.16, scale: 0.065, tilt: 0.06 }),
+  }),
+});
 const noddingFlower: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x516846, lateral: 0x516846,
     twig: 0x5d7450, pedicel: 0x6a8458, petiole: 0x5d7450 }),
@@ -162,13 +176,27 @@ const foliageFan: MaterialAppearance = Object.freeze({
     roughness: 0.74, ...ellipticLeafHit }),
   bloom: flowering.bloom,
 });
+const lobedLeaf: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x655044, lateral: 0x745c4b,
+    twig: 0x7a6850, pedicel: 0x7a6850, petiole: 0x7a6850 }),
+  stemRoughness: 0.85,
+  leaf: Object.freeze({ form: "lobed", color: 0x568348, veinColor: 0x9daf73,
+    roughness: 0.66, hitRadius: 0, hitCenterY: 0, surfacePicking: true }),
+  bloom: flowering.bloom,
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
+  "lobed-leaf-v1": lobedLeaf,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,
+  "broad-blade-v1": Object.freeze({ ...leafy,
+    branchColors: Object.freeze({ trunk: 0x63804c, lateral: 0x63804c, twig: 0x63804c, pedicel: 0x63804c, petiole: 0x63804c }),
+    leaf: Object.freeze({ ...leafy.leaf, color: 0x426d45, roughness: 0.59 }),
+  }),
   "flower-volume-v1": flowerVolume,
+  "compact-flower-v1": compactFlower,
   "arching-trailer-v1": archingTrailer,
   "foliage-fan-v1": foliageFan,
   "blossom-spray-v1": blossomSpray,

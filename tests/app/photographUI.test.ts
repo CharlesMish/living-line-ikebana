@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { DEFAULT_SCENE, withBotanicalTones, type SceneSettings } from "../../src/app/scene.ts";
 import { Photograph } from "../../src/app/photograph.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 
@@ -41,6 +42,8 @@ class Element extends EventTarget {
   }
   replaceChildren(...children: Element[]) { for (const child of this.children) child.parentElement = null; this.children = []; this.append(...children); }
   focus() { this.ownerDocument.activeElement = this; }
+  getContext() { return {fillStyle:"",fillRect(){},drawImage(){}}; }
+  toDataURL() { return "data:image/jpeg;base64," + "A".repeat(80); }
   showModal() { this.open = true; }
   close() { if (this.open) { this.open = false; this.dispatchEvent(new Event("close")); } }
   matches(selector: string) {
@@ -86,7 +89,7 @@ class Document extends EventTarget {
   createElement(tag: string) { return new Element(this, tag); }
 }
 
-function setup() {
+function setup(scene?: SceneSettings) {
   const document = new Document(), root = document.createElement("main");
   for (const id of ["more-options", "more-toggle"]) { const node = document.createElement("div"); node.id = id; root.append(node); }
   const keys = ["document", "navigator", "URL"];
@@ -98,14 +101,18 @@ function setup() {
     navigator: { configurable: true, value: { canShare: () => true, share: (data: ShareData) => { shares.push(data); return shareResult(); } } },
     URL: { configurable: true, value: { createObjectURL: () => { const url = `blob:image-${created.length}`; created.push(url); return url; }, revokeObjectURL: (url: string) => revoked.push(url) } },
   });
-  const snapshot = createWorkbenchFixture("mixed", 8278, 2), original = JSON.stringify(snapshot);
+  const snapshot = createWorkbenchFixture("mixed", 8278, 2);
+  if (scene) snapshot.scene = scene;
+  const original = JSON.stringify(snapshot);
   let pauses = 0, saves = 0, disposed = 0;
+  const kept: unknown[] = [];
   const encoders: BlobCallback[] = [];
+  const finishes: unknown[] = [];
   const ui = new Photograph(root as unknown as HTMLElement, {
     pause: () => { pauses++; }, snapshot: () => structuredClone(snapshot), canKeep: () => true,
-    keep: () => { saves++; return "saved"; },
+    keep: (snapshot) => { saves++; kept.push(snapshot); return "saved"; },
   }, () => ({
-    upsertGraph() {}, setPhotoStage() {}, setStemFibers() {}, setCanonicalView() {},
+    upsertGraph() {}, setPhotoAdjustments(value) { finishes.push(value); }, setPhotoStage() {}, setStemFibers() {}, setCanonicalView() {},
     getCameraPose: () => snapshot.camera, setCameraPose() {}, dispose: () => { disposed++; },
     capturePhotoFrame: (width, height) => ({ width, height, toBlob: (callback: BlobCallback) => encoders.push(callback) }) as HTMLCanvasElement,
   }));
@@ -113,7 +120,7 @@ function setup() {
   const click = (id: string) => find(id).dispatchEvent(new Event("click", { cancelable: true }));
   click("photo-open");
   return {
-    ui, find, click, encoders, created, revoked, shares, document,
+    ui, find, click, encoders, created, revoked, shares, document, finishes, kept,
     get saves() { return saves; }, get pauses() { return pauses; }, get disposed() { return disposed; },
     set shareResult(value: () => Promise<void>) { shareResult = value; },
     async finishEncode(index = encoders.length - 1, blob: Blob | null = new Blob(["PNG"], { type: "image/png" })) {
@@ -184,5 +191,53 @@ test("share dismissal does not download, and a stale share result cannot write i
     h.click("photo-close"); h.click("photo-open"); done(); await new Promise((resolve) => setImmediate(resolve));
     assert.equal(h.find("photo-delivery-message").textContent, ""); assert.equal(h.find("photo-result").hidden, true);
     assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+
+test("photo finish controls reach the renderer, invalidate pending PNGs, compare and reset without saving the working bowl", async () => {
+  const h=setup();
+  try {
+    h.click("photo-export");
+    h.find("photo-warmth").value=".4";h.find("photo-warmth").dispatchEvent(new Event("input"));
+    assert.equal((h.finishes.at(-1) as {warmth:number}).warmth,.4);
+    assert.equal(h.find("photo-warmth-value").textContent,"+40");
+    await h.finishEncode();assert.equal(h.find("photo-result").hidden,true);
+    h.click("photo-before");assert.equal(h.finishes.at(-1),undefined);assert.equal(h.find("photo-before").getAttribute("aria-pressed"),"true");
+    h.click("photo-before");assert.equal((h.finishes.at(-1) as {warmth:number}).warmth,.4);
+    h.click("photo-export");await h.finishEncode();assert.equal(h.find("photo-result").hidden,false);
+    h.click("photo-reset-finish");assert.equal(h.find("photo-warmth").value,"0");assert.equal(h.find("photo-before").disabled,true);
+    assert.match(h.find("photo-result-note").textContent,/earlier frame/);assert.equal(h.saves,0);
+  } finally {h.close();}
+});
+
+
+test("Garden photo Keep persists the visible finish and a neutral comparison omits the recipe without touching the working bowl", () => {
+ const h=setup();
+ try {
+  h.find("photo-exposure").value=".3";h.find("photo-exposure").dispatchEvent(new Event("input"));h.click("photo-keep");
+  assert.equal(h.saves,1);
+  const first=h.kept[0] as {scene:{sceneVersion:number;photoAdjustments?:{exposure:number}}};
+  assert.equal(first.scene.sceneVersion,2);assert.equal(first.scene.photoAdjustments?.exposure,.3);
+  h.click("photo-before");h.click("photo-keep");assert.equal(h.saves,2);
+  const second=h.kept[1] as {scene:{sceneVersion:number;photoAdjustments?:unknown}};
+  assert.equal(second.scene.sceneVersion,1);assert.equal(second.scene.photoAdjustments,undefined);
+ } finally {h.close();}
+});
+
+
+test("Photograph Keep and finish reset preserve the bowl's botanical tone recipe", () => {
+  const scene = withBotanicalTones(DEFAULT_SCENE, { "nodding-flower": "violet", "lobed-leaf": "ochre" });
+  const h = setup(scene);
+  try {
+    h.find("photo-exposure").value = ".4"; h.find("photo-exposure").dispatchEvent(new Event("input"));
+    h.click("photo-keep");
+    const kept = h.kept.at(-1) as { scene: SceneSettings };
+    assert.deepEqual(kept.scene.botanicalTones, scene.botanicalTones);
+    assert.equal(kept.scene.photoAdjustments?.exposure, .4); assert.equal(kept.scene.sceneVersion, 2);
+    h.click("photo-reset-finish"); h.click("photo-keep");
+    const reset = h.kept.at(-1) as { scene: SceneSettings };
+    assert.deepEqual(reset.scene.botanicalTones, scene.botanicalTones);
+    assert.equal(reset.scene.photoAdjustments, undefined);
   } finally { h.close(); }
 });

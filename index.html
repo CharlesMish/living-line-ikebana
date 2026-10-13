@@ -52,7 +52,7 @@
                 <button type="button" data-testid="view-front" data-view="front" aria-pressed="true">Front</button>
                 <button type="button" data-testid="view-three-quarter" data-view="three-quarter" aria-pressed="false" aria-label="Three-quarter view">¾</button>
                 <button type="button" data-testid="view-above" data-view="above" aria-pressed="false">Above</button>
-                <button id="stem-overlaps-toggle" type="button" data-testid="stem-overlaps-toggle" aria-pressed="false" aria-describedby="stem-overlaps-note">Stem overlaps: off</button>
+                <button id="stem-overlaps-toggle" type="button" data-testid="stem-overlaps-toggle" aria-pressed="true" aria-describedby="stem-overlaps-note">Stem overlaps: on</button>
                 <p id="stem-overlaps-note" hidden></p>
                 <button id="stem-prevention-toggle" type="button" data-testid="stem-prevention-toggle" aria-pressed="false" aria-describedby="stem-prevention-note">Prevent overlaps (study): off</button>
                 <p id="stem-prevention-note" hidden>Angular brackets mark contacts and existing overlaps between separate main stems. They are indicators, not drag handles. Existing overlaps stay free to move during the grab. Leaves, flowers and bowl contact are not constrained. Turn off to shape freely.</p>
@@ -169,28 +169,6 @@
                   </svg>
                   <span class="material-choice-name">Flowering branch</span>
                 </button>
-                <button type="button" data-material-choice="leafy-shoot" data-testid="material-choice-leafy-shoot" aria-pressed="false">
-                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
-                    <path class="cutting-twig" d="M18 60 Q150 52 280 14" />
-                    <g class="cutting-leaf">
-                      <ellipse cx="86" cy="40" rx="25" ry="8" transform="rotate(40 86 40)" />
-                      <ellipse cx="130" cy="57" rx="24" ry="8" transform="rotate(-20 130 57)" />
-                      <ellipse cx="170" cy="23" rx="24" ry="7" transform="rotate(42 170 23)" />
-                      <ellipse cx="209" cy="36" rx="22" ry="7" transform="rotate(-15 209 36)" />
-                      <ellipse cx="248" cy="12" rx="18" ry="6" transform="rotate(30 248 12)" />
-                    </g>
-                  </svg>
-                  <span class="material-choice-name">Leafy shoot</span>
-                </button>
-                <button type="button" data-material-choice="bare-branch" data-testid="material-choice-bare-branch" aria-pressed="false">
-                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
-                    <path class="cutting-stem" d="M16 62 C78 58 128 42 176 26 C214 16 250 10 286 7" />
-                    <path class="cutting-twig" d="M96 50 C90 34 74 20 52 12" />
-                    <path class="cutting-twig" d="M168 30 C190 34 212 44 228 56" />
-                    <path class="cutting-twig" d="M218 16 C226 8 240 4 256 5" />
-                  </svg>
-                  <span class="material-choice-name">Bare branch</span>
-                </button>
                 <button type="button" data-material-choice="single-flower" data-testid="material-choice-single-flower" aria-pressed="false">
                   <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
                     <path class="cutting-stem" d="M22 62 C92 58 148 42 198 24 C228 14 248 10 262 8" />
@@ -212,22 +190,6 @@
                     <path class="cutting-stem" d="M146 66 C144 48 149 28 158 6" />
                   </svg>
                   <span class="material-choice-name">Reed</span>
-                </button>
-                <button type="button" data-material-choice="flower-volume" data-testid="material-choice-flower-volume" aria-pressed="false">
-                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
-                    <path class="cutting-stem" d="M24 64 C70 58 110 40 148 22" />
-                    <ellipse class="cutting-leaf" cx="78" cy="48" rx="14" ry="5" transform="rotate(32 78 48)" />
-                    <ellipse class="cutting-leaf" cx="118" cy="32" rx="12" ry="5" transform="rotate(-24 118 32)" />
-                    <g class="cutting-bloom" transform="translate(168 16)">
-                      <circle cx="-16" cy="6" r="8" />
-                      <circle cx="-6" cy="-8" r="8" />
-                      <circle cx="8" cy="-6" r="8" />
-                      <circle cx="16" cy="8" r="8" />
-                      <circle cx="0" cy="4" r="9" />
-                      <circle class="cutting-bloom-center" cx="0" cy="2" r="4" />
-                    </g>
-                  </svg>
-                  <span class="material-choice-name">Flower volume</span>
                 </button>
                 <button type="button" data-material-choice="arching-trailer" data-testid="material-choice-arching-trailer" aria-pressed="false">
                   <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
@@ -314,6 +276,76 @@
                   </svg>
                   <span class="material-choice-name">Fern frond</span>
                 </button>
+                <button type="button" data-material-choice="compact-flower" data-testid="material-choice-compact-flower" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M50 62 C93 55 126 37 163 22 Q173 18 181 16" />
+                    <ellipse class="cutting-leaf" cx="90" cy="44" rx="11" ry="4" transform="rotate(30 90 44)" />
+                    <ellipse class="cutting-leaf" cx="127" cy="36" rx="10" ry="4" transform="rotate(-30 127 36)" />
+                    <path class="cutting-bloom" d="M181 6 Q187 1 191 7 Q199 5 199 12 Q206 16 200 21 Q199 29 192 26 Q187 32 182 26 Q173 27 174 20 Q168 15 174 11 Q173 5 181 6Z" />
+                    <circle class="cutting-bloom-center" cx="187" cy="16" r="3.4" />
+                  </svg>
+                  <span class="material-choice-name">Compact flower</span>
+                </button>
+                <button type="button" data-material-choice="lobed-leaf" data-testid="material-choice-lobed-leaf" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M36 63 Q141 48 258 15 M138 47 Q163 30 184 15" />
+                    <g class="cutting-leaf">
+                      <path d="m105 48 -18 -4 7 -6 -15 -10 15 3 0 -17 9 13 10 -10 -3 17 13 1 -13 8z" />
+                      <path d="m180 23 -15 -4 6 -5 -11 -9 13 3 1 -8 7 10 9 -6 -3 12 12 2 -13 5z" />
+                      <path d="m237 23 -13 9 0 9 -11 -4 10 11 -13 8 14 0 2 12 6 -12 12 2 -7 -10 9 -5 -11 -5z" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Lobed-leaf branch</span>
+                </button>
+                <button type="button" data-material-choice="broad-blade" data-testid="material-choice-broad-blade" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-twig" d="M45 62 Q88 57 118 42" />
+                    <path class="cutting-leaf" d="M110 46 C132 8 211 5 272 8 C235 43 167 66 110 46Z" />
+                    <path class="cutting-twig" d="M111 46 Q184 28 272 8" />
+                  </svg>
+                  <span class="material-choice-name">Broad leaf</span>
+                </button>
+                <details id="material-more" class="material-more">
+                  <summary>More cuttings</summary>
+                <button type="button" data-material-choice="bare-branch" data-testid="material-choice-bare-branch" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M16 62 C78 58 128 42 176 26 C214 16 250 10 286 7" />
+                    <path class="cutting-twig" d="M96 50 C90 34 74 20 52 12" />
+                    <path class="cutting-twig" d="M168 30 C190 34 212 44 228 56" />
+                    <path class="cutting-twig" d="M218 16 C226 8 240 4 256 5" />
+                  </svg>
+                  <span class="material-choice-name">Bare branch</span>
+                </button>
+                <button type="button" data-material-choice="leafy-shoot" data-testid="material-choice-leafy-shoot" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-twig" d="M18 60 Q150 52 280 14" />
+                    <g class="cutting-leaf">
+                      <ellipse cx="86" cy="40" rx="25" ry="8" transform="rotate(40 86 40)" />
+                      <ellipse cx="130" cy="57" rx="24" ry="8" transform="rotate(-20 130 57)" />
+                      <ellipse cx="170" cy="23" rx="24" ry="7" transform="rotate(42 170 23)" />
+                      <ellipse cx="209" cy="36" rx="22" ry="7" transform="rotate(-15 209 36)" />
+                      <ellipse cx="248" cy="12" rx="18" ry="6" transform="rotate(30 248 12)" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Leafy shoot</span>
+                </button>
+                <button type="button" data-material-choice="flower-volume" data-testid="material-choice-flower-volume" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M24 64 C70 58 110 40 148 22" />
+                    <ellipse class="cutting-leaf" cx="78" cy="48" rx="14" ry="5" transform="rotate(32 78 48)" />
+                    <ellipse class="cutting-leaf" cx="118" cy="32" rx="12" ry="5" transform="rotate(-24 118 32)" />
+                    <g class="cutting-bloom" transform="translate(168 16)">
+                      <circle cx="-16" cy="6" r="8" />
+                      <circle cx="-6" cy="-8" r="8" />
+                      <circle cx="8" cy="-6" r="8" />
+                      <circle cx="16" cy="8" r="8" />
+                      <circle cx="0" cy="4" r="9" />
+                      <circle class="cutting-bloom-center" cx="0" cy="2" r="4" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Flower volume</span>
+                </button>
+                </details>
               </nav>
               <div class="materials-scroll-cue materials-scroll-cue-above" data-testid="materials-more-above" hidden aria-hidden="true">
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>
@@ -536,6 +568,44 @@
                 <span class="material-name">Fern frond</span>
                 <span class="material-verb">drag to the pins</span>
               </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-compact-flower" data-material-label="compact flower">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                <path class="cutting-stem" d="M50 62 C93 55 126 37 163 22 Q173 18 181 16" />
+                <ellipse class="cutting-leaf" cx="90" cy="44" rx="11" ry="4" transform="rotate(30 90 44)" />
+                <ellipse class="cutting-leaf" cx="127" cy="36" rx="10" ry="4" transform="rotate(-30 127 36)" />
+                <path class="cutting-bloom" d="M181 6 Q187 1 191 7 Q199 5 199 12 Q206 16 200 21 Q199 29 192 26 Q187 32 182 26 Q173 27 174 20 Q168 15 174 11 Q173 5 181 6Z" />
+                <circle class="cutting-bloom-center" cx="187" cy="16" r="3.4" />
+              </svg>
+              <span class="material-copy">
+                <span class="material-name">Compact flower</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-lobed-leaf" data-material-label="lobed-leaf branch">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M36 63 Q141 48 258 15 M138 47 Q163 30 184 15" />
+                    <g class="cutting-leaf">
+                      <path d="m105 48 -18 -4 7 -6 -15 -10 15 3 0 -17 9 13 10 -10 -3 17 13 1 -13 8z" />
+                      <path d="m180 23 -15 -4 6 -5 -11 -9 13 3 1 -8 7 10 9 -6 -3 12 12 2 -13 5z" />
+                      <path d="m237 23 -13 9 0 9 -11 -4 10 11 -13 8 14 0 2 12 6 -12 12 2 -7 -10 9 -5 -11 -5z" />
+                    </g>
+                  </svg>
+              <span class="material-copy">
+                <span class="material-name">Lobed-leaf branch</span>
+                <span class="material-verb">drag to the pins</span>
+              </span>
+              <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+            </template>
+            <template id="material-template-broad-blade" data-material-label="broad leaf">
+              <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-twig" d="M45 62 Q88 57 118 42" />
+                    <path class="cutting-leaf" d="M110 46 C132 8 211 5 272 8 C235 43 167 66 110 46Z" />
+                    <path class="cutting-twig" d="M111 46 Q184 28 272 8" />
+                  </svg>
+              <span class="material-copy"><span class="material-name">Broad leaf</span><span class="material-verb">drag to the pins</span></span>
               <span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span>
             </template>
           </div>

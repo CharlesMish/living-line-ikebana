@@ -190,6 +190,15 @@ test("every material's leaf and bloom acquisition proxies contain their visible 
         if (organ.kind === "leaf" || organ.kind === "bloom") forms.add(`${organ.kind}:${appearance[organ.kind].form}`);
         const visual = studio.createOrganVisual(graph, organ, false);
         visual.group.updateMatrixWorld(true);
+        if (organ.kind === "leaf" && appearance.leaf.surfacePicking) {
+          // Notched leaves deliberately have no containing convex proxy. Every
+          // visible triangle is copied into the owned exact-surface hit geometry.
+          const visiblePositions = visual.group.children.filter((child: THREE.Object3D) => child !== visual.hit)
+            .flatMap((child: THREE.Mesh) => Array.from(child.geometry.getAttribute("position").array));
+          assert.deepEqual(Array.from(visual.hit.geometry.getAttribute("position").array), visiblePositions);
+          disposeObject(visual.group);
+          continue;
+        }
         // Raycasting uses the polygonal proxy, not an ideal sphere. A point
         // below its nominal radius can still sit beyond a flat triangular face.
         const hitPositions = visual.hit.geometry.getAttribute("position");
@@ -229,7 +238,7 @@ test("every material's leaf and bloom acquisition proxies contain their visible 
       }
     }
   }
-  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate", "leaf:pinnate"]);
+  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:cupped", "bloom:open-face", "bloom:tufted", "leaf:elliptic", "leaf:lanceolate", "leaf:lobed", "leaf:pinnate"]);
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {

@@ -48,6 +48,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - It preserves all rest lengths, attachments, stock length, identity, and inactive history.
 - The seated trunk exit stays upward: its first-segment unit tangent has a minimum vertical component of `min(acquiredExit.y, clamp(0.08 / activeLength, 0, 1))`. If an Aim would cross that limit, its rigid rotation stops at the limit. The descending end of an arch is not itself clamped to insertion height; this is not a water/ceramic collision solver. Existing lower poses never jump on acquisition. Degenerate start or target directions produce no change.
 - A visible organ surface supplies the frozen world-space grip for Aim; the supporting branch root remains the pivot. Graph attachment distance still determines pruning and identity. A near-miss proxy without a surface intersection retains attachment-based Aim. Surface grip is transient acquisition context, never saved botanical state.
+- **Single-flower face tilt:** a direct hit on the visible `single-flower-v1` bloom intentionally uses a camera-axis tilt within the Aim transaction. Camera right/up and gain freeze at acquisition; horizontal/vertical displacement requests one degree per CSS pixel, with the combined rotation capped at 120 degrees per grab. The supporting pedicel and its active descendants rotate rigidly about the pedicel root. There is no new handle, independent petal edit, or axial-roll control. Stalk hits, proxy-only misses, other flowers, saved graphs and pruning stations retain their existing law. Return to the acquisition position is exact; cancellation, prevention, ordinary release and Undo keep their usual ownership.
 - Direction degeneracy uses the shared numerical geometry tolerance (`1e-6`
   units), not a minimum stalk or drag length. The September 22 correction
   removes the former `sqrt(0.02)`-unit dead zone, which froze short stalk grabs
@@ -105,8 +106,12 @@ Within a tier, choose smallest CSS-pixel distance to projected material, then sm
 For a direct hit on a visible stem, leaf or flower surface, projected-material
 distance is zero and depth comes from that surface. Enlarged hit proxies still
 admit nearby misses, ranked by their projected branch or organ attachment.
-Surface ranking never changes the acquired graph station: branches keep their
-projected arc distance, and organs keep their supporting-branch attachment.
+Ordinary stem surface ranking does not change the acquired graph station:
+branches keep their projected arc distance, and organs keep their supporting-branch attachment.
+The additive `broad-blade-v1` lamina is an explicit exception: a direct leaf-surface
+hit uses its triangle-interpolated original-stock UV distance, including while
+sliding a prune on the acquired blade. A surface grip carries the actual touched
+point for Aim. Off the blade, ordinary projected-midline fallback still applies.
 Branch projection converts the closest screen-segment fraction through the
 camera's perspective before deriving world position and rest-arc distance. The
 acquired station therefore projects back under that point of the visible line;
@@ -125,6 +130,21 @@ Candidates outside the canvas, behind the camera, or beyond clipping are exclude
 The visible bend bead has a minimum projected diameter of `12` CSS pixels;
 only its decoration scales, not canonical geometry or the original hit proxy.
 These are acquisition/readability bounds, not physical-phone acceptance.
+
+### Lobed-leaf study — additive material and exact surface acquisition
+
+`lobed-leaf-v1` adds one woody line, one subordinate fork, and four simple
+five-lobed leaf organs on four petioles at two opposite attachment nodes. Each
+blade is one connected surface. A petiole cut removes one whole leaf; a fork
+cut removes its distal descendants. There are no per-lobe edits. Existing
+Aim/Bend/prune ownership, rest lengths, identity, inactive history and storage
+fields are unchanged. Previously frozen generators and profiles are unchanged.
+
+This new form opts into exact lamina-plus-vein acquisition geometry instead of
+a containing sphere: visible lobe notches remain empty for picking. Both faces
+route a direct surface press to the existing supporting-petiole Aim and prune
+law. This exception applies only to the new leaf; older organ near-miss proxies
+and the structural-stem/handle fallback retain their existing behavior.
 
 ## 6. Persistence and recovery
 
@@ -355,7 +375,7 @@ or materials are gated, and no cut, view visit, angle or water threshold is requ
 
 ### Optional stem-overlap inspection — September 28 presentation study
 
-`Angles → Stem overlaps` is off by default and session-only. It marks approximate
+`Angles → Stem overlaps` is on by default and session-only (owner-requested October 13 revision). It can be switched off; Prevent overlaps remains independently opt-in. It marks approximate
 3D penetration between active structural stems (trunk/lateral/twig) of separate
 cuttings using their current points and radii. Same-plant contact, organs/stalks,
 vessel and floor are not checked. Capsule envelopes are approximate at end caps
@@ -428,7 +448,7 @@ compatibility limits and evidence](development/reports/vessel-study/README.md).
 
 Vessel layout and appearance are presentation metadata alongside the canonical botanical document. Layout changes cancel owned previews first, retain every graph/history record, and never fit/scale/relocate existing plants. The same coordinator retains its Undo checkpoint. Footprint laws use the acquired connected planting area; existing protection and overlap markers remain authoritative.
 
-Garden v2 and studio v2 retain sceneVersion1, stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, fixed lighting and exact output pixels.
+Garden v2 and studio v2 retain stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Plain scenes retain sceneVersion1; optional botanical tones and photo finishes use sceneVersion2 so older readers refuse enhanced scenes rather than silently discard their appearance. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, fixed lighting and exact output pixels.
 
 New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte intact; missing presentation defaults to Original/Sand/Glaze/Paper/Ground. v1 Garden backups import through validation; v2 backups fail closed in older clients. Invalid/future data blocks writes instead of being overwritten. Stale guards include both v2 and legacy keys. A still-open older client has a separate legacy document; reload the updated app before continuing. No automatic personal-data rewrite or external creation upload occurs.
 
@@ -437,6 +457,8 @@ The studio-craft presentation expansion adds stable Chalk/Iron color IDs, Satin/
 The same presentation pass adds a stable `plinth` perch ID and refines the existing stone and bench draws. Perches retain the exact vessel contact height and never move plants or planting targets. Previously kept stone/bench scenes receive the refined draw; their already-saved cover pixels are not rewritten. Each perch owns and disposes its procedural resources. Transparent photos omit the floor and all perches.
 
 Photograph now separates **Prepare PNG** from explicit Download, supported file Share, and Open image. Preparation retains a visible PNG and does not claim that a device saved it. A scene/framing change, close/reopen, or graphics loss invalidates pending encoding; an earlier prepared image remains available while the dialog stays open and is labelled when its frame is older. Share starts directly from its explicit button, and cancellation never initiates a download. Composition guides are UI only and never enter PNGs, Garden covers or saved scenes. Keep remains an explicit Garden write; preparation and delivery do not save the working bowl. Lighting stays fixed.
+
+The Photograph Finish controls (Exposure, Contrast, Warmth, Saturation and Vignette) are presentation-only. Neutral bypasses all grading and retains the original draw. Active grading runs on the finished scene framebuffer and is shared by preview, PNG, Garden cover and restored scene; transparent alpha is preserved. It never changes lights, canonical plants, camera or UI pixels. Finish edits invalidate pending PNG encoding. Reset finish does not reset framing. Show original retains the sliders but saving while it is displayed intentionally saves the visible original. Non-neutral recipes use sceneVersion2 so older clients reject rather than discard them; plain legacy scenes remain version1. Unknown recipe fields/versions and invalid numeric ranges fail closed. See the [Photograph finish report](development/reports/botanical-darkroom/photograph.md) for evidence and unrun GPU/phone checks.
 
 ### Smaller pinbeds and base recovery (October 4)
 
@@ -467,3 +489,44 @@ capture loss cancels the held press; implicit loss after a completed release is 
 no-op. A projection-changing stage measurement clears the press before applying
 the lens. Release also checks current canvas size/projection and pointer travel,
 including when no intermediate move or resize event was delivered.
+
+### Botanical tones (October 13)
+
+Studio offers named, material-specific tone choices. A setting applies to all
+cuttings of that material family in one bowl, including new stock; it is not a
+random reroll or a per-organ paint operation. Natural preserves the accepted
+appearance. Color edits reuse material and geometry identities and leave graph,
+seed, frame, hit proxy, prune opacity and acquisition behavior unchanged. The
+nodding bell retains its green collar. Reed and trailer keep their natural greens.
+
+The optional `botanicalTones` scene field is a validated map of fixed family and
+preset IDs; absent means Natural. An explicit nonnatural color edit promotes the
+presentation envelope to sceneVersion 2 so old readers refuse rather than discard
+its settings. Legacy scenes stay version 1 until an enhanced presentation setting
+is explicitly saved. Unknown future versions/fields/presets fail closed. Garden,
+working copies, comparison and Photograph restore the same tones. Opening/changing
+these controls cancels active editing first, and scene save failure leaves the
+previous settings intact. Botanical schema and generator versions are unchanged.
+
+
+## Botanical stock and palette refinement, October 13
+
+The live catalog appends `compact-flower-v1`, `broad-blade-v1`, and `lobed-leaf-v1`.
+All twelve established tray IDs, their old versions, and frozen workbench profiles
+remain registered. Bare branch, Leafy shoot, and original Flower volume move under
+More cuttings; they are neither deleted nor converted in saved bowls. Compact
+flower has one small tufted organ on its own pedicel, not a scaled copy of the
+five-organ volume head. It retains the existing stalk and tuft acquisition law.
+
+Broad leaf has one persistent petiole/midrib branch and a derived continuous
+lamina. The lamina follows transported material frames through Aim and Bend.
+Original stock width and texture stations come from its immutable version/seed;
+a distal cut clips the blade without rescaling or retapering the remaining leaf.
+Prune preview and committed cut share the same geometry, and Undo restores the
+same stock. This adds no independent folding/twisting or leaf-area collision law:
+stem overlaps and Prevent overlaps still cover structural stems only.
+
+Botanical tone edits and Photograph finish edits preserve one another's optional
+metadata. Resetting either removes only its own recipe; an already enhanced scene
+stays version2. Invalid or future data refuses load/import without modifying bytes.
+See [the combined report](development/reports/botanical-darkroom/README.md).

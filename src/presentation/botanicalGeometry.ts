@@ -1,3 +1,4 @@
+import { createLobedLeafGeometry, createLobedLeafVeinGeometry } from "./lobedLeafGeometry.ts";
 import * as THREE from "three";
 
 /**
@@ -120,7 +121,7 @@ function bladeSurface(
   return geometry;
 }
 
-export type LeafForm = "elliptic" | "lanceolate" | "pinnate";
+export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
 export type BloomForm = "cupped" | "open-face" | "tufted" | "bell";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
@@ -550,6 +551,7 @@ function resolvedFanLeaf(form: LeafForm, draw?: LeafDrawOptions): FanLeafDraw {
  * Fan profiles reuse the elliptic grid so foliage-fan draw cost stays on the same mesh.
  */
 export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
+  if (form === "lobed") return createLobedLeafGeometry(seed);
   if (form === "pinnate") return createPinnatePinnaGeometry(seed, resolvedPinnate(draw));
   const profile = resolvedFanLeaf(form, draw);
   if (profile === "shared") {
@@ -563,6 +565,7 @@ export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?:
  * it. At its widest it is 0.0056 units, so it remains a vein rather than a stripe.
  */
 export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
+  if (form === "lobed") return createLobedLeafVeinGeometry(seed);
   if (form === "pinnate") return createPinnateCostaGeometry(seed, resolvedPinnate(draw));
   const profile = resolvedFanLeaf(form, draw);
   return bladeSurface("living-line/leaf-midrib", (t, across) => {

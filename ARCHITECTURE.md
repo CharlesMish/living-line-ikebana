@@ -90,8 +90,8 @@ separate structural cuttings. `app/stemOverlapPreview.ts` adapts current present
 and exact remaining prune material; it never writes the coordinator or storage.
 `presentation/stemOverlapOverlay.ts` caches by structural geometry and draws at
 most 32 unpickable camera-facing bracket marks in two instanced layers. The
-uncapped count is available in View. The session-only opt-in leaves normal play,
-Garden thumbnails and Compare clean. This detector is not a collision solver;
+uncapped count is available in View. Inspection starts on for the session and can be disabled; it constrains no edit.
+Garden thumbnails and Compare stay clean. This detector is not a collision solver;
 its approximation and any later constraint require separate acceptance.
 
 ## Opt-in contact prevention
@@ -106,3 +106,31 @@ No solver state enters storage. View's default-off study supplies this optional
 adapter; contact feedback is separate from the inspection count. See the
 [study report](docs/development/reports/stem-prevention/README.md) for deliberate
 legacy-pair exemptions, motion bounds and pending phone acceptance.
+
+
+## Sparse lobed-leaf material
+
+`core/lobedLeaf.ts` adds the durable `lobed-leaf-v1` generator using the existing
+branch and leaf records. `presentation/lobedLeafGeometry.ts` derives a connected
+five-lobed lamina and radiating veins from organ identity. Its leaf appearance
+opts into exact-surface picking; `ThreeStudio` merges independent copies of the
+lamina and vein triangles for that hit mesh. Empty notches stay empty without
+changing older materials' acquisition proxies or the shared edit solver.
+
+
+## Botanical and Photograph refinement
+
+Three additive generators expand the live catalog while its established prefix
+and frozen profiles retain identity: `compactFlower.ts`, `broadBlade.ts`, and
+`lobedLeaf.ts`. Broad blade's lamina derives from original-stock distances and
+material frames, with exact surface station picking; lobed leaves use their real
+notched mesh for acquisition. Single flower direct-bloom hits use a bounded
+camera-axis tilt inside the existing snapshot/coordinator transaction.
+
+`botanicalTones.ts` defines per-material presentation recipes. `photoGrade.ts`
+applies a neutral-bypassed GPU finish to the completed scene framebuffer.
+`scene.ts` accepts legacy sceneVersion1 and enhanced sceneVersion2; both optional
+recipes flow through the working studio, Garden views/comparison and Photograph.
+The botanical graph schema and old generators are unchanged. See the combined
+[report](docs/development/reports/botanical-darkroom/README.md) for verification,
+resource ownership, and the unrun GPU/phone checks.

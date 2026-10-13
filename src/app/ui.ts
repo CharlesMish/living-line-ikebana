@@ -129,7 +129,7 @@ const DEFAULT_STATE: UIState = {
   cameraMode: "orbit",
   view: "front",
   viewMenuOpen: false,
-  showStemOverlaps: false,
+  showStemOverlaps: true,
   preventStemOverlaps: false,
   stemOverlapCount: 0,
   materialMenuOpen: false,
@@ -327,6 +327,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     }
   }
 
+  const moreCuttings = root.querySelector<HTMLDetailsElement>("#material-more");
   let materialMenuWasOpen = false;
 
   function syncMaterialScrollCues(): void {
@@ -346,7 +347,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   function revealPressedMaterialChoice(): void {
     const pressed = paletteChoices.find((choice) => choice.getAttribute("aria-pressed") === "true");
-    if (!pressed || materialOptions.clientHeight === 0) return;
+    if (!pressed) return;
+    if (moreCuttings?.contains(pressed)) moreCuttings.open = true;
+    if (materialOptions.clientHeight === 0) return;
     const panelRect = materialOptions.getBoundingClientRect();
     const borderTop = Number.parseFloat(getComputedStyle(materialOptions).borderTopWidth) || 0;
     const viewTop = panelRect.top + borderTop;
@@ -554,6 +557,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     emit({ kind: "set-material-menu", open: !currentState.materialMenuOpen }, event);
   }, listenerOptions);
 
+  moreCuttings?.addEventListener("toggle", syncMaterialScrollCues, listenerOptions);
   materialOptions.addEventListener("scroll", () => {
     syncMaterialScrollCues();
   }, listenerOptions);

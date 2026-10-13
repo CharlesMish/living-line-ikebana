@@ -1,6 +1,9 @@
+import { withBotanicalTones } from "./scene.ts";
+import { BotanicalTonesUI } from "./botanicalTonesUI.ts";
 import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
 import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
+import { captureFlowerHeadTilt, flowerHeadTiltRotation, singleFlowerHead, type FlowerHeadTiltFrame } from "./flowerHeadAim.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
@@ -133,6 +136,7 @@ type AimGesture = PointerBase & {
   plane: SpatialPlane;
   startPlaneHit: Vec3;
   grabbedPoint: Vec3;
+  headTilt?: { frame: FlowerHeadTiltFrame; startClientX: number; startClientY: number };
 };
 
 type BendGesture = PointerBase & {
@@ -275,6 +279,7 @@ export class IkebanaApp {
   private readonly storageKeys = sceneStorageKeys(new URL(location.href), this.config.workbench, this.config.vesselProfile?.id);
   private suppressSave = false;
   private vesselAppearanceUI?: VesselAppearanceUI;
+  private botanicalTonesUI?: BotanicalTonesUI;
   private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
   private readonly initialSaved = this.store.load();
   private readonly sound = new CraftSound();
@@ -401,7 +406,7 @@ export class IkebanaApp {
   private createStudio() {
     const studio = new ThreeStudio(this.canvas, {
       debugHitTargets: this.config.debug, pinnateDraw: this.config.pinnateDraw, fanLeafDraw: this.config.fanLeafDraw,
-      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, stageLens: true,
+      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, botanicalTones: this.scene.botanicalTones, photoAdjustments: this.scene.photoAdjustments, stageLens: true,
       placeCue: this.config.placeCue,
       onCanvasResize: () => this.onViewportChanged(),
     });
@@ -414,10 +419,14 @@ export class IkebanaApp {
     this.scene = next; this.vesselAppearance = next; this.config.vesselProfile = sceneProfile(next);
     this.root.dataset.vesselStudy = next.layoutId;
     if (rebuild) { this.studio.dispose(); this.studio = this.createStudio(); this.measureStage(); }
-    else { this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
+    else { this.studio.setPhotoAdjustments(next.photoAdjustments); this.studio.setBotanicalTones(next.botanicalTones); this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
     this.setupVesselUI();
   }
   private setupVesselUI() {
+    if (this.botanicalTonesUI) this.botanicalTonesUI.update(this.scene.botanicalTones, !this.workingSession);
+    else this.botanicalTonesUI = new BotanicalTonesUI(this.root, this.scene.botanicalTones,
+      () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
+      botanicalTones => this.changeScene(withBotanicalTones(this.scene, botanicalTones)));
     if (this.vesselAppearanceUI) {
       this.vesselAppearanceUI.update(sceneProfile(this.scene).label, this.scene, this.scene.layoutId, !this.workingSession);
       return;
@@ -502,6 +511,7 @@ export class IkebanaApp {
     this.photograph?.destroy();
     this.gardenUI?.destroy();
     this.vesselAppearanceUI?.destroy();
+    this.botanicalTonesUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
     if (window.__IKEBANA_TEST__) delete window.__IKEBANA_TEST__;
@@ -1233,11 +1243,14 @@ export class IkebanaApp {
     const graph = this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId);
     const branch = graph?.branches.get(candidate.branchId);
     if (!graph || !branch?.active) return;
-    // A petal press should turn around the supporting stalk from the part the
-    // player actually touched, not from its often tiny hidden attachment lever.
-    const surfaceGrip = candidate.kind === "organ" && candidate.aimPoint
+    // A visible organ or branch-bound blade supplies the part actually touched,
+    // not its hidden attachment/centreline lever. Ordinary tubes omit aimPoint.
+    const surfaceGrip = candidate.aimPoint
       ? Object.freeze({ ...candidate.aimPoint }) : undefined;
     const grabbedPoint = surfaceGrip ?? sampleBranch(branch, candidate.materialDistance).position;
+    const headTilt = surfaceGrip && singleFlowerHead(graph, branch.id, candidate.organId)
+      ? { frame: captureFlowerHeadTilt(this.studio.getCameraAxes()), startClientX: event.clientX, startClientY: event.clientY }
+      : undefined;
     const plane = this.studio.cameraFacingPlaneThrough(grabbedPoint);
     const startPlaneHit = this.studio.intersectClientPlane(event.clientX, event.clientY, plane) ?? grabbedPoint;
     const gesture: AimGesture = {
@@ -1248,6 +1261,7 @@ export class IkebanaApp {
       plane,
       startPlaneHit,
       grabbedPoint,
+      headTilt,
     };
     this.assignSelectedBranch(branch.id);
     this.setGesture(gesture);
@@ -1258,13 +1272,13 @@ export class IkebanaApp {
         plantId: graph.id,
         branchId: branch.id,
         grabbedMaterialDistance: candidate.materialDistance,
-        context: Object.freeze({ surfaceGrip }),
+        context: Object.freeze({ surfaceGrip, headTilt: Boolean(headTilt) }),
       },
       { target: grabbedPoint },
     );
     if (!result.ok) return this.abortFailedBegin(gesture);
     this.recordHit(event, "aim");
-    this.ui.setStatus("Shape the line.");
+    this.ui.setStatus(headTilt ? "Turn the flower face." : "Shape the line.");
   }
 
   private assignSelectedBranch(branchId: string | null) {
@@ -1485,6 +1499,14 @@ export class IkebanaApp {
       gesture.pendingVisible = intersection !== null;
       this.coordinator.updateInsert(event.pointerId, placementInputFromIntersection(intersection));
       this.ui.setStatus(this.placementStatus(Boolean(intersection?.valid)));
+      return;
+    }
+    if (gesture.kind === "aim" && gesture.headTilt) {
+      const { frame, startClientX, startClientY } = gesture.headTilt;
+      this.coordinator.updateAim(event.pointerId, {
+        target: gesture.grabbedPoint,
+        headRotation: flowerHeadTiltRotation(frame, event.clientX - startClientX, event.clientY - startClientY),
+      });
       return;
     }
     if (gesture.kind === "aim" || gesture.kind === "bend") {

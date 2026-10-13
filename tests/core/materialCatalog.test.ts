@@ -109,10 +109,10 @@ test("material preparation requires an exact catalog ID without fallback", () =>
   );
 });
 
-test("catalog order keeps the established seven, then Round 4, then berry-twig and fern-frond", () => {
+test("catalog order keeps the established twelve before additive botanical studies", () => {
   assert.deepEqual(
     getMaterialDefinitions().map((definition) => definition.materialId),
-    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig", "fern-frond"],
+    ["flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig", "fern-frond", "compact-flower", "broad-blade", "lobed-leaf"],
   );
   assert.equal(isSupportedGeneratorVersion("bare-branch-v1"), true);
   assert.equal(isSupportedGeneratorVersion("single-flower-v1"), true);

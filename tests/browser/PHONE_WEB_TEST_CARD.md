@@ -559,7 +559,7 @@ with a successfully recovered arrangement.
 
 Use the six checks in
 [the stem-overlap report](../../docs/development/reports/stem-overlaps/README.md#short-ownerbrowser-check).
-Record exact head, device and viewport. Confirm default-off matches normal play,
+Record exact head, device and viewport. Confirm markers start on, can be turned off without changing the arrangement, and
 View toggle remains reachable at 320px/large text/short landscape, markers do not
 look like grab handles, and real 3D depth separation is not marked. Compare marks
 through live shaping, hover/held prune, Cancel, Undo, insertion and removal. Keep
@@ -580,3 +580,28 @@ contact marks and smaller moves need human feel review. Keep the study off if it
 gets in the way. Check 320px/large text/short landscape menu reachability, plus
 Garden View/Return and clean thumbnails/Compare. Record phone/GPU timing separately
 from CPU probes and automated geometry checks.
+
+
+## October 13 botanical and photo candidate — physical phone still required
+
+1. Confirm Angles → Stem overlaps starts on. Prevent overlaps remains an explicit
+   opt-in. Bare branch / Leafy shoot / Flower volume remain under Materials → More cuttings.
+2. Single flower: grab the visible bloom and tilt left/right and up/down. Check
+   sensitivity, no starting jump, Undo, and an interrupted grab. Its stalk still
+   uses ordinary Aim. Report any repeated first-drag freeze; it is unresolved.
+3. Compact flower: seat, aim its single head, cut it, Undo. Lobed-leaf branch:
+   select a lobe, confirm empty notches do not grab a broad hidden proxy, remove
+   one leaf without moving another. Broad leaf: bend, cut halfway, confirm its
+   remaining blade stays broad rather than shrinking to a new pointed leaf.
+4. Studio → Botanical tones: change an existing broad leaf, choose autumn ochre
+   or russet for lobed foliage and blue violet for nodding flower. New cuttings
+   of the same material inherit the tone. All natural restores the original.
+5. Photograph: adjust the five Finish sliders; compare Original/Finish; prepare
+   PNG and check that it matches the displayed choice. Check transparent edges
+   on a different background. Reset finish must preserve framing and plant tones.
+6. Keep the adjusted photograph, view it from Garden, compare, open a working
+   copy, reload, and export/import backup. Both tone and finish must survive;
+   returning to the original bowl must restore its prior look. No save on viewing.
+
+Desktop CPU mesh/transaction/DOM-adapter tests are not phone or GPU evidence.
+These three new materials and the grade still need visual/feel acceptance.

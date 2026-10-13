@@ -1,4 +1,5 @@
-import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
+import { NEUTRAL_PHOTO_ADJUSTMENTS, PHOTO_ADJUSTMENT_CONTROLS, neutralPhotoAdjustments, validatePhotoAdjustments, type PhotoAdjustments } from "../presentation/photoAdjustments.ts";
+import { DEFAULT_SCENE, sceneProfile, validateScene, withPhotoAdjustments, type SceneSettings } from "./scene.ts";
 import { fromCanonicalPlantGraph } from "../core/index.ts";
 import { ThreeStudio, type CanonicalView, type StudioCameraPose } from "../presentation/ThreeStudio.ts";
 import { framePhotoCamera, PHOTO_SIZES, PHOTO_BACKDROPS, PHOTO_PERCHES, type PhotoBackdrop, type PhotoPerch, type PhotoFormat } from "../presentation/photoStage.ts";
@@ -11,9 +12,9 @@ interface PhotoActions {
   canKeep(): boolean;
   keep(snapshot: ArrangementSnapshot, thumbnail: string | null, title: string): string;
 }
-type PhotoStudio = Pick<ThreeStudio, "upsertGraph" | "setPhotoStage" | "setStemFibers" | "setCanonicalView" | "getCameraPose" | "setCameraPose" | "capturePhotoFrame" | "dispose">;
+type PhotoStudio = Pick<ThreeStudio, "upsertGraph" | "setPhotoAdjustments" | "setPhotoStage" | "setStemFibers" | "setCanonicalView" | "getCameraPose" | "setCameraPose" | "capturePhotoFrame" | "dispose">;
 type PhotoStudioFactory = (canvas: HTMLCanvasElement, scene: SceneSettings) => PhotoStudio;
-const createPhotoStudio: PhotoStudioFactory = (canvas, scene) => new ThreeStudio(canvas, { photography: true, maxPixelRatio: 1.5, vesselProfile: sceneProfile(scene), vesselAppearance: scene });
+const createPhotoStudio: PhotoStudioFactory = (canvas, scene) => new ThreeStudio(canvas, { photography: true, maxPixelRatio: 1.5, vesselProfile: sceneProfile(scene), vesselAppearance: scene, photoAdjustments: scene.photoAdjustments, botanicalTones: scene.botanicalTones });
 
 /** Disposable presentation of a committed copy. Closing never touches the working coordinator. */
 export class Photograph {
@@ -27,6 +28,7 @@ export class Photograph {
   private busy = false;
   private graphicsReady = false;
   private sharing = false;
+  private showingOriginal = false;
   private readonly imageExport = new PhotoExport();
   private shareData: ShareData | null = null;
   private readonly abort = new AbortController();
@@ -65,6 +67,11 @@ export class Photograph {
         <label><span class="photo-range-label">Height <output id="photo-vertical-value" for="photo-vertical">Centre</output></span><input id="photo-vertical" type="range" min="-2" max="2" step="0.02" value="0"></label>
         <button id="photo-reset" type="button">Reset framing</button>
         </fieldset>
+        <fieldset class="photo-finish"><legend>Finish</legend>
+        <p class="panel-note">A little light and colour, just for this photograph.</p>
+        ${PHOTO_ADJUSTMENT_CONTROLS.map(({ id, label, min, max, step }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}">0</output></span><input id="photo-${id}" type="range" min="${min}" max="${max}" step="${step}" value="0"></label>`).join("")}
+        <div class="photo-finish-actions"><button id="photo-before" type="button" aria-pressed="false">Show original</button><button id="photo-reset-finish" type="button">Reset finish</button></div>
+        </fieldset>
         <fieldset><legend>Save</legend>
         <button id="photo-export" class="photo-primary" type="button">Prepare PNG</button>
         <p class="panel-note">Makes a full-size image you can save or share.</p>
@@ -97,6 +104,13 @@ export class Photograph {
     for (const id of ["photo-zoom", "photo-horizontal", "photo-vertical"]) this.find(id).addEventListener("input", () => this.frame(), { signal });
     this.find<HTMLInputElement>("photo-fibers").addEventListener("change", () => { this.changedFrame(); this.studio?.setStemFibers(this.find<HTMLInputElement>("photo-fibers").checked); }, { signal });
     this.find<HTMLInputElement>("photo-grid-toggle").addEventListener("change", () => { this.find("photo-grid").hidden = !this.find<HTMLInputElement>("photo-grid-toggle").checked; }, { signal });
+    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => this.finish(), { signal });
+    this.find("photo-reset-finish").addEventListener("click", () => {
+      this.loadFinish(NEUTRAL_PHOTO_ADJUSTMENTS); this.finish();
+    }, { signal });
+    this.find("photo-before").addEventListener("click", () => {
+      this.showingOriginal = !this.showingOriginal; this.finish(false);
+    }, { signal });
     this.find("photo-reset").addEventListener("click", () => this.reset(), { signal });
     this.find("photo-export").addEventListener("click", () => { void this.export(); }, { signal });
     this.find("photo-share").addEventListener("click", () => { void this.share(); }, { signal });
@@ -131,6 +145,7 @@ export class Photograph {
       this.find<HTMLInputElement>("photo-fibers").checked = scene.stemFibers; this.studio.setStemFibers(scene.stemFibers);
       this.find<HTMLButtonElement>("photo-keep").disabled = !this.snapshot.plants.length || !this.actions.canKeep();
       this.graphicsReady = true;
+      this.loadFinish(scene.photoAdjustments ?? NEUTRAL_PHOTO_ADJUSTMENTS); this.finish();
       this.busy = false; this.stage(); this.format(); this.reset();
       this.message("Ready to frame.");
     } catch (error) {
@@ -172,6 +187,28 @@ export class Photograph {
       this.find(id).setAttribute("aria-valuetext", text);
     }
     if (this.pose) this.studio?.setCameraPose(framePhotoCamera(this.pose, Number(this.value("photo-zoom")), Number(this.value("photo-horizontal")), Number(this.value("photo-vertical"))), "free", false);
+  }
+  private loadFinish(recipe: Readonly<PhotoAdjustments>) {
+    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(recipe[id]);
+  }
+  private currentFinish(): PhotoAdjustments {
+    return validatePhotoAdjustments({ version: 1, ...Object.fromEntries(PHOTO_ADJUSTMENT_CONTROLS.map(({ id }) => [id, Number(this.value(`photo-${id}`))])) });
+  }
+  private finish(resetComparison = true) {
+    if (resetComparison) this.showingOriginal = false;
+    this.changedFrame();
+    const recipe = this.currentFinish();
+    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) {
+      const n = recipe[id], text = id === "exposure" ? `${n > 0 ? "+" : ""}${n.toFixed(2)} EV` : `${n > 0 ? "+" : ""}${Math.round(n * 100)}`;
+      this.find(`photo-${id}-value`).textContent = text; this.find(`photo-${id}`).setAttribute("aria-valuetext", text);
+    }
+    const before = this.find<HTMLButtonElement>("photo-before");
+    before.textContent = this.showingOriginal ? "Show finish" : "Show original";
+    before.setAttribute("aria-pressed", String(this.showingOriginal));
+    before.disabled = neutralPhotoAdjustments(recipe);
+    this.studio?.setPhotoAdjustments(this.showingOriginal ? undefined : recipe);
+    this.find("photo-canvas").setAttribute("aria-label", this.showingOriginal ? "Original photograph preview, without finish" : "Live photograph preview");
+    this.message(this.showingOriginal ? "Showing the original. PNG and Garden will use this view without the finish." : "Finish applied to the preview, PNG and Garden photo.");
   }
   private changedFrame() {
     const wasPreparing = this.busy;
@@ -244,8 +281,8 @@ export class Photograph {
       context.drawImage(frame, (360 - frame.width * scale) / 2, (270 - frame.height * scale) / 2, frame.width * scale, frame.height * scale);
       const thumbnail = cover.toDataURL("image/jpeg", 0.78);
       if (thumbnail.length > 80_000) throw new Error("This cover is too large. Try a simpler frame.");
-      const scene = validateScene({ ...(this.snapshot.scene ?? DEFAULT_SCENE),
-        backdropId: this.value("photo-backdrop"), perchId: this.value("photo-perch"), photoFormat: this.value("photo-format"), stemFibers: this.find<HTMLInputElement>("photo-fibers").checked });
+      const scene = validateScene(withPhotoAdjustments({ ...(this.snapshot.scene ?? DEFAULT_SCENE),
+        backdropId: this.value("photo-backdrop") as PhotoBackdrop, perchId: this.value("photo-perch") as PhotoPerch, photoFormat: this.value("photo-format") as PhotoFormat, stemFibers: this.find<HTMLInputElement>("photo-fibers").checked }, this.showingOriginal ? { ...NEUTRAL_PHOTO_ADJUSTMENTS } : this.currentFinish()));
       const snapshot = validateArrangement({ ...this.snapshot, scene, camera: this.studio.getCameraPose() }, Infinity);
       const id = this.actions.keep(snapshot, thumbnail, this.value("photo-name"));
       this.dialog.dataset.keptId = id;

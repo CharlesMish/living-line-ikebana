@@ -5,17 +5,23 @@
  */
 import { writeFileSync } from "node:fs";
 import * as THREE from "three";
-import { getGeneratorDefinition, getMaterialDefinitions, bendBranch, sampleBranch } from "../src/core/index.ts";
+import { getGeneratorDefinition, getMaterialDefinition, getMaterialDefinitions, bendBranch, sampleBranch } from "../src/core/index.ts";
 import { ThreeStudio } from "../src/presentation/ThreeStudio.ts";
 import { createVesselGeometry } from "../src/presentation/vessel.ts";
 
 const pairs = ["fern-frond", "blossom-spray", "nodding-flower"];
 const seeds = [8278, 9255, 10232];
-const camera = new THREE.OrthographicCamera(-3.8, 3.8, 7.4, -0.4, 0.1, 100);
+const materialId = process.argv.find(argument => argument.startsWith("--material="))?.slice("--material=".length);
+const material = materialId ? getMaterialDefinition(materialId) : null;
+if (materialId && !material) throw new Error(`Unknown material: ${materialId}`);
+const plantsOnly = process.argv.includes("--plants-only");
+const camera = material && plantsOnly
+  ? new THREE.OrthographicCamera(-2.6, 2.6, 5.2, -0.4, 0.1, 100)
+  : new THREE.OrthographicCamera(-3.8, 3.8, 7.4, -0.4, 0.1, 100);
 const panels: unknown[] = [];
 const palette = process.argv.includes("--palette");
 const shape = process.argv.includes("--shape");
-const variants = palette ? getMaterialDefinitions().map(m => m.generator.generatorVersion)
+const variants = material ? [material.generator.generatorVersion] : palette ? getMaterialDefinitions().map(m => m.generator.generatorVersion)
   : shape ? ["nodding-flower-v2", "fern-frond-v2", "blossom-spray-v2"]
     : pairs.flatMap(id => [`${id}-v1`, `${id}-v2`]);
 for (const seed of palette ? [8278] : seeds) for (const version of variants) {
@@ -38,12 +44,14 @@ for (const seed of palette ? [8278] : seeds) for (const version of variants) {
       options: { debugHitTargets: false }, botanicalRoot: scene, updateAffordances() {}, updateCutCollar() {}, requestRender() {},
     });
     studio.createPlantVisual(graph, false);
+    if (!plantsOnly) {
     const bowl = new THREE.Mesh(createVesselGeometry(), new THREE.MeshStandardMaterial({ color: 0xd3cbae }));
     scene.add(bowl);
     const water = new THREE.Mesh(new THREE.CircleGeometry(2.35, 64), new THREE.MeshStandardMaterial({ color: 0x74a5a0 }));
     water.rotation.x = -Math.PI / 2; water.position.y = 0.43; scene.add(water);
     const pins = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.12, 48), new THREE.MeshStandardMaterial({ color: 0x514b3d }));
     pins.position.y = 0.49; scene.add(pins);
+    }
     scene.updateMatrixWorld(true);
     const triangles: number[][] = [];
     scene.traverseVisible(object => {
@@ -71,7 +79,7 @@ for (const seed of palette ? [8278] : seeds) for (const version of variants) {
         }
       }
     });
-    panels.push({ label: `${version} / ${seed} / ${view}`, triangles });
+    panels.push({ label: `${material ? "CPU mesh · " : ""}${version} / ${seed} / ${view}`, triangles });
   }
 }
-writeFileSync(process.argv[2], JSON.stringify({ columns: palette ? 4 : shape ? 3 : 4, panels }));
+writeFileSync(process.argv[2], JSON.stringify({ columns: material ? 2 : palette ? 4 : shape ? 3 : 4, panels }));

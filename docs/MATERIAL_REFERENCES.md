@@ -195,3 +195,22 @@ after radii. An edge seat is a different event. The cane passes over the lip
 and the free end overhangs past the rim. A downward bend can penetrate the
 water, and a saturated bend can go through the basin floor. Overhang and
 penetration stay separate. No collision response was added.
+
+## Sparse lobed-leaf branch — `lobed-leaf-v1`
+
+An additive maple-inspired study: one modest woody line, one subordinate fork,
+and four simple leaves at two opposite nodes. The renderer supplies one connected
+five-lobed surface per organ with real empty notches and radiating veins. A leaf
+is not five separately editable leaflets. The petiole supplies ordinary face Aim;
+wood and fork supply the existing Bend. A petiole cut removes one whole leaf.
+There are no separate lobe handles, leaf-surface bending, or axial-roll controls.
+
+The morphological reference is [NC State Extension's Japanese maple entry](https://plants.ces.ncsu.edu/plants/acer-palmatum/),
+read 2026-10-13: opposite simple leaves with five to nine lobes. This generic
+cutting deliberately uses five, with two open attachment nodes. It does not claim
+a species-accurate growth or mechanical simulation. Default green earns the
+silhouette independently of any seasonal presentation colors.
+
+The new leaf uses exact visible lamina-plus-vein hit geometry so an empty notch
+cannot grab its leaf. Existing materials keep their previous hit envelopes.
+See [implementation and evidence](development/reports/botanical-darkroom/lobed-leaf.md).

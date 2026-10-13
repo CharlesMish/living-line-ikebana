@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import { canonicalCameraPose } from "../../src/app/camera.ts";
-import { DEFAULT_SCENE, validateScene } from "../../src/app/scene.ts";
+import { DEFAULT_SCENE, validateScene, withPhotoAdjustments } from "../../src/app/scene.ts";
 import { PHOTO_BACKDROPS, PHOTO_PERCHES } from "../../src/presentation/photoStage.ts";
 import { VESSEL_COLORS, VESSEL_FINISHES } from "../../src/study/vesselAppearance.ts";
 import { SceneCommittedStore, SceneGardenStore, parseSceneStudio, parseSceneGarden, sceneStorageKeys } from "../../src/app/scenePersistence.ts";
@@ -54,7 +54,7 @@ test("invalid and future studio versions preserve both keys and block subsequent
  }
 });
 test("Garden rejects unknown layout/scene versions, malformed entries and future versions atomically", () => {
- for (const payload of [{ gardenVersion: 99 }, { gardenVersion: 2, entries: [{ ...entry, arrangement: { ...entry.arrangement, scene: { ...scene, layoutId: "future" } } }] }, { gardenVersion: 2, entries: [{ ...entry, arrangement: { ...entry.arrangement, scene: { ...scene, sceneVersion: 2 } } }] }]) {
+ for (const payload of [{ gardenVersion: 99 }, { gardenVersion: 2, entries: [{ ...entry, arrangement: { ...entry.arrangement, scene: { ...scene, layoutId: "future" } } }] }, { gardenVersion: 2, entries: [{ ...entry, arrangement: { ...entry.arrangement, scene: { ...scene, sceneVersion: 99 } } }] }]) {
   const storage = memory(), store = new SceneGardenStore("new-garden", "old-garden", storage); store.load();
   assert.throws(() => store.importBackup(JSON.stringify(payload))); assert.deepEqual(storage.writes, []);
   storage.items.set("new-garden", JSON.stringify(payload)); assert.throws(() => store.load());
@@ -131,4 +131,24 @@ test("legacy working saves retain the previous count/size allowance instead of i
  const storage = memory();storage.items.set('old-studio',raw);
  const store = new SceneCommittedStore('new-studio','old-studio',()=>({scene,camera}),storage);assert.equal(store.load()?.plants.length,65);
  assert.equal(store.save(66,many),true);assert.equal(parseSceneStudio(storage.getItem('new-studio')!).plants.length,65);
+});
+
+
+test("photo recipes survive working/Garden round-trips while legacy scenes retain no new optional field", () => {
+ const photoAdjustments={version:1 as const, exposure:.2,contrast:-.1,warmth:.3,saturation:.4,vignette:.2};
+ const choice=withPhotoAdjustments(scene,photoAdjustments);
+ assert.equal(choice.sceneVersion,2);assert.throws(()=>validateScene({...scene,photoAdjustments}));
+ assert.deepEqual(validateScene(DEFAULT_SCENE),DEFAULT_SCENE);
+ const storage=memory(), store=new SceneCommittedStore("working",undefined,()=>({scene:choice,camera}),storage);
+ store.load();assert.equal(store.save(2,plants),true);
+ assert.deepEqual(parseSceneStudio(storage.getItem("working")!).scene,choice);
+ const garden=new SceneGardenStore("photos",undefined,storage);garden.load();
+ garden.keep({...entry,arrangement:{...entry.arrangement,camera,scene:choice}});
+ const restored=new SceneGardenStore("imported-photos",undefined,storage);restored.load();restored.importBackup(garden.exportRaw());
+ assert.deepEqual(parseSceneGarden(restored.exportRaw()).entries[0].arrangement.scene,choice);
+ assert.deepEqual(parseSceneGarden(restored.exportRaw()).entries[0].arrangement.plants,plants);
+ for(const recipe of [{...photoAdjustments,version:2},{...photoAdjustments,hue:30},{...photoAdjustments,vignette:-1},null]) {
+  const raw=JSON.stringify({gardenVersion:2,entries:[{...entry,arrangement:{...entry.arrangement,scene:{...choice,photoAdjustments:recipe}}}]});
+  const before=[...storage.items];assert.throws(()=>restored.importBackup(raw));assert.deepEqual([...storage.items],before);
+ }
 });

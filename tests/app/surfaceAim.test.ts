@@ -58,7 +58,8 @@ for (const create of [createNoddingFlower, createNoddingFlowerV2]) {
       move(0);
       assert.equal(serializePlantGraph(coordinator.getPresentationState().active.graph), before, "returning the grip rolls back exactly");
       move(8);
-      coordinator.cancel("pointer-cancel");
+      coordinator.pointerCancel(7);
+      assert.equal(coordinator.getPresentationState().active, null, "cancellation resolves the held transaction");
       assert.equal(serializePlantGraph(coordinator.getDocumentSnapshot().plants.get(graph.id)!), before);
       assert.equal(saves.length, 0);
       assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);

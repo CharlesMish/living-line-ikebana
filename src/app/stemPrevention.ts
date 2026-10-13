@@ -1,7 +1,7 @@
 import { aimRotation, applyAimRotation, applyBendRotation, bendRotationVector, translatePendingGraph, translatePlantBaseWithResult } from '../core/edit.ts';
 import { sampleBranch } from '../core/arcLength.ts';
 import { clonePlantGraph } from '../core/clone.ts';
-import { clamp, length, normalize, subtract, type Vec3 } from '../core/math.ts';
+import { clamp, length, normalize, subtract, type Vec3, type Quat } from '../core/math.ts';
 import { rotationPath, rotationVector } from '../core/rotationPath.ts';
 import { aimPointSpeeds, bendPointSpeeds, contactEnvironment, insertionContacts, interpolateParameter, limitStemMotion, parameterDistance, type ContactEnvironment } from '../core/stemContact.ts';
 import type { PlantGraph } from '../core/types.ts';
@@ -36,10 +36,10 @@ export class StemPrevention {
         this.feedback = { reason: marks.length ? 'insertion' : 'clear', existingPairs: 0, marks };
         return marks.length === 0;
     }
-    aim(snapshot: PlantGraph, spec: AimSpec<StudioContextMap['aim']>, target: Vec3) {
+    aim(snapshot: PlantGraph, spec: AimSpec<StudioContextMap['aim']>, target: Vec3, headRotation?: Quat) {
         const branch = snapshot.branches.get(spec.branchId)!;
         const grip = spec.context.surfaceGrip ?? sampleBranch(branch, spec.grabbedMaterialDistance).position;
-        const desired = rotationVector(aimRotation(snapshot, spec.branchId, grip, target));
+        const desired = rotationVector(headRotation ?? aimRotation(snapshot, spec.branchId, grip, target));
         const session = this.session(snapshot, spec, zero());
         const path = rotationPath(session.parameter, desired);
         const exit = normalize(subtract(branch.points[1], branch.points[0]));

@@ -3,6 +3,8 @@ import test from "node:test";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import { canonicalCameraPose } from "../../src/app/camera.ts";
 import { DEFAULT_SCENE, validateScene } from "../../src/app/scene.ts";
+import { PHOTO_BACKDROPS, PHOTO_PERCHES } from "../../src/presentation/photoStage.ts";
+import { VESSEL_COLORS, VESSEL_FINISHES } from "../../src/study/vesselAppearance.ts";
 import { SceneCommittedStore, SceneGardenStore, parseSceneStudio, parseSceneGarden, sceneStorageKeys } from "../../src/app/scenePersistence.ts";
 import { parseGarden } from "../../src/app/garden.ts";
 import { applyPrune, fromCanonicalPlantGraph, previewPrune, toCanonicalPlantGraph } from "../../src/core/index.ts";
@@ -92,6 +94,29 @@ test("routing keeps preview, workbench, vessel study and ordinary legacy keys se
 test("strict scene validation rejects fallback substitutions and invalid canonical identity", () => {
  for (const patch of [{ colorId: "future" }, { finishId: "future" }, { backdropId: "future" }, { perchId: "future" }, { photoFormat: "future" }, { stemFibers: 1 }]) assert.throws(() => validateScene({ ...scene, ...patch }));
  assert.throws(() => parseSceneStudio(JSON.stringify({ ...JSON.parse(legacyStudio), nextSuccessfulOrdinal: 1 })), /identity/);
+});
+test("every registered color, surface, backdrop and perch survives working save and Garden backup without botanical changes", () => {
+ const settings = [
+  ...VESSEL_COLORS.map(color => ({ ...DEFAULT_SCENE, colorId: color.id })),
+  ...VESSEL_FINISHES.map(finish => ({ ...DEFAULT_SCENE, finishId: finish.id })),
+  ...PHOTO_BACKDROPS.map(backdrop => ({ ...DEFAULT_SCENE, backdropId: backdrop.id })),
+  ...PHOTO_PERCHES.map(perch => ({ ...DEFAULT_SCENE, perchId: perch.id })),
+  { ...DEFAULT_SCENE, colorId: "iron", finishId: "speckled", backdropId: "mist" as const, perchId: "plinth" as const },
+ ];
+ for (const choice of settings) {
+  assert.deepEqual(validateScene(choice), choice);
+  const storage = memory(), store = new SceneCommittedStore("working", undefined, () => ({ scene: choice, camera }), storage);
+  store.load(); assert.equal(store.save(2, plants), true);
+  const restored = new SceneCommittedStore("working", undefined, () => ({ scene: DEFAULT_SCENE, camera }), storage).load()!;
+  assert.deepEqual(restored.scene, choice); assert.deepEqual(restored.plants, plants);
+  const garden = new SceneGardenStore("garden", undefined, storage); garden.load();
+  garden.keep({ ...entry, arrangement: { ...entry.arrangement, camera, scene: choice } });
+  const imported = new SceneGardenStore("imported", undefined, storage); imported.load();
+  assert.equal(imported.importBackup(garden.exportRaw()), 1);
+  const kept = parseSceneGarden(imported.exportRaw()).entries[0].arrangement;
+  assert.deepEqual(kept.scene, choice); assert.deepEqual(kept.plants, plants); assert.deepEqual(kept.camera, camera);
+  assert.equal(storage.items.get("old-studio"), legacyStudio); assert.equal(storage.items.get("old-garden"), legacyGarden);
+ }
 });
 test("legacy working saves retain the previous count/size allowance instead of inheriting Garden limits", () => {
  const fixture = createWorkbenchFixture("reed", 8278, 1);

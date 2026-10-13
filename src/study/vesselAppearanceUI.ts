@@ -24,7 +24,7 @@ export class VesselAppearanceUI {
       <p>Quiet colors, the same light.</p><label>Layout<select id="vessel-layout"></select></label>
       <label>Color<select id="vessel-color" data-testid="vessel-color"></select></label>
       <label>Surface<select id="vessel-finish" data-testid="vessel-finish"></select></label>
-      <p class="panel-note">Stoneware adds a fine grain and softer reflections. Planting space and protection stay the same.</p>
+      <p class="panel-note">Glaze catches the light; satin softens it. Stoneware has a fine grain, and speckled ceramic has scattered mineral flecks.</p>
       <p class="panel-note">Your Garden remembers the vessel, surface and scene setting.</p>`;
     this.dialog.querySelector("h1")!.textContent = label;
     const layout = this.dialog.querySelector<HTMLSelectElement>("#vessel-layout")!;

@@ -6,10 +6,14 @@ export const VESSEL_COLORS = [
   { id: "sand", label: "Sand", color: 0xbcb09b, rimColor: 0xd2c7b3 },
   { id: "celadon", label: "Celadon", color: 0x82998c, rimColor: 0xa0b5a7 },
   { id: "charcoal", label: "Charcoal", color: 0x414a49, rimColor: 0x64706c },
+  { id: "chalk", label: "Chalk", color: 0xe5dfd3, rimColor: 0xf0e9db },
+  { id: "iron", label: "Iron", color: 0x996c55, rimColor: 0xb98a6b },
 ] as const;
 export const VESSEL_FINISHES = [
-  { id: "glaze", label: "Glaze", roughness: .38, clearcoat: .65, rimRoughness: .35, grain: false },
-  { id: "stoneware", label: "Stoneware", roughness: .76, clearcoat: .06, rimRoughness: .72, grain: true },
+  { id: "glaze", label: "Glaze", roughness: .38, clearcoat: .65, rimRoughness: .35, grain: false, bumpScale: 0 },
+  { id: "stoneware", label: "Stoneware", roughness: .76, clearcoat: .06, rimRoughness: .72, grain: true, bumpScale: .008 },
+  { id: "satin", label: "Satin", roughness: .63, clearcoat: .20, rimRoughness: .59, grain: true, bumpScale: .0035 },
+  { id: "speckled", label: "Speckled", roughness: .64, clearcoat: .18, rimRoughness: .60, grain: true, bumpScale: .005 },
 ] as const;
 export const DEFAULT_VESSEL_APPEARANCE: VesselAppearanceChoice = { colorId: "sand", finishId: "glaze" };
 
@@ -21,7 +25,7 @@ export function resolveVesselAppearance(choice: Partial<VesselAppearanceChoice> 
     colorSpace: "srgb" as const,
     color: color.color, rimColor: color.rimColor,
     roughness: finish.roughness, clearcoat: finish.clearcoat, rimRoughness: finish.rimRoughness,
-    grain: finish.grain, bumpScale: finish.grain ? .008 : 0,
+    grain: finish.grain, bumpScale: finish.bumpScale,
   };
 }
 

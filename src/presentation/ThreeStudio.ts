@@ -1,6 +1,7 @@
 import { createPhotoPerch, PHOTO_COLORS, type PhotoBackdrop, type PhotoPerch } from "./photoStage.ts";
+import { disposePhotoPerch } from "./perchSurfaces.ts";
 import { attachStemSurface, installStemSurface } from "./stemSurface.ts";
-import { applyVesselAppearance, createVesselGrain } from "./vesselAppearance.ts";
+import { applyVesselAppearance, createVesselGrain, createVesselFinishTextures, type VesselFinishTextures } from "./vesselAppearance.ts";
 import { DEFAULT_VESSEL_APPEARANCE, resolveVesselAppearance, resolveVesselPresentation, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import type { StemOverlap } from "../core/stemOverlaps.ts";
 import { createVesselGeometry } from "./vessel.ts";
@@ -357,6 +358,7 @@ export class ThreeStudio {
   private stemOverlaps?: StemOverlapOverlay;
   private vesselSurfaces: Array<{ body: THREE.MeshPhysicalMaterial; rim: THREE.MeshStandardMaterial }> = [];
   private vesselGrain?: THREE.DataTexture;
+  private vesselFinishTextures?: Map<string, VesselFinishTextures>;
   private vesselAppearance: VesselAppearanceChoice = { ...DEFAULT_VESSEL_APPEARANCE };
   private readonly plants = new Map<string, PlantVisual>();
   private readonly cameraTarget = new THREE.Vector3();
@@ -673,8 +675,13 @@ export class ThreeStudio {
   setVesselAppearance(choice: VesselAppearanceChoice) {
     const settings = resolveVesselAppearance(choice);
     this.vesselAppearance = settings.choice;
-    if (settings.grain) this.vesselGrain ??= createVesselGrain();
-    for (const surface of this.vesselSurfaces ?? []) applyVesselAppearance(surface.body, surface.rim, settings.choice, this.vesselGrain);
+    if (settings.choice.finishId === "stoneware") this.vesselGrain ??= createVesselGrain();
+    const finishes = this.vesselFinishTextures ??= new Map();
+    if (!finishes.has(settings.choice.finishId)) {
+      const textures = createVesselFinishTextures(settings.choice.finishId);
+      if (textures) finishes.set(settings.choice.finishId, textures);
+    }
+    for (const surface of this.vesselSurfaces ?? []) applyVesselAppearance(surface.body, surface.rim, settings.choice, this.vesselGrain, finishes.get(settings.choice.finishId));
     this.requestRender();
   }
 
@@ -2002,8 +2009,8 @@ export class ThreeStudio {
   /** Session-only scene dressing. The vessel and all plants keep world coordinates. */
   setPhotoStage(backdrop: PhotoBackdrop, perch: PhotoPerch) {
     const floor = this.scene.getObjectByName("studio-floor") as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
-    if (this.photoPerch) { this.scene.remove(this.photoPerch); disposeObject(this.photoPerch); }
-    const created = createPhotoPerch(perch, this.getVesselPresentation().vessels); this.photoPerch = created.group;
+    if (this.photoPerch) { this.scene.remove(this.photoPerch); disposePhotoPerch(this.photoPerch); }
+    const created = createPhotoPerch(backdrop === "transparent" ? "ground" : perch, this.getVesselPresentation().vessels); this.photoPerch = created.group;
     this.scene.add(created.group); created.group.visible = backdrop !== "transparent";
     floor.visible = backdrop !== "transparent"; floor.position.y = created.floorY;
     if (backdrop === "transparent") {
@@ -2199,7 +2206,12 @@ export class ThreeStudio {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
     this.vesselGrain?.dispose();
+    for (const textures of this.vesselFinishTextures?.values() ?? []) textures.dispose();
+    this.vesselFinishTextures?.clear();
     this.stemOverlaps?.dispose();
+    if (this.photoPerch) {
+      this.scene.remove(this.photoPerch); disposePhotoPerch(this.photoPerch); this.photoPerch = null;
+    }
     disposeObject(this.scene);
     this.renderer.dispose();
     this.plants.clear();

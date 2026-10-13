@@ -50,7 +50,7 @@ test('appearance choices leave geometry, botanical data, camera and support exte
     studio.setVesselAppearance(DEFAULT_VESSEL_APPEARANCE);
     assert.equal((mesh.material as THREE.MeshPhysicalMaterial).roughness,.38);
     assert.equal((mesh.material as THREE.MeshPhysicalMaterial).bumpMap,null);
-  }finally{studio.vesselGrain?.dispose();dispose();}
+  }finally{studio.vesselGrain?.dispose();studio.vesselFinishTextures?.forEach((textures:any)=>textures.dispose());dispose();}
 });
 
 test('palette is bounded, defaults are stable, and the URL records appearance without a save schema', () => {

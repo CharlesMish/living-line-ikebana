@@ -181,6 +181,16 @@ async function exercise(config) {
     assert.notEqual(turned.state.canonicalHash, seated.state.canonicalHash);
     assert.equal(turned.state.cameraHash, seated.state.cameraHash);
     assert.equal(turned.state.successfulSeatOrdinal, seated.state.successfulSeatOrdinal);
+    if (config.width <= 640) {
+      const editBox = await page.locator("#edit-options").boundingBox();
+      inside(editBox, config.width, config.height, "Phone Edit sheet");
+      assert.ok(editBox.y >= config.height / 2, "Phone Turn controls sit below the flowers, not beneath the rail");
+      for (const id of ["turn-cutting-left", "turn-cutting-right", "undo-edit", "remove-cutting"]) {
+        const target = await page.locator(`#${id}`).boundingBox();
+        assert.ok(target.width >= 44 && target.height >= 44, `${id} retains a 44px target`);
+      }
+      result.turnSheet = editBox;
+    }
     await capture("turn-cutting");
     await activate(page.getByTestId("undo-edit"));
     assert.deepEqual((await readState(page)).canonical, seated.canonical);

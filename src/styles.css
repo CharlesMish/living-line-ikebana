@@ -1093,6 +1093,9 @@ noscript {
 /* Deliberate phone rows: one mode pair, then three equal action disclosures.
    No isolated Garden/info pills, shortened labels, or incidental flex wrapping. */
 @media (max-width: 640px) {
+  /* Preserve the rail's exact inset without a transform containing block, so
+     the open Edit sheet can sit below the flowers in viewport coordinates. */
+  .top-chrome { left: calc(var(--safe-left) + .5rem); transform: none; }
   .top-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .3rem; }
   .posture-control { width: 100%; }
   .top-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin: 0; gap: .3rem; }
@@ -1106,7 +1109,11 @@ noscript {
   .materials-toggle { width: 100%; white-space: normal; }
   .materials-toggle svg { display: none; }
   .bend-stations, .bend-stations-note { flex-basis: 100%; }
-  .edit-options { left: 0; }
+  .edit-options {
+    position: fixed; top: auto; bottom: calc(var(--safe-bottom) + 5.5rem);
+    left: calc(var(--safe-left) + .75rem); right: calc(var(--safe-right) + .75rem);
+    width: auto; max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 11rem);
+  }
   .view-switcher { right: 50%; transform: translateX(50%); width: min(17rem, calc(100vw - var(--safe-left) - var(--safe-right) - 2rem)); }
   .view-switcher, .more-options { max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8rem); }
 }

@@ -54,3 +54,11 @@ All IDs, explicit accessible action names, command gates and disclosure behavior
 remain. This reduces menu height without moving the camera or adding rail rows.
 The existing production UI event tests pass; root will recapture the actual
 layout remotely before claiming the obstruction improved.
+
+Run 185 confirmed the compact panel was smaller but still covered the tall
+Single flower in the assisted scene. On narrow screens the open Edit controls
+now sit above the bottom status area instead. The rail keeps its exact safe-area
+inset; no camera, gesture, selection or transaction rules change. The rendered
+job explicitly checks the sheet is in the lower half and its four action targets
+remain at least 44 pixels. The sheet is still dismissed by the ordinary Edit,
+outside-press, focus and Escape paths.

@@ -1,20 +1,25 @@
 import { NEUTRAL_PHOTO_ADJUSTMENTS, PHOTO_ADJUSTMENT_CONTROLS, neutralPhotoAdjustments, validatePhotoAdjustments, type PhotoAdjustments } from "../presentation/photoAdjustments.ts";
-import { DEFAULT_SCENE, sceneProfile, validateScene, withPhotoAdjustments, type SceneSettings } from "./scene.ts";
+import { DEFAULT_SCENE, sceneProfile, validateScene, withPhotoAdjustments, withPhotoLighting, type SceneSettings } from "./scene.ts";
 import { fromCanonicalPlantGraph } from "../core/index.ts";
 import { ThreeStudio, type CanonicalView, type StudioCameraPose } from "../presentation/ThreeStudio.ts";
+import { PHOTO_FRAMING_CONTROLS } from "../presentation/photoFraming.ts";
+import { PHOTO_LIGHTING, validatePhotoLighting, type PhotoLightingId } from "../presentation/photoLighting.ts";
 import { framePhotoCamera, PHOTO_SIZES, PHOTO_BACKDROPS, PHOTO_PERCHES, type PhotoBackdrop, type PhotoPerch, type PhotoFormat } from "../presentation/photoStage.ts";
 import { validateArrangement, type ArrangementSnapshot } from "./garden.ts";
+import { PhotoDraftMemory, type PhotoDraft, type PhotoDraftContext } from "./photoDraft.ts";
 import { PhotoExport, photoShareData, sharePhoto, type PreparedPhoto } from "./photoExport.ts";
 
 interface PhotoActions {
   pause(): void;
   snapshot(): ArrangementSnapshot;
+  context(): PhotoDraftContext;
+  returnToArrange(): void;
   canKeep(): boolean;
   keep(snapshot: ArrangementSnapshot, thumbnail: string | null, title: string): string;
 }
-type PhotoStudio = Pick<ThreeStudio, "upsertGraph" | "setPhotoAdjustments" | "setPhotoStage" | "setStemFibers" | "setCanonicalView" | "getCameraPose" | "setCameraPose" | "capturePhotoFrame" | "dispose">;
+type PhotoStudio = Pick<ThreeStudio, "upsertGraph" | "setPhotoLighting" | "setPhotoAdjustments" | "setPhotoStage" | "setStemFibers" | "setCanonicalView" | "getCameraPose" | "setCameraPose" | "capturePhotoFrame" | "dispose">;
 type PhotoStudioFactory = (canvas: HTMLCanvasElement, scene: SceneSettings) => PhotoStudio;
-const createPhotoStudio: PhotoStudioFactory = (canvas, scene) => new ThreeStudio(canvas, { photography: true, maxPixelRatio: 1.5, vesselProfile: sceneProfile(scene), vesselAppearance: scene, photoAdjustments: scene.photoAdjustments, botanicalTones: scene.botanicalTones });
+const createPhotoStudio: PhotoStudioFactory = (canvas, scene) => new ThreeStudio(canvas, { photography: true, maxPixelRatio: 1.5, vesselProfile: sceneProfile(scene), vesselAppearance: scene, photoAdjustments: scene.photoAdjustments, photoLighting: scene.photoLighting, botanicalTones: scene.botanicalTones });
 
 /** Disposable presentation of a committed copy. Closing never touches the working coordinator. */
 export class Photograph {
@@ -29,6 +34,9 @@ export class Photograph {
   private graphicsReady = false;
   private sharing = false;
   private showingOriginal = false;
+  private readonly drafts = new PhotoDraftMemory();
+  private draftContext: PhotoDraftContext = null;
+  private draftReady = false;
   private readonly imageExport = new PhotoExport();
   private shareData: ShareData | null = null;
   private readonly abort = new AbortController();
@@ -41,6 +49,8 @@ export class Photograph {
     this.dialog.innerHTML = `
       <div class="panel-heading"><div><p class="eyebrow">A moment to keep</p><h1 id="photo-title">Photograph</h1></div><button id="photo-close" type="button" aria-label="Close Photograph">×</button></div>
       <p class="photo-intro">Choose a setting, compose the frame, and keep the moment. Your working bowl stays as you left it.</p>
+      <div class="photo-workflow"><button id="photo-return" type="button">Return to arranging</button><button id="photo-reset-setup" type="button">Reset photo setup</button></div>
+      <p id="photo-draft-note" class="panel-note"></p>
       <div class="photo-layout"><div class="photo-preview">
         <div class="photo-mat"><div class="photo-frame"><canvas id="photo-canvas" aria-label="Live photograph preview"></canvas><div id="photo-grid" class="photo-grid" hidden aria-hidden="true"></div></div></div>
         <div class="photo-preview-footer"><p id="photo-size" class="panel-note"></p><label class="photo-check"><input id="photo-grid-toggle" type="checkbox"> Composition grid</label></div>
@@ -57,14 +67,17 @@ export class Photograph {
         <fieldset><legend>Scene</legend>
         <label>Backdrop <select id="photo-backdrop"></select></label>
         <label>Perch <select id="photo-perch"></select></label>
+        <label>Lighting <select id="photo-lighting"></select></label><p id="photo-lighting-description" class="panel-note"></p>
         <label class="photo-check"><input id="photo-fibers" type="checkbox"> Subtle stem fibers</label>
         </fieldset>
         <fieldset><legend>Frame</legend>
         <label>Frame <select id="photo-format"><option value="landscape">Landscape · 4:3</option><option value="portrait">Portrait · 3:4</option><option value="square">Square · 1:1</option></select></label>
         <label>View <select id="photo-view"><option value="current">My current view</option><option value="front">Front</option><option value="three-quarter">Three-quarter</option><option value="above">Above</option></select></label>
-        <label><span class="photo-range-label">Closer <output id="photo-zoom-value" for="photo-zoom">1.00×</output></span><input id="photo-zoom" type="range" min="0.8" max="1.8" step="0.01" value="1"></label>
-        <label><span class="photo-range-label">Across <output id="photo-horizontal-value" for="photo-horizontal">Centre</output></span><input id="photo-horizontal" type="range" min="-2" max="2" step="0.02" value="0"></label>
-        <label><span class="photo-range-label">Height <output id="photo-vertical-value" for="photo-vertical">Centre</output></span><input id="photo-vertical" type="range" min="-2" max="2" step="0.02" value="0"></label>
+        ${PHOTO_FRAMING_CONTROLS.slice(0, 3).map(({ id, label, min, max, step, neutral }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}"></output></span><input id="photo-${id}" type="range" min="${min}" max="${max}" step="${step}" value="${neutral}"></label>`).join("")}
+        <details class="photo-angle-controls"><summary>Turn and tilt</summary>
+        ${PHOTO_FRAMING_CONTROLS.slice(3).map(({ id, label, min, max, step, neutral }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}"></output></span><input id="photo-${id}" type="range" min="${min}" max="${max}" step="${step}" value="${neutral}"></label>`).join("")}
+        <p class="panel-note">Elevation stays above the bowl. Tilt gently rotates the photograph.</p>
+        </details>
         <button id="photo-reset" type="button">Reset framing</button>
         </fieldset>
         <fieldset class="photo-finish"><legend>Finish</legend>
@@ -82,7 +95,7 @@ export class Photograph {
         <p id="photo-message" role="status" aria-live="polite"></p>
       </div></div>`;
     root.append(this.dialog);
-    for (const [id, options] of [["photo-backdrop", PHOTO_BACKDROPS], ["photo-perch", PHOTO_PERCHES]] as const) {
+    for (const [id, options] of [["photo-backdrop", PHOTO_BACKDROPS], ["photo-perch", PHOTO_PERCHES], ["photo-lighting", PHOTO_LIGHTING]] as const) {
       for (const { id: value, label } of options) {
         const option = document.createElement("option"); option.value = value; option.textContent = label;
         this.find<HTMLSelectElement>(id).append(option);
@@ -92,8 +105,14 @@ export class Photograph {
     this.opener.addEventListener("click", () => this.open(), { signal });
     this.find("photo-close").addEventListener("click", () => this.dialog.close(), { signal });
     this.dialog.addEventListener("close", () => this.release(), { signal });
+    this.find("photo-return").addEventListener("click", () => { this.dialog.close(); this.actions.returnToArrange(); }, { signal });
+    this.find("photo-reset-setup").addEventListener("click", () => {
+      this.drafts.forget(this.draftContext); this.loadSetup(null);
+      this.message("Photo setup reset to the bowl’s current setting and view.");
+    }, { signal });
     this.find("photo-backdrop").addEventListener("change", () => this.stage(), { signal });
     this.find("photo-perch").addEventListener("change", () => this.stage(), { signal });
+    this.find("photo-lighting").addEventListener("change", () => this.lighting(), { signal });
     this.find("photo-format").addEventListener("change", () => this.format(), { signal });
     this.find("photo-view").addEventListener("change", () => {
       const view = this.value("photo-view");
@@ -101,7 +120,7 @@ export class Photograph {
       else { this.studio?.setCanonicalView(view as CanonicalView, false); this.pose = this.studio?.getCameraPose() ?? null; }
       this.reset();
     }, { signal });
-    for (const id of ["photo-zoom", "photo-horizontal", "photo-vertical"]) this.find(id).addEventListener("input", () => this.frame(), { signal });
+    for (const { id } of PHOTO_FRAMING_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => this.frame(), { signal });
     this.find<HTMLInputElement>("photo-fibers").addEventListener("change", () => { this.changedFrame(); this.studio?.setStemFibers(this.find<HTMLInputElement>("photo-fibers").checked); }, { signal });
     this.find<HTMLInputElement>("photo-grid-toggle").addEventListener("change", () => { this.find("photo-grid").hidden = !this.find<HTMLInputElement>("photo-grid-toggle").checked; }, { signal });
     for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => this.finish(), { signal });
@@ -132,22 +151,23 @@ export class Photograph {
     this.actions.pause(); this.snapshot = validateArrangement(this.actions.snapshot(), Infinity);
     this.root.querySelector<HTMLElement>("#more-options")!.hidden = true;
     this.dialog.showModal(); this.session++;
-    this.graphicsReady = false;
+    this.graphicsReady = false; this.draftReady = false;
     this.find<HTMLButtonElement>("photo-export").disabled = true;
     this.find<HTMLButtonElement>("photo-keep").disabled = true;
     delete this.dialog.dataset.keptId;
     try {
       const scene = this.snapshot.scene ?? DEFAULT_SCENE;
       this.studio = this.createStudio(this.find<HTMLCanvasElement>("photo-canvas"), scene);
-      for (const [id, value] of [["photo-backdrop", scene.backdropId], ["photo-perch", scene.perchId], ["photo-format", scene.photoFormat]]) this.find<HTMLSelectElement>(id).value = value;
+      // Always rebuild from the latest committed plants and scene. A draft has
+      // no plants, vessel or botanical tones with which to overwrite that copy.
       for (const graph of this.snapshot.plants) this.studio.upsertGraph(fromCanonicalPlantGraph(graph));
-      this.pose = this.snapshot.camera; this.find<HTMLSelectElement>("photo-view").value = "current";
-      this.find<HTMLInputElement>("photo-fibers").checked = scene.stemFibers; this.studio.setStemFibers(scene.stemFibers);
+      this.draftContext = this.actions.context();
+      const draft = this.drafts.restore(this.draftContext);
       this.find<HTMLButtonElement>("photo-keep").disabled = !this.snapshot.plants.length || !this.actions.canKeep();
-      this.graphicsReady = true;
-      this.loadFinish(scene.photoAdjustments ?? NEUTRAL_PHOTO_ADJUSTMENTS); this.finish();
-      this.busy = false; this.stage(); this.format(); this.reset();
-      this.message("Ready to frame.");
+      this.graphicsReady = true; this.busy = false;
+      this.loadSetup(draft); this.draftReady = true;
+      this.find("photo-return").textContent = this.draftContext === null ? "Return to viewing" : "Return to arranging";
+      this.message(draft ? "Resumed your photo setup with the latest committed cuttings." : "Ready to frame.");
     } catch (error) {
       this.graphicsReady = false; this.imageExport.invalidate(); this.busy = false;
       this.find<HTMLButtonElement>("photo-export").disabled = true;
@@ -155,6 +175,47 @@ export class Photograph {
       this.studio?.dispose(); this.studio = null; this.message(String(error));
     }
     this.find<HTMLButtonElement>("photo-close").focus();
+  }
+  private loadSetup(draft: PhotoDraft | null) {
+    const scene = this.snapshot?.scene ?? DEFAULT_SCENE;
+    for (const [id, value] of [["photo-backdrop", draft?.backdrop ?? scene.backdropId], ["photo-perch", draft?.perch ?? scene.perchId], ["photo-format", draft?.format ?? scene.photoFormat]]) this.find<HTMLSelectElement>(id).value = value;
+    this.pose = structuredClone(draft?.pose ?? this.snapshot!.camera);
+    this.find<HTMLSelectElement>("photo-view").value = draft?.view ?? "current";
+    this.find<HTMLInputElement>("photo-fibers").checked = draft?.fibers ?? scene.stemFibers;
+    this.studio?.setStemFibers(this.find<HTMLInputElement>("photo-fibers").checked);
+    for (const { id, neutral } of PHOTO_FRAMING_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(draft?.[id] ?? neutral);
+    this.find<HTMLSelectElement>("photo-lighting").value = draft?.lighting ?? validatePhotoLighting(scene.photoLighting);
+    this.lighting();
+    this.find<HTMLInputElement>("photo-grid-toggle").checked = draft?.grid ?? false;
+    this.find("photo-grid").hidden = !(draft?.grid ?? false);
+    this.find<HTMLInputElement>("photo-name").value = draft?.title ?? "";
+    this.loadFinish(draft?.finish ?? scene.photoAdjustments ?? NEUTRAL_PHOTO_ADJUSTMENTS);
+    this.showingOriginal = draft?.showingOriginal ?? false; this.finish(false);
+    this.stage(); this.format();
+    this.find("photo-draft-note").textContent = this.draftContext === null
+      ? "Viewing a kept moment. These temporary photo choices do not replace your working bowl’s setup."
+      : "Your photo setup is remembered for this bowl while this page stays open. Return to arranging to adjust a cutting, then reopen Photograph. Reloading or starting a fresh bowl clears the setup.";
+  }
+  private rememberSetup() {
+    if (!this.draftReady || !this.pose || this.actions.context() !== this.draftContext) return;
+    this.drafts.remember(this.draftContext, {
+      backdrop: this.value("photo-backdrop") as PhotoBackdrop,
+      perch: this.value("photo-perch") as PhotoPerch,
+      format: this.value("photo-format") as PhotoFormat,
+      fibers: this.find<HTMLInputElement>("photo-fibers").checked,
+      pose: this.pose, view: this.value("photo-view") as PhotoDraft["view"],
+      zoom: Number(this.value("photo-zoom")), horizontal: Number(this.value("photo-horizontal")), vertical: Number(this.value("photo-vertical")),
+      yaw: Number(this.value("photo-yaw")), pitch: Number(this.value("photo-pitch")), roll: Number(this.value("photo-roll")),
+      lighting: validatePhotoLighting(this.value("photo-lighting")),
+      finish: this.currentFinish(), showingOriginal: this.showingOriginal,
+      grid: this.find<HTMLInputElement>("photo-grid-toggle").checked,
+      title: this.value("photo-name"),
+    });
+  }
+  private lighting() {
+    const lighting = validatePhotoLighting(this.value("photo-lighting"));
+    this.changedFrame(); this.studio?.setPhotoLighting(lighting);
+    this.find("photo-lighting-description").textContent = PHOTO_LIGHTING.find(item => item.id === lighting)!.description;
   }
   private stage() {
     this.changedFrame();
@@ -174,19 +235,19 @@ export class Photograph {
     this.frame();
   }
   private reset() {
-    this.find<HTMLInputElement>("photo-zoom").value = "1";
-    this.find<HTMLInputElement>("photo-horizontal").value = "0";
-    this.find<HTMLInputElement>("photo-vertical").value = "0"; this.frame();
+    for (const { id, neutral } of PHOTO_FRAMING_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(neutral);
+    this.frame();
   }
   private frame() {
     this.changedFrame();
-    for (const id of ["photo-zoom", "photo-horizontal", "photo-vertical"]) {
-      const value = Number(this.value(id));
-      const text = id === "photo-zoom" ? `${value.toFixed(2)}×` : value === 0 ? "Centre" : `${value > 0 ? "+" : ""}${value.toFixed(2)}`;
+    for (const { id: controlId } of PHOTO_FRAMING_CONTROLS) {
+      const id = `photo-${controlId}`, value = Number(this.value(id));
+      const angle = controlId === "yaw" || controlId === "pitch" || controlId === "roll";
+      const text = angle ? `${value > 0 ? "+" : ""}${value}°` : id === "photo-zoom" ? `${value.toFixed(2)}×` : value === 0 ? "Centre" : `${value > 0 ? "+" : ""}${value.toFixed(2)}`;
       this.find(`${id}-value`).textContent = text;
       this.find(id).setAttribute("aria-valuetext", text);
     }
-    if (this.pose) this.studio?.setCameraPose(framePhotoCamera(this.pose, Number(this.value("photo-zoom")), Number(this.value("photo-horizontal")), Number(this.value("photo-vertical"))), "free", false);
+    if (this.pose) this.studio?.setCameraPose(framePhotoCamera(this.pose, Number(this.value("photo-zoom")), Number(this.value("photo-horizontal")), Number(this.value("photo-vertical")), Number(this.value("photo-yaw")), Number(this.value("photo-pitch")), Number(this.value("photo-roll"))), "free", false);
   }
   private loadFinish(recipe: Readonly<PhotoAdjustments>) {
     for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(recipe[id]);
@@ -281,20 +342,22 @@ export class Photograph {
       context.drawImage(frame, (360 - frame.width * scale) / 2, (270 - frame.height * scale) / 2, frame.width * scale, frame.height * scale);
       const thumbnail = cover.toDataURL("image/jpeg", 0.78);
       if (thumbnail.length > 80_000) throw new Error("This cover is too large. Try a simpler frame.");
-      const scene = validateScene(withPhotoAdjustments({ ...(this.snapshot.scene ?? DEFAULT_SCENE),
-        backdropId: this.value("photo-backdrop") as PhotoBackdrop, perchId: this.value("photo-perch") as PhotoPerch, photoFormat: this.value("photo-format") as PhotoFormat, stemFibers: this.find<HTMLInputElement>("photo-fibers").checked }, this.showingOriginal ? { ...NEUTRAL_PHOTO_ADJUSTMENTS } : this.currentFinish()));
+      const scene = validateScene(withPhotoLighting(withPhotoAdjustments({ ...(this.snapshot.scene ?? DEFAULT_SCENE),
+        backdropId: this.value("photo-backdrop") as PhotoBackdrop, perchId: this.value("photo-perch") as PhotoPerch, photoFormat: this.value("photo-format") as PhotoFormat, stemFibers: this.find<HTMLInputElement>("photo-fibers").checked }, this.showingOriginal ? { ...NEUTRAL_PHOTO_ADJUSTMENTS } : this.currentFinish()), this.value("photo-lighting") as PhotoLightingId));
       const snapshot = validateArrangement({ ...this.snapshot, scene, camera: this.studio.getCameraPose() }, Infinity);
       const id = this.actions.keep(snapshot, thumbnail, this.value("photo-name"));
       this.dialog.dataset.keptId = id;
       this.message("Photo kept in Garden. Your working bowl is unchanged.");
     } catch (error) { this.message(error instanceof Error ? error.message : String(error)); }
   }
-  private release() {
+  private release(remember = true) {
+    if (remember) this.rememberSetup();
+    this.draftReady = false;
     this.session++; this.imageExport.clear(); this.shareData = null; this.sharing = false;
     this.find("photo-result").hidden = true;
     for (const id of ["photo-result-image", "photo-download", "photo-open-image"]) this.find(id).removeAttribute(id === "photo-result-image" ? "src" : "href");
     this.deliveryMessage(""); this.studio?.dispose(); this.studio = null; this.snapshot = null; this.pose = null; this.busy = false; this.graphicsReady = false;
     this.root.querySelector<HTMLButtonElement>("#more-toggle")?.focus();
   }
-  destroy() { this.abort.abort(); this.release(); this.dialog.remove(); this.opener.remove(); }
+  destroy() { this.abort.abort(); this.release(false); this.drafts.clear(); this.dialog.remove(); this.opener.remove(); }
 }

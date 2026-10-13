@@ -76,7 +76,7 @@ const singleFlower: MaterialAppearance = Object.freeze({
   stemRoughness: 0.64,
   leaf: Object.freeze({ form: "elliptic", color: 0x4d6848, veinColor: 0x8a9a62,
     roughness: 0.7, ...ellipticLeafHit }),
-  bloom: Object.freeze({ form: "open-face", color: 0xf0d2ae, roughness: 0.62, hitRadius: 0.7 }),
+  bloom: Object.freeze({ form: "open-cup", color: 0xf0d2ae, roughness: 0.72, hitRadius: 0.7 }),
 });
 const reed: MaterialAppearance = Object.freeze({
   branchColors: Object.freeze({ trunk: 0x4e6240, lateral: 0x4e6240,

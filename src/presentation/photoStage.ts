@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import type { StudioCameraPose } from "./ThreeStudio.ts";
 import { createPerchSurface } from "./perchSurfaces.ts";
 import { timberGeometry, honedStoneGeometry, plasterGeometry } from "./perchGeometry.ts";
 
@@ -10,6 +9,8 @@ export const PHOTO_BACKDROPS = [
   { id: "mist", label: "Mist wall" },
   { id: "clay", label: "Clay wall" },
   { id: "ink", label: "Ink wall" },
+  { id: "hills", label: "Mist hills" },
+  { id: "garden", label: "Garden shade" },
   { id: "transparent", label: "Transparent" },
 ] as const;
 export type PhotoBackdrop = typeof PHOTO_BACKDROPS[number]["id"];
@@ -33,6 +34,8 @@ export const PHOTO_COLORS: Record<Exclude<PhotoBackdrop, "transparent">, { wall:
   mist: { wall: 0xb8c7d0, floor: 0x9eafb9 },
   clay: { wall: 0xc1a398, floor: 0xac8f83 },
   ink: { wall: 0x414f59, floor: 0x35444e },
+  hills: { wall: 0xced7c9, floor: 0xb8c2b4 },
+  garden: { wall: 0xcfd6c3, floor: 0xb5bcad },
 };
 
 /** All perch tops meet the unchanged vessel bottom. Nothing botanical moves. */
@@ -93,14 +96,4 @@ export function createPhotoPerch(perch: PhotoPerch, supports: readonly PerchSupp
   return { group, floorY: support.topY - height };
 }
 
-/** Screen-space framing from a fixed pose; repeated updates never accumulate. */
-export function framePhotoCamera(pose: StudioCameraPose, zoom: number, horizontal: number, vertical: number): StudioCameraPose {
-  const target = new THREE.Vector3(pose.target.x, pose.target.y, pose.target.z);
-  const delta = new THREE.Vector3(pose.position.x, pose.position.y, pose.position.z).sub(target);
-  const forward = delta.clone().normalize().negate();
-  const right = forward.clone().cross(new THREE.Vector3(pose.up.x, pose.up.y, pose.up.z)).normalize();
-  const screenUp = right.clone().cross(forward).normalize();
-  const shift = right.multiplyScalar(-horizontal).add(screenUp.multiplyScalar(-vertical));
-  target.add(shift); const position = target.clone().add(delta.multiplyScalar(1 / zoom));
-  return { position: { x: position.x, y: position.y, z: position.z }, target: { x: target.x, y: target.y, z: target.z }, up: { ...pose.up } };
-}
+export { framePhotoCamera } from "./photoFraming.ts";

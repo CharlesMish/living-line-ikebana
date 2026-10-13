@@ -11,7 +11,7 @@ function harness(workbench = false) {
   const state = { posture: "arrange", tool: "shape", view: "front", cameraMode: "orbit" };
   const app = Object.assign(Object.create(IkebanaApp.prototype), {
     scene: { ...DEFAULT_SCENE }, applyScene(value: any) { this.scene = structuredClone(value); this.config.vesselProfile = sceneProfile(value); },
-    workingSession: null, config: { workbench }, bendVariant: "bead", selectedBranchId: "plant-1:trunk", cameraIsFree: false,
+    photoDraftContext: 0, workingSession: null, config: { workbench }, bendVariant: "bead", selectedBranchId: "plant-1:trunk", cameraIsFree: false,
     hovering: false, gesture: null, autosaveWrites: [],
     root: { querySelector: () => null },
     sound: { unlock() {} }, telemetryStore: { clear() {} },
@@ -241,4 +241,20 @@ test("a65-cutting legacy working bowl can change scene without becoming a Garden
  app.setupVesselUI=()=>{};
  app.changeScene({...DEFAULT_SCENE,colorId:"celadon"});
  assert.equal(savedCount,65);assert.equal(app.arrangementSnapshot().plants.length,65);
+});
+
+test("photo draft context survives ordinary edits, cancellation and Garden inspection; replacement advances only after save", () => {
+  const { app, snapshot } = harness();
+  assert.equal(app.photoDraftContext, 0);
+  moveBase(app, .4); assert.equal(app.photoDraftContext, 0);
+  moveBase(app, -.4, false);
+  app.gesture = { kind: "base", owner: 7, capture: { hasPointerCapture: () => false } };
+  app.pauseForGarden(); assert.equal(app.photoDraftContext, 0); assert.equal(app.coordinator.getDebugState().active, null);
+  app.viewGardenEntry({ id: "photo-view", title: "A kept moment", arrangement: snapshot });
+  assert.equal(app.photoDraftContext, 0); app.returnToWorkingBowl(); assert.equal(app.photoDraftContext, 0);
+  app.store.save = () => false;
+  assert.throws(() => app.replaceWorkingBowl(null), /could not be saved/); assert.equal(app.photoDraftContext, 0);
+  app.store.save = () => true;
+  app.replaceWorkingBowl(null); assert.equal(app.photoDraftContext, 1);
+  app.replaceWorkingBowl(snapshot); assert.equal(app.photoDraftContext, 2);
 });

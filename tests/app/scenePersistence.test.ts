@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import { canonicalCameraPose } from "../../src/app/camera.ts";
-import { DEFAULT_SCENE, validateScene, withPhotoAdjustments } from "../../src/app/scene.ts";
+import { DEFAULT_SCENE, validateScene, withPhotoAdjustments, withPhotoLighting } from "../../src/app/scene.ts";
+import { PHOTO_LIGHTING } from "../../src/presentation/photoLighting.ts";
 import { PHOTO_BACKDROPS, PHOTO_PERCHES } from "../../src/presentation/photoStage.ts";
 import { VESSEL_COLORS, VESSEL_FINISHES } from "../../src/study/vesselAppearance.ts";
 import { SceneCommittedStore, SceneGardenStore, parseSceneStudio, parseSceneGarden, sceneStorageKeys } from "../../src/app/scenePersistence.ts";
@@ -92,7 +93,7 @@ test("routing keeps preview, workbench, vessel study and ordinary legacy keys se
  assert.ok(sceneStorageKeys(new URL("https://example.test"), false, "long-bed").studio.includes("long-bed"));
 });
 test("strict scene validation rejects fallback substitutions and invalid canonical identity", () => {
- for (const patch of [{ colorId: "future" }, { finishId: "future" }, { backdropId: "future" }, { perchId: "future" }, { photoFormat: "future" }, { stemFibers: 1 }]) assert.throws(() => validateScene({ ...scene, ...patch }));
+ for (const patch of [{ photoLighting: "future", sceneVersion: 2 }, { photoLighting: "window" }, { colorId: "future" }, { finishId: "future" }, { backdropId: "future" }, { perchId: "future" }, { photoFormat: "future" }, { stemFibers: 1 }]) assert.throws(() => validateScene({ ...scene, ...patch }));
  assert.throws(() => parseSceneStudio(JSON.stringify({ ...JSON.parse(legacyStudio), nextSuccessfulOrdinal: 1 })), /identity/);
 });
 test("every registered color, surface, backdrop and perch survives working save and Garden backup without botanical changes", () => {
@@ -101,6 +102,7 @@ test("every registered color, surface, backdrop and perch survives working save 
   ...VESSEL_FINISHES.map(finish => ({ ...DEFAULT_SCENE, finishId: finish.id })),
   ...PHOTO_BACKDROPS.map(backdrop => ({ ...DEFAULT_SCENE, backdropId: backdrop.id })),
   ...PHOTO_PERCHES.map(perch => ({ ...DEFAULT_SCENE, perchId: perch.id })),
+  ...PHOTO_LIGHTING.map(light => withPhotoLighting(DEFAULT_SCENE, light.id)),
   { ...DEFAULT_SCENE, colorId: "iron", finishId: "speckled", backdropId: "mist" as const, perchId: "plinth" as const },
  ];
  for (const choice of settings) {

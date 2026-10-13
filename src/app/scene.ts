@@ -1,5 +1,6 @@
 import { neutralPhotoAdjustments, validatePhotoAdjustments, type PhotoAdjustments } from "../presentation/photoAdjustments.ts";
 import { validateBotanicalTones, type BotanicalTones } from "../presentation/botanicalTones.ts";
+import { validatePhotoLighting, type PhotoLightingId } from "../presentation/photoLighting.ts";
 import { ORIGINAL_VESSEL, VESSEL_PROFILES } from "../study/vesselProfiles.ts";
 import { VESSEL_COLORS, VESSEL_FINISHES } from "../study/vesselAppearance.ts";
 import { PHOTO_BACKDROPS, PHOTO_PERCHES, type PhotoBackdrop, type PhotoFormat, type PhotoPerch } from "../presentation/photoStage.ts";
@@ -17,6 +18,7 @@ export interface SceneSettings {
   stemFibers: boolean;
   botanicalTones?: BotanicalTones;
   photoAdjustments?: PhotoAdjustments;
+  photoLighting?: PhotoLightingId;
 }
 export const DEFAULT_SCENE: SceneSettings = {
   sceneVersion: 1, layoutId: "original", colorId: "sand", finishId: "glaze",
@@ -25,10 +27,10 @@ export const DEFAULT_SCENE: SceneSettings = {
 export function validateScene(value: unknown): SceneSettings {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid saved scene.");
   const s = value as SceneSettings;
-  const keys = ["sceneVersion", "layoutId", "colorId", "finishId", "backdropId", "perchId", "photoFormat", "stemFibers", "botanicalTones", "photoAdjustments"];
+  const keys = ["sceneVersion", "layoutId", "colorId", "finishId", "backdropId", "perchId", "photoFormat", "stemFibers", "botanicalTones", "photoAdjustments", "photoLighting"];
   if (Object.keys(s).some(key => !keys.includes(key))) throw new Error("This saved scene cannot be opened.");
   if (![1, 2].includes(s.sceneVersion)
-    || (s.sceneVersion === 1 && (Object.hasOwn(s, "botanicalTones") || Object.hasOwn(s, "photoAdjustments")))
+    || (s.sceneVersion === 1 && (Object.hasOwn(s, "botanicalTones") || Object.hasOwn(s, "photoAdjustments") || Object.hasOwn(s, "photoLighting")))
     || !VESSEL_PROFILES.some(p => p.id === s.layoutId)
     || !VESSEL_COLORS.some(c => c.id === s.colorId) || !VESSEL_FINISHES.some(f => f.id === s.finishId)
     || !PHOTO_BACKDROPS.some(b => b.id === s.backdropId)
@@ -39,7 +41,8 @@ export function validateScene(value: unknown): SceneSettings {
   return { sceneVersion: s.sceneVersion, layoutId: s.layoutId, colorId: s.colorId, finishId: s.finishId,
     backdropId: s.backdropId, perchId: s.perchId, photoFormat: s.photoFormat, stemFibers: s.stemFibers,
     ...(botanicalTones ? { botanicalTones } : {}),
-    ...(Object.hasOwn(s, "photoAdjustments") ? { photoAdjustments: validatePhotoAdjustments(s.photoAdjustments) } : {}) };
+    ...(Object.hasOwn(s, "photoAdjustments") ? { photoAdjustments: validatePhotoAdjustments(s.photoAdjustments) } : {}),
+    ...(Object.hasOwn(s, "photoLighting") ? { photoLighting: validatePhotoLighting(s.photoLighting) } : {}) };
 }
 export function sceneProfile(scene?: SceneSettings) {
   return VESSEL_PROFILES.find(p => p.id === scene?.layoutId) ?? ORIGINAL_VESSEL;
@@ -59,4 +62,12 @@ export function withBotanicalTones(scene: SceneSettings, value?: BotanicalTones)
   const { botanicalTones: _previous, ...rest } = scene;
   return validateScene({ ...rest, sceneVersion: botanicalTones ? 2 : scene.sceneVersion,
     ...(botanicalTones ? { botanicalTones } : {}) });
+}
+
+/** Studio is the historical default. A named lighting recipe travels with a kept photo. */
+export function withPhotoLighting(scene: SceneSettings, value?: PhotoLightingId): SceneSettings {
+  const photoLighting = validatePhotoLighting(value);
+  const { photoLighting: _previous, ...rest } = scene;
+  return validateScene({ ...rest, sceneVersion: photoLighting === "studio" ? scene.sceneVersion : 2,
+    ...(photoLighting === "studio" ? {} : { photoLighting }) });
 }

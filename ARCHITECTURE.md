@@ -127,6 +127,12 @@ material frames, with exact surface station picking; lobed leaves use their real
 notched mesh for acquisition. Single flower direct-bloom hits use a bounded
 camera-axis tilt inside the existing snapshot/coordinator transaction.
 
+`openCupGeometry.ts` gives only Single flower an authored five-petal open cup,
+with thin closed petal surfaces, a rear receptacle and attached stamens. This
+replaces its shallow presentation dish while preserving `single-flower-v1`,
+the material frame, hit envelope and direct-head tilt. Flowering branch retains
+its original seven-petal surface, and Compact flower keeps its dense tuft.
+
 `botanicalTones.ts` defines per-material presentation recipes. `photoGrade.ts`
 applies a neutral-bypassed GPU finish to the completed scene framebuffer.
 `scene.ts` accepts legacy sceneVersion1 and enhanced sceneVersion2; both optional
@@ -134,3 +140,25 @@ recipes flow through the working studio, Garden views/comparison and Photograph.
 The botanical graph schema and old generators are unchanged. See the combined
 [report](docs/development/reports/botanical-darkroom/README.md) for verification,
 resource ownership, and the unrun GPU/phone checks.
+
+`app/photoDraft.ts` owns one bounded, in-memory Photograph setup keyed to an explicit working-document generation. The app advances that generation only after a successful fresh/copy write, never after ordinary editing. Read-only Garden views use a null draft context so they cannot consume or overwrite the working setup. Drafts contain only Photograph presentation controls; `Photograph.open` always reacquires authoritative committed plants and scene before applying a draft.
+
+
+## Visual tone choices and photographic setting
+
+`app/botanicalTonePreview.ts` derives code-native botanical samples and part-color
+strips from the same appearance resolver as the scene. `botanicalTonesUI.ts` reads
+the committed bowl inventory when opened, places those families first, and keeps
+other materials available in a disclosure. The controls retain the existing
+family-level scene command and save-before-apply path.
+
+`presentation/photoFraming.ts` evaluates bounded photo offsets from one reference
+pose; saved `camera.up` already expresses roll. `photoLighting.ts` applies named
+recipes to each studio's owned lights; optional `scene.photoLighting` is strictly
+validated and propagated through working, Photograph and Garden renderers.
+`atmosphericBackdrops.ts` owns small procedural background textures, with the
+same crop evaluated before both preview and capture. Existing geometry and
+planting coordinates do not depend on these presentation controls.
+
+See [the photo-workflow report](docs/development/reports/photo-workflow/README.md)
+for the combined evidence and remaining visual acceptance.

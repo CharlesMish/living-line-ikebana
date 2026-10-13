@@ -8,7 +8,7 @@ import type { ComparisonViewport } from "./gardenCompare.ts";
 
 /** A disposable studio for one side of a comparison. It is not the working bowl. */
 export function createStudioComparisonViewport(canvas: HTMLCanvasElement, vesselProfile?: VesselProfile, vesselAppearance?: VesselAppearanceChoice & Partial<SceneSettings>): ComparisonViewport {
-  const studio = new ThreeStudio(canvas, { vesselProfile, vesselAppearance, botanicalTones: vesselAppearance?.botanicalTones, photoAdjustments: vesselAppearance?.photoAdjustments });
+  const studio = new ThreeStudio(canvas, { vesselProfile, vesselAppearance, botanicalTones: vesselAppearance?.botanicalTones, photoAdjustments: vesselAppearance?.photoAdjustments, photoLighting: vesselAppearance?.photoLighting });
   if (vesselAppearance?.backdropId && vesselAppearance.perchId) studio.setPhotoStage(vesselAppearance.backdropId, vesselAppearance.perchId);
   studio.setStemFibers(vesselAppearance?.stemFibers ?? false);
   return {

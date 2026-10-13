@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import { canonicalCameraPose } from "../../src/app/camera.ts";
-import { DEFAULT_SCENE, validateScene, withBotanicalTones, withPhotoAdjustments } from "../../src/app/scene.ts";
+import { DEFAULT_SCENE, validateScene, withBotanicalTones, withPhotoAdjustments, withPhotoLighting } from "../../src/app/scene.ts";
 import { SceneCommittedStore, SceneGardenStore, parseSceneGarden, parseSceneStudio } from "../../src/app/scenePersistence.ts";
 import { NEUTRAL_PHOTO_ADJUSTMENTS } from "../../src/presentation/photoAdjustments.ts";
 import { IkebanaApp } from "../../src/app/IkebanaApp.ts";
@@ -94,15 +94,30 @@ test("tone and photo recipes compose, reset independently and survive Garden and
 
 test("app scene transitions apply and clear both recipes without rebuilding botanical graphs", () => {
   const toned = withBotanicalTones(DEFAULT_SCENE, { "broad-blade": "olive" });
-  const scene = withPhotoAdjustments(toned, { ...NEUTRAL_PHOTO_ADJUSTMENTS, contrast: .2 });
+  const scene = withPhotoLighting(withPhotoAdjustments(toned, { ...NEUTRAL_PHOTO_ADJUSTMENTS, contrast: .2 }), "evening");
   const calls: Record<string, unknown> = {};
   const studio = { setPhotoAdjustments: (value: unknown) => { calls.grade = value; },
     setBotanicalTones: (value: unknown) => { calls.tones = value; },
-    setVesselAppearance() {}, setPhotoStage() {}, setStemFibers() {} };
+    setPhotoLighting: (value: unknown) => { calls.lighting = value; }, setVesselAppearance() {}, setPhotoStage() {}, setStemFibers() {} };
   const app = Object.assign(Object.create(IkebanaApp.prototype), { scene: DEFAULT_SCENE, studio,
     config: {}, root: { dataset: {} }, setupVesselUI() {} });
   app.applyScene(scene);
-  assert.equal(app.studio, studio); assert.deepEqual(calls.grade, scene.photoAdjustments); assert.deepEqual(calls.tones, scene.botanicalTones);
+  assert.equal(app.studio, studio); assert.equal(calls.lighting, "evening"); assert.deepEqual(calls.grade, scene.photoAdjustments); assert.deepEqual(calls.tones, scene.botanicalTones);
   app.applyScene(DEFAULT_SCENE);
-  assert.equal(calls.grade, undefined); assert.equal(calls.tones, undefined);
+  assert.equal(calls.grade, undefined); assert.equal(calls.tones, undefined); assert.equal(calls.lighting, undefined);
+});
+
+
+test("lighting resets independently of botanical tones and finish without changing an old scene on read", () => {
+  assert.deepEqual(withPhotoLighting(DEFAULT_SCENE), DEFAULT_SCENE);
+  const tones = { "lobed-leaf": "russet" };
+  const grade = { ...NEUTRAL_PHOTO_ADJUSTMENTS, exposure: .3 };
+  const styled = withPhotoAdjustments(withBotanicalTones(DEFAULT_SCENE, tones), grade);
+  const lit = withPhotoLighting(styled, "window");
+  assert.deepEqual(withPhotoLighting(withPhotoAdjustments(withBotanicalTones(DEFAULT_SCENE, tones), grade), "window"),
+    withBotanicalTones(withPhotoAdjustments(withPhotoLighting(DEFAULT_SCENE, "window"), grade), tones));
+  const reset = withPhotoLighting(lit, "studio");
+  assert.deepEqual(reset, styled);
+  assert.deepEqual(withBotanicalTones(lit).photoLighting, "window");
+  assert.deepEqual(withPhotoAdjustments(lit, NEUTRAL_PHOTO_ADJUSTMENTS).photoLighting, "window");
 });

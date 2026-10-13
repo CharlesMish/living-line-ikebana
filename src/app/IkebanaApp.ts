@@ -313,6 +313,8 @@ export class IkebanaApp {
   private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
   private gardenUI!: GardenUI;
   private photograph: Photograph | null = null;
+  /** Stable across edits; only explicit document replacement starts a new photo setup. */
+  private photoDraftContext = 0;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean; scene: SceneSettings } | null = null;
   private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
   private placeArm: {
@@ -395,6 +397,8 @@ export class IkebanaApp {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
         snapshot: () => this.arrangementSnapshot(),
+        context: () => this.workingSession ? null : this.photoDraftContext,
+        returnToArrange: () => { if (!this.workingSession) this.handleUICommand({ kind: "set-posture", posture: "arrange" }, new Event("photo-return")); },
         canKeep: () => !this.workingSession,
         keep: (snapshot, thumbnail, title) => this.gardenUI.keepPhotograph(snapshot, thumbnail, title),
       });
@@ -406,7 +410,7 @@ export class IkebanaApp {
   private createStudio() {
     const studio = new ThreeStudio(this.canvas, {
       debugHitTargets: this.config.debug, pinnateDraw: this.config.pinnateDraw, fanLeafDraw: this.config.fanLeafDraw,
-      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, botanicalTones: this.scene.botanicalTones, photoAdjustments: this.scene.photoAdjustments, stageLens: true,
+      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, botanicalTones: this.scene.botanicalTones, photoAdjustments: this.scene.photoAdjustments, photoLighting: this.scene.photoLighting, stageLens: true,
       placeCue: this.config.placeCue,
       onCanvasResize: () => this.onViewportChanged(),
     });
@@ -419,14 +423,15 @@ export class IkebanaApp {
     this.scene = next; this.vesselAppearance = next; this.config.vesselProfile = sceneProfile(next);
     this.root.dataset.vesselStudy = next.layoutId;
     if (rebuild) { this.studio.dispose(); this.studio = this.createStudio(); this.measureStage(); }
-    else { this.studio.setPhotoAdjustments(next.photoAdjustments); this.studio.setBotanicalTones(next.botanicalTones); this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
+    else { this.studio.setPhotoLighting(next.photoLighting); this.studio.setPhotoAdjustments(next.photoAdjustments); this.studio.setBotanicalTones(next.botanicalTones); this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
     this.setupVesselUI();
   }
   private setupVesselUI() {
     if (this.botanicalTonesUI) this.botanicalTonesUI.update(this.scene.botanicalTones, !this.workingSession);
     else this.botanicalTonesUI = new BotanicalTonesUI(this.root, this.scene.botanicalTones,
       () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
-      botanicalTones => this.changeScene(withBotanicalTones(this.scene, botanicalTones)));
+      botanicalTones => this.changeScene(withBotanicalTones(this.scene, botanicalTones)),
+      () => [...this.coordinator.getPresentationState().document.plants.values()].map(graph => graph.generatorVersion));
     if (this.vesselAppearanceUI) {
       this.vesselAppearanceUI.update(sceneProfile(this.scene).label, this.scene, this.scene.layoutId, !this.workingSession);
       return;
@@ -761,6 +766,7 @@ export class IkebanaApp {
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene: snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene), camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    this.photoDraftContext++;
     this.applyScene(snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene));
     const loaded = getLastWorkbenchFixtureLoad();
     if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
@@ -2423,6 +2429,7 @@ export class IkebanaApp {
         this.metrics.setBendVariant(this.bendVariant);
         this.studio.clearGraphs();
         this.studio.setPendingGraph(null);
+        this.photoDraftContext++;
         this.replaceCoordinator(new Map(), 0);
         this.ui.setState({
           posture: "arrange",

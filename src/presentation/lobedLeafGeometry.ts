@@ -132,6 +132,51 @@ export function createLobedLeafVeinGeometry(seed = 0): THREE.BufferGeometry {
   return finishGeometry("living-line/lobed-leaf-veins", positions, colors, uvs, indices);
 }
 
+/** A reverse network seated just below the actual piecewise-linear lamina.
+ * Sampling the analytic surface alone can put ribbons through a triangle on a
+ * coarsely curved leaf. No second lamina, duplicated coplanar face or notch fill
+ * is introduced. The front lamina and its original veins remain byte-identical.
+ */
+export function createLobedLeafReverseVeinGeometry(seed = 0, lamina?: THREE.BufferGeometry): THREE.BufferGeometry {
+  const surface = lamina ?? createLobedLeafGeometry(seed);
+  const geometry = createLobedLeafVeinGeometry(seed);
+  geometry.name = "living-line/lobed-leaf-reverse-veins";
+  const position = geometry.getAttribute("position"), color = geometry.getAttribute("color");
+  const sample = lobedSurfaceSampler(surface);
+  for (let index = 0; index < position.count; index += 1) {
+    const z = sample(position.getX(index), position.getY(index));
+    if (z === null) throw new Error("A lobed reverse vein left its lamina.");
+    position.setZ(index, z - 0.0024);
+    color.setXYZ(index, 0.97, 0.99, 0.96);
+  }
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+  if (!lamina) surface.dispose();
+  return geometry;
+}
+
+/** Height on the rendered +Z-facing triangles, rather than an approximation to
+ * their smooth source surface. Captured once at construction; never per frame. */
+function lobedSurfaceSampler(geometry: THREE.BufferGeometry) {
+  const positions = geometry.getAttribute("position"), indices = geometry.index!;
+  return (x: number, y: number): number | null => {
+    for (let index = 0; index < indices.count; index += 3) {
+      const a = indices.getX(index), b = indices.getX(index + 1), c = indices.getX(index + 2);
+      const ax = positions.getX(a), ay = positions.getY(a);
+      const bx = positions.getX(b), by = positions.getY(b);
+      const cx = positions.getX(c), cy = positions.getY(c);
+      const determinant = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+      const u = ((by - cy) * (x - cx) + (cx - bx) * (y - cy)) / determinant;
+      const v = ((cy - ay) * (x - cx) + (ax - cx) * (y - cy)) / determinant;
+      const w = 1 - u - v;
+      if (u >= -1e-7 && v >= -1e-7 && w >= -1e-7) {
+        return u * positions.getZ(a) + v * positions.getZ(b) + w * positions.getZ(c);
+      }
+    }
+    return null;
+  };
+}
+
 function finishGeometry(name: string, positions: number[], colors: number[], uvs: number[], indices: number[]): THREE.BufferGeometry {
   const geometry = new THREE.BufferGeometry();
   geometry.name = name;

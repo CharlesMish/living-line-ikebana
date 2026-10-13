@@ -448,7 +448,7 @@ compatibility limits and evidence](development/reports/vessel-study/README.md).
 
 Vessel layout and appearance are presentation metadata alongside the canonical botanical document. Layout changes cancel owned previews first, retain every graph/history record, and never fit/scale/relocate existing plants. The same coordinator retains its Undo checkpoint. Footprint laws use the acquired connected planting area; existing protection and overlap markers remain authoritative.
 
-Garden v2 and studio v2 retain stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Plain scenes retain sceneVersion1; optional botanical tones and photo finishes use sceneVersion2 so older readers refuse enhanced scenes rather than silently discard their appearance. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, fixed lighting and exact output pixels.
+Garden v2 and studio v2 retain stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Plain scenes retain sceneVersion1; optional botanical tones, photo finishes and light recipes use sceneVersion2 so older readers refuse enhanced scenes rather than silently discard their appearance. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, curated lighting and exact output pixels.
 
 New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte intact; missing presentation defaults to Original/Sand/Glaze/Paper/Ground. v1 Garden backups import through validation; v2 backups fail closed in older clients. Invalid/future data blocks writes instead of being overwritten. Stale guards include both v2 and legacy keys. A still-open older client has a separate legacy document; reload the updated app before continuing. No automatic personal-data rewrite or external creation upload occurs.
 
@@ -456,7 +456,9 @@ The studio-craft presentation expansion adds stable Chalk/Iron color IDs, Satin/
 
 The same presentation pass adds a stable `plinth` perch ID and refines the existing stone and bench draws. Perches retain the exact vessel contact height and never move plants or planting targets. Previously kept stone/bench scenes receive the refined draw; their already-saved cover pixels are not rewritten. Each perch owns and disposes its procedural resources. Transparent photos omit the floor and all perches.
 
-Photograph now separates **Prepare PNG** from explicit Download, supported file Share, and Open image. Preparation retains a visible PNG and does not claim that a device saved it. A scene/framing change, close/reopen, or graphics loss invalidates pending encoding; an earlier prepared image remains available while the dialog stays open and is labelled when its frame is older. Share starts directly from its explicit button, and cancellation never initiates a download. Composition guides are UI only and never enter PNGs, Garden covers or saved scenes. Keep remains an explicit Garden write; preparation and delivery do not save the working bowl. Lighting stays fixed.
+Photograph now separates **Prepare PNG** from explicit Download, supported file Share, and Open image. Preparation retains a visible PNG and does not claim that a device saved it. A scene/framing change, close/reopen, or graphics loss invalidates pending encoding; an earlier prepared image remains available while the dialog stays open and is labelled when its frame is older. Share starts directly from its explicit button, and cancellation never initiates a download. Composition guides are UI only and never enter PNGs, Garden covers or saved scenes. Keep remains an explicit Garden write; preparation and delivery do not save the working bowl. Studio lighting remains the original default; optional photographic light presets are stored as presentation metadata.
+
+Photograph remembers one setup for the current working bowl while the page stays open. Closing, Escape, and Return to arranging retain only the photo backdrop, perch, lighting, all six frame choices, base camera, finish, grid and title. Reopening first cancels any live edit, then rebuilds from the latest committed plants, vessel and botanical tones; it never reinstates older plant geometry. The working-bowl identity survives ordinary edits, Undo and temporary Garden inspection. Only successful fresh-bowl/working-copy replacement advances it; a failed replacement leaves the draft intact. Read-only Garden photographs neither load nor replace this working draft. Reset photo setup explicitly resets to the current bowl's saved setting and view. Page reload discards the draft. None of these actions writes the working bowl or keeps a Garden entry automatically. Graphics loss retains the setup but requires a new renderer on reopen; prepared PNGs and pending encodes remain scoped to their original modal session.
 
 The Photograph Finish controls (Exposure, Contrast, Warmth, Saturation and Vignette) are presentation-only. Neutral bypasses all grading and retains the original draw. Active grading runs on the finished scene framebuffer and is shared by preview, PNG, Garden cover and restored scene; transparent alpha is preserved. It never changes lights, canonical plants, camera or UI pixels. Finish edits invalidate pending PNG encoding. Reset finish does not reset framing. Show original retains the sliders but saving while it is displayed intentionally saves the visible original. Non-neutral recipes use sceneVersion2 so older clients reject rather than discard them; plain legacy scenes remain version1. Unknown recipe fields/versions and invalid numeric ranges fail closed. See the [Photograph finish report](development/reports/botanical-darkroom/photograph.md) for evidence and unrun GPU/phone checks.
 
@@ -499,6 +501,12 @@ appearance. Color edits reuse material and geometry identities and leave graph,
 seed, frame, hit proxy, prune opacity and acquisition behavior unchanged. The
 nodding bell retains its green collar. Reed and trailer keep their natural greens.
 
+The chooser shows all three named looks with small unlit botanical samples and
+part-color strips derived from the appearance resolver. Families in the committed
+bowl appear first; remaining choices are folded under Other cuttings. Samples
+represent colors and recognizable forms, not the exact seed or final lit pixels.
+Choosing the already-selected look does not create another save.
+
 The optional `botanicalTones` scene field is a validated map of fixed family and
 preset IDs; absent means Natural. An explicit nonnatural color edit promotes the
 presentation envelope to sceneVersion 2 so old readers refuse rather than discard
@@ -518,6 +526,17 @@ More cuttings; they are neither deleted nor converted in saved bowls. Compact
 flower has one small tufted organ on its own pedicel, not a scaled copy of the
 five-organ volume head. It retains the existing stalk and tuft acquisition law.
 
+Single flower's October 13 appearance revision replaces its shallow five-petal
+dish with a connected open cup and rear receptacle. Only derived mesh appearance
+changes: the `single-flower-v1` generator, fixture, frame, scale, 0.7 acquisition
+envelope, supporting-pedicel station and direct-head tilt law remain unchanged.
+Its Natural / Warm rose / Soft lilac recipes retain their IDs and colors.
+
+Lobed leaf keeps its front shape, color variation and front vein buffers. Its
+reverse uses a quieter, paler material response and its own surface-following
+veins. This does not fill notch gaps or change the canonical leaf, attachment,
+picking law or botanical tone IDs.
+
 Broad leaf has one persistent petiole/midrib branch and a derived continuous
 lamina. The lamina follows transported material frames through Aim and Bend.
 Original stock width and texture stations come from its immutable version/seed;
@@ -530,3 +549,31 @@ Botanical tone edits and Photograph finish edits preserve one another's optional
 metadata. Resetting either removes only its own recipe; an already enhanced scene
 stays version2. Invalid or future data refuses load/import without modifying bytes.
 See [the combined report](development/reports/botanical-darkroom/README.md).
+
+### Quiet scenic photo backdrops
+
+`hills` (Mist hills) and `garden` (Garden shade) are additive, static painted photo backdrops. Their centre crop preserves aspect instead of stretching, and the same rendering path is used in preview, PNG, Garden covers and restored scenes. They add no world geometry, move no botanical material and alter no lighting. The existing floor/perch receives real scene shadows; the backdrop itself is unlit. Each renderer owns its procedural texture and releases it on replacement or close. Transparent omits it. All older backdrop IDs and default paper appearance remain unchanged; older readers reject unknown new IDs. See the [backdrop report](development/reports/photo-workflow/backdrops.md) for automated evidence and unrun GPU/phone checks.
+
+### Photograph camera and lighting — October 13 owner revision
+
+Photograph framing is evaluated from its chosen reference view on every change,
+never accumulated from the last slider result. Closer and screen-relative Across /
+Height have wider travel; optional Turn, Elevation and Tilt change only the photo
+camera. Altered elevation remains 3–87 degrees above the target, while an untouched
+reference (including Above) remains exact. Downward pan stops on its screen-space
+ray before the camera crosses y=0.12. Closing in on an already low frame may lift
+position and target equally to retain that clearance, without changing view
+direction, roll or requested radius. An untouched inherited lower pose remains
+exact; changed framing does not push it lower. Tilt is saved in the existing camera
+`up` vector, with no new camera schema or second roll recipe. Explicit presets and
+ordinary Step Back orbit retain their existing world-up behavior. Garden View
+restores the saved pose; Compare continues to use one shared temporary camera.
+
+Studio, Soft window and Evening reuse the existing hemisphere, key and fill
+lights and one shadow map. Studio reproduces the accepted light values; the other
+recipes intentionally change light direction and colour rather than post-process
+tone alone. The light choice applies to the preview, PNG and retained Garden
+scene. It changes no plant, vessel, frame, background alpha or working gesture law.
+Optional `photoLighting` is sceneVersion2 metadata: older strict readers refuse an
+unrecognized scene field rather than silently lose the choice. See the
+[camera and light report](development/reports/photo-workflow/camera-light.md).

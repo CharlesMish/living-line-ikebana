@@ -589,6 +589,9 @@ from CPU probes and automated geometry checks.
 2. Single flower: grab the visible bloom and tilt left/right and up/down. Check
    sensitivity, no starting jump, Undo, and an interrupted grab. Its stalk still
    uses ordinary Aim. Report any repeated first-drag freeze; it is unresolved.
+   Inspect the authored open cup from front, edge and rear in Natural / Warm rose /
+   Soft lilac. Confirm the rear green receptacle meets the stalk, no black or white
+   rim appears, and it reads as one open flower beside Compact's dense tuft.
 3. Compact flower: seat, aim its single head, cut it, Undo. Lobed-leaf branch:
    select a lobe, confirm empty notches do not grab a broad hidden proxy, remove
    one leaf without moving another. Broad leaf: bend, cut halfway, confirm its
@@ -605,3 +608,32 @@ from CPU probes and automated geometry checks.
 
 Desktop CPU mesh/transaction/DOM-adapter tests are not phone or GPU evidence.
 These three new materials and the grade still need visual/feel acceptance.
+
+### Photograph return to arranging (owner follow-up)
+
+1. Frame a bowl, choose a backdrop/perch, alter Finish, and set a Garden title. Return to arranging, prune or aim a cutting, and reopen Photograph. The setup should return with the edited cutting and no automatic Keep.
+2. Change the vessel and botanical tones while arranging, then reopen. They should update while the photo setup stays put.
+3. Open a kept Garden entry and Photograph it; return to the working bowl and reopen Photograph. The kept entry's temporary choices must not overwrite the working setup.
+4. Reset photo setup explicitly; then repeat after a fresh bowl or working copy. Old framing/finish must not leak to the replacement. A page reload intentionally forgets unsaved photo setup.
+5. Cancel an edit before opening Photograph and confirm its preview does not appear. Interrupt a PNG encode by closing/reopening or graphics loss; the old PNG must not land in the reopened session.
+
+These checks need a physical phone; DOM adapter tests cover state and event routing, not layout, rendered output, or touch feel.
+
+## Photograph framing and light owner check — October 13
+
+- Frame a tall arrangement with the wider Closer / Across / Height ranges. Confirm
+  distant stock does not wash out, the perch stays legible, and deliberately close
+  crops still work in portrait and landscape.
+- Under Turn and tilt, change Turn, Elevation and Tilt, including from Above.
+  Confirm sliders are reversible, Reset framing restores the reference, and pan
+  remains in screen directions after tilting. Elevation stays above the target.
+- Try Studio / Soft window / Evening on wood, stone, translucent leaves and water.
+  Look for overexposure, harsh shadow edges or unwanted muddy colour; these are
+  curated directional rigs, not measured area lighting.
+- Keep a tilted, lit photo, reopen Garden View and export a backup. Reload and
+  import it; confirm the appearance and tilt are retained once. Compare still
+  shares its own temporary camera. Start ordinary orbit after a working copy: the
+  normal world-up orbit should remain stable.
+- Prepare a transparent PNG under each light preset. Confirm no opaque backdrop
+  appears and that Prepare, preview and Garden cover use the same light. Change
+  light during preparation and confirm the older encode is not presented as current.

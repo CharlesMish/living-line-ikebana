@@ -101,26 +101,35 @@ function setup(scene?: SceneSettings) {
     navigator: { configurable: true, value: { canShare: () => true, share: (data: ShareData) => { shares.push(data); return shareResult(); } } },
     URL: { configurable: true, value: { createObjectURL: () => { const url = `blob:image-${created.length}`; created.push(url); return url; }, revokeObjectURL: (url: string) => revoked.push(url) } },
   });
-  const snapshot = createWorkbenchFixture("mixed", 8278, 2);
+  let snapshot = createWorkbenchFixture("mixed", 8278, 2);
+  let context: number | null = 0, returns = 0;
   if (scene) snapshot.scene = scene;
-  const original = JSON.stringify(snapshot);
+  let original = JSON.stringify(snapshot);
   let pauses = 0, saves = 0, disposed = 0;
   const kept: unknown[] = [];
   const encoders: BlobCallback[] = [];
   const finishes: unknown[] = [];
+  const lights: unknown[] = [];
+  const studios: { scene: SceneSettings; plants: unknown[]; pose: typeof snapshot.camera; disposed: boolean }[] = [];
   const ui = new Photograph(root as unknown as HTMLElement, {
-    pause: () => { pauses++; }, snapshot: () => structuredClone(snapshot), canKeep: () => true,
+    pause: () => { pauses++; }, snapshot: () => structuredClone(snapshot), context: () => context, returnToArrange: () => { if (context !== null) returns++; }, canKeep: () => context !== null,
     keep: (snapshot) => { saves++; kept.push(snapshot); return "saved"; },
-  }, () => ({
-    upsertGraph() {}, setPhotoAdjustments(value) { finishes.push(value); }, setPhotoStage() {}, setStemFibers() {}, setCanonicalView() {},
-    getCameraPose: () => snapshot.camera, setCameraPose() {}, dispose: () => { disposed++; },
-    capturePhotoFrame: (width, height) => ({ width, height, toBlob: (callback: BlobCallback) => encoders.push(callback) }) as HTMLCanvasElement,
-  }));
+  }, (_canvas, scene) => {
+    const studio = { scene: structuredClone(scene), plants: [] as unknown[], pose: structuredClone(snapshot.camera), disposed: false }; studios.push(studio);
+    return {
+      upsertGraph(graph) { studio.plants.push(graph); }, setPhotoAdjustments(value) { finishes.push(value); }, setPhotoStage() {}, setPhotoLighting(value) { lights.push(value); }, setStemFibers() {}, setCanonicalView() {},
+      getCameraPose: () => structuredClone(studio.pose), setCameraPose(pose) { studio.pose = structuredClone(pose); }, dispose: () => { disposed++; studio.disposed = true; },
+      capturePhotoFrame: (width, height) => ({ width, height, toBlob: (callback: BlobCallback) => encoders.push(callback) }) as HTMLCanvasElement,
+    };
+  });
   const find = (id: string) => { const node = root.querySelector(`#${id}`); assert.ok(node, id); return node; };
   const click = (id: string) => find(id).dispatchEvent(new Event("click", { cancelable: true }));
   click("photo-open");
   return {
-    ui, find, click, encoders, created, revoked, shares, document, finishes, kept,
+    ui, find, click, encoders, created, revoked, shares, document, finishes, lights, kept, studios,
+    set context(value: number | null) { context = value; },
+    set snapshot(value: typeof snapshot) { snapshot = structuredClone(value); original = JSON.stringify(snapshot); },
+    get returns() { return returns; },
     get saves() { return saves; }, get pauses() { return pauses; }, get disposed() { return disposed; },
     set shareResult(value: () => Promise<void>) { shareResult = value; },
     async finishEncode(index = encoders.length - 1, blob: Blob | null = new Blob(["PNG"], { type: "image/png" })) {
@@ -239,5 +248,131 @@ test("Photograph Keep and finish reset preserve the bowl's botanical tone recipe
     const reset = h.kept.at(-1) as { scene: SceneSettings };
     assert.deepEqual(reset.scene.botanicalTones, scene.botanicalTones);
     assert.equal(reset.scene.photoAdjustments, undefined);
+  } finally { h.close(); }
+});
+
+test("return to arranging remembers photo choices but reopens the latest plants, vessel and tones", () => {
+  const h = setup();
+  try {
+    for (const [id, value] of [["photo-backdrop", "sage"], ["photo-perch", "bench"], ["photo-format", "portrait"], ["photo-zoom", "1.4"], ["photo-horizontal", ".6"], ["photo-warmth", ".3"]]) {
+      h.find(id).value = value; h.find(id).dispatchEvent(new Event(id === "photo-zoom" || id === "photo-horizontal" || id === "photo-warmth" ? "input" : "change"));
+    }
+    h.find("photo-name").value = "After pruning";
+    const pose = structuredClone(h.studios.at(-1)!.pose);
+    h.click("photo-return"); assert.equal(h.returns, 1); assert.equal(h.find("photo-dialog").open, false);
+    assert.equal(h.saves, 0); assert.equal(h.studios[0].disposed, true);
+    const latest = createWorkbenchFixture("leafy-shoot", 9255, 1);
+    latest.scene = withBotanicalTones({ ...DEFAULT_SCENE, colorId: "charcoal" }, { "lobed-leaf": "russet" });
+    h.snapshot = latest; h.click("photo-open");
+    assert.equal(h.find("photo-backdrop").value, "sage"); assert.equal(h.find("photo-perch").value, "bench");
+    assert.equal(h.find("photo-format").value, "portrait"); assert.equal(h.find("photo-zoom").value, "1.4");
+    assert.equal(h.find("photo-horizontal").value, "0.6"); assert.equal(h.find("photo-warmth").value, "0.3");
+    assert.equal(h.find("photo-name").value, "After pruning"); assert.deepEqual(h.studios.at(-1)!.pose, pose);
+    assert.equal(h.studios.at(-1)!.plants.length, 1); assert.deepEqual(h.studios.at(-1)!.scene, latest.scene);
+    assert.match(h.find("photo-message").textContent, /latest committed cuttings/);
+    h.click("photo-keep");
+    const kept = h.kept.at(-1) as { plants: unknown; scene: SceneSettings };
+    assert.deepEqual(kept.plants, latest.plants); assert.equal(kept.scene.colorId, "charcoal");
+    assert.deepEqual(kept.scene.botanicalTones, latest.scene.botanicalTones); assert.equal(kept.scene.backdropId, "sage");
+  } finally { h.close(); }
+});
+
+test("read-only Garden photographs neither receive nor overwrite the working bowl setup", () => {
+  const h = setup();
+  try {
+    h.find("photo-backdrop").value = "sage"; h.find("photo-backdrop").dispatchEvent(new Event("change"));
+    h.click("photo-close"); h.context = null;
+    const kept = createWorkbenchFixture("leafy-shoot", 9255, 1); kept.scene = { ...DEFAULT_SCENE, backdropId: "dusk" };
+    h.snapshot = kept; h.click("photo-open");
+    assert.equal(h.find("photo-backdrop").value, "dusk"); assert.equal(h.find("photo-return").textContent, "Return to viewing");
+    assert.equal(h.find("photo-keep").disabled, true);
+    h.find("photo-backdrop").value = "ink"; h.find("photo-backdrop").dispatchEvent(new Event("change"));
+    h.click("photo-reset-setup"); assert.equal(h.find("photo-backdrop").value, "dusk");
+    h.click("photo-return"); assert.equal(h.returns, 0);
+    h.context = 0; h.snapshot = createWorkbenchFixture("mixed", 8278, 2); h.click("photo-open");
+    assert.equal(h.find("photo-backdrop").value, "sage"); assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+test("new bowl context and explicit Reset photo setup clear the draft without writing a save", () => {
+  const h = setup();
+  try {
+    h.find("photo-backdrop").value = "sage"; h.find("photo-backdrop").dispatchEvent(new Event("change"));
+    h.find("photo-zoom").value = "1.6"; h.find("photo-zoom").dispatchEvent(new Event("input"));
+    h.click("photo-close"); h.context = 1;
+    const fresh = createWorkbenchFixture("mixed", 8278, 1); fresh.plants = [];
+    h.snapshot = fresh; h.click("photo-open");
+    assert.equal(h.find("photo-backdrop").value, "paper"); assert.equal(h.find("photo-zoom").value, "1");
+    assert.equal(h.studios.at(-1)!.plants.length, 0); assert.equal(h.find("photo-keep").disabled, true);
+    h.find("photo-backdrop").value = "ink"; h.find("photo-backdrop").dispatchEvent(new Event("change"));
+    h.find("photo-exposure").value = ".8"; h.find("photo-exposure").dispatchEvent(new Event("input"));
+    h.click("photo-reset-setup");
+    assert.equal(h.find("photo-backdrop").value, "paper"); assert.equal(h.find("photo-exposure").value, "0");
+    h.click("photo-close"); h.click("photo-open"); assert.equal(h.find("photo-backdrop").value, "paper");
+    assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+test("graphics-loss reopen restores setup and original comparison without reviving a stale PNG", async () => {
+  const h = setup();
+  try {
+    h.find("photo-warmth").value = ".5"; h.find("photo-warmth").dispatchEvent(new Event("input"));
+    h.click("photo-before"); h.click("photo-export");
+    h.find("photo-canvas").dispatchEvent(new Event("webglcontextlost", { cancelable: true }));
+    h.click("photo-close"); h.click("photo-open"); await h.finishEncode();
+    assert.equal(h.find("photo-warmth").value, "0.5"); assert.equal(h.find("photo-before").getAttribute("aria-pressed"), "true");
+    assert.equal(h.finishes.at(-1), undefined); assert.equal(h.find("photo-result").hidden, true); assert.equal(h.find("photo-export").disabled, false);
+    assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+test("lighting and angle controls invalidate stale images, survive return, and Keep stores the rendered camera once", async () => {
+  const h = setup();
+  try {
+    assert.equal(h.find("photo-lighting").value, "studio");
+    assert.equal(h.find("photo-zoom").getAttribute("min"), "0.55");
+    assert.equal(h.find("photo-zoom").getAttribute("max"), "2.8");
+    h.click("photo-export");
+    h.find("photo-lighting").value = "window"; h.find("photo-lighting").dispatchEvent(new Event("change"));
+    assert.equal(h.lights.at(-1), "window"); await h.finishEncode();
+    assert.equal(h.find("photo-result").hidden, true);
+    for (const [id, value] of [["yaw", "24"], ["pitch", "10"], ["roll", "7.5"], ["horizontal", "3.2"], ["zoom", ".7"]]) {
+      h.find(`photo-${id}`).value = value; h.find(`photo-${id}`).dispatchEvent(new Event("input"));
+    }
+    assert.equal(h.find("photo-roll-value").textContent, "+7.5°");
+    const pose = structuredClone(h.studios.at(-1)!.pose);
+    h.find("photo-roll").dispatchEvent(new Event("input")); assert.deepEqual(h.studios.at(-1)!.pose, pose, "angle changes derive from the immutable reference");
+    h.click("photo-return"); h.click("photo-open");
+    assert.equal(h.find("photo-lighting").value, "window"); assert.equal(h.find("photo-yaw").value, "24");
+    assert.equal(h.find("photo-pitch").value, "10"); assert.equal(h.find("photo-roll").value, "7.5");
+    assert.deepEqual(h.studios.at(-1)!.pose, pose);
+    h.click("photo-keep");
+    const kept = h.kept.at(-1) as { scene: SceneSettings; camera: typeof pose };
+    assert.equal(kept.scene.photoLighting, "window"); assert.equal(kept.scene.sceneVersion, 2); assert.deepEqual(kept.camera, pose);
+    h.click("photo-close"); h.context = 1;
+    const copied = createWorkbenchFixture("mixed", 8278, 2); copied.scene = kept.scene; copied.camera = kept.camera;
+    h.snapshot = copied; h.click("photo-open");
+    assert.equal(h.find("photo-yaw").value, "0"); assert.equal(h.find("photo-roll").value, "0");
+    assert.deepEqual(h.studios.at(-1)!.pose, pose, "saved roll is already in the camera and must not be applied twice");
+    assert.equal(h.find("photo-lighting").value, "window");
+    h.click("photo-keep"); assert.deepEqual((h.kept.at(-1) as {camera: typeof pose}).camera, pose);
+  } finally { h.close(); }
+});
+
+test("Reset framing clears all six offsets without resetting lighting or Finish", () => {
+  const h = setup();
+  try {
+    const originalPose = structuredClone(h.studios.at(-1)!.pose);
+    h.find("photo-lighting").value = "evening"; h.find("photo-lighting").dispatchEvent(new Event("change"));
+    h.find("photo-warmth").value = ".2"; h.find("photo-warmth").dispatchEvent(new Event("input"));
+    for (const [id, value] of [["zoom", "1.8"], ["horizontal", "2.4"], ["vertical", "2.2"], ["yaw", "20"], ["pitch", "-6"], ["roll", "-5"]]) {
+      h.find(`photo-${id}`).value = value; h.find(`photo-${id}`).dispatchEvent(new Event("input"));
+    }
+    h.click("photo-reset"); assert.deepEqual(h.studios.at(-1)!.pose, originalPose);
+    assert.equal(h.find("photo-zoom").value, "1");
+    for (const id of ["horizontal", "vertical", "yaw", "pitch", "roll"]) assert.equal(h.find(`photo-${id}`).value, "0");
+    assert.equal(h.find("photo-lighting").value, "evening"); assert.equal(h.find("photo-warmth").value, ".2");
+    h.click("photo-reset-setup"); assert.equal(h.find("photo-lighting").value, "studio"); assert.equal(h.find("photo-warmth").value, "0");
+    assert.equal(h.saves, 0);
   } finally { h.close(); }
 });

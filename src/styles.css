@@ -279,6 +279,9 @@ button:focus-visible {
   box-shadow: var(--shadow);
 }
 .edit-options[hidden] { display: none; }
+.edit-options { max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 8rem); overflow-y: auto; overscroll-behavior: contain; }
+.cutting-turn-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; }
+.edit-options .cutting-turn-actions button { border: 1px solid var(--line); text-align: center; min-height: 44px; }
 .edit-options button {
   display: block;
   width: 100%;
@@ -1128,30 +1131,35 @@ noscript {
 .garden-host [hidden], #workbench-open[hidden] { display: none !important; }
 
 /* Photograph: a disposable camera studio; composition guides stay out of exports. */
-.photo-dialog { width: min(1160px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: clamp(14px, 3vw, 28px); border: 1px solid #bab3a4; border-radius: 20px; background: #f5f1e9; color: #303b32; overflow: auto; overscroll-behavior: contain; }
+.photo-dialog { width: min(1160px, calc(100vw - 24px)); height: min(860px, calc(100dvh - 24px)); max-height: calc(100dvh - 24px); padding: 16px; border: 1px solid #bab3a4; border-radius: 20px; background: #f5f1e9; color: #303b32; overflow: hidden; overscroll-behavior: contain; }
+.photo-dialog[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; }
 .photo-dialog::backdrop { background: rgb(24 30 27 / 65%); }
-.photo-dialog h1 { margin: 0; font: 1.7rem Georgia, serif; }
-.photo-dialog .panel-heading { flex-wrap: wrap; align-items: start; gap: 8px; }
-.photo-dialog .panel-heading > div, .photo-controls { min-width: 0; }
-.photo-intro { max-width: 62ch; margin: 12px 0 0; font-size: .88rem; line-height: 1.6; color: #657062; }
-.photo-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, 280px); gap: 26px; margin-top: 22px; align-items: start; }
-.photo-preview { min-width: 0; }
-.photo-mat { padding: clamp(10px, 2vw, 22px); background: #e6e1d7; border: 1px solid #d7d0c2; border-radius: 12px; }
-.photo-frame { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: repeating-conic-gradient(#ddd8ce 0% 25%, #f4efe5 0% 50%) 50% / 18px 18px; box-shadow: 0 2px 12px #323a3019; }
+.photo-heading { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.photo-dialog h1 { margin: 0; flex: 1 1 auto; min-width: 0; font: 1.4rem Georgia, serif; }
+.photo-heading #photo-return { flex: 0 1 150px; min-width: 0; overflow-wrap: anywhere; font-size: .8rem; line-height: 1.2; }
+.photo-intro { margin: 0 0 12px; font-size: .84rem; line-height: 1.5; color: #657062; }
+.photo-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, 340px); gap: 18px; min-height: 0; min-width: 0; }
+.photo-preview { display: grid; min-width: 0; min-height: 0; }
+/* The mat owns a finite rectangle. Container units contain every frame format
+   inside it without cropping the preview or measuring layout in JavaScript. */
+.photo-mat { --photo-aspect: 1.3333333333333333; container-type: size; display: grid; place-items: center; min-width: 0; min-height: 0; padding: clamp(6px, 1.5vw, 18px); background: #e6e1d7; border: 1px solid #d7d0c2; border-radius: 12px; }
+.photo-frame { position: relative; width: min(100cqw, calc(100cqh * var(--photo-aspect))); aspect-ratio: 4 / 3; overflow: hidden; background: repeating-conic-gradient(#ddd8ce 0% 25%, #f4efe5 0% 50%) 50% / 18px 18px; box-shadow: 0 2px 12px #323a3019; }
 #photo-canvas { display: block; width: 100%; height: 100%; }
 .photo-grid { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to right, transparent calc(100% / 3 - .5px), #fff8 calc(100% / 3 - .5px), #fff8 calc(100% / 3 + .5px), transparent calc(100% / 3 + .5px), transparent calc(200% / 3 - .5px), #fff8 calc(200% / 3 - .5px), #fff8 calc(200% / 3 + .5px), transparent calc(200% / 3 + .5px)), linear-gradient(to bottom, transparent calc(100% / 3 - .5px), #fff8 calc(100% / 3 - .5px), #fff8 calc(100% / 3 + .5px), transparent calc(100% / 3 + .5px), transparent calc(200% / 3 - .5px), #fff8 calc(200% / 3 - .5px), #fff8 calc(200% / 3 + .5px), transparent calc(200% / 3 + .5px)); }
-.photo-workflow { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 8px; }
-.photo-workflow button { min-height: 44px; padding: 7px 13px; }
-#photo-draft-note { max-width: 75ch; margin-bottom: 16px; }
-.photo-preview-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2px 14px; margin-top: 8px; }
-.photo-preview-footer p { margin: 0; font-size: .75rem; color: #657062; }
-.photo-preview-footer .photo-check { font-size: .78rem; white-space: nowrap; }
-.photo-controls { display: grid; gap: 18px; align-content: start; }
+.photo-tools { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px; min-height: 0; min-width: 0; }
+.photo-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; min-width: 0; }
+.photo-dialog .photo-tabs button { min-width: 0; overflow-wrap: anywhere; padding: 8px 3px; font-size: .82rem; }
+.photo-tabs [aria-selected=true] { background: #344b3b; border-color: #344b3b; color: #fff9eb; }
+.photo-controls { min-height: 0; min-width: 0; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scroll-padding: 10px; padding: 3px 5px 10px 3px; }
+.photo-panel { min-width: 0; }
+#photo-draft-note { margin: 6px 0 12px; }
+.photo-setup-note { margin-top: 16px; }
+.photo-setup-note summary { min-height: 44px; padding: 10px 0; cursor: pointer; font-size: .84rem; }
 .photo-controls fieldset { min-width: 0; display: grid; gap: 10px; margin: 0; padding: 14px; border: 1px solid #d5cfbf; border-radius: 10px; }
 .photo-controls legend { padding: 0 6px; font: 1.05rem Georgia, serif; }
 .photo-controls label { display: grid; gap: 5px; font-size: .84rem; }
 .photo-controls select, .photo-controls input[type=text] { min-width: 0; max-width: 100%; width: 100%; min-height: 44px; font: inherit; color: inherit; background: #fffdf7; border: 1px solid #bdb6a6; border-radius: 7px; padding: 7px; }
-.photo-controls input[type=range] { width: 100%; min-height: 36px; margin: 0; accent-color: #536d52; }
+.photo-controls input[type=range] { width: 100%; min-height: 44px; margin: 0; accent-color: #536d52; }
 .photo-range-label { display: flex; justify-content: space-between; gap: 8px; }
 .photo-angle-controls { margin-bottom: 12px; }
 .photo-angle-controls summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
@@ -1162,14 +1170,14 @@ noscript {
 .photo-range-label output { font-variant-numeric: tabular-nums; color: #64715e; }
 .photo-dialog .photo-check { display: flex; align-items: center; gap: 7px; min-height: 44px; }
 .photo-dialog input[type=checkbox] { width: 17px; height: 17px; flex: 0 0 auto; accent-color: #536d52; }
-.photo-controls button, .photo-save-actions button, .photo-save-actions a, #photo-close { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; font: inherit; color: inherit; text-decoration: none; background: #e9e5d9; border: 1px solid #b8b09e; border-radius: 7px; padding: 8px 12px; cursor: pointer; line-height: 1.4; white-space: normal; }
+.photo-controls button, .photo-tabs button, .photo-heading button, .photo-save-actions button, .photo-save-actions a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; font: inherit; color: inherit; text-decoration: none; background: #e9e5d9; border: 1px solid #b8b09e; border-radius: 7px; padding: 8px 12px; cursor: pointer; line-height: 1.4; white-space: normal; }
 .photo-dialog .photo-primary { background: #344b3b; color: #fff9eb; border-color: #344b3b; }
 .photo-dialog button:disabled { opacity: .55; cursor: default; }
 .photo-dialog :is(button,a,input,select):focus-visible { outline: 3px solid #9a6d36; outline-offset: 3px; }
-#photo-close { min-width: 44px; }
-#photo-message, #photo-delivery-message { margin: 0; font-size: .86rem; line-height: 1.55; }
+#photo-close { min-width: 44px; width: 44px; flex: 0 0 44px; }
+#photo-message, #photo-delivery-message { margin: 12px 0 0; font-size: .86rem; line-height: 1.55; }
 .photo-controls .panel-note, .photo-result .panel-note { margin: 0; color: #657062; font-size: .78rem; line-height: 1.55; }
-.photo-result { margin-top: 20px; padding: 16px; border: 1px solid #bec9b7; border-radius: 12px; background: #faf9f2; display: grid; gap: 12px; }
+.photo-result { margin-top: 16px; padding: 12px; border: 1px solid #bec9b7; border-radius: 12px; background: #faf9f2; display: grid; gap: 12px; }
 .photo-result-heading { display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
 .photo-result-heading .eyebrow { margin: 0 0 4px; }
 .photo-result-heading h2 { margin: 0; font: 1.2rem Georgia, serif; }
@@ -1180,17 +1188,25 @@ noscript {
 .photo-save-actions > * { flex: 1 1 120px; text-align: center; }
 .photo-dialog h1, .photo-dialog h2, .photo-controls button, .photo-controls p, .photo-result p { overflow-wrap: anywhere; }
 .photo-dialog [hidden] { display: none !important; }
-@media(max-width: 740px) {
-  .photo-dialog { padding: 14px; }
-  .photo-layout { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 16px; }
-  .photo-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .photo-controls fieldset:nth-of-type(2) { grid-column: 2; grid-row: 1 / span 2; }
-  #photo-message { grid-column: 1 / -1; }
+@media(max-width: 740px) and (min-height: 521px) {
+  .photo-dialog { width: calc(100vw - 16px); height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); padding: 10px; border-radius: 14px; }
+  .photo-dialog h1 { font-size: 1.2rem; }
+  .photo-heading #photo-return { flex-basis: 116px; }
+  .photo-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(100px, 36%) minmax(0, 1fr); gap: 10px; }
+  .photo-mat { padding: 6px; }
+  .photo-controls fieldset { padding: 10px; }
+  .photo-controls select, .photo-controls input[type=text] { font-size: 1rem; }
 }
-@media(max-width: 520px) {
-  .photo-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); padding: 12px; border-radius: 14px; }
-  .photo-controls { grid-template-columns: minmax(0, 1fr); }
-  .photo-controls fieldset:nth-of-type(2) { grid-column: auto; grid-row: auto; }
-  .photo-mat { padding: 9px; }
-  .photo-result { padding: 12px; }
+/* A short landscape keeps preview and controls alongside one another. On
+   text zoom the controls can still scroll without displacing the photograph. */
+@media(max-height: 520px) {
+  .photo-dialog { width: calc(100vw - 12px); height: calc(100dvh - 12px); max-height: calc(100dvh - 12px); padding: 8px; border-radius: 12px; }
+  .photo-dialog[open] { gap: 8px; }
+  .photo-dialog h1 { font-size: 1.2rem; }
+  .photo-layout { grid-template-columns: minmax(0, 1fr) minmax(240px, 43%); gap: 10px; }
+  .photo-mat { padding: 5px; }
+}
+@media(max-width: 520px) and (max-height: 520px) {
+  .photo-heading #photo-return { flex-basis: 106px; }
+  .photo-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(65px, 29%) minmax(0, 1fr); gap: 6px; }
 }

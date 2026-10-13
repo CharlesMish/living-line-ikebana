@@ -27,6 +27,7 @@ export interface UIState {
   moreMenuOpen: boolean;
   canUndo: boolean;
   canRemove: boolean;
+  selectedCuttingName: string | null;
   selectedMaterialId: string;
   bendVariant: BendVariant;
   bendStationsMode: BendStationsMode;
@@ -57,6 +58,7 @@ export type UICommand =
   | { kind: "set-more-menu"; open: boolean }
   | { kind: "undo-edit" }
   | { kind: "remove-cutting" }
+  | { kind: "turn-cutting"; direction: "left" | "right" }
   | { kind: "select-material"; materialId: string }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
   | { kind: "set-bend-station"; station: BendStationId }
@@ -137,6 +139,7 @@ const DEFAULT_STATE: UIState = {
   moreMenuOpen: false,
   canUndo: false,
   canRemove: false,
+  selectedCuttingName: null,
   selectedMaterialId: "flowering-branch",
   bendVariant: "fixed-bead",
   bendStationsMode: "off",
@@ -241,6 +244,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const editOptions = requireElement<HTMLElement>(root, "#edit-options");
   const undoEdit = requireElement<HTMLButtonElement>(root, "#undo-edit");
   const removeCutting = requireElement<HTMLButtonElement>(root, "#remove-cutting");
+  const turnLeft = requireElement<HTMLButtonElement>(root, "#turn-cutting-left");
+  const turnRight = requireElement<HTMLButtonElement>(root, "#turn-cutting-right");
   const materialMenu = requireElement<HTMLElement>(root, ".material-menu");
   const materialsToggle = requireElement<HTMLButtonElement>(root, "#materials-toggle");
   const materialOptionsFrame = requireElement<HTMLElement>(root, ".material-options-frame");
@@ -287,7 +292,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     if (command.kind !== "set-more-menu" && currentState.moreMenuOpen) {
       setState({ moreMenuOpen: false });
     }
-    if (command.kind !== "set-edit-menu" && currentState.editMenuOpen) {
+    if (command.kind !== "set-edit-menu" && command.kind !== "turn-cutting" && currentState.editMenuOpen) {
       setState({ editMenuOpen: false });
       if (command.kind === "undo-edit" || command.kind === "remove-cutting") {
         editToggle.focus({ preventScroll: true });
@@ -380,6 +385,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     editOptions.hidden = !currentState.editMenuOpen;
     undoEdit.disabled = !currentState.canUndo;
     removeCutting.disabled = !currentState.canRemove;
+    turnLeft.disabled = turnRight.disabled = !currentState.canRemove;
+    requireElement<HTMLElement>(root, "#turn-cutting-selection").textContent = currentState.selectedCuttingName
+      ? `${currentState.selectedCuttingName[0].toUpperCase()}${currentState.selectedCuttingName.slice(1)}` : "In Shape, tap a stem to select it.";
+    requireElement<HTMLElement>(root, "#turn-cutting-note").textContent = currentState.posture === "step-back"
+      ? "Available in your working bowl’s Arrange mode." : "Turns around its seat; keeps its lean.";
     viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
     viewOptions.hidden = !currentState.viewMenuOpen;
     const stationChoices = currentState.bendStationsMode === "on" ? currentState.bendStationChoices : [];
@@ -551,6 +561,13 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   removeCutting.addEventListener("click", (event) => {
     if (currentState.canRemove) emit({ kind: "remove-cutting" }, event);
+  }, listenerOptions);
+
+  turnLeft.addEventListener("click", (event) => {
+    if (currentState.canRemove) emit({ kind: "turn-cutting", direction: "left" }, event);
+  }, listenerOptions);
+  turnRight.addEventListener("click", (event) => {
+    if (currentState.canRemove) emit({ kind: "turn-cutting", direction: "right" }, event);
   }, listenerOptions);
 
   materialsToggle.addEventListener("click", (event) => {

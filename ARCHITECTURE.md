@@ -71,6 +71,13 @@ coordinators created by reload/fresh/copy have no checkpoint. Garden inspection
 holds and restores the working coordinator, preserving its checkpoint while
 blocking editing in the separate viewer. No storage schema or generator changes.
 
+`core/turnCutting.ts` reuses rigid descendant reconstruction to turn a complete
+cutting about its vertical seated axis. The Edit menu invokes
+`TransactionCoordinator.commandTurnSelected` as an explicit, save-before-commit
+document operation with one Undo checkpoint. `StemPrevention.turn` sweeps each
+15-degree command through the existing conservative contact limiter; it never
+tests only the endpoint or reuses transient state from another tap.
+
 `ThreeStudio` keeps the actual pin-field outline visible for the full pending
 insertion, independently of ghost visibility. Its CSS-pixel acquisition fallback
 adds nearby structural stems and selected visible handles only when no direct

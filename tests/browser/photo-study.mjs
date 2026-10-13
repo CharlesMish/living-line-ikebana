@@ -29,25 +29,26 @@ try {
  assert.equal(await baseline.evaluate(()=>window.__IKEBANA_TEST__.getState().canonicalHash),initial.state.canonicalHash);
  await baseline.close();
  await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-dialog[open]').waitFor();
- const set=async(id,value)=>{await page.locator(`#photo-${id}`).fill(value);await page.locator(`#photo-${id}`).dispatchEvent('input');};
+ const photoTab=id=>page.locator('#photo-tab-'+id).click();
+ const set=async(id,value)=>{await photoTab('frame');await page.locator(`#photo-${id}`).fill(value);await page.locator(`#photo-${id}`).dispatchEvent('input');};
  await set('zoom','1.3');
  const capture=async(name)=>{
   const priorURL=await page.locator('#photo-result-image').getAttribute('src');
-  await page.locator('#photo-export').click();
+  await photoTab('save');await page.locator('#photo-export').click();
   await page.waitForFunction(previous=>{const image=document.querySelector('#photo-result-image');return image&&image.getAttribute('src')!==previous&&image.complete&&image.naturalWidth>0&&!document.querySelector('#photo-export').disabled;},priorURL);
   const downloadPromise=page.waitForEvent('download');await page.locator('#photo-download').click();const download=await downloadPromise;await download.saveAs(`${dir}/${name}.png`);
  };
  await capture('paper-ground-clean');await page.screenshot({path:`${dir}/photo-controls-desktop.png`});
- await page.locator('#photo-perch').selectOption('stone');await capture('paper-stone');
- await page.locator('#photo-backdrop').selectOption('sage');await capture('sage-stone');
- await page.locator('#photo-backdrop').selectOption('dusk');await page.locator('#photo-perch').selectOption('bench');await page.locator('#photo-view').selectOption('three-quarter');await set('zoom','1.25');await capture('dusk-bench');
- await page.locator('#photo-format').selectOption('portrait');await capture('portrait-dusk');
- await page.locator('#photo-perch').selectOption('plinth');for(const backdrop of ['mist','clay','ink']){await page.locator('#photo-backdrop').selectOption(backdrop);await capture(`${backdrop}-plinth`);}
- await page.locator('#photo-backdrop').selectOption('transparent');await capture('portrait-transparent');
+ await photoTab('scene');await page.locator('#photo-perch').selectOption('stone');await capture('paper-stone');
+ await photoTab('scene');await page.locator('#photo-backdrop').selectOption('sage');await capture('sage-stone');
+ await photoTab('scene');await page.locator('#photo-backdrop').selectOption('dusk');await photoTab('scene');await page.locator('#photo-perch').selectOption('bench');await photoTab('frame');await page.locator('#photo-view').selectOption('three-quarter');await set('zoom','1.25');await capture('dusk-bench');
+ await photoTab('frame');await page.locator('#photo-format').selectOption('portrait');await capture('portrait-dusk');
+ await photoTab('scene');await page.locator('#photo-perch').selectOption('plinth');for(const backdrop of ['mist','clay','ink']){await photoTab('scene');await page.locator('#photo-backdrop').selectOption(backdrop);await capture(`${backdrop}-plinth`);}
+ await photoTab('scene');await page.locator('#photo-backdrop').selectOption('transparent');await capture('portrait-transparent');
  assert.equal(await page.locator('#photo-perch').isEnabled(),false);
- await page.locator('#photo-format').selectOption('square');await capture('square-transparent');
- await page.locator('#photo-format').selectOption('landscape');await page.locator('#photo-backdrop').selectOption('paper');await page.locator('#photo-perch').selectOption('ground');await page.locator('#photo-view').selectOption('front');await set('zoom','1.8');
- await capture('fiber-baseline');await page.locator('#photo-fibers').check();await capture('fiber-candidate');await page.locator('#photo-fibers').uncheck();await capture('fiber-restored');
+ await photoTab('frame');await page.locator('#photo-format').selectOption('square');await capture('square-transparent');
+ await photoTab('frame');await page.locator('#photo-format').selectOption('landscape');await photoTab('scene');await page.locator('#photo-backdrop').selectOption('paper');await photoTab('scene');await page.locator('#photo-perch').selectOption('ground');await photoTab('frame');await page.locator('#photo-view').selectOption('front');await set('zoom','1.8');
+ await capture('fiber-baseline');await photoTab('scene');await page.locator('#photo-fibers').check();await capture('fiber-candidate');await photoTab('scene');await page.locator('#photo-fibers').uncheck();await capture('fiber-restored');
  const beforeKeep=await page.evaluate(()=>({state:window.__IKEBANA_TEST__.getState(),audit:window.__IKEBANA_TEST__.getAutosaveAudit(),storage:localStorage.getItem('ikebana-web-alpha:workbench-studio-v2'),legacyStorage:localStorage.getItem('ikebana-web-alpha:workbench-studio-v1')}));
  assert.equal(beforeKeep.state.canonicalHash,initial.state.canonicalHash);assert.equal(beforeKeep.state.cameraHash,initial.state.cameraHash);assert.deepEqual(beforeKeep.audit,initial.audit);assert.equal(beforeKeep.storage,initial.storage);assert.equal(beforeKeep.legacyStorage,initial.legacyStorage);
  results.checks.push('staging/framing/exports/fiber toggles preserve canonical, main camera, ordinal, autosave');
@@ -86,7 +87,7 @@ try {
   await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-dialog[open]').waitFor();
   const overflow=await page.evaluate(()=>{const d=document.querySelector('#photo-dialog');return {client:d.clientWidth,scroll:d.scrollWidth,viewport:innerWidth};});
   assert.ok(overflow.scroll<=overflow.client+1,JSON.stringify(overflow));
-  await page.locator('#photo-keep').scrollIntoViewIfNeeded();assert.ok(await page.locator('#photo-keep').isVisible());
+  await photoTab('save');await page.locator('#photo-keep').scrollIntoViewIfNeeded();assert.ok(await page.locator('#photo-keep').isVisible());
   await page.screenshot({path:`${dir}/photo-${width}x${height}-text${text}.png`});
   await page.locator('#photo-close').click();
  }

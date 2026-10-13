@@ -588,7 +588,7 @@ export class IkebanaApp {
           // evict it and retry the graph save exactly once — before ever
           // reporting a save failure to the tester.
           // Recovery was persisted before replacing memory. Do not write it twice.
-          if (event.operation !== "undo" && event.operation !== "remove") {
+          if (event.operation !== "undo" && event.operation !== "remove" && event.operation !== "turn") {
             this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
           }
           // Recorded only after the graph save (and any eviction/retry) has
@@ -631,6 +631,29 @@ export class IkebanaApp {
     const branch = this.selectedBranchId ? selected?.branches.get(this.selectedBranchId) : undefined;
     this.assignSelectedBranch(branch?.active ? branch.id : selected?.rootBranchId ?? null);
     this.ui.setStatus(operation === "undo" ? "Last edit undone." : "Cutting removed. Undo can bring it back.");
+    this.syncPresentation();
+  }
+
+  private turnWorkingCutting(direction: "left" | "right") {
+    if (this.workingSession) return;
+    this.cancelPlaceReadiness("interrupt");
+    this.interruptActive("view-command", false);
+    this.metrics.resetAttempt();
+    const prevention = this.preventionByCoordinator.get(this.coordinator);
+    if (!prevention) return;
+    const sequence = this.coordinator.getDebugState().commitSequence;
+    const radians = (direction === "left" ? -1 : 1) * Math.PI / 12;
+    const result = this.coordinator.commandTurnSelected(snapshot => prevention.turn(snapshot, radians));
+    if (!result.ok) {
+      if (result.reason === "save-failed") this.ui.setStatus("Could not save this change. Your bowl is unchanged.", "warning");
+      return;
+    }
+    const changed = this.coordinator.getDebugState().commitSequence !== sequence;
+    const reason = prevention.feedback.reason;
+    const stopped = reason !== "clear";
+    this.ui.setStatus(reason !== "clear"
+      ? PREVENTION_MESSAGES[reason]
+      : changed ? "Cutting turned. Undo reverses this step." : "Cutting unchanged.", stopped ? "warning" : "quiet");
     this.syncPresentation();
   }
 
@@ -812,7 +835,7 @@ export class IkebanaApp {
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
     if (this.workingSession && (command.kind === "set-posture" && command.posture === "arrange"
-      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant", "undo-edit", "remove-cutting", "arm-material-pointer"].includes(command.kind))) {
+      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant", "undo-edit", "remove-cutting", "turn-cutting", "arm-material-pointer"].includes(command.kind))) {
       this.ui.setStatus("This is a kept arrangement. Make a working copy to change it.");
       return;
     }
@@ -830,6 +853,10 @@ export class IkebanaApp {
       case "undo-edit":
       case "remove-cutting": {
         this.recoverWorkingEdit(command.kind === "undo-edit" ? "undo" : "remove");
+        break;
+      }
+      case "turn-cutting": {
+        this.turnWorkingCutting(command.direction);
         break;
       }
       case "stop-and-look": {
@@ -2209,6 +2236,7 @@ export class IkebanaApp {
     this.ui.setState({
       canUndo: !this.workingSession && this.coordinator.canUndo(),
       canRemove: !this.workingSession && debug.posture === "arrange" && Boolean(selectedPlantId),
+      selectedCuttingName: selectedGraph ? getMaterialDefinitions().find(material => material.generator.generatorVersion === selectedGraph.generatorVersion)?.materialId.replaceAll("-", " ") ?? "cutting" : null,
       bendStationsMode: this.bendStationsMode,
       bendStationChoices: showStationChoices ? stations.map((station) => station.id) : [],
       bendStationSelected: showStationChoices && stationBranch

@@ -37,7 +37,14 @@
                 <span>Edit</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
               </button>
-              <div id="edit-options" class="edit-options" role="group" aria-label="Recover and remove cuttings" hidden>
+              <div id="edit-options" class="edit-options" role="group" aria-label="Turn, recover and remove cuttings" hidden>
+                <p id="turn-cutting-label">Turn selected cutting</p>
+                <p id="turn-cutting-selection">In Shape, tap a stem to select it.</p>
+                <div class="cutting-turn-actions" role="group" aria-labelledby="turn-cutting-label" aria-describedby="turn-cutting-note">
+                  <button id="turn-cutting-left" type="button" disabled aria-label="Turn selected cutting left by 15 degrees">↶ Left 15°</button>
+                  <button id="turn-cutting-right" type="button" disabled aria-label="Turn selected cutting right by 15 degrees">Right 15° ↷</button>
+                </div>
+                <p id="turn-cutting-note">Turns around its seat; keeps its lean.</p>
                 <button id="undo-edit" type="button" data-testid="undo-edit" disabled>Undo last edit</button>
                 <button id="remove-cutting" type="button" data-testid="remove-cutting" disabled>Remove selected cutting</button>
                 <p>One undo step. No redo.</p>

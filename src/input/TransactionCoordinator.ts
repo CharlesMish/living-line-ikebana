@@ -641,6 +641,23 @@ export class TransactionCoordinator<
     return this.commitRecovery("remove", { plants: remaining, selectedPlantId: null }, before, plantId);
   }
 
+  /** A bounded, explicit turn is one undoable command, never a synthetic release. */
+  public commandTurnSelected(turn: (snapshot: Graph) => Graph): CommandResult {
+    const gate = this.requireIdle("arrange");
+    if (!gate.ok) return gate;
+    const plantId = this.selectedPlantId;
+    if (plantId === null) return fail("plant-not-selected");
+    const graph = this.plants.get(plantId);
+    if (graph === undefined) return fail("plant-not-found");
+    const changed = turn(this.adapters.cloneGraph(graph));
+    // Blocked/degenerate turns preserve the preceding useful Undo checkpoint.
+    if (this.adapters.graphEquals(graph, changed)) return OK;
+    const before = this.botanicalCheckpoint();
+    const plants = new Map(before.plants);
+    plants.set(plantId, this.adapters.cloneGraph(changed));
+    return this.commitRecovery("turn", { plants, selectedPlantId: plantId }, before, plantId);
+  }
+
   private botanicalCheckpoint(selectedPlantId = this.selectedPlantId): BotanicalCheckpoint<Graph> {
     const plants = new Map<PlantId, Graph>();
     for (const [plantId, graph] of this.plants) plants.set(plantId, this.adapters.cloneGraph(graph));

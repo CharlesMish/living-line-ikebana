@@ -17,6 +17,7 @@ try {
  assert.equal(after.s.canonicalHash,before.s.canonicalHash);assert.equal(after.s.successfulSeatOrdinal,before.s.successfulSeatOrdinal);assert.equal(after.s.posture,'arrange');assert.deepEqual(after.a,before.a);
  results.push('opening Photograph during insertion cancels, later release is inert, no ordinal or autosave write');
  await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-dialog[open]').waitFor();
+ await page.locator('#photo-tab-save').click();
  // Synthetic export failure then retry; native output is untouched.
  await page.evaluate(()=>{window.originalToBlob=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(cb){cb(null);};});
  await page.locator('#photo-export').click();await page.waitForFunction(()=>!document.querySelector('#photo-export').disabled);assert.match(await page.locator('#photo-message').textContent(),/could not create/);
@@ -34,7 +35,7 @@ try {
  results.push('Close during pending PNG encoding cancels delivery; session token prevents stale image or download');
  // Unknown v2 data must survive a failed Keep unchanged.
  await page.evaluate(async()=>{const{createWorkbenchFixture}=await import('/src/app/workbench.ts');const f=createWorkbenchFixture('reed',8278,1);localStorage.setItem('ikebana-web-alpha:workbench-studio-v1',JSON.stringify({storageVersion:1,savedAt:new Date().toISOString(),nextSuccessfulOrdinal:2,plants:f.plants}));localStorage.setItem('ikebana-web-alpha:workbench-garden-v1','{"gardenVersion":99,"precious":"synthetic"}');});
- await page.reload();await page.locator('[data-ready=true]').waitFor();await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-keep').click();
+ await page.reload();await page.locator('[data-ready=true]').waitFor();await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-tab-save').click();await page.locator('#photo-keep').click();
  assert.equal(await page.evaluate(()=>localStorage.getItem('ikebana-web-alpha:workbench-garden-v1')),'{"gardenVersion":99,"precious":"synthetic"}');
  results.push('unsupported Garden version fails closed and keeps its exact bytes');
 }finally{await browser.close();await writeFile((process.env.IKEBANA_EVIDENCE_DIR??'.')+'/photo-interruption-results.json',JSON.stringify(results,null,2));}

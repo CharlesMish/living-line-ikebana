@@ -5,6 +5,7 @@ import { IkebanaApp } from "../../src/app/IkebanaApp.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import { fromCanonicalPlantGraph, sampleBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { CommittedStore } from "../../src/app/persistence.ts";
+import { turnCutting } from "../../src/core/turnCutting.ts";
 
 function harness(workbench = false) {
   const writes: unknown[] = [];
@@ -80,6 +81,34 @@ test("app recovery writes once before swapping memory; failed recovery preserves
   assert.equal(app.selectedBranchId, "plant-1:trunk");
 });
 
+test("app Turn cancels any preview, saves once before replacing geometry, and preserves Undo on save failure", () => {
+  const { app, writes } = harness();
+  app.coordinator.commandSelection("plant-1");
+  const before = app.coordinator.getDocumentSnapshot();
+  const beforeGraph = before.plants.get("plant-1");
+  moveBase(app, -.8, false);
+  app.gesture = { kind: "base", owner: 7, capture: { hasPointerCapture: () => false } };
+  const save = app.store.save;
+  app.store.save = (ordinal: number, plants: unknown) => {
+    assert.deepEqual(app.coordinator.getDocumentSnapshot(), before, "disk write precedes the turn");
+    return save(ordinal, plants);
+  };
+  app.handleUICommand({ kind: "turn-cutting", direction: "right" }, {});
+  assert.equal(app.gesture, null); assert.equal(app.coordinator.release(7).ok, false);
+  assert.equal(writes.length, 1, "one successful prewrite, no duplicate autosave");
+  const turned = app.coordinator.getDocumentSnapshot();
+  assert.deepEqual(turned.plants.get("plant-1"), turnCutting(beforeGraph, Math.PI / 12), "turn starts at committed geometry, not the cancelled base preview");
+  assert.deepEqual(turned.camera, before.camera); assert.equal(turned.successfulPlantOrdinal, before.successfulPlantOrdinal);
+  app.store.save = () => false;
+  app.handleUICommand({ kind: "turn-cutting", direction: "left" }, {});
+  assert.deepEqual(app.coordinator.getDocumentSnapshot(), turned);
+  assert.equal(app.coordinator.canUndo(), true); assert.equal(app.autosaveWrites.length, 1);
+  app.store.save = save;
+  app.handleUICommand({ kind: "undo-edit" }, {});
+  assert.deepEqual(app.coordinator.getDocumentSnapshot(), before);
+  assert.equal(writes.length, 2);
+});
+
 test("Undo keyboard shortcut leaves text/modals alone and cancels a held edit before undoing a commit", () => {
   const { app, writes } = harness();
   const before = JSON.stringify(app.arrangementSnapshot());
@@ -135,7 +164,7 @@ test("viewing a kept arrangement preserves the exact working coordinator and ref
   app.viewGardenEntry(kept);
   assert.notEqual(app.coordinator, original);
   assert.equal(app.coordinator.getDebugState().posture, "step-back");
-  for (const command of [{ kind: "set-posture", posture: "arrange" }, { kind: "activate-material", materialId: "flowering-branch" }, { kind: "select-material", materialId: "bare-branch" }, { kind: "set-tool", tool: "prune" }, { kind: "undo-edit" }, { kind: "remove-cutting" }]) app.handleUICommand(command, {});
+  for (const command of [{ kind: "set-posture", posture: "arrange" }, { kind: "activate-material", materialId: "flowering-branch" }, { kind: "select-material", materialId: "bare-branch" }, { kind: "set-tool", tool: "prune" }, { kind: "undo-edit" }, { kind: "remove-cutting" }, { kind: "turn-cutting", direction: "right" }]) app.handleUICommand(command, {});
   assert.equal(app.coordinator.getDebugState().posture, "step-back");
   assert.equal(app.coordinator.getDocumentSnapshot().plants.size, 2);
   assert.throws(() => app.replaceWorkingBowl(kept.arrangement), /Return/);

@@ -158,9 +158,24 @@ and the structural-stem/handle fallback retain their existing behavior.
 
 ### Explicit botanical recovery — September 28 contract revision
 
+**Turn selected cutting — October 13 addition.** In Arrange, `Edit → Turn
+selected cutting` offers left/right 15-degree steps about the vertical axis
+through that cutting's seated root. The whole active graph and its material
+frames turn together; point heights, lean, stock lengths, attachments, organs,
+identity and inactive history remain unchanged. No camera motion or generator
+reroll occurs. The menu names the selected material and stays open for repeated
+steps. This is an explicit document command, not an acquired drag: the app
+cancels any live preview/readied insertion first. Each changed step saves once
+before replacing memory and creates one Undo checkpoint; save failure and
+no-motion turns retain the existing bowl/checkpoint. Step Back and kept Garden
+views cannot turn a cutting. With Prevent overlaps on, every requested step is
+checked over its entire rigid arc, including carried structural children. It
+stops at certified contact/work limits using the same exclusions and pre-existing
+pair exemptions as Aim. Repeated steps cannot jump across a new contact.
+
 The working coordinator keeps one transient botanical checkpoint, not a history
 stack. `Edit → Undo last edit` restores the state before the most recent changed
-Insert/Aim/Bend/base/Prune or Remove operation, including canonical inactive cut
+Insert/Aim/Bend/base/Prune, Turn or Remove operation, including canonical inactive cut
 history. Undo consumes the checkpoint and provides no redo. No-op releases,
 cancelled edits, failed/invalid insertions, camera moves and selection/tool/view
 commands retain the preceding checkpoint. A no-op release still follows the
@@ -173,7 +188,7 @@ can restore that cutting. Undo may also be invoked in Step Back. Kept Garden
 views cannot invoke either command. Opening Edit or using its recovery command
 cancels any live preview before recovery; it never stores that preview in history.
 
-Undo and Remove persist their proposed committed plants **before** replacing
+Undo, Turn and Remove persist their proposed committed plants **before** replacing
 in-memory plants or consuming/replacing the checkpoint. The app's save callback
 can veto the operation on failure; both working state and checkpoint then remain
 available for retry. Successful recovery is saved once. Camera framing and the

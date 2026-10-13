@@ -11,7 +11,8 @@ class Element extends EventTarget {
   parentElement: Element | null = null;
   attributes = new Map<string, string>();
   dataset: Record<string, string> = {};
-  style: Record<string, string> = {};
+  style: Record<string, unknown> & { setProperty(name: string, value: string): void } = { setProperty(name, value) { this[name] = value; } };
+  scrollTop = 0;
   className = "";
   id = "";
   textContent = "";
@@ -374,5 +375,73 @@ test("Reset framing clears all six offsets without resetting lighting or Finish"
     assert.equal(h.find("photo-lighting").value, "evening"); assert.equal(h.find("photo-warmth").value, ".2");
     h.click("photo-reset-setup"); assert.equal(h.find("photo-lighting").value, "studio"); assert.equal(h.find("photo-warmth").value, "0");
     assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+
+test("Photograph tabs isolate scrolling controls from the persistent preview and prepared image", async () => {
+  const h = setup();
+  try {
+    const controls = h.find("photo-controls"), canvas = h.find("photo-canvas");
+    assert.equal(controls.querySelector("#photo-canvas"), null);
+    assert.equal(h.find("photo-panel-save").querySelector("#photo-result"), h.find("photo-result"));
+    assert.equal(h.find("photo-panel-scene").hidden, false);
+    h.click("photo-tab-finish");
+    assert.equal(h.find("photo-panel-scene").hidden, true); assert.equal(h.find("photo-panel-finish").hidden, false);
+    assert.equal(h.find("photo-tab-finish").getAttribute("aria-selected"), "true");
+    assert.equal(h.find("photo-tab-finish").getAttribute("tabindex"), "0");
+    controls.scrollTop = 600;
+    h.find("photo-warmth").value = ".4"; h.find("photo-warmth").dispatchEvent(new Event("input"));
+    assert.equal(controls.scrollTop, 600, "editing a slider cannot jump its scroll position");
+    assert.equal(h.find("photo-canvas"), canvas, "switching panels keeps the same live renderer");
+    h.click("photo-tab-save"); assert.equal(controls.scrollTop, 0);
+    h.click("photo-export"); await h.finishEncode();
+    assert.equal(h.find("photo-result").hidden, false); assert.equal(h.find("photo-panel-save").hidden, false);
+    h.click("photo-tab-finish");
+    assert.equal(h.find("photo-panel-save").hidden, true); assert.equal(h.find("photo-canvas"), canvas);
+    assert.deepEqual(h.revoked, [], "switching tabs does not discard the prepared PNG");
+    assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+test("Photograph tabs support keyboard traversal without changing the scene", () => {
+  const h = setup();
+  try {
+    const key = (id: string, value: string) => {
+      const event = new Event("keydown", { cancelable: true }); Object.defineProperty(event, "key", { value });
+      h.find(id).dispatchEvent(event); assert.equal(event.defaultPrevented, true);
+    };
+    key("photo-tab-scene", "ArrowLeft"); assert.equal(h.document.activeElement, h.find("photo-tab-save"));
+    key("photo-tab-save", "Home"); assert.equal(h.document.activeElement, h.find("photo-tab-scene"));
+    key("photo-tab-scene", "ArrowRight"); assert.equal(h.document.activeElement, h.find("photo-tab-frame"));
+    key("photo-tab-frame", "End"); assert.equal(h.document.activeElement, h.find("photo-tab-save"));
+    assert.equal(h.find("photo-panel-save").hidden, false); assert.equal(h.find("photo-panel-frame").hidden, true);
+    assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+test("Saturation places neutral in the slider centre while retaining existing recipe limits", () => {
+  const h = setup();
+  try {
+    const control = h.find("photo-saturation");
+    assert.equal(control.getAttribute("min"), "-1"); assert.equal(control.getAttribute("max"), "1"); assert.equal(control.value, "0");
+    for (const [slider, expected] of [[-1, -1], [-.5, -.5], [0, 0], [.5, .3], [1, .6]]) {
+      control.value = String(slider); control.dispatchEvent(new Event("input")); h.click("photo-keep");
+      assert.equal((h.kept.at(-1) as {scene: SceneSettings}).scene.photoAdjustments?.saturation ?? 0, expected);
+    }
+    h.click("photo-reset-finish"); assert.equal(control.value, "0"); h.click("photo-keep");
+    assert.equal((h.kept.at(-1) as {scene: SceneSettings}).scene.photoAdjustments, undefined);
+  } finally { h.close(); }
+});
+
+test("an untouched saved saturation remains exact through other controls, Keep and draft resume", () => {
+  const recipe = { version: 1 as const, exposure: 0, contrast: 0, warmth: 0, saturation: .123456789012345, vignette: 0 };
+  const h = setup({ ...DEFAULT_SCENE, sceneVersion: 2, photoAdjustments: recipe });
+  try {
+    assert.equal(Number(h.find("photo-saturation").value), recipe.saturation / .6);
+    h.find("photo-warmth").value = ".2"; h.find("photo-warmth").dispatchEvent(new Event("input"));
+    h.click("photo-keep"); assert.equal((h.kept.at(-1) as {scene: SceneSettings}).scene.photoAdjustments?.saturation, recipe.saturation);
+    h.click("photo-return"); h.click("photo-open"); h.click("photo-keep");
+    assert.equal((h.kept.at(-1) as {scene: SceneSettings}).scene.photoAdjustments?.saturation, recipe.saturation);
   } finally { h.close(); }
 });

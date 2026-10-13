@@ -8,6 +8,7 @@ import type { PlantGraph } from '../core/types.ts';
 import type { StemOverlap } from '../core/stemOverlaps.ts';
 import type { AimSpec, BendSpec, BaseSpec } from '../input/types.ts';
 import type { StudioContextMap } from './domainAdapters.ts';
+import { turnCutting } from '../core/turnCutting.ts';
 export interface PreventionFeedback {
     reason: 'clear' | 'contact' | 'budget' | 'insertion';
     existingPairs: number;
@@ -35,6 +36,20 @@ export class StemPrevention {
         const marks = insertionContacts(graph, contactEnvironment(graph, this.plants(), false));
         this.feedback = { reason: marks.length ? 'insertion' : 'clear', existingPairs: 0, marks };
         return marks.length === 0;
+    }
+    /** One explicit turn sweeps its complete arc; a clear endpoint is not enough. */
+    turn(snapshot: PlantGraph, radians: number) {
+        if (!this.enabled() || !Number.isFinite(radians) || radians === 0) {
+            this.feedback = { reason: 'clear', existingPairs: 0, marks: [] };
+            return turnCutting(snapshot, radians);
+        }
+        const environment = contactEnvironment(snapshot, [...this.plants()].map(clonePlantGraph));
+        const result = limitStemMotion({
+            at: t => turnCutting(snapshot, radians * t),
+            speeds: aimPointSpeeds(snapshot, snapshot.rootBranchId, Math.abs(radians)),
+        }, environment);
+        this.feedback = { reason: result.reason, existingPairs: environment.exempt.size, marks: result.marks };
+        return result.graph;
     }
     aim(snapshot: PlantGraph, spec: AimSpec<StudioContextMap['aim']>, target: Vec3, headRotation?: Quat) {
         const branch = snapshot.branches.get(spec.branchId)!;

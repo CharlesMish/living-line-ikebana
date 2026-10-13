@@ -19,6 +19,9 @@ interface PhotoActions {
 }
 type PhotoStudio = Pick<ThreeStudio, "upsertGraph" | "setPhotoLighting" | "setPhotoAdjustments" | "setPhotoStage" | "setStemFibers" | "setCanonicalView" | "getCameraPose" | "setCameraPose" | "capturePhotoFrame" | "dispose">;
 type PhotoStudioFactory = (canvas: HTMLCanvasElement, scene: SceneSettings) => PhotoStudio;
+const PHOTO_PANELS = ["scene", "frame", "finish", "save"] as const;
+type PhotoPanel = typeof PHOTO_PANELS[number];
+
 const createPhotoStudio: PhotoStudioFactory = (canvas, scene) => new ThreeStudio(canvas, { photography: true, maxPixelRatio: 1.5, vesselProfile: sceneProfile(scene), vesselAppearance: scene, photoAdjustments: scene.photoAdjustments, photoLighting: scene.photoLighting, botanicalTones: scene.botanicalTones });
 
 /** Disposable presentation of a committed copy. Closing never touches the working coordinator. */
@@ -34,6 +37,9 @@ export class Photograph {
   private graphicsReady = false;
   private sharing = false;
   private showingOriginal = false;
+  // Keep the exact loaded recipe until the user touches this mapped control.
+  private saturation = 0;
+  private panel: PhotoPanel = "scene";
   private readonly drafts = new PhotoDraftMemory();
   private draftContext: PhotoDraftContext = null;
   private draftReady = false;
@@ -47,29 +53,24 @@ export class Photograph {
     this.dialog = document.createElement("dialog"); this.dialog.id = "photo-dialog"; this.dialog.className = "photo-dialog";
     this.dialog.setAttribute("aria-labelledby", "photo-title");
     this.dialog.innerHTML = `
-      <div class="panel-heading"><div><p class="eyebrow">A moment to keep</p><h1 id="photo-title">Photograph</h1></div><button id="photo-close" type="button" aria-label="Close Photograph">×</button></div>
-      <p class="photo-intro">Choose a setting, compose the frame, and keep the moment. Your working bowl stays as you left it.</p>
-      <div class="photo-workflow"><button id="photo-return" type="button">Return to arranging</button><button id="photo-reset-setup" type="button">Reset photo setup</button></div>
-      <p id="photo-draft-note" class="panel-note"></p>
-      <div class="photo-layout"><div class="photo-preview">
-        <div class="photo-mat"><div class="photo-frame"><canvas id="photo-canvas" aria-label="Live photograph preview"></canvas><div id="photo-grid" class="photo-grid" hidden aria-hidden="true"></div></div></div>
-        <div class="photo-preview-footer"><p id="photo-size" class="panel-note"></p><label class="photo-check"><input id="photo-grid-toggle" type="checkbox"> Composition grid</label></div>
-        <section id="photo-result" class="photo-result" hidden aria-labelledby="photo-result-title">
-          <div class="photo-result-heading"><div><p class="eyebrow">Your PNG</p><h2 id="photo-result-title">Ready to save</h2></div><span id="photo-result-size"></span></div>
-          <p id="photo-result-note">This is the prepared image. Save it using one of the options below.</p>
-          <img id="photo-result-image" alt="Prepared Living Line photograph" draggable="true">
-          <div class="photo-save-actions"><a id="photo-download" class="photo-primary">Download PNG</a><button id="photo-share" type="button" hidden>Share image…</button><a id="photo-open-image" target="_blank" rel="noopener">Open image</a></div>
-          <p class="panel-note">If a download does not appear, try Share image or Open image. You can also press and hold the image to see your browser’s saving options.</p>
-          <p id="photo-delivery-message" role="status" aria-live="polite"></p>
-        </section>
+      <div class="photo-heading"><h1 id="photo-title">Photograph</h1><button id="photo-return" type="button">Return to arranging</button><button id="photo-close" type="button" aria-label="Close Photograph">×</button></div>
+      <div class="photo-layout"><div class="photo-preview" aria-label="Composition">
+        <div id="photo-mat" class="photo-mat"><div class="photo-frame"><canvas id="photo-canvas" aria-label="Live photograph preview"></canvas><div id="photo-grid" class="photo-grid" hidden aria-hidden="true"></div></div></div>
       </div>
-      <div class="photo-controls">
+      <div class="photo-tools">
+      <div class="photo-tabs" role="tablist" aria-label="Photograph controls">
+        ${PHOTO_PANELS.map((id) => `<button id="photo-tab-${id}" type="button" role="tab" aria-controls="photo-panel-${id}" aria-selected="${id === "scene"}" tabindex="${id === "scene" ? "0" : "-1"}">${id[0].toUpperCase() + id.slice(1)}</button>`).join("")}
+      </div>
+      <div id="photo-controls" class="photo-controls">
+        <section id="photo-panel-scene" class="photo-panel" role="tabpanel" aria-labelledby="photo-tab-scene" tabindex="0">
+        <p class="photo-intro">Choose a setting. Your working bowl stays as you left it.</p>
         <fieldset><legend>Scene</legend>
         <label>Backdrop <select id="photo-backdrop"></select></label>
         <label>Perch <select id="photo-perch"></select></label>
         <label>Lighting <select id="photo-lighting"></select></label><p id="photo-lighting-description" class="panel-note"></p>
         <label class="photo-check"><input id="photo-fibers" type="checkbox"> Subtle stem fibers</label>
-        </fieldset>
+        </fieldset></section>
+        <section id="photo-panel-frame" class="photo-panel" role="tabpanel" aria-labelledby="photo-tab-frame" tabindex="0" hidden>
         <fieldset><legend>Frame</legend>
         <label>Frame <select id="photo-format"><option value="landscape">Landscape · 4:3</option><option value="portrait">Portrait · 3:4</option><option value="square">Square · 1:1</option></select></label>
         <label>View <select id="photo-view"><option value="current">My current view</option><option value="front">Front</option><option value="three-quarter">Three-quarter</option><option value="above">Above</option></select></label>
@@ -79,12 +80,16 @@ export class Photograph {
         <p class="panel-note">Elevation stays above the bowl. Tilt gently rotates the photograph.</p>
         </details>
         <button id="photo-reset" type="button">Reset framing</button>
-        </fieldset>
+        <label class="photo-check"><input id="photo-grid-toggle" type="checkbox"> Composition grid</label>
+        <p id="photo-size" class="panel-note"></p>
+        </fieldset></section>
+        <section id="photo-panel-finish" class="photo-panel" role="tabpanel" aria-labelledby="photo-tab-finish" tabindex="0" hidden>
         <fieldset class="photo-finish"><legend>Finish</legend>
         <p class="panel-note">A little light and colour, just for this photograph.</p>
-        ${PHOTO_ADJUSTMENT_CONTROLS.map(({ id, label, min, max, step }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}">0</output></span><input id="photo-${id}" type="range" min="${min}" max="${max}" step="${step}" value="0"></label>`).join("")}
+        ${PHOTO_ADJUSTMENT_CONTROLS.map(({ id, label, min, max, step }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}">0</output></span><input id="photo-${id}" type="range" min="${min}" max="${id === "saturation" ? 1 : max}" step="${step}" value="0"></label>`).join("")}
         <div class="photo-finish-actions"><button id="photo-before" type="button" aria-pressed="false">Show original</button><button id="photo-reset-finish" type="button">Reset finish</button></div>
-        </fieldset>
+        </fieldset></section>
+        <section id="photo-panel-save" class="photo-panel" role="tabpanel" aria-labelledby="photo-tab-save" tabindex="0" hidden>
         <fieldset><legend>Save</legend>
         <button id="photo-export" class="photo-primary" type="button">Prepare PNG</button>
         <p class="panel-note">Makes a full-size image you can save or share.</p>
@@ -92,8 +97,18 @@ export class Photograph {
         <button id="photo-keep" type="button">Keep photo in Garden</button>
         <p class="panel-note">Garden keeps the scene and view with a small cover image.</p>
         </fieldset>
+        <section id="photo-result" class="photo-result" hidden aria-labelledby="photo-result-title">
+          <div class="photo-result-heading"><div><p class="eyebrow">Your PNG</p><h2 id="photo-result-title">Ready to save</h2></div><span id="photo-result-size"></span></div>
+          <p id="photo-result-note">This is the prepared image. Save it using one of the options below.</p>
+          <img id="photo-result-image" alt="Prepared Living Line photograph" draggable="true">
+          <div class="photo-save-actions"><a id="photo-download" class="photo-primary">Download PNG</a><button id="photo-share" type="button" hidden>Share image…</button><a id="photo-open-image" target="_blank" rel="noopener">Open image</a></div>
+          <p class="panel-note">If a download does not appear, try Share image or Open image. You can also press and hold the image to see your browser’s saving options.</p>
+          <p id="photo-delivery-message" role="status" aria-live="polite"></p>
+        </section>
+        <details class="photo-setup-note"><summary>About this photo setup</summary><p id="photo-draft-note" class="panel-note"></p><button id="photo-reset-setup" type="button">Reset photo setup</button></details>
+        </section>
         <p id="photo-message" role="status" aria-live="polite"></p>
-      </div></div>`;
+      </div></div></div>`;
     root.append(this.dialog);
     for (const [id, options] of [["photo-backdrop", PHOTO_BACKDROPS], ["photo-perch", PHOTO_PERCHES], ["photo-lighting", PHOTO_LIGHTING]] as const) {
       for (const { id: value, label } of options) {
@@ -102,6 +117,16 @@ export class Photograph {
       }
     }
     const signal = this.abort.signal;
+    for (const [index, id] of PHOTO_PANELS.entries()) {
+      const tab = this.find(`photo-tab-${id}`);
+      tab.addEventListener("click", () => this.showPanel(id), { signal });
+      tab.addEventListener("keydown", (event) => {
+        const key = (event as KeyboardEvent).key;
+        const next = key === "ArrowRight" ? (index + 1) % PHOTO_PANELS.length : key === "ArrowLeft" ? (index + PHOTO_PANELS.length - 1) % PHOTO_PANELS.length : key === "Home" ? 0 : key === "End" ? PHOTO_PANELS.length - 1 : null;
+        if (next === null) return;
+        event.preventDefault(); this.showPanel(PHOTO_PANELS[next]); this.find(`photo-tab-${PHOTO_PANELS[next]}`).focus();
+      }, { signal });
+    }
     this.opener.addEventListener("click", () => this.open(), { signal });
     this.find("photo-close").addEventListener("click", () => this.dialog.close(), { signal });
     this.dialog.addEventListener("close", () => this.release(), { signal });
@@ -123,7 +148,10 @@ export class Photograph {
     for (const { id } of PHOTO_FRAMING_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => this.frame(), { signal });
     this.find<HTMLInputElement>("photo-fibers").addEventListener("change", () => { this.changedFrame(); this.studio?.setStemFibers(this.find<HTMLInputElement>("photo-fibers").checked); }, { signal });
     this.find<HTMLInputElement>("photo-grid-toggle").addEventListener("change", () => { this.find("photo-grid").hidden = !this.find<HTMLInputElement>("photo-grid-toggle").checked; }, { signal });
-    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => this.finish(), { signal });
+    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => {
+      if (id === "saturation") { const value = Number(this.value("photo-saturation")); this.saturation = value > 0 ? value * .6 : value; }
+      this.finish();
+    }, { signal });
     this.find("photo-reset-finish").addEventListener("click", () => {
       this.loadFinish(NEUTRAL_PHOTO_ADJUSTMENTS); this.finish();
     }, { signal });
@@ -139,8 +167,17 @@ export class Photograph {
     this.find<HTMLCanvasElement>("photo-canvas").addEventListener("webglcontextlost", (event) => {
       event.preventDefault(); this.graphicsReady = false; this.changedFrame();
       this.find<HTMLButtonElement>("photo-keep").disabled = true;
-      this.message(`Graphics paused. Close Photograph and reopen it before capturing.${this.imageExport.current ? " Your prepared image is still available below the preview." : ""}`);
+      this.message(`Graphics paused. Close Photograph and reopen it before capturing.${this.imageExport.current ? " Your prepared image is still available in Save." : ""}`);
     }, { signal });
+  }
+  private showPanel(panel: PhotoPanel) {
+    this.panel = panel;
+    for (const id of PHOTO_PANELS) {
+      const active = id === panel, tab = this.find(`photo-tab-${id}`);
+      tab.setAttribute("aria-selected", String(active)); tab.setAttribute("tabindex", active ? "0" : "-1");
+      this.find(`photo-panel-${id}`).hidden = !active;
+    }
+    this.find("photo-controls").scrollTop = 0;
   }
   private find<T extends HTMLElement = HTMLElement>(id: string): T { return this.dialog.querySelector<T>(`#${id}`)!; }
   private value(id: string) { return this.find<HTMLInputElement | HTMLSelectElement>(id).value; }
@@ -150,7 +187,7 @@ export class Photograph {
     if (this.dialog.open) return;
     this.actions.pause(); this.snapshot = validateArrangement(this.actions.snapshot(), Infinity);
     this.root.querySelector<HTMLElement>("#more-options")!.hidden = true;
-    this.dialog.showModal(); this.session++;
+    this.dialog.showModal(); this.session++; this.showPanel(this.panel);
     this.graphicsReady = false; this.draftReady = false;
     this.find<HTMLButtonElement>("photo-export").disabled = true;
     this.find<HTMLButtonElement>("photo-keep").disabled = true;
@@ -231,6 +268,7 @@ export class Photograph {
   private format() {
     const size = PHOTO_SIZES[this.value("photo-format") as PhotoFormat];
     this.find("photo-canvas").parentElement!.style.aspectRatio = `${size.width} / ${size.height}`;
+    this.find("photo-mat").style.setProperty("--photo-aspect", String(size.width / size.height));
     this.find("photo-size").textContent = this.sizeLabel();
     this.frame();
   }
@@ -250,10 +288,11 @@ export class Photograph {
     if (this.pose) this.studio?.setCameraPose(framePhotoCamera(this.pose, Number(this.value("photo-zoom")), Number(this.value("photo-horizontal")), Number(this.value("photo-vertical")), Number(this.value("photo-yaw")), Number(this.value("photo-pitch")), Number(this.value("photo-roll"))), "free", false);
   }
   private loadFinish(recipe: Readonly<PhotoAdjustments>) {
-    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(recipe[id]);
+    this.saturation = recipe.saturation;
+    for (const { id } of PHOTO_ADJUSTMENT_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(id === "saturation" && recipe[id] > 0 ? recipe[id] / .6 : recipe[id]);
   }
   private currentFinish(): PhotoAdjustments {
-    return validatePhotoAdjustments({ version: 1, ...Object.fromEntries(PHOTO_ADJUSTMENT_CONTROLS.map(({ id }) => [id, Number(this.value(`photo-${id}`))])) });
+    return validatePhotoAdjustments({ version: 1, ...Object.fromEntries(PHOTO_ADJUSTMENT_CONTROLS.map(({ id }) => [id, id === "saturation" ? this.saturation : Number(this.value(`photo-${id}`))])) });
   }
   private finish(resetComparison = true) {
     if (resetComparison) this.showingOriginal = false;
@@ -294,7 +333,7 @@ export class Photograph {
       const photo = await this.imageExport.prepare(this.capture());
       if (!photo || session !== this.session || revision !== this.frameRevision || !this.dialog.open) return;
       this.showPrepared(photo);
-      this.message("PNG ready below the preview. Choose Download, Share image, or Open image.");
+      this.message("PNG ready in Save. Choose Download, Share image, or Open image.");
     } catch (error) { if (session === this.session && revision === this.frameRevision) this.message(error instanceof Error ? error.message : String(error)); }
     finally {
       if (session === this.session && revision === this.frameRevision) {
@@ -304,6 +343,7 @@ export class Photograph {
     }
   }
   private showPrepared(photo: PreparedPhoto) {
+    this.showPanel("save");
     this.find("photo-result").hidden = false;
     this.find<HTMLImageElement>("photo-result-image").src = photo.url;
     this.find("photo-result-size").textContent = `${photo.width} × ${photo.height}`;

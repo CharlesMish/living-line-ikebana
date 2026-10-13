@@ -51,7 +51,7 @@ function setup() {
   const choice = document.element("flowering-choice");
   choice.dataset.materialChoice = "flowering-branch";
   document.matches.set("[data-material-choice]", [choice]);
-  for (const selector of ["#edit-toggle", "#edit-options", "#undo-edit", "#remove-cutting"]) {
+  for (const selector of ["#edit-toggle", "#edit-options", "#undo-edit", "#remove-cutting", "#turn-cutting-left", "#turn-cutting-right"]) {
     document.element(selector).parent = document.element(".edit-menu");
   }
   for (const selector of ["#more-toggle", "#more-options", "#garden-open", "#experiment-toggle"]) {
@@ -161,6 +161,25 @@ test("Edit shares disclosure ownership with View and Materials and returns actio
     assert.equal(h.document.element("#edit-options").hidden, true);
     assert.equal(h.document.activeElement, h.document.element("#edit-toggle"));
     assert.equal(h.commands.at(-1)?.kind, "remove-cutting");
+  } finally { h.close(); }
+});
+
+test("Turn controls name the selected material, stay open for repeats and respect unavailable state", () => {
+  const h = setup();
+  try {
+    h.click("#turn-cutting-left"); assert.equal(h.commands.length, 0);
+    assert.equal(h.document.element("#turn-cutting-left").disabled, true);
+    assert.equal(h.document.element("#turn-cutting-selection").textContent, "In Shape, tap a stem to select it.");
+    h.ui.setState({ canRemove: true, selectedCuttingName: "blossom spray" });
+    h.click("#edit-toggle"); h.click("#turn-cutting-left"); h.click("#turn-cutting-right");
+    assert.equal(h.ui.state.editMenuOpen, true);
+    assert.equal(h.document.element("#turn-cutting-selection").textContent, "Blossom spray");
+    assert.deepEqual(h.commands.slice(-2), [
+      { kind: "turn-cutting", direction: "left" }, { kind: "turn-cutting", direction: "right" },
+    ]);
+    h.ui.setState({ canRemove: false }); const count = h.commands.length;
+    h.click("#turn-cutting-right"); assert.equal(h.commands.length, count);
+    assert.equal(h.document.element("#turn-cutting-right").disabled, true);
   } finally { h.close(); }
 });
 

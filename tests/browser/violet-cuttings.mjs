@@ -60,14 +60,16 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
         await page.locator("#photo-view").selectOption("three-quarter");
         // Native range keyboard change, not DOM value injection.
         await page.locator("#photo-zoom").focus(); await page.keyboard.press("Home");
-        for (let i = 0; i < 12; i++) await page.keyboard.press("PageUp");
+        // Fixed 2.8× view in both this component and the combined preview,
+        // whose Closer range is wider. Step keys use the real native control.
+        for (let i = 0; i < 225; i++) await page.keyboard.press("ArrowRight");
         await capture(`photo-${look}`);
         await page.locator("#photo-return").click();
       }
       // Twelve explicit 15-degree cutting turns expose the reverse in Front.
       // This is a deliberate pose edit, not a camera/mouse acquisition test.
       await page.getByTestId("edit-toggle").click();
-      for (let i = 0; i < 12; i++) await page.getByTestId("turn-cutting-right").click();
+      for (let i = 0; i < 12; i++) await page.locator("#turn-cutting-right").click();
       await page.keyboard.press("Escape");
       await capture("rear-toned");
       const saved = await state();

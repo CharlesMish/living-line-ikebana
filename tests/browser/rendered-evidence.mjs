@@ -15,6 +15,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { runPrunePreviewComparison } from "./prune-preview-tint.mjs";
 import { checkWorkingSaveFeedback } from "./working-save-feedback.mjs";
+import { checkPhotoDetail } from "./photo-detail.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -220,6 +221,7 @@ async function exercise(config) {
     await page.locator("#photo-format").selectOption("landscape");
     await page.locator("#photo-view").selectOption("three-quarter");
     await capture("photo-frame");
+    result.photoDetail = await checkPhotoDetail({ page, config, capture });
     await activate(page.locator("#photo-tab-finish"));
     for (const id of ["warmth", "saturation"]) {
       result.finishLayout.push({ id, ...(await finishVisibility(page, config, id)) });

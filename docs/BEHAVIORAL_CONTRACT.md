@@ -604,3 +604,28 @@ scene. It changes no plant, vessel, frame, background alpha or working gesture l
 Optional `photoLighting` is sceneVersion2 metadata: older strict readers refuse an
 unrecognized scene field rather than silently lose the choice. See the
 [camera and light report](development/reports/photo-workflow/camera-light.md).
+
+### Deliberate Photograph close-ups — October 14 owner revision
+
+Photograph's Frame panel offers Close detail and Whole view. Close detail first
+arms a single preview tap; it does not move the camera until that tap completes.
+A stationary primary press released on the same, unchanged preview centres the
+chosen point at the current camera target's depth and requests at least 3.5×
+Closer. It is framing, not picking, autofocus or depth-of-field simulation. Across
+and Height remain the precise correction controls. Pan bounds and floor clearance
+can limit an edge request. Whole view resets all six framing offsets to the chosen
+reference, preserving setting, light and Finish.
+
+Closer now reaches 4.8×. Changed framing cannot bring the camera nearer than 1.5
+world units to its target; an inherited closer camera remains exact and may back
+away, but cannot move closer again. This prevents repeated Keep/reopen/Closer
+from approaching the camera's near plane. Existing neutral frames remain exact.
+No field-of-view or lens field is added: the same camera position/target/up carries
+the close-up through preview, PNG, Garden, backups and session resume. Compare
+still owns its shared temporary camera.
+
+Movement beyond eight CSS pixels, another pointer, cancellation, leaving the
+preview, changed preview bounds, blur, hiding the page, resize, graphics loss,
+panel switches and closing discard an unfinished detail press. Escape while
+choosing cancels that choice before closing the dialog. Selecting a detail does
+not save the working bowl or Garden, consume an ordinal, or change a plant.

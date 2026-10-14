@@ -65,7 +65,7 @@ npm run dev
 
 Then open the local URL on desktop or on a phone on the same network.
 
-The public project page is deployed from `main` by [`.github/workflows/pages.yml`](.github/workflows/pages.yml). In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The expected URL is `https://charlesmish.github.io/living-line-ikebana/`.
+The public project page is deployed from `main` by [`.github/workflows/pages.yml`](.github/workflows/pages.yml). In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The public URL is `https://charlesmish.github.io/living-line-ikebana/`. Its entry and downloadable standalone use the approved **tap + drag** build; `drag.html` retains drag-only play. `build-info.json` records the deployed source commit and file hashes. The Pages job builds the existing placement variants and selects these entry files after verification; local development defaults are unchanged.
 
 For a production build and a self-contained file:
 
@@ -98,12 +98,12 @@ Use `?bend=touch` to open directly in the touch-located variant. Omitting the pa
 
 ## Placement cue and tap-to-place
 
-Ordinary play omits both flags. The source card still starts a drag on press, and the pin-field outline still appears only while that drag is held.
+The public page supports both tap and drag without URL flags. Unflagged local development and `drag.html` retain drag-only placement, where the pin-field outline appears while the drag is held.
 
 - `?placeCue=1` — in Arrange, a quiet line shows the accepted planting area before a drag. It follows the layout’s planting ellipses, including oval, offset, long, and multi-area beds. The plate outside that line reads as a rim. Step Back and Photograph stay quiet. Dragging still seats on release, with the same acceptance rules.
 - `?placeTap=1` — includes the cue. Tap the source card to ready one cutting, then tap inside the pins to place it. Tap the card again, Cancel, or Escape to cancel. Dragging from the card still works; movement past 8 CSS pixels is a drag, and the tap that readies does not also place.
 
-These are development flags. A study packet can bake one condition into a self-contained file so the address bar does not carry them. After `npm run build`, or as part of that build:
+These remain useful development flags. A study packet can bake one condition into a self-contained file so the address bar does not carry them. After `npm run build`, or as part of that build:
 
 ```bash
 LIVING_LINE_PLACE=all npm run build

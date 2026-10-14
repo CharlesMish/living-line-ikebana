@@ -32,7 +32,31 @@ jobs:
         run: npm ci
 
       - name: Verify and build site
+        env:
+          LIVING_LINE_PLACE: all
         run: npm run verify
+
+      - name: Publish the approved tap-and-drag entry
+        run: |
+          cp dist/arrangement-3.html dist/index.html
+          cp dist/arrangement-1.html dist/drag.html
+          cp dist/arrangement-3.html dist/ikebana-web-alpha-standalone.html
+          node --input-type=module <<'EOF'
+          import { createHash } from 'node:crypto';
+          import { readFile, writeFile } from 'node:fs/promises';
+          const files = {};
+          for (const name of ['index.html', 'drag.html', 'ikebana-web-alpha-standalone.html']) {
+            const bytes = await readFile(`dist/${name}`);
+            files[name] = { bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') };
+          }
+          await writeFile('dist/build-info.json', JSON.stringify({
+            repository: process.env.GITHUB_REPOSITORY,
+            commit: process.env.GITHUB_SHA,
+            placement: 'tap-and-drag',
+            dragOnly: 'drag.html',
+            files,
+          }, null, 2) + '\n');
+          EOF
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

@@ -3,7 +3,7 @@ import type { StudioCameraPose } from "./ThreeStudio.ts";
 
 /** Photograph offsets only. No Step Back limits or saved camera shape change. */
 export const PHOTO_FRAMING_CONTROLS = [
-  { id: "zoom", label: "Closer", min: .55, max: 2.8, step: .01, neutral: 1 },
+  { id: "zoom", label: "Closer", min: .55, max: 4.8, step: .01, neutral: 1 },
   { id: "horizontal", label: "Across", min: -4.8, max: 4.8, step: .02, neutral: 0 },
   { id: "vertical", label: "Height", min: -4.8, max: 4.8, step: .02, neutral: 0 },
   { id: "yaw", label: "Turn", min: -60, max: 60, step: 1, neutral: 0 },
@@ -15,6 +15,8 @@ export const NEUTRAL_PHOTO_FRAMING: Readonly<PhotoFraming> = Object.freeze({ zoo
 // The highest stage floor is the ground plane at −.02. Keep a small clearance
 // above it, including when a saved low frame is used as a new zoom reference.
 const PHOTO_CAMERA_MIN_HEIGHT = .12;
+export const PHOTO_DETAIL_ZOOM = 3.5;
+export const PHOTO_CAMERA_MIN_DISTANCE = 1.5;
 
 export function validatePhotoFraming(value: PhotoFraming): PhotoFraming {
   for (const { id, min, max } of PHOTO_FRAMING_CONTROLS) {
@@ -54,7 +56,11 @@ export function framePhotoCamera(pose: StudioCameraPose, zoom: number, horizonta
   const right = forward.clone().cross(up).normalize();
   const screenUp = right.clone().cross(forward).normalize();
   const shift = right.multiplyScalar(-horizontal).add(screenUp.multiplyScalar(-vertical));
-  const offset = delta.multiplyScalar(1 / zoom);
+  // Reopening a kept close-up must not let repeated zooming walk through the
+  // target plane. An inherited closer pose remains exact until changed, and
+  // changed framing cannot take it closer still.
+  const radius = delta.length();
+  const offset = delta.multiplyScalar(Math.max(radius / zoom, Math.min(PHOTO_CAMERA_MIN_DISTANCE, radius)) / radius);
   // An inherited below-stage pose is not silently repaired on opening. Changed
   // framing may raise it, but must not drive it lower. A normal reference retains
   // the stage clearance even if zooming toward a previously panned, low target.
@@ -70,4 +76,30 @@ export function framePhotoCamera(pose: StudioCameraPose, zoom: number, horizonta
   if (zoom === 1 && !yaw && !pitch && !roll && !lift && shift.lengthSq() === 0) return { position: {...pose.position}, target: {...pose.target}, up: {...pose.up} };
   target.add(shift); const position = target.clone().add(offset);
   return { position: { x: position.x, y: position.y, z: position.z }, target: { x: target.x, y: target.y, z: target.z }, up: { x: up.x, y: up.y, z: up.z } };
+}
+
+/** Choose a close-up from the visible frame, on its current target plane. This
+ * is camera framing, not material picking: it uses the exact projection aspect
+ * and FOV, with no hit proxy, autofocus, plant movement or per-frame fitting.
+ * x/y are normalized device coordinates (right/up positive). The result remains
+ * ordinary, bounded slider values, so draft/Keep need no new camera schema. */
+export function detailPhotoFraming(pose: StudioCameraPose, framing: PhotoFraming, x: number, y: number, aspect: number, verticalFov: number): PhotoFraming {
+  validatePhotoFraming(framing);
+  if (![x, y, aspect, verticalFov].every(Number.isFinite) || Math.abs(x) > 1 || Math.abs(y) > 1 || aspect <= 0 || verticalFov <= 1 || verticalFov >= 179) throw new Error("Invalid photograph detail point.");
+  const current = framePhotoCamera(pose, framing.zoom, framing.horizontal, framing.vertical, framing.yaw, framing.pitch, framing.roll);
+  const position = new THREE.Vector3(current.position.x, current.position.y, current.position.z);
+  const target = new THREE.Vector3(current.target.x, current.target.y, current.target.z);
+  const forward = target.clone().sub(position).normalize();
+  const right = forward.clone().cross(new THREE.Vector3(current.up.x, current.up.y, current.up.z)).normalize();
+  const up = right.clone().cross(forward).normalize();
+  const halfHeight = position.distanceTo(target) * Math.tan(THREE.MathUtils.degToRad(verticalFov) / 2);
+  const chosen = target.addScaledVector(right, x * halfHeight * aspect).addScaledVector(up, y * halfHeight);
+  const zoom = Math.max(framing.zoom, PHOTO_DETAIL_ZOOM);
+  const centred = framePhotoCamera(pose, zoom, 0, 0, framing.yaw, framing.pitch, framing.roll);
+  const shift = chosen.sub(new THREE.Vector3(centred.target.x, centred.target.y, centred.target.z));
+  const bound = (id: "horizontal" | "vertical", value: number) => {
+    const { min, max } = PHOTO_FRAMING_CONTROLS.find(control => control.id === id)!;
+    return THREE.MathUtils.clamp(value, min, max);
+  };
+  return { ...framing, zoom, horizontal: bound("horizontal", -shift.dot(right)), vertical: bound("vertical", -shift.dot(up)) };
 }

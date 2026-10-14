@@ -1,4 +1,5 @@
 import { createLobedLeafGeometry, createLobedLeafVeinGeometry } from "./lobedLeafGeometry.ts";
+import { createPetalBellGeometry } from "./bellGeometry.ts";
 import * as THREE from "three";
 
 /**
@@ -124,7 +125,7 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
-export type BloomForm = "cupped" | "open-face" | "open-cup" | "tufted" | "bell";
+export type BloomForm = "cupped" | "open-face" | "open-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
 export type PinnateDraw = "baseline" | "tapered" | "quilled";
@@ -153,6 +154,7 @@ export interface BloomSurfaceProfile {
 }
 
 export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
+  if (form === "violet-floret" || form === "indigo-floret") throw new Error("violet florets are complete authored corollas, not radial petal profiles");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal profile");
   }
@@ -695,6 +697,7 @@ export function tuftInstancePose(
 }
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
+  if (form === "violet-floret" || form === "indigo-floret") throw new Error("violet florets are complete authored corollas, not repeated petals");
   if (form === "open-cup") throw new Error("open-cup is a complete authored corolla, not a repeated petal");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal");
@@ -715,24 +718,17 @@ const BELL_SLEEVE = 0.14;
 const BELL_SLEEVE_BACK = -0.052;
 
 export function createBellGeometry(seed = 0, palette?: { petal: number; collar: number }): THREE.BufferGeometry {
+  // Only v2 supplies a collar palette. Keep v1 geometry/color arrays exact.
+  if (palette) return createPetalBellGeometry(seed, palette);
   const rings = 14;
   const columns = 32;
   const phase = variation(seed, 11) * TAU;
   const positions: number[] = [];
   const colors: number[] = [];
   const indices: number[] = [];
-  const petalColor = palette ? new THREE.Color(palette.petal) : null;
-  const collarColor = palette ? new THREE.Color(palette.collar) : null;
   const push = (x: number, y: number, z: number, shade: number) => {
     positions.push(x, y, z);
-    if (petalColor && collarColor) {
-      const t = Math.max(0, Math.min(1, (y - 0.01) / 0.09));
-      const tint = collarColor.clone().lerp(petalColor, t * t * (3 - 2 * t));
-      const light = Math.max(0.65, shade);
-      colors.push(tint.r * light, tint.g * light, tint.b * light);
-    } else {
-      colors.push(shade * 0.9, shade * 0.95, Math.min(1, shade * 1.04));
-    }
+    colors.push(shade * 0.9, shade * 0.95, Math.min(1, shade * 1.04));
     return positions.length / 3 - 1;
   };
   const profile = (t: number, theta: number) => {

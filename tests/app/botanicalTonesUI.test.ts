@@ -118,7 +118,7 @@ test("production tones chooser presents current materials first and all three vi
     h.click("botanical-tones-open");
     assert.equal(h.pauses, 1); assert.equal(h.find("botanical-tones-dialog").open, true);
     assert.deepEqual(h.families("botanical-tones-current"), ["compact-flower", "lobed-leaf"]);
-    assert.equal(h.families("botanical-tones-more").length, 11);
+    assert.equal(h.families("botanical-tones-more").length, 13);
     assert.equal(h.find("botanical-tones-empty").hidden, true);
     assert.equal(h.find("botanical-tones-current").querySelector(".botanical-tone-count")!.textContent, "1 in bowl");
     for (const id of ["natural", "ochre", "russet"]) {
@@ -135,7 +135,7 @@ test("production tones chooser presents current materials first and all three vi
     h.versions = ["berry-twig-v1"];
     h.click("botanical-tones-open");
     assert.deepEqual(h.families("botanical-tones-current"), ["berry-twig"]);
-    assert.equal(h.families("botanical-tones-more").length, 12);
+    assert.equal(h.families("botanical-tones-more").length, 14);
   } finally { h.close(); }
 });
 

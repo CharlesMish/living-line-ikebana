@@ -28,3 +28,5 @@ export * from "./blossomSprayV2.ts";
 export * from "./noddingFlowerV2.ts";
 export * from "./broadBlade.ts";
 export * from "./lobedLeaf.ts";
+export * from "./violetSprig.ts";
+export * from "./indigoSpire.ts";

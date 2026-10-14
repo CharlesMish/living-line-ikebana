@@ -1,8 +1,8 @@
 import { NEUTRAL_PHOTO_ADJUSTMENTS, PHOTO_ADJUSTMENT_CONTROLS, neutralPhotoAdjustments, validatePhotoAdjustments, type PhotoAdjustments } from "../presentation/photoAdjustments.ts";
 import { DEFAULT_SCENE, sceneProfile, validateScene, withPhotoAdjustments, withPhotoLighting, type SceneSettings } from "./scene.ts";
 import { fromCanonicalPlantGraph } from "../core/index.ts";
-import { ThreeStudio, type CanonicalView, type StudioCameraPose } from "../presentation/ThreeStudio.ts";
-import { PHOTO_FRAMING_CONTROLS } from "../presentation/photoFraming.ts";
+import { STUDIO_VERTICAL_FOV, ThreeStudio, type CanonicalView, type StudioCameraPose } from "../presentation/ThreeStudio.ts";
+import { detailPhotoFraming, PHOTO_FRAMING_CONTROLS, type PhotoFraming } from "../presentation/photoFraming.ts";
 import { PHOTO_LIGHTING, validatePhotoLighting, type PhotoLightingId } from "../presentation/photoLighting.ts";
 import { framePhotoCamera, PHOTO_SIZES, PHOTO_BACKDROPS, PHOTO_PERCHES, type PhotoBackdrop, type PhotoPerch, type PhotoFormat } from "../presentation/photoStage.ts";
 import { validateArrangement, type ArrangementSnapshot } from "./garden.ts";
@@ -38,6 +38,8 @@ export class Photograph {
   private graphicsReady = false;
   private sharing = false;
   private showingOriginal = false;
+  private choosingDetail = false;
+  private detailPress: { id: number; x: number; y: number; width: number; height: number; left: number; top: number } | null = null;
   // Keep the exact loaded recipe until the user touches this mapped control.
   private saturation = 0;
   private panel: PhotoPanel = "scene";
@@ -75,12 +77,13 @@ export class Photograph {
         <fieldset><legend>Frame</legend>
         <label>Frame <select id="photo-format"><option value="landscape">Landscape · 4:3</option><option value="portrait">Portrait · 3:4</option><option value="square">Square · 1:1</option></select></label>
         <label>View <select id="photo-view"><option value="current">My current view</option><option value="front">Front</option><option value="three-quarter">Three-quarter</option><option value="above">Above</option></select></label>
+        <div class="photo-finish-actions"><button id="photo-reset" type="button">Whole view</button><button id="photo-detail" type="button" aria-pressed="false" aria-describedby="photo-detail-help">Close detail</button></div>
+        <p id="photo-detail-help" class="panel-note">Choose Close detail, then tap a point in the preview. Across and Height fine-tune the crop. Whole view restores this view’s starting frame.</p>
         ${PHOTO_FRAMING_CONTROLS.slice(0, 3).map(({ id, label, min, max, step, neutral }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}"></output></span><input id="photo-${id}" type="range" min="${min}" max="${max}" step="${step}" value="${neutral}"></label>`).join("")}
         <details class="photo-angle-controls"><summary>Turn and tilt</summary>
         ${PHOTO_FRAMING_CONTROLS.slice(3).map(({ id, label, min, max, step, neutral }) => `<label><span class="photo-range-label">${label} <output id="photo-${id}-value" for="photo-${id}"></output></span><input id="photo-${id}" type="range" min="${min}" max="${max}" step="${step}" value="${neutral}"></label>`).join("")}
         <p class="panel-note">Elevation stays above the bowl. Tilt gently rotates the photograph.</p>
         </details>
-        <button id="photo-reset" type="button">Reset framing</button>
         <label class="photo-check"><input id="photo-grid-toggle" type="checkbox"> Composition grid</label>
         <p id="photo-size" class="panel-note"></p>
         </fieldset></section>
@@ -147,6 +150,35 @@ export class Photograph {
       else { this.studio?.setCanonicalView(view as CanonicalView, false); this.pose = this.studio?.getCameraPose() ?? null; }
       this.reset();
     }, { signal });
+    this.find("photo-detail").addEventListener("click", () => {
+      this.setChoosingDetail(!this.choosingDetail);
+      this.message(this.choosingDetail ? "Tap the preview where you want a closer look. Or use Closer, Across and Height below." : "Detail selection cancelled. Your frame is unchanged.");
+    }, { signal });
+    const canvas = this.find<HTMLCanvasElement>("photo-canvas");
+    canvas.addEventListener("pointerdown", (event) => {
+      this.detailPress = null;
+      if (this.choosingDetail && event.button === 0 && event.isPrimary !== false) {
+        const { width, height, left, top } = canvas.getBoundingClientRect();
+        this.detailPress = { id: event.pointerId, x: event.clientX, y: event.clientY, width, height, left, top };
+      }
+    }, { signal });
+    canvas.addEventListener("pointermove", (event) => {
+      if (this.detailPress?.id === event.pointerId && Math.hypot(event.clientX - this.detailPress.x, event.clientY - this.detailPress.y) > 8) this.detailPress = null;
+    }, { signal });
+    canvas.addEventListener("pointerup", (event) => {
+      const press = this.detailPress; this.detailPress = null;
+      if (!this.choosingDetail || press?.id !== event.pointerId || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 8 || !this.pose || !this.graphicsReady) return;
+      const rect = canvas.getBoundingClientRect();
+      if ((["width", "height", "left", "top"] as const).some(key => Math.abs(rect[key] - press[key]) > .5)) return;
+      if (rect.width <= 0 || rect.height <= 0 || event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) return;
+      const detail = detailPhotoFraming(this.pose, this.framing(), (event.clientX - rect.left) / rect.width * 2 - 1, 1 - (event.clientY - rect.top) / rect.height * 2, rect.width / rect.height, STUDIO_VERTICAL_FOV);
+      for (const { id } of PHOTO_FRAMING_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(detail[id]);
+      this.frame(); this.message("Close detail. Use Across and Height to refine it, or Whole view to step back.");
+    }, { signal });
+    for (const type of ["pointercancel", "pointerleave", "lostpointercapture"]) canvas.addEventListener(type, () => { this.detailPress = null; }, { signal });
+    this.dialog.ownerDocument.addEventListener("visibilitychange", () => { if (this.dialog.ownerDocument.hidden) this.setChoosingDetail(false); }, { signal });
+    for (const type of ["blur", "resize"]) this.dialog.ownerDocument.defaultView?.addEventListener(type, () => this.setChoosingDetail(false), { signal });
+    this.dialog.addEventListener("cancel", (event) => { if (this.choosingDetail) { event.preventDefault(); this.setChoosingDetail(false); this.message("Detail selection cancelled. Your frame is unchanged."); } }, { signal });
     for (const { id } of PHOTO_FRAMING_CONTROLS) this.find(`photo-${id}`).addEventListener("input", () => this.frame(), { signal });
     this.find<HTMLInputElement>("photo-fibers").addEventListener("change", () => { this.changedFrame(); this.studio?.setStemFibers(this.find<HTMLInputElement>("photo-fibers").checked); }, { signal });
     this.find<HTMLInputElement>("photo-grid-toggle").addEventListener("change", () => { this.find("photo-grid").hidden = !this.find<HTMLInputElement>("photo-grid-toggle").checked; }, { signal });
@@ -173,6 +205,7 @@ export class Photograph {
     }, { signal });
   }
   private showPanel(panel: PhotoPanel) {
+    this.setChoosingDetail(false);
     this.panel = panel;
     for (const id of PHOTO_PANELS) {
       const active = id === panel, tab = this.find(`photo-tab-${id}`);
@@ -278,7 +311,18 @@ export class Photograph {
     for (const { id, neutral } of PHOTO_FRAMING_CONTROLS) this.find<HTMLInputElement>(`photo-${id}`).value = String(neutral);
     this.frame();
   }
+  private setChoosingDetail(value: boolean) {
+    value = value && this.graphicsReady;
+    this.choosingDetail = value; this.detailPress = null;
+    this.find("photo-detail").setAttribute("aria-pressed", String(value));
+    this.find("photo-detail").textContent = value ? "Choose a point…" : "Close detail";
+    this.find("photo-canvas").dataset.detail = String(value);
+  }
+  private framing(): PhotoFraming {
+    return Object.fromEntries(PHOTO_FRAMING_CONTROLS.map(({id}) => [id, Number(this.value(`photo-${id}`))])) as PhotoFraming;
+  }
   private frame() {
+    this.setChoosingDetail(false);
     this.changedFrame();
     for (const { id: controlId } of PHOTO_FRAMING_CONTROLS) {
       const id = `photo-${controlId}`, value = Number(this.value(id));
@@ -313,6 +357,7 @@ export class Photograph {
     this.message(this.showingOriginal ? "Showing the original. PNG and Garden will use this view without the finish." : "Finish applied to the preview, PNG and Garden photo.");
   }
   private changedFrame() {
+    this.setChoosingDetail(false);
     const wasPreparing = this.busy;
     this.frameRevision++; this.imageExport.invalidate(); this.busy = false;
     this.find<HTMLButtonElement>("photo-export").disabled = !this.graphicsReady;
@@ -387,6 +432,7 @@ export class Photograph {
     } catch (error) { this.message(error instanceof Error ? error.message : String(error)); }
   }
   private release(remember = true) {
+    this.setChoosingDetail(false);
     if (remember) this.rememberSetup();
     this.draftReady = false;
     this.session++; this.imageExport.clear(); this.shareData = null; this.sharing = false;

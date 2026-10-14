@@ -1,3 +1,5 @@
+import { createVioletSprig, VIOLET_SPRIG_VERSION } from "./violetSprig.ts";
+import { createIndigoSpire, INDIGO_SPIRE_VERSION } from "./indigoSpire.ts";
 import { createBroadBlade, BROAD_BLADE_VERSION } from "./broadBlade.ts";
 import { createLobedLeaf, LOBED_LEAF_VERSION } from "./lobedLeaf.ts";
 import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
@@ -126,6 +128,9 @@ const noddingFlowerV2: GeneratorDefinition = Object.freeze({ generatorVersion: N
 
 const lobedLeafV1: GeneratorDefinition = Object.freeze({ generatorVersion: LOBED_LEAF_VERSION, generate: createLobedLeaf });
 
+const violetSprigV1: GeneratorDefinition = Object.freeze({ generatorVersion: VIOLET_SPRIG_VERSION, generate: createVioletSprig });
+const indigoSpireV1: GeneratorDefinition = Object.freeze({ generatorVersion: INDIGO_SPIRE_VERSION, generate: createIndigoSpire });
+
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
 // those durable generator definitions.
@@ -148,6 +153,8 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   compactFlowerV1,
   broadBladeV1,
   lobedLeafV1,
+  violetSprigV1,
+  indigoSpireV1,
 ]);
 
 /**
@@ -174,6 +181,8 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "compact-flower", generator: compactFlowerV1 }),
   Object.freeze({ materialId: "broad-blade", generator: broadBladeV1 }),
   Object.freeze({ materialId: "lobed-leaf", generator: lobedLeafV1 }),
+  Object.freeze({ materialId: "violet-sprig", generator: violetSprigV1 }),
+  Object.freeze({ materialId: "indigo-spire", generator: indigoSpireV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

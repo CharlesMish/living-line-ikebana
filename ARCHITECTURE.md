@@ -169,3 +169,13 @@ planting coordinates do not depend on these presentation controls.
 
 See [the photo-workflow report](docs/development/reports/photo-workflow/README.md)
 for the combined evidence and remaining visual acceptance.
+
+## Violet cuttings
+
+`violetSprig.ts` and `indigoSpire.ts` add two deterministic v1 stocks with multiple
+flowering stations, keeping the existing graph and pruning law. Their additive
+forms in `violetBloomGeometry.ts` are closed, derived corollas; catalog appearance,
+tone samples and tray silhouettes resolve by their durable generator version.
+`bellGeometry.ts` refines only the existing nodding-v2 draw while leaving its
+canonical graph and nodding-v1 arrays unchanged. Single flower remains registered
+and accessible under More cuttings. See the [candidate report](docs/development/reports/violet-cuttings/README.md).

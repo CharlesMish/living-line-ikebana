@@ -47,3 +47,6 @@ export const FERN_FROND_RESPONSE = Object.freeze({ rachis: 0.43, stalk: 0.18 });
 
 /** Sparse woody line and subordinate fork; leaf stalks remain rigid under Bend. */
 export const LOBED_LEAF_RESPONSE = Object.freeze({ wood: 0.70, fork: 0.49, stalk: 0.18 });
+/** Low wiry flower arms and a firmer upright flowering axis; copied once. */
+export const VIOLET_SPRIG_RESPONSE = Object.freeze({ stem: 0.40, arm: 0.28, stalk: 0.18 });
+export const INDIGO_SPIRE_RESPONSE = Object.freeze({ stem: 0.54, stalk: 0.18 });

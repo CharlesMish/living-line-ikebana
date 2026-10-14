@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { canonicalCameraPose, orbitCameraPose } from "../../src/app/camera.ts";
 import { validateArrangement } from "../../src/app/garden.ts";
 import { framePhotoCamera } from "../../src/presentation/photoStage.ts";
-import { PHOTO_FRAMING_CONTROLS, NEUTRAL_PHOTO_FRAMING, validatePhotoFraming } from "../../src/presentation/photoFraming.ts";
+import { detailPhotoFraming, PHOTO_CAMERA_MIN_DISTANCE, PHOTO_FRAMING_CONTROLS, NEUTRAL_PHOTO_FRAMING, validatePhotoFraming } from "../../src/presentation/photoFraming.ts";
 import { applyPhotoLighting, PHOTO_LIGHTING, validatePhotoLighting, type PhotoLightRig } from "../../src/presentation/photoLighting.ts";
 import { ThreeStudio, type StudioCameraPose } from "../../src/presentation/ThreeStudio.ts";
 import { fogRangeForDistance } from "../../src/presentation/stageLens.ts";
@@ -35,7 +35,7 @@ test("neutral photograph framing preserves every canonical and rolled reference 
 test("all photo framing extremes yield stable finite poses accepted by real Garden validation", () => {
   for (const view of ["front", "above", "three-quarter"] as const) {
     const base = canonicalCameraPose(view), before = JSON.stringify(base);
-    for (const zoom of [.55, 2.8]) for (const yaw of [-60, 60]) for (const pitch of [-30, 30]) for (const roll of [-12, 12]) {
+    for (const zoom of [.55, 4.8]) for (const yaw of [-60, 60]) for (const pitch of [-30, 30]) for (const roll of [-12, 12]) {
       const pose = framePhotoCamera(base, zoom, 4.8, -4.8, yaw, pitch, roll);
       assert.deepEqual(framePhotoCamera(base, zoom, 4.8, -4.8, yaw, pitch, roll), pose);
       const kept = validateArrangement({ plants: [], successfulPlantOrdinal: 0, camera: pose });
@@ -50,6 +50,48 @@ test("all photo framing extremes yield stable finite poses accepted by real Gard
       assert.ok(radius(pose) < fogRangeForDistance(radius(pose), 15.5).far);
     }
     assert.equal(JSON.stringify(base), before);
+  }
+});
+
+test("detail framing centres the chosen target-plane point for every photo aspect and rolled view", () => {
+  for (const aspect of [4/3, 3/4, 1]) for (const view of ["front", "above", "three-quarter"] as const) {
+    const reference = canonicalCameraPose(view);
+    const framing = {...NEUTRAL_PHOTO_FRAMING, zoom: 1.8, horizontal: .3, vertical: -.25, yaw: 17, roll: 9};
+    const before = JSON.stringify({reference, framing});
+    const current = framePhotoCamera(reference, framing.zoom, framing.horizontal, framing.vertical, framing.yaw, framing.pitch, framing.roll);
+    const camera = cameraFor(current); camera.aspect = aspect; camera.updateProjectionMatrix();
+    for (const [x, y] of [[-.15,.2],[.25,.15],[0,0]]) {
+      const depth = vec(current.target).project(camera).z;
+      const chosen = new THREE.Vector3(x, y, depth).unproject(camera);
+      const next = detailPhotoFraming(reference, framing, x, y, aspect, 44);
+      const detail = framePhotoCamera(reference, next.zoom, next.horizontal, next.vertical, next.yaw, next.pitch, next.roll);
+      const closeCamera = cameraFor(detail); closeCamera.aspect = aspect; closeCamera.updateProjectionMatrix();
+      const projected = chosen.project(closeCamera);
+      assert.ok(Math.abs(projected.x) < 1e-10 && Math.abs(projected.y) < 1e-10, `${view} ${aspect}: chosen detail stays centred`);
+      assert.equal(next.zoom, 3.5); assert.deepEqual(detail.up, current.up);
+      const saved = validateArrangement(JSON.parse(JSON.stringify({plants:[], successfulPlantOrdinal:0, camera:detail}))).camera;
+      assert.deepEqual(saved, detail, "the exact close-up is carried by the existing camera pose");
+    }
+    assert.equal(JSON.stringify({reference, framing}), before);
+  }
+});
+
+test("detail framing respects pan bounds and repeated kept close-ups cannot walk through the target", () => {
+  const reference = canonicalCameraPose("front");
+  const framing = detailPhotoFraming(reference, {...NEUTRAL_PHOTO_FRAMING}, 1, 1, 4/3, 44);
+  assert.ok(Math.abs(framing.horizontal) <= 4.8 && Math.abs(framing.vertical) <= 4.8);
+  let pose = reference;
+  for (let repeat = 0; repeat < 8; repeat++) {
+    pose = framePhotoCamera(pose, 4.8, 0, 0);
+    assert.ok(radius(pose) >= PHOTO_CAMERA_MIN_DISTANCE - 1e-10);
+    assert.ok(pose.position.y >= .12 - 1e-10);
+    assert.deepEqual(framePhotoCamera(pose,1,0,0), pose, "reopening a kept detail does not crop it twice");
+  }
+  const legacyClose = {position:{x:0,y:3,z:.8},target:{x:0,y:3,z:0},up:{x:0,y:1,z:0}};
+  assert.deepEqual(framePhotoCamera(legacyClose,1,0,0), legacyClose);
+  assert.ok(Math.abs(radius(framePhotoCamera(legacyClose,4.8,0,0)) - .8) < 1e-10);
+  for (const values of [[NaN,0,1,44],[0,Infinity,1,44],[2,0,1,44],[0,0,0,44],[0,0,1,180]]) {
+    assert.throws(() => detailPhotoFraming(reference,{...NEUTRAL_PHOTO_FRAMING},...values as [number,number,number,number]), /detail point/);
   }
 });
 

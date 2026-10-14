@@ -33,6 +33,9 @@ covers retain their existing resolution/padding. No Garden schema migration.
   overflow, open/return and byte-identical storage. Results belong to the exact
   PR CI head, not this local CPU report.
 - No physical-phone/Safari or frame-time evidence in this change.
+- First rendered run caught overlapping implicit grid rows at 320px, short
+  landscape and enlarged text. Rows now size to their contents explicitly;
+  the browser check also asserts non-overlap and that each card contains its image.
 
 Owner check: keep one portrait photograph, open Garden → Print wall, try both
 finishes, open a moment and return to your bowl. Verify that the frame is uncropped

@@ -28,6 +28,14 @@ export async function checkPrintWall({ page, activate, capture, readState }) {
   await capture("garden-oak-wall");
   await activate(page.locator("#wall-paper"));
   assert.equal(await page.locator("#wall-paper").getAttribute("aria-pressed"), "true");
+  const prints = await page.locator(".wall-print").evaluateAll(elements => elements.map(el => {
+    const r = el.getBoundingClientRect(), img = el.querySelector("img").getBoundingClientRect();
+    return { x: r.x, y: r.y, right: r.right, bottom: r.bottom, imageBottom: img.bottom };
+  }));
+  for (let i = 0; i < prints.length; i++) {
+    const a = prints[i]; assert.ok(a.imageBottom <= a.bottom, "Print contains its image");
+    for (const b of prints.slice(i + 1)) assert.ok(a.right <= b.x || b.right <= a.x || a.bottom <= b.y || b.bottom <= a.y, "Print cards never overlap");
+  }
   await capture("garden-paper-wall");
   await activate(page.locator(".wall-print").first());
   assert.equal(await page.locator("#wall-detail").isVisible(), true);

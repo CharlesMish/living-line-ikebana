@@ -17,7 +17,7 @@
 .wall-finishes button { background: transparent; font-size: .8rem; padding: .35rem .7rem; }
 .wall-finishes [aria-pressed="true"] { background: #fcfaf5; border-color: #818574; }
 .wall-collection, .wall-detail { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; }
-.wall-collection { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); align-content: start; align-items: start; gap: 2.2rem; padding: 1.7rem 2rem 2.5rem; }
+.wall-collection { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); grid-auto-rows: max-content; align-content: start; align-items: start; gap: 2.2rem; padding: 1.7rem 2rem 2.5rem; }
 .garden-wall .wall-print { background: none; border: 0; padding: 0; border-radius: 0; width: 100%; max-width: 26rem; justify-self: center; color: inherit; }
 .garden-wall .wall-print:hover { background: none; }
 .wall-mat { display: block; border: .6rem solid #836449; padding: clamp(.85rem, 2vw, 1.5rem); background: #fbf8f0; box-shadow: inset 0 0 0 1px #b9a68d, 0 2px 2px #51453740, 0 12px 20px -10px #3a32267a; }

@@ -6,9 +6,11 @@ import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-export async function checkVioletCuttings({ browser, baseURL, output }) {
-  const report = { status: "RUNNING", input: "Assisted keyboard seating, UI tone/turn/photo/Garden controls; read-only projected branch station for prune-cancel", cases: [] };
-  for (const [material, tone] of [["violet-sprig", "lavender"], ["indigo-spire", "blue"], ["nodding-flower", "violet"]]) {
+export async function checkVioletCuttings({ browser, baseURL, output,
+  cases = [["violet-sprig", "lavender"], ["indigo-spire", "blue"], ["nodding-flower", "violet"]],
+  prefix = "violet-study", reportName = "violet-cuttings", extended = false }) {
+  const report = { status: "RUNNING", input: `Assisted keyboard seating, UI tone/turn/photo/Garden controls; read-only projected branch station for prune-cancel${extended ? ", ordinary prune release and Undo" : ""}`, cases: [] };
+  for (const [material, tone] of cases) {
     const context = await browser.newContext({ viewport: { width: 1100, height: 850 }, acceptDownloads: true, reducedMotion: "reduce" });
     const page = await context.newPage(); page.setDefaultTimeout(10_000);
     const record = { material, tone, status: "RUNNING", images: [], errors: [] };
@@ -18,7 +20,7 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
     const state = () => page.evaluate(() => ({ canonical: window.__IKEBANA_TEST__.getCanonicalSnapshot(), audit: window.__IKEBANA_TEST__.getAutosaveAudit() }));
     const capture = async suffix => {
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      const file = `violet-study-${material}-${suffix}.png`;
+      const file = `${prefix}-${material}-${suffix}.png`;
       await page.screenshot({ path: path.join(output, file) }); record.images.push(file);
     };
     const studio = async id => { await page.getByTestId("more-toggle").click(); await page.locator(`#${id}`).click(); };
@@ -31,6 +33,7 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
       await page.getByTestId("material-source").focus(); await page.keyboard.press("Enter");
       await page.waitForFunction(() => window.__IKEBANA_TEST__.getCanonicalSnapshot().plants.length === 1);
       const seated = await state();
+      record.fixture = seated.canonical.plants;
       await capture("front-natural");
       await view("three-quarter"); await capture("three-quarter-natural");
       await view("front");
@@ -47,6 +50,16 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
       await page.keyboard.press("Escape"); await page.mouse.up();
       await page.mouse.move(20, 400);
       assert.deepEqual(await state(), beforePrune, "cancel neither changes the graph nor saves");
+      if (extended) {
+        await page.mouse.move(target.x, target.y); await page.mouse.down(); await page.mouse.up();
+        await page.mouse.move(20, 400);
+        assert.notDeepEqual((await state()).canonical.plants, seated.canonical.plants, "real prune release changes the cutting");
+        await capture("prune-committed");
+        await page.getByTestId("edit-toggle").click(); await page.getByTestId("undo-edit").click();
+        if (await page.locator("#edit-options").isVisible()) await page.keyboard.press("Escape");
+        assert.deepEqual((await state()).canonical, seated.canonical, "Undo restores full botanical history and insertion identity");
+        record.pruneUndo = "PASS";
+      }
       await page.getByTestId("tool-shape").click();
       for (const look of ["natural", tone]) {
         if (look !== "natural") {
@@ -64,6 +77,13 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
         // whose Closer range is wider. Step keys use the real native control.
         for (let i = 0; i < 225; i++) await page.keyboard.press("ArrowRight");
         await capture(`photo-${look}`);
+        if (extended && look === "natural") {
+          for (const angle of ["front", "above"]) {
+            await page.locator("#photo-view").selectOption(angle);
+            await capture(`photo-${angle}`);
+          }
+          await page.locator("#photo-view").selectOption("three-quarter");
+        }
         await page.locator("#photo-return").click();
       }
       // Twelve explicit 15-degree cutting turns expose the reverse in Front.
@@ -72,12 +92,16 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
       for (let i = 0; i < 12; i++) await page.locator("#turn-cutting-right").click();
       await page.keyboard.press("Escape");
       await capture("rear-toned");
+      if (extended) {
+        await studio("photo-open"); await page.locator("#photo-tab-frame").click();
+        await capture("photo-rear"); await page.locator("#photo-return").click();
+      }
       const saved = await state();
       await studio("garden-open"); await page.locator("#garden-name").fill(`${material} rendered study`);
       await page.locator("#garden-keep").click();
       await page.locator("#garden-backups > summary").click();
       const downloadPromise = page.waitForEvent("download"); await page.locator("#garden-export").click();
-      const download = await downloadPromise, file = path.join(output, `violet-study-${material}-garden.json`);
+      const download = await downloadPromise, file = path.join(output, `${prefix}-${material}-garden.json`);
       await download.saveAs(file);
       const backup = JSON.parse(await readFile(file, "utf8"));
       assert.equal(backup.entries.length, 1);
@@ -95,11 +119,11 @@ export async function checkVioletCuttings({ browser, baseURL, output }) {
       report.status = "FAIL";
       throw error;
     } finally {
-      await writeFile(path.join(output, "violet-cuttings.json"), JSON.stringify(report, null, 2));
+      await writeFile(path.join(output, `${reportName}.json`), JSON.stringify(report, null, 2));
       await context.close();
     }
   }
   report.status = "PASS";
-  await writeFile(path.join(output, "violet-cuttings.json"), JSON.stringify(report, null, 2));
+  await writeFile(path.join(output, `${reportName}.json`), JSON.stringify(report, null, 2));
   return report;
 }

@@ -11,7 +11,7 @@ test("tone samples use resolved material part colors for every preset and durabl
     const expected = resolveBotanicalAppearance(version, getMaterialAppearance(version), { [family.id]: tone.id });
     const colorByPart = new Map([
       ["Wood", expected.branchColors.trunk], ["Stem", expected.branchColors.trunk], ["Leaves", expected.leaf.color],
-      ["Flowers", expected.bloom.color], ["Berries", expected.berry?.color], ["Buds", expected.budColor],
+      ["Flowers", expected.bloom.color], ["Berries", expected.berry?.color], ["Buds", expected.budColor], ["Seed discs", expected.seedpod?.color], ["Rims", expected.seedpod?.rimColor],
     ]);
     for (const part of actual.parts) {
       assert.equal(part.color, hex(colorByPart.get(part.label)!));

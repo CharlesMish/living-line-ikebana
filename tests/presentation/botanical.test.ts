@@ -238,7 +238,7 @@ test("every material's leaf and bloom acquisition proxies contain their visible 
       }
     }
   }
-  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:cupped", "bloom:indigo-floret", "bloom:open-cup", "bloom:tufted", "bloom:violet-floret", "leaf:elliptic", "leaf:lanceolate", "leaf:lobed", "leaf:pinnate"]);
+  assert.deepEqual([...forms].sort(), ["bloom:bell", "bloom:compact-cup", "bloom:cupped", "bloom:indigo-floret", "bloom:open-cup", "bloom:spray-cup", "bloom:starry-head", "bloom:tufted", "bloom:violet-floret", "leaf:elliptic", "leaf:lanceolate", "leaf:lobed", "leaf:pinnate"]);
 });
 
 test("open-face bloom is flatter than the cupped reference and follows the material frame, not the camera", async () => {

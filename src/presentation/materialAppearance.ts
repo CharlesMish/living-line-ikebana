@@ -30,6 +30,8 @@ export interface MaterialAppearance {
      */
     tuftScatter?: Readonly<{ azimuth: number; scale: number; tilt: number }>;
   }>;
+  /** Papery dried fruit partitions. Exact visible surfaces own acquisition. */
+  readonly seedpod?: Readonly<{ color: number; rimColor: number; roughness: number }>;
   /** Present only for a generator that emits berry organs. One sphere per organ. */
   readonly berry?: Readonly<{
     color: number;
@@ -104,12 +106,9 @@ const blossomSpray: MaterialAppearance = Object.freeze({
   stemRoughness: 0.66,
   // No leaves are generated. The record still requires a leaf slot.
   leaf: flowering.leaf,
-  // Existing tufted surface and the flower-volume acquisition envelope.
-  // Separation is topological. This does not add a smaller proxy or a new mesh.
+  // An open six-petal flower inside the unchanged acquisition envelope.
   bloom: Object.freeze({
-    form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56,
-    // Wider than the flower-volume head so separated accents are not one stamp.
-    tuftScatter: Object.freeze({ azimuth: 0.22, scale: 0.09, tilt: 0.08 }),
+    form: "spray-cup", color: 0xf6d0d8, roughness: 0.75, hitRadius: 0.56,
   }),
 });
 const compactFlower: MaterialAppearance = Object.freeze({
@@ -119,9 +118,8 @@ const compactFlower: MaterialAppearance = Object.freeze({
   leaf: Object.freeze({ form: "elliptic", color: 0x436248, veinColor: 0x8b9d66,
     roughness: 0.74, ...ellipticLeafHit }),
   bloom: Object.freeze({
-    form: "tufted", color: 0xb8667a, roughness: 0.68, hitRadius: 0.56,
-    // One cup with a modestly uneven rim, rather than five overlapping cups.
-    tuftScatter: Object.freeze({ azimuth: 0.16, scale: 0.065, tilt: 0.06 }),
+    // Rounder, deeper and 12% wider; its saved organ scale and hit sphere stay exact.
+    form: "compact-cup", color: 0xb8667a, roughness: 0.75, hitRadius: 0.56,
   }),
 });
 const noddingFlower: MaterialAppearance = Object.freeze({
@@ -198,12 +196,27 @@ const indigoSpire: MaterialAppearance = Object.freeze({
     hitRadius: 0.56, hitCenterY: 0.5 }),
   bloom: Object.freeze({ form: "indigo-floret", color: 0x6655a6, roughness: 0.87, hitRadius: 0.32, hitCenterY: 0.17 }),
 });
+const starryPincushion: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x65775a, lateral: 0x718264, twig: 0x718264, pedicel: 0x7a8b6c, petiole: 0x718264 }),
+  stemRoughness: 0.84,
+  leaf: Object.freeze({ form: "lobed", color: 0x5e7453, veinColor: 0x9da982, roughness: 0.81,
+    hitRadius: 0, hitCenterY: 0, surfacePicking: true }),
+  bloom: Object.freeze({ form: "starry-head", color: 0xf1ead5, roughness: 0.86, hitRadius: 0.36 }),
+});
+const silverSeed: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x837052, lateral: 0x9a8261, twig: 0x9a8261, pedicel: 0xac9777, petiole: 0xac9777 }),
+  stemRoughness: 0.96,
+  leaf: flowering.leaf, bloom: flowering.bloom,
+  seedpod: Object.freeze({ color: 0xe0dfce, rimColor: 0xb3a485, roughness: 0.91 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "lobed-leaf-v1": lobedLeaf,
   "violet-sprig-v1": violetSprig,
   "indigo-spire-v1": indigoSpire,
+  "starry-pincushion-v1": starryPincushion,
+  "silver-seed-v1": silverSeed,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,

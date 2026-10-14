@@ -60,7 +60,7 @@ test("compact flower keeps exactly one terminal head on a separate stalk, determ
   }
   assert.equal(new Set(strings).size, 3, "different seeds produce different persistent specimens");
   const appearance = getMaterialAppearance(COMPACT_FLOWER_VERSION);
-  assert.equal(appearance.bloom.form, "tufted");
+  assert.equal(appearance.bloom.form, "compact-cup");
   assert.equal(appearance.bloom.hitRadius, getMaterialAppearance("flower-volume-v1").bloom.hitRadius);
 });
 

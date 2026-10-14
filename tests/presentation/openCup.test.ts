@@ -49,7 +49,7 @@ test("authored single-flower petals are closed, cupped, deterministic and bounde
 
 test("single flower stays distinct from Compact, updates tones and exposes front/rear head grips", () => {
   assert.equal(getMaterialAppearance("single-flower-v1").bloom.form, "open-cup");
-  assert.equal(getMaterialAppearance("compact-flower-v1").bloom.form, "tufted");
+  assert.equal(getMaterialAppearance("compact-flower-v1").bloom.form, "compact-cup");
   assert.equal(getMaterialAppearance("one-branch-v1").bloom.form, "cupped");
   for (const seed of [8278, 9255, 10232]) {
     const graph = createSingleFlower("plant-1", seed, { x: 0, y: 0.55, z: 0 });

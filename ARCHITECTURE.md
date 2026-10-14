@@ -138,7 +138,11 @@ camera-axis tilt inside the existing snapshot/coordinator transaction.
 with thin closed petal surfaces, a rear receptacle and attached stamens. This
 replaces its shallow presentation dish while preserving `single-flower-v1`,
 the material frame, hit envelope and direct-head tilt. Flowering branch retains
-its original seven-petal surface, and Compact flower keeps its dense tuft.
+its original seven-petal surface. Compact and Blossom spray use distinct closed
+corollas from `authoredFlowerGeometry.ts`; each petal occupies its own convex
+sector so bounded seed variation cannot pierce its neighbours. Their graphs,
+organ frames and acquisition spheres stay unchanged; archived flower-volume
+keeps the older instanced tuft.
 
 `botanicalTones.ts` defines per-material presentation recipes. `photoGrade.ts`
 applies a neutral-bypassed GPU finish to the completed scene framebuffer.
@@ -179,3 +183,21 @@ tone samples and tray silhouettes resolve by their durable generator version.
 `bellGeometry.ts` refines only the existing nodding-v2 draw while leaving its
 canonical graph and nodding-v1 arrays unchanged. Single flower remains registered
 and accessible under More cuttings. See the [candidate report](docs/development/reports/violet-cuttings/README.md).
+
+## Starry pincushion study
+
+`core/starryPincushion.ts` adds `starry-pincushion-v1`: three flower heads on
+separately prunable arms, using existing branch, bloom and leaf records.
+`presentation/starryHeadGeometry.ts` derives one merged, closed head surface
+with ten bracts and a compact floret dome. Tone recipes and tray/preview
+silhouettes are presentation only. All frozen profile definitions stay intact.
+
+## Silver seed spray study
+
+`core/silverSeed.ts` adds versioned sparse dried stock and the semantic `seedpod`
+organ kind. The existing serializer, validator and craft cues explicitly accept
+that kind. `presentation/seedDiscGeometry.ts` constructs a closed shallow
+partition and a rim/vein mesh with both sides authored. `ThreeStudio` merges
+copies of those exact surfaces for picking and routes them to the existing
+supporting stalk operation. Scene tones have distinct membrane/rim colors;
+there are no new persistent graph fields, texture files or alpha-sort layers.

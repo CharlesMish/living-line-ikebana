@@ -18,6 +18,7 @@ import { checkWorkingSaveFeedback } from "./working-save-feedback.mjs";
 import { checkPrintWall } from "./print-wall.mjs";
 import { checkPhotoDetail } from "./photo-detail.mjs";
 import { checkVioletCuttings } from "./violet-cuttings.mjs";
+import { checkFlowerCraft } from "./flower-craft.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -314,6 +315,7 @@ try {
   record.browser = browser.version();
   for (const config of cases) await exercise(config);
   record.violetCuttings = await checkVioletCuttings({ browser, baseURL, output });
+  record.flowerCraft = await checkFlowerCraft({ browser, baseURL, output });
   record.prunePreview = await runPrunePreviewComparison({ browser, baseURL, output });
   assert.equal(record.prunePreview.status, "PASS", JSON.stringify(record.prunePreview));
 } catch (error) {

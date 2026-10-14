@@ -50,3 +50,8 @@ export const LOBED_LEAF_RESPONSE = Object.freeze({ wood: 0.70, fork: 0.49, stalk
 /** Low wiry flower arms and a firmer upright flowering axis; copied once. */
 export const VIOLET_SPRIG_RESPONSE = Object.freeze({ stem: 0.40, arm: 0.28, stalk: 0.18 });
 export const INDIGO_SPIRE_RESPONSE = Object.freeze({ stem: 0.54, stalk: 0.18 });
+
+/** Light branching flower stock with firm individual head stalks. */
+export const STARRY_PINCUSHION_RESPONSE = Object.freeze({ stem: 0.44, arm: 0.31, stalk: 0.18 });
+/** Dried seed stock holds its sparse structure; stalks remain rigid under Bend. */
+export const SILVER_SEED_RESPONSE = Object.freeze({ stem: 0.68, arm: 0.56, stalk: 0.18 });

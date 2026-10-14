@@ -138,7 +138,11 @@ camera-axis tilt inside the existing snapshot/coordinator transaction.
 with thin closed petal surfaces, a rear receptacle and attached stamens. This
 replaces its shallow presentation dish while preserving `single-flower-v1`,
 the material frame, hit envelope and direct-head tilt. Flowering branch retains
-its original seven-petal surface, and Compact flower keeps its dense tuft.
+its original seven-petal surface. Compact and Blossom spray use distinct closed
+corollas from `authoredFlowerGeometry.ts`; each petal occupies its own convex
+sector so bounded seed variation cannot pierce its neighbours. Their graphs,
+organ frames and acquisition spheres stay unchanged; archived flower-volume
+keeps the older instanced tuft.
 
 `botanicalTones.ts` defines per-material presentation recipes. `photoGrade.ts`
 applies a neutral-bypassed GPU finish to the completed scene framebuffer.

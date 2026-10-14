@@ -1,3 +1,4 @@
+import { createAuthoredFlowerCorollaGeometry, createAuthoredFlowerCalyxGeometry, createAuthoredFlowerFilamentGeometry } from "./authoredFlowerGeometry.ts";
 import { createVioletFloretGeometry, createIndigoFloretGeometry } from "./violetBloomGeometry.ts";
 import { applyPhotoLighting, disposePhotoLighting, validatePhotoLighting, type PhotoLightRig, type PhotoLightingId } from "./photoLighting.ts";
 import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
@@ -1008,7 +1009,12 @@ export class ThreeStudio {
         group.add(bell);
       } else {
         const profile = bloomSurfaceProfile(bloom.form);
-        if (bloom.form === "open-cup") {
+        const authored = bloom.form === "compact-cup" || bloom.form === "spray-cup";
+        if (bloom.form === "compact-cup" || bloom.form === "spray-cup") {
+          const petals = new THREE.Mesh(createAuthoredFlowerCorollaGeometry(seed, bloom.form), petalMaterial);
+          petals.castShadow = !pending;
+          group.add(petals);
+        } else if (bloom.form === "open-cup") {
           const petals = new THREE.Mesh(createOpenCupCorollaGeometry(seed), petalMaterial);
           petals.castShadow = !pending;
           group.add(petals);
@@ -1050,8 +1056,10 @@ export class ThreeStudio {
           }
         }
         group.add(new THREE.Mesh(
-          bloom.form === "open-cup" ? createOpenCupCalyxGeometry(seed) : createCalyxGeometry(seed, bloom.form),
-          bodyMaterial(0x57734d, 0.82, bloom.form !== "open-cup"),
+          bloom.form === "compact-cup" || bloom.form === "spray-cup"
+            ? createAuthoredFlowerCalyxGeometry(seed, bloom.form)
+            : bloom.form === "open-cup" ? createOpenCupCalyxGeometry(seed) : createCalyxGeometry(seed, bloom.form),
+          bodyMaterial(0x57734d, 0.82, !authored && bloom.form !== "open-cup"),
         ));
         const center = new THREE.Mesh(
           new THREE.SphereGeometry(profile.centerRadius, 12, 8),
@@ -1062,6 +1070,9 @@ export class ThreeStudio {
         group.add(center);
         if (bloom.form === "open-cup") {
           group.add(new THREE.Mesh(createOpenCupFilamentGeometry(), bodyMaterial(0xc49b56, 0.82)));
+        }
+        if (authored) {
+          group.add(new THREE.Mesh(createAuthoredFlowerFilamentGeometry(), bodyMaterial(0xc4aa68, 0.84)));
         }
         // One instanced mesh adds a quiet ring of anthers, owned by this bloom.
         const anthers = new THREE.InstancedMesh(

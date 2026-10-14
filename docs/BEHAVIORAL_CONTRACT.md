@@ -652,3 +652,13 @@ unknown materials/tones rather than discard them. Single flower moves into More
 cuttings; its generator, frame, direct-head control and saved graphs stay intact.
 Nodding v2's thinner, lobed bell is appearance only; v1's arrays and both versions'
 canonical graph, acquisition envelope and shaping remain unchanged.
+
+### Fitted Compact and Blossom spray petals — October 14 candidate
+
+Compact and both Blossom spray versions use authored, closed petal surfaces with
+nonintersecting polar sectors. Compact's rendered flower is approximately 12%
+wider and more cupped; spray has a lighter, six-petal opening. This intentionally
+revises those derived appearances only. Canonical graph/seed/scale/spin/frame,
+pedicel acquisition, hit envelopes, pruning and saved scenes are unchanged.
+Historical flower-volume rendering remains exact. This does not add petal or
+leaf collision protection between separate organs. See the [petal report](development/reports/authored-flower-petals/README.md).

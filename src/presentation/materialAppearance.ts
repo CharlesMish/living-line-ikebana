@@ -104,12 +104,9 @@ const blossomSpray: MaterialAppearance = Object.freeze({
   stemRoughness: 0.66,
   // No leaves are generated. The record still requires a leaf slot.
   leaf: flowering.leaf,
-  // Existing tufted surface and the flower-volume acquisition envelope.
-  // Separation is topological. This does not add a smaller proxy or a new mesh.
+  // An open six-petal flower inside the unchanged acquisition envelope.
   bloom: Object.freeze({
-    form: "tufted", color: 0xf6d0d8, roughness: 0.66, hitRadius: 0.56,
-    // Wider than the flower-volume head so separated accents are not one stamp.
-    tuftScatter: Object.freeze({ azimuth: 0.22, scale: 0.09, tilt: 0.08 }),
+    form: "spray-cup", color: 0xf6d0d8, roughness: 0.75, hitRadius: 0.56,
   }),
 });
 const compactFlower: MaterialAppearance = Object.freeze({
@@ -119,9 +116,8 @@ const compactFlower: MaterialAppearance = Object.freeze({
   leaf: Object.freeze({ form: "elliptic", color: 0x436248, veinColor: 0x8b9d66,
     roughness: 0.74, ...ellipticLeafHit }),
   bloom: Object.freeze({
-    form: "tufted", color: 0xb8667a, roughness: 0.68, hitRadius: 0.56,
-    // One cup with a modestly uneven rim, rather than five overlapping cups.
-    tuftScatter: Object.freeze({ azimuth: 0.16, scale: 0.065, tilt: 0.06 }),
+    // Rounder, deeper and 12% wider; its saved organ scale and hit sphere stay exact.
+    form: "compact-cup", color: 0xb8667a, roughness: 0.75, hitRadius: 0.56,
   }),
 });
 const noddingFlower: MaterialAppearance = Object.freeze({

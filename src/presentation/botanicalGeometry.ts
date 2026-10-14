@@ -23,7 +23,8 @@ import * as THREE from "three";
  *   five-petal reference dish whose local +Z follows the supporting material
  *   frame. Single flower now uses `open-cup`, the separately authored corolla
  *   and rear receptacle in openCupGeometry.ts; its graph and facing stay exact.
- *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
+ *   `compact-cup` and `spray-cup` use separate closed sector petals in
+ *   authoredFlowerGeometry.ts. `tufted` remains the flower-volume head draw.
  *   Instance scatter, when the appearance asks for it, varies only the rebuildable
  *   petal matrices. `bell` is one shell whose mouth continues local +Y. A short
  *   sleeve of that same shell sits behind the attachment so the neck reads as
@@ -125,7 +126,7 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
-export type BloomForm = "cupped" | "open-face" | "open-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret";
+export type BloomForm = "cupped" | "open-face" | "open-cup" | "compact-cup" | "spray-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
 export type PinnateDraw = "baseline" | "tapered" | "quilled";
@@ -168,6 +169,13 @@ export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
     return {
       petalCount: 5, centerRadius: 0.105, centerScaleZ: 0.56, centerZ: 0.05, centerColor: 0x8a623e,
       antherRadius: 0.014, antherRing: 0.14, antherZ: 0.095, antherCount: 18,
+    };
+  }
+  if (form === "compact-cup" || form === "spray-cup") {
+    return {
+      petalCount: form === "compact-cup" ? 8 : 6,
+      centerRadius: 0.061, centerScaleZ: 0.58, centerZ: 0.038, centerColor: 0x81556a,
+      antherRadius: 0.011, antherRing: 0.073, antherZ: 0.066, antherCount: 10,
     };
   }
   if (form === "tufted") {
@@ -698,6 +706,7 @@ export function tuftInstancePose(
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
   if (form === "violet-floret" || form === "indigo-floret") throw new Error("violet florets are complete authored corollas, not repeated petals");
+  if (form === "compact-cup" || form === "spray-cup") throw new Error("authored flower is a complete corolla, not a repeated petal");
   if (form === "open-cup") throw new Error("open-cup is a complete authored corolla, not a repeated petal");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal");

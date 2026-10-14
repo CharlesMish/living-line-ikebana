@@ -1,0 +1,144 @@
+{
+  "sourceFile": "browser-all-four-count12.json",
+  "reportVersion": 2,
+  "schema": "living-line-workbench-report",
+  "mode": "workbench",
+  "capturedAt": "2026-09-21T15:47:44.351Z",
+  "reviewer": "round-2-independent-review",
+  "head": "6c6abd61919754976d64f1a11d590c059056717e",
+  "loadedFixture": {
+    "profileId": "all-four",
+    "seed": 8278,
+    "count": 12,
+    "materialSequence": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ],
+    "composition": {
+      "materialSequence": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower"
+      ],
+      "assignedMaterialIds": [
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower",
+        "flowering-branch",
+        "leafy-shoot",
+        "bare-branch",
+        "single-flower"
+      ],
+      "countsByMaterialId": {
+        "flowering-branch": 3,
+        "leafy-shoot": 3,
+        "bare-branch": 3,
+        "single-flower": 3
+      },
+      "balancedEqualCopies": true,
+      "warnings": []
+    },
+    "bowlMatchesLoadedFixture": true,
+    "constructionCount": 12
+  },
+  "presentation": {
+    "plantIds": [
+      "plant-1",
+      "plant-10",
+      "plant-11",
+      "plant-12",
+      "plant-2",
+      "plant-3",
+      "plant-4",
+      "plant-5",
+      "plant-6",
+      "plant-7",
+      "plant-8",
+      "plant-9"
+    ],
+    "pendingPlantId": null,
+    "pendingBranchVisualCount": 0,
+    "pendingOrganVisualCount": 0,
+    "branchVisualCount": 96,
+    "organVisualCount": 60
+  },
+  "arrangementPlantCount": 12,
+  "renderer": {
+    "calls": 598,
+    "triangles": 84674,
+    "lines": 0,
+    "geometries": 442,
+    "textures": 2,
+    "programs": 13,
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800
+    },
+    "pixelRatio": 1,
+    "pixelRatioCap": 1.8,
+    "note": "Draw calls, triangles, geometries, textures and programs are resource counts from one render. They are not FPS, frame time, or phone-performance measurements."
+  },
+  "capture": {
+    "status": "captured",
+    "cssViewport": {
+      "width": 1280,
+      "height": 800,
+      "source": "canvas-client-rect"
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 800,
+      "source": "canvas-drawing-buffer"
+    },
+    "pixelRatio": {
+      "device": 1,
+      "renderer": 1,
+      "rendererCap": 1.8,
+      "note": "devicePixelRatio is not a device-mode label; renderer pixel ratio may be capped below the device ratio."
+    },
+    "browserWindow": {
+      "width": 1280,
+      "height": 800,
+      "source": "window-inner"
+    },
+    "visualViewport": {
+      "width": 1280,
+      "height": 800,
+      "scale": 1,
+      "source": "window.visualViewport"
+    },
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.0.0 Safari/537.36",
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 3.7,
+        "z": 15
+      },
+      "target": {
+        "x": 0,
+        "y": 2.55,
+        "z": 0
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    "notes": [
+      "CSS viewport is the canvas layout size (getBoundingClientRect), not the browser window and not a device-mode label.",
+      "Browser window innerWidth/innerHeight is the window, not the canvas CSS viewport.",
+      "Drawing-buffer width/height are the WebGL backing store pixels, not CSS pixels.",
+      "devicePixelRatio is the browser-reported ratio; renderer pixel ratio may be capped separately.",
+      "Draw calls and triangles are resource counts from one render, not FPS or phone performance."
+    ]
+  }
+}

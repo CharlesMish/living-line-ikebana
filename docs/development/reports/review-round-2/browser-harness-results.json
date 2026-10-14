@@ -1,0 +1,406 @@
+[
+  {
+    "name": "tray-320-chrome-not-growing-with-materials",
+    "status": "pass",
+    "closedHeight": 190.59375,
+    "openHeight": 190.59375,
+    "optionsHeight": 189.1875,
+    "panelBelowRail": false,
+    "materialsOverflow": {
+      "scrollWidth": 98,
+      "clientWidth": 98,
+      "text": "Materials"
+    },
+    "note": "persistent rail 190.59375px closed / 190.59375px open; palette panel 189.1875px"
+  },
+  {
+    "name": "source-vs-palette-bindings",
+    "status": "pass",
+    "chromeHeight": 190.59375,
+    "sourceMaterialId": "flowering-branch",
+    "sourceTestId": "material-source",
+    "choiceMaterialIds": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "choiceIds": [
+      "flowering-branch",
+      "leafy-shoot",
+      "bare-branch",
+      "single-flower"
+    ],
+    "materialsLabel": "Materials",
+    "materialsOverflow": {
+      "scrollWidth": 98,
+      "clientWidth": 98,
+      "text": "Materials"
+    }
+  },
+  {
+    "name": "tray-390-chrome-not-growing-with-materials",
+    "status": "pass",
+    "closedHeight": 179.78125,
+    "openHeight": 179.78125
+  },
+  {
+    "name": "select-flowering-branch-does-not-insert",
+    "status": "pass",
+    "sourceId": "flowering-branch"
+  },
+  {
+    "name": "invalid-release-flowering-branch",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0,
+    "plants": 0
+  },
+  {
+    "name": "escape-cancel-flowering-branch",
+    "status": "pass",
+    "heldOp": "insert",
+    "afterEscOrdinal": 0,
+    "laterOrdinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "interrupted-drag-flowering-branch",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "valid-seat-flowering-branch",
+    "status": "fail",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "select-leafy-shoot-does-not-insert",
+    "status": "pass",
+    "sourceId": "leafy-shoot"
+  },
+  {
+    "name": "invalid-release-leafy-shoot",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0,
+    "plants": 0
+  },
+  {
+    "name": "escape-cancel-leafy-shoot",
+    "status": "pass",
+    "heldOp": "insert",
+    "afterEscOrdinal": 0,
+    "laterOrdinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "interrupted-drag-leafy-shoot",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "valid-seat-leafy-shoot",
+    "status": "fail",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "select-bare-branch-does-not-insert",
+    "status": "pass",
+    "sourceId": "bare-branch"
+  },
+  {
+    "name": "invalid-release-bare-branch",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0,
+    "plants": 0
+  },
+  {
+    "name": "escape-cancel-bare-branch",
+    "status": "pass",
+    "heldOp": "insert",
+    "afterEscOrdinal": 0,
+    "laterOrdinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "interrupted-drag-bare-branch",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "valid-seat-bare-branch",
+    "status": "fail",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "select-single-flower-does-not-insert",
+    "status": "pass",
+    "sourceId": "single-flower"
+  },
+  {
+    "name": "invalid-release-single-flower",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0,
+    "plants": 0
+  },
+  {
+    "name": "escape-cancel-single-flower",
+    "status": "pass",
+    "heldOp": "insert",
+    "afterEscOrdinal": 0,
+    "laterOrdinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "interrupted-drag-single-flower",
+    "status": "pass",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "valid-seat-single-flower",
+    "status": "fail",
+    "ordinal": 0,
+    "writes": 0
+  },
+  {
+    "name": "keyboard-palette-and-source-activation",
+    "status": "pass",
+    "afterKeySelect": {
+      "selected": "bare-branch",
+      "source": "bare-branch",
+      "ordinal": 0
+    },
+    "ordinal": 1,
+    "generator": "bare-branch-v1"
+  },
+  {
+    "name": "garden-isolation-bare-branch",
+    "status": "pass",
+    "viewing": {
+      "posture": "step-back",
+      "trayDisabled": true,
+      "status": "A kept moment. Orbit or pan to look; make a copy to change it.",
+      "gardenViewing": "true"
+    },
+    "cutChanged": true,
+    "workingStillCut": true,
+    "originalUncut": true,
+    "viewedMatchesGarden": true,
+    "pruneHeldOp": "prune",
+    "afterCutInactive": [],
+    "reloadedHash": "e87395dc"
+  },
+  {
+    "name": "garden-isolation-single-flower",
+    "status": "fail",
+    "viewing": {
+      "posture": "step-back",
+      "trayDisabled": true,
+      "status": "A kept moment. Orbit or pan to look; make a copy to change it.",
+      "gardenViewing": "true"
+    },
+    "cutChanged": true,
+    "workingStillCut": true,
+    "originalUncut": true,
+    "viewedMatchesGarden": true,
+    "pruneHeldOp": "prune",
+    "afterCutInactive": [],
+    "reloadedHash": "35d2e909"
+  },
+  {
+    "name": "garden-isolation-flowering-branch",
+    "status": "fail",
+    "viewing": {
+      "posture": "step-back",
+      "trayDisabled": true,
+      "status": "A kept moment. Orbit or pan to look; make a copy to change it.",
+      "gardenViewing": "true"
+    },
+    "cutChanged": true,
+    "workingStillCut": true,
+    "originalUncut": true,
+    "viewedMatchesGarden": true,
+    "pruneHeldOp": "prune",
+    "afterCutInactive": [],
+    "reloadedHash": "d968e00b"
+  },
+  {
+    "name": "garden-isolation-leafy-shoot",
+    "status": "fail",
+    "viewing": {
+      "posture": "step-back",
+      "trayDisabled": true,
+      "status": "A kept moment. Orbit or pan to look; make a copy to change it.",
+      "gardenViewing": "true"
+    },
+    "cutChanged": true,
+    "workingStillCut": true,
+    "originalUncut": true,
+    "viewedMatchesGarden": true,
+    "pruneHeldOp": "prune",
+    "afterCutInactive": [],
+    "reloadedHash": "36577295"
+  },
+  {
+    "name": "held-prune-escape-single-flower",
+    "status": "pass",
+    "heldOp": "prune",
+    "laterHashEqual": true,
+    "writes": 1,
+    "note": "held prune preview acquired"
+  },
+  {
+    "name": "step-back-blocks-editing",
+    "status": "pass",
+    "chrome": {
+      "craftHidden": "true",
+      "sourceDisabled": false,
+      "materialsDisabled": false
+    },
+    "ordinal": 0
+  },
+  {
+    "name": "workbench-picker-named-profiles",
+    "status": "pass",
+    "options": [
+      {
+        "value": "flowering-branch",
+        "label": "flowering branch",
+        "disabled": false
+      },
+      {
+        "value": "leafy-shoot",
+        "label": "leafy shoot",
+        "disabled": false
+      },
+      {
+        "value": "bare-branch",
+        "label": "bare branch",
+        "disabled": false
+      },
+      {
+        "value": "single-flower",
+        "label": "single flower",
+        "disabled": false
+      },
+      {
+        "value": "reference-pair",
+        "label": "Reference pair (flowering + leafy)",
+        "disabled": false
+      },
+      {
+        "value": "references-plus-bare",
+        "label": "References plus bare-branch",
+        "disabled": false
+      },
+      {
+        "value": "references-plus-single-flower",
+        "label": "References plus single-flower",
+        "disabled": false
+      },
+      {
+        "value": "all-four",
+        "label": "All four (flowering → leafy → bare → single-flower)",
+        "disabled": false
+      },
+      {
+        "value": "all-registered-materials",
+        "label": "All registered materials (dynamic)",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "name": "workbench-all-four-count12-scene",
+    "status": "pass",
+    "plantCount": 12,
+    "counts12": {
+      "one-branch-v1": 3,
+      "leafy-shoot-v1": 3,
+      "bare-branch-v1": 3,
+      "single-flower-v1": 3
+    },
+    "gens12": [
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "bare-branch-v1",
+      "single-flower-v1",
+      "leafy-shoot-v1",
+      "bare-branch-v1",
+      "single-flower-v1",
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "bare-branch-v1",
+      "single-flower-v1",
+      "one-branch-v1"
+    ]
+  },
+  {
+    "name": "workbench-report-button-present",
+    "status": "pass"
+  },
+  {
+    "name": "workbench-all-four-count6-is-2-2-1-1",
+    "status": "pass",
+    "plantCount": 6,
+    "counts6": {
+      "one-branch-v1": 2,
+      "leafy-shoot-v1": 2,
+      "bare-branch-v1": 1,
+      "single-flower-v1": 1
+    },
+    "gens6": [
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "bare-branch-v1",
+      "single-flower-v1",
+      "one-branch-v1",
+      "leafy-shoot-v1"
+    ]
+  },
+  {
+    "name": "workbench-reference-pair-6-only-flowering-leafy",
+    "status": "pass",
+    "gensPair": [
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "one-branch-v1",
+      "leafy-shoot-v1",
+      "one-branch-v1",
+      "leafy-shoot-v1"
+    ]
+  },
+  {
+    "name": "workbench-single-flower-count12-is-twelve",
+    "status": "pass",
+    "plantCount": 12
+  },
+  {
+    "name": "player-vs-workbench-storage-separation",
+    "status": "pass",
+    "playerHasPlayerKey": true,
+    "playerHasWorkbenchKey": false,
+    "workbenchHasWorkbenchKey": true,
+    "playerKeyUnchangedWhileWorkbenchLoaded": true,
+    "workbenchPlantCount": 12,
+    "playerPlantCount": 1
+  },
+  {
+    "name": "browser-aim-or-bend-preserves-rest-lengths-bare-branch",
+    "status": "pass",
+    "preserved": true,
+    "writesBefore": 1,
+    "writesAfter": 2,
+    "hashChanged": true
+  }
+]

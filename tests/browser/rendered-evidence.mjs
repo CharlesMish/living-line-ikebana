@@ -15,6 +15,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { runPrunePreviewComparison } from "./prune-preview-tint.mjs";
 import { checkWorkingSaveFeedback } from "./working-save-feedback.mjs";
+import { checkPrintWall } from "./print-wall.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -282,6 +283,8 @@ async function exercise(config) {
     assert.equal(afterPhoto.state.cameraHash, beforePhoto.state.cameraHash);
     assert.deepEqual(afterPhoto.audit, beforePhoto.audit);
     result.checks.push("Photo return/resume/reset preserves exact working graph, camera, ordinal and commit autosave audit");
+    result.printWall = await checkPrintWall({ page, activate, capture, readState });
+    result.checks.push("Print wall preserves stored pixels and documents, displays portrait/square covers, and opens read-only originals");
     if (config.width === 390) {
       result.workingSave = await checkWorkingSaveFeedback({ page, activate, config, capture, readState });
       result.checks.push("Injected quota failure stays visible through later hints; Retry persists the current bowl and preserves Undo");

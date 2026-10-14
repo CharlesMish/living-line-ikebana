@@ -31,6 +31,7 @@ class Element extends EventTarget {
     if (name.startsWith("data-")) this.dataset[name.slice(5).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = value;
   }
   getAttribute(name: string) { return this.attributes.get(name) ?? null; }
+  removeAttribute(name: string) { this.attributes.delete(name); }
   append(...children: Element[]) {
     for (const child of children) { child.parentElement = this; this.children.push(child); }
   }
@@ -217,5 +218,49 @@ test("unreadable Garden opens backup recovery and leaves the stored bytes untouc
     assert.match(h.find("#garden-error").textContent, /stored data is untouched/);
     assert.equal(h.store.exportRaw(), raw);
     assert.equal(h.writes, 0);
+  } finally { h.close(); }
+});
+
+test("Print wall displays kept pixels, switches finishes and opens the saved original without writes", () => {
+  const first = { ...kept("a", "Autumn <b>light</b>"), thumbnail: "data:image/jpeg;base64,QUJD" };
+  const h = setup([first, kept("b", "No cover")]);
+  try {
+    h.ui.open(); const before = h.store.exportRaw();
+    click(h.find("#garden-wall-open"));
+    assert.equal(h.find("#garden-wall").open, true);
+    assert.equal(h.root.querySelectorAll(".wall-print").length, 1);
+    assert.equal(h.find(".wall-caption strong").textContent, first.title);
+    assert.equal(h.find("#wall-count").textContent, "1 kept view");
+    click(h.find("#wall-paper"));
+    assert.equal(h.find("#garden-wall").dataset.finish, "paper");
+    assert.equal(h.find("#wall-paper").getAttribute("aria-pressed"), "true");
+    click(h.find(".wall-print"));
+    assert.equal(h.find("#wall-collection").hidden, true);
+    assert.equal(h.find("#wall-detail").hidden, false);
+    assert.equal(h.find("#wall-detail-title").textContent, first.title);
+    const cancel = new Event("cancel", { cancelable: true }); h.find("#garden-wall").dispatchEvent(cancel);
+    assert.equal(cancel.defaultPrevented, true);
+    assert.equal(h.find("#wall-detail").hidden, true);
+    assert.equal(h.document.activeElement, h.find(".wall-print"));
+    click(h.find(".wall-print")); click(h.find("#wall-view"));
+    assert.deepEqual(h.views, ["a"]);
+    assert.equal(h.find("#garden-wall").open, false);
+    assert.equal(h.find("#garden-dialog").open, false);
+    assert.equal(h.store.exportRaw(), before);
+    assert.equal(h.writes, 0);
+    assert.equal(h.replacements.length, 0);
+  } finally { h.close(); }
+});
+
+test("empty print wall gives a keep path; closing restores focus and preserves the bowl", () => {
+  const h = setup([]);
+  try {
+    h.ui.open(); click(h.find("#garden-wall-open"));
+    assert.match(h.find(".wall-empty").textContent, /Keep photo in Garden/);
+    click(h.find("#wall-close"));
+    assert.equal(h.document.activeElement, h.find("#garden-wall-open"));
+    assert.equal(h.find("#garden-dialog").open, true);
+    assert.equal(h.writes, 0);
+    assert.equal(h.views.length, 0);
   } finally { h.close(); }
 });

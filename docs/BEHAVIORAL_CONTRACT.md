@@ -252,6 +252,17 @@ with an empty collection. See [Garden](GARDEN.md) and
 
 ## 7. Evidence and change gates
 
+### Kept photographs and Print wall
+
+Garden's Print wall reads the same kept entries and cover pixels as the ordinary
+collection. Display style, print inspection and opening an original write no
+working save or Garden data. It never regenerates an old cover. Moments without
+covers remain accessible in Garden. Escape from one print returns to the wall;
+closing the wall returns to Garden. New Photograph covers preserve frame aspect
+ratio at up to 640 pixels on the long edge within the existing JPEG byte bound.
+Failed encoding cannot create an entry. Existing covers, backups, full-resolution
+PNG delivery and the saved arrangement schema remain unchanged.
+
 ### Step Back Pan extension
 
 Orbit (the default) and Pan share the Step Back camera transaction. Pan

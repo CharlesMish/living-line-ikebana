@@ -8,6 +8,7 @@ import { framePhotoCamera, PHOTO_SIZES, PHOTO_BACKDROPS, PHOTO_PERCHES, type Pho
 import { validateArrangement, type ArrangementSnapshot } from "./garden.ts";
 import { PhotoDraftMemory, type PhotoDraft, type PhotoDraftContext } from "./photoDraft.ts";
 import { PhotoExport, photoShareData, sharePhoto, type PreparedPhoto } from "./photoExport.ts";
+import { makePhotoCover } from "./photoCover.ts";
 
 interface PhotoActions {
   pause(): void;
@@ -376,14 +377,7 @@ export class Photograph {
   private keep() {
     if (!this.snapshot?.plants.length || !this.actions.canKeep() || !this.studio) return;
     try {
-      const frame = this.capture(); const cover = document.createElement("canvas"); cover.width = 360; cover.height = 270;
-      const context = cover.getContext("2d"); if (!context) throw new Error("This browser cannot prepare a cover.");
-      // JPEG is the existing Garden format. Transparent cutouts receive a paper matte.
-      context.fillStyle = "#eee9dd"; context.fillRect(0, 0, 360, 270);
-      const scale = Math.min(360 / frame.width, 270 / frame.height);
-      context.drawImage(frame, (360 - frame.width * scale) / 2, (270 - frame.height * scale) / 2, frame.width * scale, frame.height * scale);
-      const thumbnail = cover.toDataURL("image/jpeg", 0.78);
-      if (thumbnail.length > 80_000) throw new Error("This cover is too large. Try a simpler frame.");
+      const thumbnail = makePhotoCover(this.capture());
       const scene = validateScene(withPhotoLighting(withPhotoAdjustments({ ...(this.snapshot.scene ?? DEFAULT_SCENE),
         backdropId: this.value("photo-backdrop") as PhotoBackdrop, perchId: this.value("photo-perch") as PhotoPerch, photoFormat: this.value("photo-format") as PhotoFormat, stemFibers: this.find<HTMLInputElement>("photo-fibers").checked }, this.showingOriginal ? { ...NEUTRAL_PHOTO_ADJUSTMENTS } : this.currentFinish()), this.value("photo-lighting") as PhotoLightingId));
       const snapshot = validateArrangement({ ...this.snapshot, scene, camera: this.studio.getCameraPose() }, Infinity);

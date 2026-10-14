@@ -1,4 +1,6 @@
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
+import { GardenWall } from "./gardenWall.ts";
+import "./gardenWall.css";
 import {
   comparisonCanvasSlots,
   equalCanvasBox,
@@ -41,6 +43,7 @@ export class GardenUI {
   private readonly compareDialog: HTMLDialogElement;
   private readonly viewer: HTMLElement;
   private readonly error: HTMLElement;
+  private readonly wall: GardenWall;
   private entries: GardenEntry[] = [];
   private pending: (() => void) | null = null;
   private viewedEntry: GardenEntry | null = null;
@@ -76,7 +79,7 @@ export class GardenUI {
           <div class="garden-actions"><input id="garden-name" maxlength="80" placeholder="Untitled arrangement" autocomplete="off"/><button id="garden-keep" type="submit">Keep this bowl</button></div>
           <p class="panel-note">Saves this view and arrangement. Your working bowl stays open.</p>
         </form>
-        <div class="garden-collection-heading"><div><h2>Kept moments</h2><p id="garden-count" class="eyebrow"></p></div><button type="button" id="garden-new">Start a fresh bowl</button></div>
+        <div class="garden-collection-heading"><div><h2>Kept moments</h2><p id="garden-count" class="eyebrow"></p></div><div class="garden-actions"><button type="button" id="garden-wall-open" aria-haspopup="dialog">Print wall</button><button type="button" id="garden-new">Start a fresh bowl</button></div></div>
         <section id="garden-compare-bar" class="garden-compare-bar" hidden>
           <p id="garden-compare-status" role="status" aria-live="polite">Choose Compare on two moments.</p>
           <button type="button" id="garden-compare-go" disabled>Look at both</button>
@@ -133,12 +136,14 @@ export class GardenUI {
     this.compareDialog = this.find<HTMLDialogElement>("#garden-compare-dialog");
     this.viewer = this.find(".garden-viewer");
     this.error = this.find("#garden-error");
+    this.wall = new GardenWall(host, (entry) => this.run(() => this.view(entry)));
     const on = (selector: string, action: () => void) => this.find(selector).addEventListener("click", () => this.run(action), { signal: this.controller.signal });
     on("#garden-open", () => this.open());
     on("#garden-close", () => this.dialog.close());
     on("#garden-return", () => this.returnToWork());
     on("#garden-copy", () => { if (this.viewedEntry) this.offerReplacement(this.viewedEntry.arrangement); });
     on("#garden-new", () => this.offerReplacement(null));
+    on("#garden-wall-open", () => this.wall.open(this.entries, this.find("#garden-wall-open")));
     on("#garden-cancel-choice", () => this.clearChoice());
     on("#garden-replace", () => this.finishReplacement());
     on("#garden-keep-first", () => { this.keep(); this.finishReplacement(); });
@@ -192,6 +197,7 @@ export class GardenUI {
     const grid = this.find("#garden-grid"); grid.replaceChildren();
     this.find("#garden-count").textContent = this.loaded ? `${this.entries.length} of ${GARDEN_LIMIT} spaces used` : "Garden unavailable";
     this.find<HTMLButtonElement>("#garden-import").disabled = !this.loaded;
+    this.find<HTMLButtonElement>("#garden-wall-open").disabled = !this.loaded;
     this.find<HTMLButtonElement>("#garden-keep").disabled = !this.loaded || this.actions.isViewing() || !this.actions.snapshot().plants.length;
     this.find("#garden-keep-form").hidden = this.actions.isViewing() || !this.actions.snapshot().plants.length;
     this.find(".garden-copy-note").hidden = !this.entries.length;
@@ -539,6 +545,7 @@ export class GardenUI {
   }
   destroy() {
     this.controller.abort();
+    this.wall.destroy();
     try { this.reduceCompare({ type: "interrupt" }); } catch { /* Teardown still releases the viewports. */ }
     this.comparing = false;
     this.comparison = null;

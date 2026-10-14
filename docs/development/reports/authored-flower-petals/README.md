@@ -17,7 +17,7 @@ Flowering branch and all other forms are outside the change.
 ## Authored forms
 
 - Compact: one eight-petal cup with rounder petals, .461 nominal radius, a
-  deeper continuous rise and gently relaxed tips. That is 12% wider than the
+  deeper continuous rise, broad inner shoulders and gently relaxed tips. That is 12% wider than the
   former .412 nominal tuft and the new open spray; stem height is unchanged.
 - Blossom spray: one lighter six-petal open flower per existing bloom. Nominal
   radius remains .412. The visible opening, petal count and shallow profile
@@ -35,7 +35,7 @@ collision scope. No new petal-editing or solver law is introduced.
 
 ## Verification
 
-`npm ci` and `npm run verify` passed: clean typecheck, **615 tests**, zero
+Initial repair: `npm ci` and `npm run verify` passed with clean typecheck, **615 tests**, zero
 failures/skips, production build and self-contained distribution validation.
 
 - Independent triangle crossing probe: old Compact and old spray fail; both
@@ -50,9 +50,31 @@ failures/skips, production build and self-contained distribution validation.
 - Existing canonical fixtures, pruning/rollback, head acquisition and other
   material invariants run in full verify; source core generators are unchanged.
 
-CPU geometry is not rendered acceptance. Matched close front, three-quarter,
-Above and rear images and browser save/reload checks are to be supplied by the
-integration's rendered CI; no physical phone or Safari/frame-time claim is made.
+CPU geometry is not rendered acceptance. The integration supplies whole-view
+Front/Above and closer three-quarter/reverse images, plus browser save/reload.
+Compact adds complete head-focused captures for the fullness revision. No
+physical phone or Safari/frame-time claim is made.
+
+### Compact fullness follow-up
+
+The first safe-sector repair removed the piercings, but the rendered review
+showed an overly open, regular eight-spoked face. Compact now widens quickly
+above the attachment, keeps its shoulder broad and rises into a deeper cup.
+Small seed variations in shoulder roundness and cup height stay within each
+petal's sector. Its outer radius and the lighter spray recipe are unchanged.
+
+An independent ray/triangle silhouette probe at face radii .14, .24 and .32
+measures occupied angles. Across seeds 8278, 9255 and 10232, inner-radius
+coverage rises from 83.9–84.2% to 97.8%; middle/outer coverage is 95.3–97.8%.
+Peak cup height increases from about .195 to .249–.252. This restores body
+without overlapping a second petal layer or changing the existing hit sphere.
+
+The combined candidate passes **630/630** tests after the revision, with clean
+types/build/distribution. All six focused authored-flower checks pass: the actual
+triangle-piercing regression, 35-seed nonintersection/envelope proof, closed
+outward shells, deterministic form distinction, projected fullness and the
+frozen archived-tuft hashes. Matched rendered acceptance for this follow-up is
+recorded separately by the combined candidate's browser report.
 
 ## Cost
 

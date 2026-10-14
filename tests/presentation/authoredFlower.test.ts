@@ -75,6 +75,20 @@ function radius(geometry: THREE.BufferGeometry): number {
   return peak;
 }
 
+/** Sample the rendered face's occupied angles, not generator row/column values.
+ * This guards the visual regression where safe, narrow wedges left long radial
+ * slots through Compact's body. Small seams around real petals remain allowed. */
+function faceCoverage(geometry: THREE.BufferGeometry, radius: number): number {
+  const faces = triangles(geometry), ray = new THREE.Ray(), hit = new THREE.Vector3();
+  let occupied = 0;
+  for (let sample = 0; sample < 360; sample++) {
+    const angle = (sample + 0.5) * Math.PI * 2 / 360;
+    ray.set(new THREE.Vector3(radius * Math.cos(angle), radius * Math.sin(angle), 1), new THREE.Vector3(0, 0, -1));
+    if (faces.some(face => ray.intersectTriangle(face.a, face.b, face.c, false, hit))) occupied++;
+  }
+  return occupied / 360;
+}
+
 test("every authored petal is closed and stays in a disjoint convex sector, including its reverse", () => {
   for (const form of FORMS) for (const seed of SEEDS) {
     const geometry = createAuthoredFlowerCorollaGeometry(seed, form);
@@ -173,7 +187,7 @@ test("Compact has a wider, deeper cup while spray remains open, with determinist
     try {
       assert.ok(radius(compact) / radius(spray) > 1.10 && radius(compact) / radius(spray) < 1.15);
       assert.ok(compact.boundingBox!.max.z > spray.boundingBox!.max.z * 1.7);
-      assert.ok(compact.boundingBox!.max.z < 0.22, "cupped flower, not a tall stacked head");
+      assert.ok(compact.boundingBox!.max.z < 0.27, "cupped flower, not a tall stacked head");
       for (const form of FORMS) {
         const repeat = createAuthoredFlowerCorollaGeometry(seed, form), actual = form === "compact-cup" ? compact : spray;
         for (const attribute of ["position", "normal", "color"]) assert.deepEqual(repeat.getAttribute(attribute).array, actual.getAttribute(attribute).array);
@@ -184,6 +198,18 @@ test("Compact has a wider, deeper cup while spray remains open, with determinist
         calyx.dispose();
       }
     } finally { compact.dispose(); spray.dispose(); }
+  }
+});
+
+test("Compact retains a full inner and middle cup rather than long open radial slots", () => {
+  for (const seed of [8278, 9255, 10232]) {
+    const compact = createAuthoredFlowerCorollaGeometry(seed, "compact-cup");
+    try {
+      for (const radius of [0.14, 0.24, 0.32]) {
+        assert.ok(faceCoverage(compact, radius) > 0.90, `seed ${seed}: body remains full at radius ${radius}`);
+      }
+      assert.ok(compact.boundingBox!.max.z > 0.23, "the full shoulder rises into a cup instead of a flat wheel");
+    } finally { compact.dispose(); }
   }
 });
 

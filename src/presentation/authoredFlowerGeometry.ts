@@ -30,8 +30,10 @@ function petal(seed: number, petalIndex: number, form: AuthoredFlowerForm): THRE
   // retains that reach; a six-petal face gives it more air than Compact.
   const radius = (compact ? 0.461 : 0.412) * (0.985 + 0.03 * variation(seed, petalIndex + 10));
   const reach = radius - 0.046;
-  const bend = (variation(seed, petalIndex + 20) - 0.5) * 0.034;
+  const bend = (variation(seed, petalIndex + 20) - 0.5) * (compact ? 0.012 : 0.034);
   const phase = variation(seed, petalIndex + 30) * TAU;
+  const cupRise = 0.260 + (variation(seed, petalIndex + 40) - 0.5) * 0.012;
+  const shoulder = 0.16 + variation(seed, petalIndex + 50) * 0.045;
   const samples: Array<[number, number]> = [[0, 0]];
   for (let row = 1; row < ROWS; row++) for (let col = 0; col <= COLUMNS; col++) {
     samples.push([row / ROWS, col / COLUMNS * 2 - 1]);
@@ -43,11 +45,18 @@ function petal(seed: number, petalIndex: number, form: AuthoredFlowerForm): THRE
     const envelope = Math.sin(Math.PI * t);
     // The maximum half-width is less than half the fixed sector. Every point
     // and every triangle remain inside it, including the slight vein bend.
-    const halfWidth = sector * (compact ? 0.477 : 0.465) * Math.pow(envelope, compact ? 0.30 : 0.44);
+    // Compact opens quickly above its tiny attachment and carries that width
+    // through the shoulder. Tapering both ends with a sine made deep radial
+    // slots: a clean mesh, but an eight-spoked daisy instead of a full cup.
+    // The rounded outer shoulder still retreats inside the same convex sector.
+    const width = compact
+      ? (1 - Math.exp(-45 * t)) * Math.pow(1 - Math.pow(t, 6), shoulder)
+      : Math.pow(envelope, 0.44);
+    const halfWidth = sector * (compact ? 0.485 : 0.465) * width;
     const theta = angle + across * halfWidth + bend * envelope;
     const r = 0.046 + reach * t;
     const edge = Math.abs(across);
-    const cup = compact ? 0.215 * Math.pow(t, 1.28) - 0.049 * Math.pow(t, 7)
+    const cup = compact ? cupRise * Math.pow(t, 0.78) - 0.043 * Math.pow(t, 6)
       : 0.088 * Math.pow(t, 1.3) - 0.021 * Math.pow(t, 6);
     const fold = (compact ? 0.018 : 0.011) * across * across * envelope;
     const ripple = 0.0024 * Math.sin(phase + t * 3 * Math.PI) * Math.pow(edge, 3) * envelope;

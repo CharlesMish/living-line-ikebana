@@ -184,10 +184,26 @@ const lobedLeaf: MaterialAppearance = Object.freeze({
     roughness: 0.66, hitRadius: 0, hitCenterY: 0, surfacePicking: true }),
   bloom: flowering.bloom,
 });
+const violetSprig: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x52654b, lateral: 0x617354, twig: 0x617354, pedicel: 0x6c805d, petiole: 0x6c805d }),
+  stemRoughness: 0.79,
+  leaf: Object.freeze({ form: "lobed", color: 0x52714e, veinColor: 0x92a477, roughness: 0.78,
+    hitRadius: 0, hitCenterY: 0, surfacePicking: true }),
+  bloom: Object.freeze({ form: "violet-floret", color: 0x9984cf, roughness: 0.83, hitRadius: 0.36 }),
+});
+const indigoSpire: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x566b57, lateral: 0x61745d, twig: 0x61745d, pedicel: 0x667b61, petiole: 0x667b61 }),
+  stemRoughness: 0.82,
+  leaf: Object.freeze({ form: "lanceolate", color: 0x627d66, veinColor: 0x94a78b, roughness: 0.77,
+    hitRadius: 0.56, hitCenterY: 0.5 }),
+  bloom: Object.freeze({ form: "indigo-floret", color: 0x6655a6, roughness: 0.87, hitRadius: 0.32, hitCenterY: 0.17 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "lobed-leaf-v1": lobedLeaf,
+  "violet-sprig-v1": violetSprig,
+  "indigo-spire-v1": indigoSpire,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,

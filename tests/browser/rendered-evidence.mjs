@@ -15,6 +15,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { runPrunePreviewComparison } from "./prune-preview-tint.mjs";
 import { checkWorkingSaveFeedback } from "./working-save-feedback.mjs";
+import { checkVioletCuttings } from "./violet-cuttings.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -167,6 +168,7 @@ async function exercise(config) {
     await page.getByTestId("material-source").focus(); await page.keyboard.press("Enter");
     await page.waitForFunction(() => window.__IKEBANA_TEST__.getCanonicalSnapshot().plants.length === 1);
     await activate(page.getByTestId("materials-toggle"));
+    await activate(page.locator("#material-more > summary"));
     await activate(page.getByTestId("material-choice-single-flower"));
     await page.getByTestId("material-source").focus(); await page.keyboard.press("Enter");
     await page.waitForFunction(() => window.__IKEBANA_TEST__.getCanonicalSnapshot().plants.length === 2);
@@ -306,6 +308,7 @@ try {
   browser = await chromium.launch({ headless: true, args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   record.browser = browser.version();
   for (const config of cases) await exercise(config);
+  record.violetCuttings = await checkVioletCuttings({ browser, baseURL, output });
   record.prunePreview = await runPrunePreviewComparison({ browser, baseURL, output });
   assert.equal(record.prunePreview.status, "PASS", JSON.stringify(record.prunePreview));
 } catch (error) {

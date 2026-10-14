@@ -177,22 +177,7 @@
                   </svg>
                   <span class="material-choice-name">Flowering branch</span>
                 </button>
-                <button type="button" data-material-choice="single-flower" data-testid="material-choice-single-flower" aria-pressed="false">
-                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
-                    <path class="cutting-stem" d="M22 62 C92 58 148 42 198 24 C228 14 248 10 262 8" />
-                    <ellipse class="cutting-leaf" cx="96" cy="46" rx="16" ry="6" transform="rotate(38 96 46)" />
-                    <ellipse class="cutting-leaf" cx="156" cy="28" rx="14" ry="5" transform="rotate(-28 156 28)" />
-                    <g class="cutting-bloom" transform="translate(268 10)">
-                      <ellipse cx="-9" cy="0" rx="9" ry="6" />
-                      <ellipse cx="0" cy="-8" rx="9" ry="6" />
-                      <ellipse cx="9" cy="0" rx="9" ry="6" />
-                      <ellipse cx="4" cy="8" rx="8" ry="5" />
-                      <ellipse cx="-5" cy="7" rx="8" ry="5" />
-                      <circle class="cutting-bloom-center" cx="0" cy="0" r="4" />
-                    </g>
-                  </svg>
-                  <span class="material-choice-name">Single flower</span>
-                </button>
+
                 <button type="button" data-material-choice="reed" data-testid="material-choice-reed" aria-pressed="false">
                   <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
                     <path class="cutting-stem" d="M146 66 C144 48 149 28 158 6" />
@@ -313,8 +298,29 @@
                   </svg>
                   <span class="material-choice-name">Broad leaf</span>
                 </button>
+                <button type="button" data-material-choice="violet-sprig" data-testid="material-choice-violet-sprig" aria-pressed="false"><svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false"><path class="cutting-stem" d="M43 62 Q112 48 214 20 M116 47 Q103 29 100 18 M160 33 Q184 43 208 42 M202 23 L224 10"/>
+<ellipse class="cutting-leaf" cx="91" cy="44" rx="10" ry="4" transform="rotate(35 91 44)"/>
+<g fill="#9984cf"><path d="M95 13 Q91 7 97 6 Q103 0 105 7 Q112 5 112 11 Q118 16 112 19 Q109 26 103 21 Q96 26 96 19 Q89 18 95 13Z"/><path d="M202 39 Q198 33 204 32 Q210 26 212 33 Q219 31 219 37 Q225 42 219 45 Q216 52 210 47 Q203 52 203 45 Q196 44 202 39Z"/><path d="M219 8 Q216 3 222 2 Q226 -2 230 3 Q236 2 236 8 Q239 14 232 16 Q227 20 223 15 Q216 17 217 11Z"/></g></svg><span class="material-choice-name">Violet sprig</span></button>
+                <button type="button" data-material-choice="indigo-spire" data-testid="material-choice-indigo-spire" aria-pressed="false"><svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false"><path class="cutting-stem" d="M37 64 Q133 35 266 10"/><path class="cutting-leaf" d="M102 45 Q89 21 72 22 Q84 44 102 45 M118 41 Q117 61 139 58 Q136 42 118 41Z"/>
+<g fill="#6655a6"><path d="M162 31 Q146 26 146 16 Q157 14 165 26 Q173 35 182 42 Q172 51 160 39Z"/><path d="M196 24 Q183 19 181 10 Q191 8 199 20 Q207 28 215 36 Q205 44 194 32Z"/><path d="M229 17 Q217 13 216 5 Q225 3 232 14 Q239 21 246 28 Q237 35 227 25Z"/><path d="M257 12 Q247 8 247 2 Q255 0 261 9 Q268 15 273 21 Q265 27 256 19Z"/></g></svg><span class="material-choice-name">Indigo spire</span></button>
                 <details id="material-more" class="material-more">
                   <summary>More cuttings</summary>
+                <button type="button" data-material-choice="single-flower" data-testid="material-choice-single-flower" aria-pressed="false">
+                  <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
+                    <path class="cutting-stem" d="M22 62 C92 58 148 42 198 24 C228 14 248 10 262 8" />
+                    <ellipse class="cutting-leaf" cx="96" cy="46" rx="16" ry="6" transform="rotate(38 96 46)" />
+                    <ellipse class="cutting-leaf" cx="156" cy="28" rx="14" ry="5" transform="rotate(-28 156 28)" />
+                    <g class="cutting-bloom" transform="translate(268 10)">
+                      <ellipse cx="-9" cy="0" rx="9" ry="6" />
+                      <ellipse cx="0" cy="-8" rx="9" ry="6" />
+                      <ellipse cx="9" cy="0" rx="9" ry="6" />
+                      <ellipse cx="4" cy="8" rx="8" ry="5" />
+                      <ellipse cx="-5" cy="7" rx="8" ry="5" />
+                      <circle class="cutting-bloom-center" cx="0" cy="0" r="4" />
+                    </g>
+                  </svg>
+                  <span class="material-choice-name">Single flower</span>
+                </button>
                 <button type="button" data-material-choice="bare-branch" data-testid="material-choice-bare-branch" aria-pressed="false">
                   <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
                     <path class="cutting-stem" d="M16 62 C78 58 128 42 176 26 C214 16 250 10 286 7" />
@@ -365,6 +371,13 @@
             </div>
           </div>
           <div id="material-templates" hidden>
+            <template id="material-template-indigo-spire" data-material-label="indigo spire"><svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false"><path class="cutting-stem" d="M37 64 Q133 35 266 10"/><path class="cutting-leaf" d="M102 45 Q89 21 72 22 Q84 44 102 45 M118 41 Q117 61 139 58 Q136 42 118 41Z"/>
+<g fill="#6655a6"><path d="M162 31 Q146 26 146 16 Q157 14 165 26 Q173 35 182 42 Q172 51 160 39Z"/><path d="M196 24 Q183 19 181 10 Q191 8 199 20 Q207 28 215 36 Q205 44 194 32Z"/><path d="M229 17 Q217 13 216 5 Q225 3 232 14 Q239 21 246 28 Q237 35 227 25Z"/><path d="M257 12 Q247 8 247 2 Q255 0 261 9 Q268 15 273 21 Q265 27 256 19Z"/></g></svg><span class="material-copy"><span class="material-name">Indigo spire</span><span class="material-verb">drag to the pins</span></span><span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span></template>
+
+            <template id="material-template-violet-sprig" data-material-label="violet sprig"><svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false"><path class="cutting-stem" d="M43 62 Q112 48 214 20 M116 47 Q103 29 100 18 M160 33 Q184 43 208 42 M202 23 L224 10"/>
+<ellipse class="cutting-leaf" cx="91" cy="44" rx="10" ry="4" transform="rotate(35 91 44)"/>
+<g fill="#9984cf"><path d="M95 13 Q91 7 97 6 Q103 0 105 7 Q112 5 112 11 Q118 16 112 19 Q109 26 103 21 Q96 26 96 19 Q89 18 95 13Z"/><path d="M202 39 Q198 33 204 32 Q210 26 212 33 Q219 31 219 37 Q225 42 219 45 Q216 52 210 47 Q203 52 203 45 Q196 44 202 39Z"/><path d="M219 8 Q216 3 222 2 Q226 -2 230 3 Q236 2 236 8 Q239 14 232 16 Q227 20 223 15 Q216 17 217 11Z"/></g></svg><span class="material-copy"><span class="material-name">Violet sprig</span><span class="material-verb">drag to the pins</span></span><span class="material-grip" aria-hidden="true"><i></i><i></i><i></i></span></template>
+
             <template id="material-template-flowering-branch" data-material-label="flowering branch">
               <svg class="cutting-silhouette" viewBox="0 0 300 72" aria-hidden="true" focusable="false">
                 <path class="cutting-stem" d="M18 58 C78 60 117 42 167 31 C207 22 245 14 283 9" />

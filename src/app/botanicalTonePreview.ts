@@ -37,7 +37,7 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
   const wood = ["flowering-branch", "bare-branch", "berry-twig", "lobed-leaf"].includes(familyId);
   const parts: Part[] = [{ label: wood ? "Wood" : "Stem", color: stem }];
   const leafy = !["bare-branch", "berry-twig", "blossom-spray"].includes(familyId);
-  const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower"].includes(familyId);
+  const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower", "violet-sprig", "indigo-spire"].includes(familyId);
   if (leafy) parts.push({ label: "Leaves", color: leaf });
   if (flowering) parts.push({ label: "Flowers", color: bloom });
   if (familyId === "flowering-branch") parts.push({ label: "Buds", color: bud });
@@ -65,6 +65,18 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
       break;
     case "blossom-spray":
       drawing = path("M41 66 Q39 42 42 12", stem) + path("M40 50 Q29 46 23 35 M41 37 Q54 34 59 23 M42 24 Q34 23 29 16", lateral, 1.4) + flower(23, 34, .55, true) + flower(60, 22, .55, true) + flower(29, 15, .5, true) + flower(43, 11, .5, true);
+      break;
+    case "violet-sprig":
+      drawing = path("M41 66 Q38 46 42 23", stem, 1.6) + path("M40 49 L24 39 L17 27 M41 37 L58 32 L66 19 M42 27 L34 13", lateral, 1.2) + blade(40, 55, -55, .4) + blade(40, 45, 55, .35)
+        + flower(17, 26, .5) + flower(26, 32, .5) + flower(57, 30, .45) + flower(66, 18, .45) + flower(34, 12, .45) + flower(45, 19, .4);
+      break;
+    case "indigo-spire":
+      drawing = path("M41 67 L41 9", stem, 1.7) + blade(41, 54, -60, .5) + blade(41, 54, 60, .5);
+      for (let tier = 0; tier < 4; tier++) {
+        const y = 39 - tier * 9;
+        drawing += path(`M41 ${y} L34 ${y - 2} M41 ${y} L48 ${y - 2}`, lateral, 1);
+        drawing += `<path d="M35 ${y-3} Q30 ${y-7} 25 ${y-4} L25 ${y+1} Q32 ${y+3} 35 ${y-1}Z M47 ${y-3} Q52 ${y-7} 57 ${y-4} L57 ${y+1} Q50 ${y+3} 47 ${y-1}Z" fill="${bloom}"/>`;
+      }
       break;
     case "nodding-flower":
       drawing = path("M33 66 Q38 46 35 30 Q29 10 40 10 Q51 9 54 23", stem) + blade(34, 51, -55, .55) + `<g transform="translate(54 22) rotate(-24)"><path d="M-3 0 Q-7 8 -12 17 Q0 24 12 17 Q7 8 3 0Z" fill="${bloom}"/><path d="M-12 17 Q0 13 12 17" fill="none" stroke="${hex(a.bloom.collarColor ?? a.branchColors.pedicel)}" stroke-width="1"/></g>`;

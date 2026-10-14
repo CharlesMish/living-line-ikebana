@@ -604,3 +604,16 @@ scene. It changes no plant, vessel, frame, background alpha or working gesture l
 Optional `photoLighting` is sceneVersion2 metadata: older strict readers refuse an
 unrecognized scene field rather than silently lose the choice. See the
 [camera and light report](development/reports/photo-workflow/camera-light.md).
+
+### Violet cuttings — October 14 candidate
+
+`violet-sprig-v1` and `indigo-spire-v1` are additive durable generators. Their
+flowers occupy multiple persistent stations, so ordinary distal pruning can
+shorten the line while retaining lower flowers. Each bloom has an ordinary
+pedicel; no petal-editing, reattachment, new growth, or stem-shortening verb is
+introduced. Tone choices are presentation-only family recipes, validated and
+saved through the existing enhanced-scene envelope. Older strict readers refuse
+unknown materials/tones rather than discard them. Single flower moves into More
+cuttings; its generator, frame, direct-head control and saved graphs stay intact.
+Nodding v2's thinner, lobed bell is appearance only; v1's arrays and both versions'
+canonical graph, acquisition envelope and shaping remain unchanged.

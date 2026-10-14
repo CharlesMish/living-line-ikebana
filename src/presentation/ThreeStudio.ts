@@ -1,3 +1,4 @@
+import { createVioletFloretGeometry, createIndigoFloretGeometry } from "./violetBloomGeometry.ts";
 import { applyPhotoLighting, disposePhotoLighting, validatePhotoLighting, type PhotoLightRig, type PhotoLightingId } from "./photoLighting.ts";
 import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
 import { createOpenCupCorollaGeometry, createOpenCupCalyxGeometry, createOpenCupFilamentGeometry } from "./openCupGeometry.ts";
@@ -978,7 +979,23 @@ export class ThreeStudio {
       const bellPalette = bloom.form === "bell" && originalBloom.collarColor !== undefined
         ? { petal: originalBloom.color, collar: originalBloom.collarColor } : undefined;
       const petalMaterial = bodyMaterial(bellPalette ? 0xffffff : bloom.color, bloom.roughness, true, next => bellPalette ? 0xffffff : next.bloom.color);
-      if (bloom.form === "bell") {
+      if (bloom.form === "violet-floret" || bloom.form === "indigo-floret") {
+        const violet = bloom.form === "violet-floret";
+        const corolla = new THREE.Mesh(violet ? createVioletFloretGeometry(seed) : createIndigoFloretGeometry(seed), petalMaterial);
+        corolla.castShadow = !pending;
+        group.add(corolla);
+        const calyx = new THREE.Mesh(new THREE.SphereGeometry(violet ? 0.063 : 0.057, 8, 6),
+          bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
+        calyx.scale.set(1, violet ? 1 : 1.4, violet ? 0.6 : 1);
+        if (violet) calyx.position.z = -0.013; else calyx.position.y = -0.018;
+        group.add(calyx);
+        if (violet) {
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(0.039, 8, 6), bodyMaterial(0xd8bf7f, 0.83));
+          eye.scale.z = 0.45;
+          eye.position.z = 0.032;
+          group.add(eye);
+        }
+      } else if (bloom.form === "bell") {
         // One shell. Its mouth follows local +Y, the supporting tangent.
         // Cupped, open-face, and tufted blooms keep the radial path below.
         const bell = new THREE.Mesh(createBellGeometry(seed, bellPalette), petalMaterial);

@@ -15,9 +15,14 @@ const state = page => page.evaluate(() => ({
   camera: window.__IKEBANA_TEST__.getState().cameraHash,
   audit: window.__IKEBANA_TEST__.getAutosaveAudit(),
 }));
+// Claude's supplied reproduction identifies this upper-right petal crop in
+// the fixed 1280×800 Front fixture. Keep it explicit: it isolates the flower
+// from brown wood and the red bud without rejecting its warm pink colours.
+const FLOWER_BOX = { left: 690, top: 200, right: 725, bottom: 235 };
 
 async function flowerDifference(page, before, after, railBottom) {
-  return page.evaluate(async ({ a, b, top }) => {
+  assert.ok(FLOWER_BOX.top > railBottom, "The measured flower is below the toolbar");
+  return page.evaluate(async ({ a, b, box }) => {
     async function pixels(base64) {
       const bytes = Uint8Array.from(atob(base64), character => character.charCodeAt(0));
       const bitmap = await createImageBitmap(new Blob([bytes], { type: "image/png" }));
@@ -30,13 +35,16 @@ async function flowerDifference(page, before, after, railBottom) {
     const first = await pixels(a), second = await pixels(b);
     if (first.width !== second.width || first.height !== second.height) throw new Error("Mismatched screenshot size");
     let count = 0, difference = 0, initial = 0, final = 0, changed = 0;
-    for (let y = Math.ceil(top + 4); y < first.height - 100; y++) {
-      for (let x = 0; x < first.width; x++) {
-        const offset = 4 * (y * first.width + x), r = first.data[offset], g = first.data[offset + 1], blue = first.data[offset + 2];
-        // Pink petals, not warm paper, brown wood, green leaves, water or UI.
+    if (box.right > first.width || box.bottom > first.height) throw new Error("Flower crop exceeds screenshot");
+    for (let y = box.top; y < box.bottom; y++) {
+      for (let x = box.left; x < box.right; x++) {
+        const offset = 4 * (y * first.width + x), r = first.data[offset], g = first.data[offset + 1];
+        // Pink petals inside the independently identified flower crop.
+        // Natural warm pink has blue BELOW green: a blue>green condition
+        // sampled the red bud instead and missed this reproduced regression.
         // Freeze this mask from the original only: a dark/absent flower cannot
         // escape the comparison by failing the threshold in the later image.
-        if (!(r > g + 15 && blue > g + 2)) continue;
+        if (!(r > g + 15)) continue;
         count++;
         let delta = 0;
         for (let channel = 0; channel < 3; channel++) {
@@ -47,9 +55,9 @@ async function flowerDifference(page, before, after, railBottom) {
         if (delta > 15) changed++;
       }
     }
-    return { flowerPixels: count, meanChannelDifference: count ? difference / (count * 3) : null,
+    return { box, flowerPixels: count, meanChannelDifference: count ? difference / (count * 3) : null,
       brightnessChange: initial ? final / initial - 1 : null, changedFraction: count ? changed / count : null };
-  }, { a: before.toString("base64"), b: after.toString("base64"), top: railBottom });
+  }, { a: before.toString("base64"), b: after.toString("base64"), box: FLOWER_BOX });
 }
 
 export async function runPrunePreviewTint({ browser, baseURL, output, name = "prune-candidate" }) {
@@ -90,7 +98,7 @@ export async function runPrunePreviewTint({ browser, baseURL, output, name = "pr
     await page.mouse.move(target.x, target.y, { steps: 5 });
     const preview = await capture("preview");
     result.preview = await flowerDifference(page, before, preview, railBottom);
-    assert.ok(result.preview.flowerPixels >= 30, "Original image contains a measurable flower, not empty background");
+    assert.ok(result.preview.flowerPixels >= 100, "Original flower crop contains enough petals, not empty background or a stray bud");
     assert.ok(result.preview.meanChannelDifference > 8 && result.preview.changedFraction > .15, "Actual prune hover visibly ghosts the flower");
     assert.deepEqual(await state(page), initial, "Hover preview writes no graph, camera or save");
     result.checks.push("genuine-preview");
@@ -117,7 +125,7 @@ export async function runPrunePreviewTint({ browser, baseURL, output, name = "pr
     const undone = await capture("after-undo");
     result.undoRecovery = await flowerDifference(page, before, undone, railBottom);
     assert.deepEqual(result.errors, []);
-    const restoredColour = sample => sample.flowerPixels >= 30 && sample.meanChannelDifference <= 3 && Math.abs(sample.brightnessChange) <= .03;
+    const restoredColour = sample => sample.flowerPixels >= 100 && sample.meanChannelDifference <= 3 && Math.abs(sample.brightnessChange) <= .03;
     result.hoverRestored = restoredColour(result.hoverRecovery);
     result.undoRestored = restoredColour(result.undoRecovery);
     result.checks.push("cut-committed", "undo-exact-graph-and-camera");

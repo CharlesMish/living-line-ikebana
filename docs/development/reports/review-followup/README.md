@@ -53,6 +53,17 @@ colour restoration specifically; the new build must restore both hover and Undo.
 It saves both image sets and numeric differences. This is assisted rendering
 evidence, not blind play or a phone trial.
 
+Run 187 produced the reported darkening on `85af926` and exact colour recovery
+on the fixed candidate. Its first automated mask mistakenly excluded the warm
+pink petals and measured a bud instead, so that run correctly failed the required
+old-build-fails gate. The corrected check uses the supplied reproduction’s
+upper-right flower region and original red-over-green mask, frozen from the
+before image. Across 582 original flower pixels, mean RGB changed from
+(207.753, 167.065, 156.172) to (124.247, 83.333, 78.440) on the old build; the
+fixed hover image restored the original values exactly. The five viewport
+workflow cases, Keep visibility and both failed-save/Retry cases passed in
+that run. The subsequent matching CI run validates the corrected pixel gate.
+
 The normal five rendered viewport cases also check the visible Keep confirmation
 and capability-aware delivery text. At 390px, including 150% root text, an
 explicitly labelled storage-fault diagnostic checks persistent unsaved feedback,

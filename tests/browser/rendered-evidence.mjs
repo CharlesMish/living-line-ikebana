@@ -13,6 +13,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { runPrunePreviewComparison } from "./prune-preview-tint.mjs";
+import { checkWorkingSaveFeedback } from "./working-save-feedback.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -34,6 +36,7 @@ const record = {
     "No frame-time or FPS measurements are made.",
   ],
   cases: [],
+  prunePreview: null,
   fatalError: null,
 };
 const cases = [
@@ -245,6 +248,22 @@ async function exercise(config) {
       result.checks.push("Explicit Prepare then Download produces a 1600×1200 PNG");
     }
 
+    await activate(page.locator("#photo-tab-save"));
+    const previewBeforeKeep = await page.locator("#photo-canvas").boundingBox();
+    await activate(page.locator("#photo-keep"));
+    await page.waitForFunction(() => document.querySelector("#photo-message").textContent.includes("Photo kept in Garden"));
+    const keepMessage = await page.locator("#photo-message").boundingBox();
+    inside(keepMessage, config.width, config.height, "Keep confirmation");
+    assert.equal(await page.locator("#photo-controls #photo-message").count(), 0, "Keep confirmation is outside the controls scrollport");
+    assert.deepEqual(await page.locator("#photo-canvas").boundingBox(), previewBeforeKeep, "Keep confirmation does not resize the live preview");
+    if (config.png && await page.locator("#photo-share").isHidden()) {
+      assert.doesNotMatch(await page.locator("#photo-save-help").textContent(), /Share image/);
+      assert.doesNotMatch(await page.locator("#photo-delivery-message").textContent(), /Share image/);
+    }
+    result.keepConfirmation = keepMessage;
+    await capture("photo-kept");
+    result.checks.push("Keep confirmation stays in view outside scrolling controls; hidden Share has no misleading delivery guidance");
+
     await activate(page.locator("#photo-return"));
     await page.waitForFunction(() => !document.querySelector("#photo-dialog").open);
     await openStudio("photo-open");
@@ -263,6 +282,10 @@ async function exercise(config) {
     assert.equal(afterPhoto.state.cameraHash, beforePhoto.state.cameraHash);
     assert.deepEqual(afterPhoto.audit, beforePhoto.audit);
     result.checks.push("Photo return/resume/reset preserves exact working graph, camera, ordinal and commit autosave audit");
+    if (config.width === 390) {
+      result.workingSave = await checkWorkingSaveFeedback({ page, activate, config, capture, readState });
+      result.checks.push("Injected quota failure stays visible through later hints; Retry persists the current bowl and preserves Undo");
+    }
     assert.deepEqual(result.errors, []);
     result.status = "PASS";
     console.log(`PASS rendered evidence ${name}`);
@@ -283,6 +306,8 @@ try {
   browser = await chromium.launch({ headless: true, args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   record.browser = browser.version();
   for (const config of cases) await exercise(config);
+  record.prunePreview = await runPrunePreviewComparison({ browser, baseURL, output });
+  assert.equal(record.prunePreview.status, "PASS", JSON.stringify(record.prunePreview));
 } catch (error) {
   record.fatalError = error.stack ?? String(error); console.error(record.fatalError);
 } finally {

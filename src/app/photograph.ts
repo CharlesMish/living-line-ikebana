@@ -102,13 +102,14 @@ export class Photograph {
           <p id="photo-result-note">This is the prepared image. Save it using one of the options below.</p>
           <img id="photo-result-image" alt="Prepared Living Line photograph" draggable="true">
           <div class="photo-save-actions"><a id="photo-download" class="photo-primary">Download PNG</a><button id="photo-share" type="button" hidden>Share image…</button><a id="photo-open-image" target="_blank" rel="noopener">Open image</a></div>
-          <p class="panel-note">If a download does not appear, try Share image or Open image. You can also press and hold the image to see your browser’s saving options.</p>
+          <p id="photo-save-help" class="panel-note"></p>
           <p id="photo-delivery-message" role="status" aria-live="polite"></p>
         </section>
         <details class="photo-setup-note"><summary>About this photo setup</summary><p id="photo-draft-note" class="panel-note"></p><button id="photo-reset-setup" type="button">Reset photo setup</button></details>
         </section>
-        <p id="photo-message" role="status" aria-live="polite"></p>
-      </div></div></div>`;
+      </div>
+      <p id="photo-message" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div></div>`;
     root.append(this.dialog);
     for (const [id, options] of [["photo-backdrop", PHOTO_BACKDROPS], ["photo-perch", PHOTO_PERCHES], ["photo-lighting", PHOTO_LIGHTING]] as const) {
       for (const { id: value, label } of options) {
@@ -161,7 +162,7 @@ export class Photograph {
     this.find("photo-reset").addEventListener("click", () => this.reset(), { signal });
     this.find("photo-export").addEventListener("click", () => { void this.export(); }, { signal });
     this.find("photo-share").addEventListener("click", () => { void this.share(); }, { signal });
-    this.find("photo-download").addEventListener("click", () => this.deliveryMessage("Download requested. If no file appears, try Share image or Open image."), { signal });
+    this.find("photo-download").addEventListener("click", () => this.deliveryMessage(`Download requested. If no file appears, try ${this.shareData ? "Share image or " : ""}Open image.`), { signal });
     this.find("photo-open-image").addEventListener("click", () => { this.imageExport.preserveOpenedImage(); this.deliveryMessage("Open requested. If your browser opens a new image tab, use its save or share options."); }, { signal });
     this.find("photo-keep").addEventListener("click", () => this.keep(), { signal });
     this.find<HTMLCanvasElement>("photo-canvas").addEventListener("webglcontextlost", (event) => {
@@ -333,7 +334,7 @@ export class Photograph {
       const photo = await this.imageExport.prepare(this.capture());
       if (!photo || session !== this.session || revision !== this.frameRevision || !this.dialog.open) return;
       this.showPrepared(photo);
-      this.message("PNG ready in Save. Choose Download, Share image, or Open image.");
+      this.message(`PNG ready in Save. Choose ${this.shareData ? "Download PNG, Share image, or Open image" : "Download PNG or Open image"}.`);
     } catch (error) { if (session === this.session && revision === this.frameRevision) this.message(error instanceof Error ? error.message : String(error)); }
     finally {
       if (session === this.session && revision === this.frameRevision) {
@@ -353,6 +354,7 @@ export class Photograph {
     this.shareData = photoShareData(photo, navigator);
     this.find<HTMLButtonElement>("photo-share").hidden = !this.shareData;
     this.find<HTMLButtonElement>("photo-share").disabled = this.sharing;
+    this.find("photo-save-help").textContent = `If a download does not appear, try ${this.shareData ? "Share image or " : ""}Open image. You can also press and hold the image to see your browser’s saving options.`;
     this.deliveryMessage("The PNG is ready here. It has not been saved to your device yet.");
     download.focus();
   }

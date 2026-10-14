@@ -40,11 +40,14 @@ export interface UIState {
   activeMaterialId: string | null;
   status: string;
   statusTone: StatusTone;
+  workingSavePending: boolean;
+  canRetryWorkingSave: boolean;
   /** Source card is armed for a scene tap. Only used when tap placement is on. */
   placeReady: boolean;
 }
 
 export type UICommand =
+  | { kind: "retry-working-save" }
   | { kind: "stop-and-look" }
   | { kind: "set-posture"; posture: Posture }
   | { kind: "set-tool"; tool: CraftTool }
@@ -151,6 +154,8 @@ const DEFAULT_STATE: UIState = {
   activeMaterialId: null,
   status: "Place a cutting.",
   statusTone: "quiet",
+  workingSavePending: false,
+  canRetryWorkingSave: false,
   placeReady: false,
 };
 
@@ -219,6 +224,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
+  const saveWarning = requireElement<HTMLElement>(root, "#working-save-warning");
+  const saveWarningText = requireElement<HTMLElement>(root, "#working-save-message");
+  const retrySave = requireElement<HTMLButtonElement>(root, "#retry-working-save");
   const craftCue = requireElement<HTMLElement>(root, "#craft-cue");
   const cueTitle = requireElement<HTMLElement>(craftCue, "[data-cue-title]");
   const cueDetail = requireElement<HTMLElement>(craftCue, "[data-cue-detail]");
@@ -257,7 +265,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     throw new Error("UI shell is missing required element: [data-material-id]");
   }
   const placeCancel = placeTap ? createPlaceCancel(root) : null;
-  if (placeTap) status.tabIndex = -1;
+  status.tabIndex = -1;
   const paletteChoices = [...root.querySelectorAll<HTMLButtonElement>("[data-material-choice]")];
   if (paletteChoices.length === 0) {
     throw new Error("UI shell is missing required element: [data-material-choice]");
@@ -476,6 +484,12 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
     status.textContent = currentState.status;
     status.dataset.tone = currentState.statusTone;
+    saveWarning.hidden = !currentState.workingSavePending;
+    retrySave.disabled = !currentState.canRetryWorkingSave;
+    const saveMessage = currentState.canRetryWorkingSave
+      ? "Changes aren’t saved on this device. Keep this page open."
+      : "Your working bowl has unsaved changes. Keep this page open and return to it to retry.";
+    if (saveWarningText.textContent !== saveMessage) saveWarningText.textContent = saveMessage;
   }
 
   function setState(patch: Partial<UIState>): void {
@@ -557,6 +571,10 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   undoEdit.addEventListener("click", (event) => {
     if (currentState.canUndo) emit({ kind: "undo-edit" }, event);
+  }, listenerOptions);
+
+  retrySave.addEventListener("click", (event) => {
+    if (currentState.canRetryWorkingSave) emit({ kind: "retry-working-save" }, event);
   }, listenerOptions);
 
   removeCutting.addEventListener("click", (event) => {

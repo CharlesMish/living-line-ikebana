@@ -9,15 +9,15 @@ import { turnCutting } from "../../src/core/turnCutting.ts";
 
 function harness(workbench = false) {
   const writes: unknown[] = [];
-  const state = { posture: "arrange", tool: "shape", view: "front", cameraMode: "orbit" };
+  const state = { posture: "arrange", tool: "shape", view: "front", cameraMode: "orbit", workingSavePending: false, canRetryWorkingSave: false };
   const app = Object.assign(Object.create(IkebanaApp.prototype), {
     scene: { ...DEFAULT_SCENE }, applyScene(value: any) { this.scene = structuredClone(value); this.config.vesselProfile = sceneProfile(value); },
     photoDraftContext: 0, workingSession: null, config: { workbench }, bendVariant: "bead", selectedBranchId: "plant-1:trunk", cameraIsFree: false,
-    hovering: false, gesture: null, autosaveWrites: [],
+    hovering: false, gesture: null, autosaveWrites: [], workingSavePending: false, lastSaveSucceeded: true,
     root: { querySelector: () => null },
     sound: { unlock() {} }, telemetryStore: { clear() {} },
     metrics: { resetAttempt() {} }, resolvePendingAcquisition() {}, syncPresentation() {},
-    ui: { state, setState: (patch: object) => Object.assign(state, patch), setStatus() {} },
+    ui: { state, setState: (patch: object) => Object.assign(state, patch), setStatus: (status: string, statusTone = "quiet") => Object.assign(state, { status, statusTone }) },
     store: { save(ordinal: number, plants: unknown) { writes.push({ ordinal, plants }); return true; } },
   });
   const snapshot = createWorkbenchFixture("flowering-branch", 8278, 1);
@@ -286,4 +286,102 @@ test("photo draft context survives ordinary edits, cancellation and Garden inspe
   app.store.save = () => true;
   app.replaceWorkingBowl(null); assert.equal(app.photoDraftContext, 1);
   app.replaceWorkingBowl(snapshot); assert.equal(app.photoDraftContext, 2);
+});
+
+test("failed committed autosave stays visible across ordinary hints; Retry saves the committed bowl without changing Undo or ordinal", () => {
+  const { app, writes } = harness();
+  const save = app.store.save;
+  app.store.save = () => false;
+  moveBase(app, .7);
+  const beforeRetry = app.coordinator.getDocumentSnapshot();
+  assert.equal(app.workingSavePending, true); assert.equal(app.ui.state.workingSavePending, true);
+  assert.equal(app.coordinator.canUndo(), true);
+  app.handleUICommand({ kind: "set-tool", tool: "prune" }, {});
+  assert.equal(app.ui.state.status, "Choose where to cut.");
+  assert.equal(app.ui.state.workingSavePending, true);
+  app.handleUICommand({ kind: "retry-working-save" }, {});
+  assert.equal(app.ui.state.workingSavePending, true); assert.deepEqual(app.coordinator.getDocumentSnapshot(), beforeRetry);
+  assert.equal(app.coordinator.canUndo(), true); assert.equal(writes.length, 0);
+  app.store.save = save;
+  app.handleUICommand({ kind: "retry-working-save" }, {});
+  assert.equal(app.workingSavePending, false); assert.equal(app.ui.state.workingSavePending, false);
+  assert.equal(app.ui.state.canRetryWorkingSave, false); assert.match(app.ui.state.status, /saved on this device/);
+  assert.deepEqual(app.coordinator.getDocumentSnapshot(), beforeRetry); assert.equal(app.coordinator.canUndo(), true);
+  assert.deepEqual(writes, [{ ordinal: beforeRetry.successfulPlantOrdinal + 1, plants: [...beforeRetry.plants.values()].map(toCanonicalPlantGraph) }]);
+  app.handleUICommand({ kind: "retry-working-save" }, {}); assert.equal(writes.length, 1, "idle retry has no work");
+});
+
+test("Retry cancels a held edit and a readied insertion before reading the committed snapshot", () => {
+  const { app, writes } = harness();
+  const save = app.store.save;
+  app.store.save = () => false; moveBase(app, .7);
+  const committed = app.coordinator.getDocumentSnapshot();
+  moveBase(app, -.8, false);
+  app.gesture = { kind: "base", owner: 7, capture: { hasPointerCapture: () => false } };
+  app.placeReadyMaterialId = "reed"; app.ui.setState({ placeReady: true });
+  app.store.save = (ordinal: number, plants: unknown) => {
+    assert.equal(app.coordinator.getDebugState().active, null);
+    assert.equal(app.placeReadyMaterialId, null);
+    assert.deepEqual(app.coordinator.getDocumentSnapshot(), committed);
+    return save(ordinal, plants);
+  };
+  app.handleUICommand({ kind: "retry-working-save" }, {});
+  assert.equal(app.gesture, null); assert.equal(app.ui.state.placeReady, false);
+  assert.equal(app.coordinator.release(7).ok, false); assert.equal(writes.length, 1);
+  assert.deepEqual(app.coordinator.getDocumentSnapshot(), committed); assert.equal(app.coordinator.canUndo(), true);
+});
+
+test("failed save-first commands do not invent pending changes and never clear earlier unsaved work", () => {
+  for (const pending of [false, true]) {
+    const { app, snapshot } = harness();
+    app.setupVesselUI = () => {};
+    if (pending) app.store.save = () => false;
+    moveBase(app, .7);
+    app.store.save = () => false;
+    const current = app.coordinator.getDocumentSnapshot();
+    for (const kind of ["undo-edit", "remove-cutting", "turn-cutting"]) {
+      app.handleUICommand({ kind, direction: "right" }, {});
+      assert.equal(app.workingSavePending, pending, `${kind}, prior pending=${pending}`);
+      assert.deepEqual(app.coordinator.getDocumentSnapshot(), current); assert.equal(app.coordinator.canUndo(), true);
+    }
+    app.changeScene({ ...DEFAULT_SCENE, colorId: "celadon" });
+    assert.equal(app.workingSavePending, pending); assert.deepEqual(app.scene, DEFAULT_SCENE);
+    for (const replacement of [null, snapshot]) {
+      assert.throws(() => app.replaceWorkingBowl(replacement), /could not be saved/);
+      assert.equal(app.workingSavePending, pending); assert.deepEqual(app.coordinator.getDocumentSnapshot(), current);
+    }
+  }
+});
+
+test("a successful complete scene or replacement save clears pending working changes", () => {
+  for (const operation of ["scene", "fresh", "copy", "undo", "commit"]) {
+    const { app, snapshot } = harness();
+    app.setupVesselUI = () => {};
+    app.store.save = () => false; moveBase(app, .7);
+    assert.equal(app.workingSavePending, true);
+    app.store.save = () => true;
+    if (operation === "scene") app.changeScene({ ...DEFAULT_SCENE, colorId: "celadon" });
+    else if (operation === "undo") app.handleUICommand({ kind: "undo-edit" }, {});
+    else if (operation === "commit") moveBase(app, -.6);
+    else app.replaceWorkingBowl(operation === "fresh" ? null : snapshot);
+    assert.equal(app.workingSavePending, false, operation); assert.equal(app.ui.state.workingSavePending, false);
+  }
+});
+
+test("Garden viewing cannot retry-save a kept document over the unsaved working bowl", () => {
+  const { app, writes } = harness();
+  const save = app.store.save;
+  app.store.save = () => false; moveBase(app, .7);
+  const working = app.coordinator, committed = working.getDocumentSnapshot();
+  app.store.save = save;
+  app.pauseForGarden(); assert.equal(app.workingSavePending, true);
+  app.viewGardenEntry({ arrangement: createWorkbenchFixture("leafy-shoot", 9255, 2) });
+  assert.equal(app.ui.state.workingSavePending, true); assert.equal(app.ui.state.canRetryWorkingSave, false);
+  app.handleUICommand({ kind: "retry-working-save" }, {});
+  assert.equal(writes.length, 0); assert.equal(app.workingSavePending, true); assert.equal(app.coordinator.getDocumentSnapshot().plants.size, 2);
+  assert.deepEqual(working.getDocumentSnapshot(), committed);
+  app.returnToWorkingBowl(); assert.equal(app.ui.state.canRetryWorkingSave, true);
+  app.handleUICommand({ kind: "retry-working-save" }, {});
+  assert.equal(writes.length, 1); assert.equal(app.workingSavePending, false);
+  assert.deepEqual(app.coordinator.getDocumentSnapshot(), committed);
 });

@@ -51,6 +51,10 @@ Inspect the built page once before physical play. All items are required.
 - All action controls and the compact material tray sit in the top rail; no
   button is between the bottom edge and the vessel. At large text sizes,
   controls wrap without overlapping labels or leaving the viewport.
+  The exceptional **Retry save** recovery button appears only after a failed
+  working autosave, in a persistent warning below the craft cue. Confirm that
+  both messages fit without overlapping at large text; Retry must cancel any
+  preview first, and a successful retry dismisses the warning.
 - Press in the top rail's padding or a gap, then drag into the plant: no
   acquisition. The rail must own its background, not pass through to material.
 - Open View: Front, ¾ and Above expand downward over the scene without moving

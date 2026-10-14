@@ -284,7 +284,15 @@ function invisibleHitMaterial(debug: boolean, color = 0x4a8ab7) {
 }
 
 function setOpacity(material: THREE.MeshStandardMaterial, opacity: number) {
-  material.transparent = opacity < 0.999;
+  const transparent = opacity < 0.999;
+  if (material.transparent !== transparent) {
+    material.transparent = transparent;
+    // Three caches shader variants by material.version. In particular, the
+    // transparent DoubleSide pass can leave its FrontSide shader cached after
+    // a prune preview. Restore the proper program when crossing this boundary,
+    // without invalidating it on every hover/graph sync or opacity-only change.
+    material.needsUpdate = true;
+  }
   material.opacity = opacity;
   material.depthWrite = opacity >= 0.999;
 }

@@ -97,9 +97,10 @@ function setup(scene?: SceneSettings) {
   const originals = new Map(keys.map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
   const created: string[] = [], revoked: string[] = [], shares: ShareData[] = [];
   let shareResult: () => Promise<void> = async () => {};
+  let shareAvailable = true, keepError: Error | null = null;
   Object.defineProperties(globalThis, {
     document: { configurable: true, value: document },
-    navigator: { configurable: true, value: { canShare: () => true, share: (data: ShareData) => { shares.push(data); return shareResult(); } } },
+    navigator: { configurable: true, value: { canShare: () => shareAvailable, share: (data: ShareData) => { shares.push(data); return shareResult(); } } },
     URL: { configurable: true, value: { createObjectURL: () => { const url = `blob:image-${created.length}`; created.push(url); return url; }, revokeObjectURL: (url: string) => revoked.push(url) } },
   });
   let snapshot = createWorkbenchFixture("mixed", 8278, 2);
@@ -114,7 +115,7 @@ function setup(scene?: SceneSettings) {
   const studios: { scene: SceneSettings; plants: unknown[]; pose: typeof snapshot.camera; disposed: boolean }[] = [];
   const ui = new Photograph(root as unknown as HTMLElement, {
     pause: () => { pauses++; }, snapshot: () => structuredClone(snapshot), context: () => context, returnToArrange: () => { if (context !== null) returns++; }, canKeep: () => context !== null,
-    keep: (snapshot) => { saves++; kept.push(snapshot); return "saved"; },
+    keep: (snapshot) => { if (keepError) throw keepError; saves++; kept.push(snapshot); return "saved"; },
   }, (_canvas, scene) => {
     const studio = { scene: structuredClone(scene), plants: [] as unknown[], pose: structuredClone(snapshot.camera), disposed: false }; studios.push(studio);
     return {
@@ -133,6 +134,8 @@ function setup(scene?: SceneSettings) {
     get returns() { return returns; },
     get saves() { return saves; }, get pauses() { return pauses; }, get disposed() { return disposed; },
     set shareResult(value: () => Promise<void>) { shareResult = value; },
+    set shareAvailable(value: boolean) { shareAvailable = value; },
+    set keepError(value: Error | null) { keepError = value; },
     async finishEncode(index = encoders.length - 1, blob: Blob | null = new Blob(["PNG"], { type: "image/png" })) {
       encoders[index](blob); await new Promise((resolve) => setImmediate(resolve));
     },
@@ -201,6 +204,44 @@ test("share dismissal does not download, and a stale share result cannot write i
     h.click("photo-close"); h.click("photo-open"); done(); await new Promise((resolve) => setImmediate(resolve));
     assert.equal(h.find("photo-delivery-message").textContent, ""); assert.equal(h.find("photo-result").hidden, true);
     assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
+test("photo saving guidance only names Share image when the prepared file can be shared", async () => {
+  const h = setup();
+  try {
+    for (const available of [false, true, false]) {
+      h.shareAvailable = available;
+      h.click("photo-export"); await h.finishEncode();
+      assert.equal(h.find("photo-share").hidden, !available);
+      h.click("photo-download");
+      for (const id of ["photo-save-help", "photo-message", "photo-delivery-message"]) {
+        const text = h.find(id).textContent;
+        assert.equal(text.includes("Share image"), available, `${id} must match the available actions`);
+        assert.match(text, /Open image/);
+      }
+      assert.equal(h.saves, 0); assert.equal(h.shares.length, 0);
+    }
+  } finally { h.close(); }
+});
+
+test("Garden Keep confirms success or failure outside the scrolling controls without moving the preview", () => {
+  const h = setup();
+  try {
+    h.click("photo-tab-save");
+    const controls = h.find("photo-controls"), canvas = h.find("photo-canvas"), status = h.find("photo-message");
+    assert.equal(controls.querySelector("#photo-message"), null, "confirmation must not sit below the long Save panel");
+    assert.equal(status.parentElement, controls.parentElement, "status belongs to the fixed tools area");
+    assert.equal(status.getAttribute("role"), "status");
+    controls.scrollTop = 120;
+    h.find("photo-keep").focus(); h.click("photo-keep");
+    assert.match(status.textContent, /Photo kept in Garden/); assert.equal(h.saves, 1);
+    assert.equal(controls.scrollTop, 120); assert.equal(h.find("photo-canvas"), canvas);
+    assert.equal(h.document.activeElement, h.find("photo-keep"), "confirmation does not steal focus");
+    h.keepError = new Error("Garden is full. Download a backup before removing an entry.");
+    h.click("photo-keep");
+    assert.match(status.textContent, /Garden is full/); assert.doesNotMatch(status.textContent, /Photo kept/);
+    assert.equal(h.saves, 1); assert.equal(controls.scrollTop, 120); assert.equal(h.find("photo-canvas"), canvas);
   } finally { h.close(); }
 });
 

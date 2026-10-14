@@ -308,6 +308,8 @@ export class IkebanaApp {
   private restored = false;
   private loadWarning = false;
   private lastSaveSucceeded = true;
+  /** Committed working changes that have not reached storage. Never serialized. */
+  private workingSavePending = false;
   private removeUIListener: (() => void) | null = null;
   private hovering = false;
   private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
@@ -450,6 +452,7 @@ export class IkebanaApp {
       this.ui.setStatus("Could not save the scene. Your previous setting is unchanged.", "warning");
       this.setupVesselUI(); return;
     }
+    this.markWorkingSaved();
     this.applyScene(scene); this.syncPresentation();
   }
   private restoreCamera(camera: CameraPose) {
@@ -570,7 +573,7 @@ export class IkebanaApp {
         },
         beforeRecoveryCommit: (event) => {
           if (this.workingSession) return false;
-          return this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
+          return this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal, "proposal");
         },
         onAutosave: (event) => {
           if (this.workingSession || this.suppressSave) return; // Garden viewing can never write the working bowl.
@@ -601,7 +604,7 @@ export class IkebanaApp {
     (this.preventionByCoordinator ??= new WeakMap()).set(coordinator, prevention);
   }
 
-  private saveWorkingPlants(plants: ReadonlyMap<string, PlantGraph>, ordinal: number) {
+  private saveWorkingPlants(plants: ReadonlyMap<string, PlantGraph>, ordinal: number, phase: "committed" | "proposal" = "committed") {
     const canonical = [...plants.values()]
       .sort((left, right) => left.id.localeCompare(right.id)).map(toCanonicalPlantGraph);
     this.lastSaveSucceeded = this.store.save(ordinal + 1, canonical);
@@ -609,8 +612,40 @@ export class IkebanaApp {
       this.telemetryStore.clear();
       this.lastSaveSucceeded = this.store.save(ordinal + 1, canonical);
     }
-    if (!this.lastSaveSucceeded) this.ui.setStatus("Could not save this change.", "warning");
+    if (this.lastSaveSucceeded) this.markWorkingSaved();
+    else {
+      // A rejected save-first proposal did not change memory. It must neither
+      // invent an unsaved change nor forget an earlier failed autosave.
+      if (phase === "committed") this.workingSavePending = true;
+      this.syncWorkingSaveFeedback();
+      this.ui.setStatus(phase === "proposal" ? "Could not save this change." : "Change kept in this session.", phase === "proposal" ? "warning" : "quiet");
+    }
     return this.lastSaveSucceeded;
+  }
+
+  private syncWorkingSaveFeedback() {
+    this.ui.setState({ workingSavePending: Boolean(this.workingSavePending), canRetryWorkingSave: Boolean(this.workingSavePending) && !this.workingSession });
+  }
+
+  private markWorkingSaved() {
+    this.lastSaveSucceeded = true;
+    this.workingSavePending = false;
+    this.syncWorkingSaveFeedback();
+  }
+
+  private retryWorkingSave() {
+    if (this.workingSession) {
+      this.ui.setStatus("Return to your working bowl before retrying its save.", "warning");
+      return;
+    }
+    if (!this.workingSavePending) return;
+    this.cancelPlaceReadiness("interrupt");
+    this.interruptActive("view-command", false);
+    const document = this.coordinator.getDocumentSnapshot();
+    if (this.saveWorkingPlants(document.plants, document.successfulPlantOrdinal)) {
+      this.ui.setStatus("Working bowl saved on this device.");
+      if (typeof this.ui.focusStatus === "function") this.ui.focusStatus();
+    }
   }
 
   private recoverWorkingEdit(operation: "undo" | "remove") {
@@ -715,6 +750,7 @@ export class IkebanaApp {
     this.restoreCamera(snapshot.camera);
     this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false, materialMenuOpen: false });
     this.ui.setStatus("A kept moment. Orbit or pan to look; make a copy to change it.");
+    this.syncWorkingSaveFeedback();
     this.syncPresentation();
   }
 
@@ -729,6 +765,7 @@ export class IkebanaApp {
     this.cameraIsFree = saved.cameraIsFree;
     this.ui.setState({ posture: this.coordinator.getDebugState().posture, tool: this.coordinator.getDebugState().tool, trayEnabled: true });
     this.ui.setStatus("Your working bowl is here.");
+    this.syncWorkingSaveFeedback();
     this.syncPresentation();
   }
 
@@ -789,6 +826,7 @@ export class IkebanaApp {
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene: snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene), camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    this.markWorkingSaved();
     this.photoDraftContext++;
     this.applyScene(snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene));
     const loaded = getLastWorkbenchFixtureLoad();
@@ -840,6 +878,10 @@ export class IkebanaApp {
       return;
     }
     switch (command.kind) {
+      case "retry-working-save": {
+        this.retryWorkingSave();
+        break;
+      }
       case "set-more-menu": {
         this.interruptActive("view-command", false);
         this.ui.setState({ moreMenuOpen: command.open, editMenuOpen: false, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });

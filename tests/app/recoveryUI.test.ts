@@ -244,3 +244,24 @@ test("prevention is an explicit default-off study and returns focus to View", ()
   assert.equal(h.document.activeElement,h.document.element('#view-toggle'));
  } finally {h.close();}
 });
+
+test("unsaved feedback outlasts hints and craft cues, and Retry is disabled for kept Garden views", () => {
+  const h = setup();
+  try {
+    const warning = h.document.element("#working-save-warning"), retry = h.document.element("#retry-working-save");
+    assert.equal(warning.hidden, true); assert.equal(retry.disabled, true);
+    h.click("#retry-working-save"); assert.equal(h.commands.length, 0);
+    h.ui.setState({ workingSavePending: true, canRetryWorkingSave: true });
+    h.ui.setStatus("Choose where to cut.");
+    h.ui.setCraftCue({ kind: "cut", title: "Tip + 1 leaf", detail: "Release to cut." });
+    assert.equal(warning.hidden, false); assert.equal(retry.disabled, false);
+    assert.equal(h.document.element("#craft-cue").hidden, false);
+    assert.match(h.document.element("#working-save-message").textContent, /Keep this page open/);
+    h.click("#retry-working-save"); assert.deepEqual(h.commands, [{ kind: "retry-working-save" }]);
+    h.ui.setState({ canRetryWorkingSave: false });
+    assert.equal(warning.hidden, false); assert.equal(retry.disabled, true);
+    assert.match(h.document.element("#working-save-message").textContent, /return to it to retry/);
+    h.click("#retry-working-save"); assert.equal(h.commands.length, 1);
+    h.ui.setState({ workingSavePending: false }); assert.equal(warning.hidden, true);
+  } finally { h.close(); }
+});

@@ -435,16 +435,27 @@ button:focus-visible {
   resize: vertical;
 }
 
-.status-pill {
+.craft-feedback {
   position: absolute;
-  z-index: 8;
+  z-index: 9;
   left: 50%;
   bottom: calc(var(--safe-bottom) + 0.8rem);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  align-items: end;
+  row-gap: .5rem;
+  width: max-content;
+  max-width: 90vw;
+  pointer-events: none;
+}
+
+.status-pill {
+  grid-area: 1 / 1;
   max-width: min(80vw, 22rem);
   min-height: 1.9rem;
   margin: 0;
   padding: 0.43rem 0.78rem;
-  transform: translateX(-50%);
   border: 1px solid rgba(52, 57, 46, 0.1);
   border-radius: 999px;
   background: rgba(246, 243, 235, 0.76);
@@ -463,11 +474,7 @@ button:focus-visible {
 }
 
 .craft-cue {
-  position: absolute;
-  z-index: 9;
-  bottom: calc(var(--safe-bottom) + 0.8rem);
-  left: 50%;
-  transform: translateX(-50%);
+  grid-area: 1 / 1;
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -484,6 +491,28 @@ button:focus-visible {
   line-height: 1.35;
 }
 .craft-cue[hidden] { display: none; }
+.working-save-warning {
+  grid-area: 2 / 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem .7rem;
+  max-width: min(90vw, 30rem);
+  padding: .45rem .7rem;
+  border: 1px solid #b58a63;
+  border-radius: .7rem;
+  color: #593c28;
+  background: #fbf1df;
+  font-size: .82rem;
+  line-height: 1.35;
+  pointer-events: auto;
+}
+.working-save-warning[hidden] { display: none; }
+.working-save-warning p { flex: 1 1 12rem; margin: 0; }
+.working-save-warning button { min-height: 44px; padding: .4rem .7rem; border: 1px solid currentColor; border-radius: .5rem; font: inherit; color: inherit; background: #fffaf0; cursor: pointer; }
+.working-save-warning button:disabled { opacity: .6; cursor: default; }
+.working-save-warning button:focus-visible { outline: 3px solid #9a6d36; outline-offset: 3px; }
 .craft-cue[data-kind="cut"] { color: #614009; border-color: #a58548; }
 .craft-cue strong { display: block; font-weight: 600; }
 .craft-cue [data-cue-detail] { display: block; margin-top: 0.18rem; color: #45483e; }
@@ -922,6 +951,7 @@ noscript {
   .materials-scroll-cue,
   .status-pill,
   .craft-cue,
+  .working-save-warning,
   .experiment-panel,
   .icon-button {
     border: 1px solid CanvasText;
@@ -1154,7 +1184,7 @@ noscript {
 .photo-frame { position: relative; width: min(100cqw, calc(100cqh * var(--photo-aspect))); aspect-ratio: 4 / 3; overflow: hidden; background: repeating-conic-gradient(#ddd8ce 0% 25%, #f4efe5 0% 50%) 50% / 18px 18px; box-shadow: 0 2px 12px #323a3019; }
 #photo-canvas { display: block; width: 100%; height: 100%; }
 .photo-grid { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to right, transparent calc(100% / 3 - .5px), #fff8 calc(100% / 3 - .5px), #fff8 calc(100% / 3 + .5px), transparent calc(100% / 3 + .5px), transparent calc(200% / 3 - .5px), #fff8 calc(200% / 3 - .5px), #fff8 calc(200% / 3 + .5px), transparent calc(200% / 3 + .5px)), linear-gradient(to bottom, transparent calc(100% / 3 - .5px), #fff8 calc(100% / 3 - .5px), #fff8 calc(100% / 3 + .5px), transparent calc(100% / 3 + .5px), transparent calc(200% / 3 - .5px), #fff8 calc(200% / 3 - .5px), #fff8 calc(200% / 3 + .5px), transparent calc(200% / 3 + .5px)); }
-.photo-tools { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px; min-height: 0; min-width: 0; }
+.photo-tools { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 10px; min-height: 0; min-width: 0; }
 .photo-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; min-width: 0; }
 .photo-dialog .photo-tabs button { min-width: 0; overflow-wrap: anywhere; padding: 8px 3px; font-size: .82rem; }
 .photo-tabs [aria-selected=true] { background: #344b3b; border-color: #344b3b; color: #fff9eb; }
@@ -1184,6 +1214,9 @@ noscript {
 .photo-dialog :is(button,a,input,select):focus-visible { outline: 3px solid #9a6d36; outline-offset: 3px; }
 #photo-close { min-width: 44px; width: 44px; flex: 0 0 44px; }
 #photo-message, #photo-delivery-message { margin: 12px 0 0; font-size: .86rem; line-height: 1.55; }
+/* Keep save confirmations and errors visible while the controls scroll. This
+   row cannot resize the separate preview; long messages remain scrollable. */
+#photo-message { margin: 0; min-height: 1.55em; max-height: 4.65em; overflow: auto; overflow-wrap: anywhere; overscroll-behavior: contain; }
 .photo-controls .panel-note, .photo-result .panel-note { margin: 0; color: #657062; font-size: .78rem; line-height: 1.55; }
 .photo-result { margin-top: 16px; padding: 12px; border: 1px solid #bec9b7; border-radius: 12px; background: #faf9f2; display: grid; gap: 12px; }
 .photo-result-heading { display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: 8px; }

@@ -713,6 +713,7 @@
         ></textarea>
       </section>
 
+      <div class="craft-feedback">
       <p id="status" class="status-pill" data-testid="status" role="status" aria-live="polite" aria-atomic="true">
         Place a cutting.
       </p>
@@ -726,6 +727,11 @@
         </span>
         <span><strong data-cue-title></strong><span data-cue-detail></span></span>
       </aside>
+      <div id="working-save-warning" class="working-save-warning" hidden>
+        <p id="working-save-message" role="status" aria-live="polite" aria-atomic="true"></p>
+        <button id="retry-working-save" type="button">Retry save</button>
+      </div>
+      </div>
     </main>
 
     <noscript>This study needs JavaScript to shape the branch.</noscript>

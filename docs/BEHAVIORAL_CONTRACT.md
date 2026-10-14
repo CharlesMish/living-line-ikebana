@@ -156,6 +156,18 @@ and the structural-stem/handle fallback retain their existing behavior.
 - Corrupt or unsupported stored data fails closed to an empty session with a terse warning; it never partially hydrates a graph.
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
 
+Failed post-commit autosave leaves the committed working change in memory and
+shows a persistent unsaved warning with **Retry save**, separately from ordinary
+craft hints. Keep the page open until a complete working-document save succeeds.
+Retry first cancels a readied cutting and every live preview, then writes only
+the current committed plants, ordinal, camera and scene. It does not edit the
+graph, consume Undo, advance an ordinal or change the save format. Kept Garden
+viewing disables Retry; return to the working bowl first. Garden Keep, photo
+export, hints and cancellation cannot clear the warning. Successful working
+autosave, Retry, scene change or explicit bowl replacement clears it. A failed
+save-first Undo/Remove/Turn/scene/replacement proposal leaves the existing bowl
+and its previous unsaved state unchanged.
+
 ### Explicit botanical recovery — September 28 contract revision
 
 **Turn selected cutting — October 13 addition.** In Arrange, `Edit → Turn

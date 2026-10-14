@@ -10,6 +10,8 @@ export interface TonePatch {
   bloom?: number;
   bud?: number;
   berry?: number;
+  seedpod?: number;
+  seedpodRim?: number;
 }
 interface Tone { id: string; label: string; patch: TonePatch }
 const natural: Tone = { id: "natural", label: "Natural", patch: {} };
@@ -36,6 +38,9 @@ export const BOTANICAL_FAMILIES = [
   { id: "berry-twig", label: "Berry twig", versions: ["berry-twig-v1"], tones: [natural,
     tone("rust", "Rust berries", { berry: 0xc86d39, branches: wood(0x735641, 0x82634b, 0x82634b) }),
     tone("wine", "Dark wine", { berry: 0x7c354e, branches: wood(0x594338, 0x6a5141, 0x6a5141) })] },
+  { id: "silver-seed", label: "Silver seed spray", versions: ["silver-seed-v1"], tones: [natural,
+    tone("ivory", "Warm ivory", { seedpod: 0xe7ddbc, seedpodRim: 0xb9a67e }),
+    tone("straw", "Pale straw", { seedpod: 0xd3bc8d, seedpodRim: 0x9e855e, branches: wood(0x806545, 0x997c53, 0x997c53) })] },
   { id: "bare-branch", label: "Bare branch", versions: ["bare-branch-v1"], more: true, tones: [natural,
     tone("walnut", "Warm walnut", { branches: wood(0x604535, 0x715240, 0x80614c) }),
     tone("silver", "Weathered silver", { branches: wood(0x79786b, 0x888577, 0x95907f) })] },
@@ -85,6 +90,7 @@ export function resolveBotanicalAppearance(generatorVersion: string, base: Mater
     leaf: patch.leaf === undefined && patch.vein === undefined ? base.leaf : { ...base.leaf, color: patch.leaf ?? base.leaf.color, veinColor: patch.vein ?? base.leaf.veinColor },
     bloom: patch.bloom === undefined ? base.bloom : { ...base.bloom, color: patch.bloom },
     ...(base.berry ? { berry: patch.berry === undefined ? base.berry : { ...base.berry, color: patch.berry } } : {}),
+    ...(base.seedpod ? { seedpod: { ...base.seedpod, color: patch.seedpod ?? base.seedpod.color, rimColor: patch.seedpodRim ?? base.seedpod.rimColor } } : {}),
     budColor: patch.bud ?? 0xa64f59,
   };
 }

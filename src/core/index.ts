@@ -30,3 +30,5 @@ export * from "./broadBlade.ts";
 export * from "./lobedLeaf.ts";
 export * from "./violetSprig.ts";
 export * from "./indigoSpire.ts";
+
+export * from "./silverSeed.ts";

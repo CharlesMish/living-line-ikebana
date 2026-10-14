@@ -19,7 +19,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 2. Graph and material invariants
 
-Each branch persistently owns its ID, kind, parent attachment, points, rest lengths, active length, radius, stiffness, reference normal, and active state. Each organ persistently owns its ID, kind, supporting branch, material distance, spin, scale, and active state. Organ kinds are `leaf`, `bloom`, `bud`, and `berry`. A berry is one fruit on one supporting branch. `berry` is another allowed kind value, not a new field, and it does not change `schemaVersion`.
+Each branch persistently owns its ID, kind, parent attachment, points, rest lengths, active length, radius, stiffness, reference normal, and active state. Each organ persistently owns its ID, kind, supporting branch, material distance, spin, scale, and active state. Organ kinds are `leaf`, `bloom`, `bud`, `berry`, and `seedpod`. A berry is one fruit on one supporting branch. `berry` and `seedpod` are allowed kind values, not new fields, and do not change `schemaVersion`. `seedpod` represents a fruit or its retained dry partition, never a flower or leaf.
 
 - `points.length === restLengths.length + 1`.
 - Every rest length is finite, positive, and matches its shaped segment length within shared tolerance.
@@ -652,3 +652,19 @@ unknown materials/tones rather than discard them. Single flower moves into More
 cuttings; its generator, frame, direct-head control and saved graphs stay intact.
 Nodding v2's thinner, lobed bell is appearance only; v1's arrays and both versions'
 canonical graph, acquisition envelope and shaping remain unchanged.
+
+### Silver seed spray — additive dried material
+
+`silver-seed-v1` adds six dry, papery seed-pod partitions on individual pedicels,
+carried by three sparse lateral arms. Its semantic organ kind is `seedpod`;
+craft cues name **seed discs** and **seed-disc stems**. Cutting one stalk removes
+one whole disc. An upper structural cut retains lower arms/discs and all inactive
+history. There is no membrane-part editing or seed scattering. Existing stock,
+frozen profiles, graph fields, Aim/Bend/prune and cancellation remain unchanged.
+
+The two-sided membrane and fibrous rim use exact surface acquisition, including
+both faces and the visible edge. Empty corners outside the oval are not a sphere
+proxy. Hits retain the existing supporting-pedicel Aim and prune grammar.
+Committed material uses opaque shading; prune and insertion use their existing
+transient opacity. Tones change presentation only. Old builds refuse the new
+generator rather than partially accepting its new organ kind.

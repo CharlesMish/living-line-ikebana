@@ -1,3 +1,4 @@
+import { createSeedDiscGeometry, createSeedDiscRimGeometry } from "./seedDiscGeometry.ts";
 import { createVioletFloretGeometry, createIndigoFloretGeometry } from "./violetBloomGeometry.ts";
 import { applyPhotoLighting, disposePhotoLighting, validatePhotoLighting, type PhotoLightRig, type PhotoLightingId } from "./photoLighting.ts";
 import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
@@ -1081,6 +1082,19 @@ export class ThreeStudio {
         group.add(anthers);
       }
       hitRadius = bloom.hitRadius;
+    } else if (organ.kind === "seedpod") {
+      const pod = appearance.seedpod;
+      if (!pod) throw new Error(`Missing seedpod appearance: ${graph.generatorVersion}`);
+      const membrane = new THREE.Mesh(createSeedDiscGeometry(seed),
+        bodyMaterial(pod.color, pod.roughness, true, next => next.seedpod!.color));
+      const rim = new THREE.Mesh(createSeedDiscRimGeometry(seed, membrane.geometry),
+        bodyMaterial(pod.rimColor, .96, true, next => next.seedpod!.rimColor));
+      membrane.castShadow = !pending; rim.castShadow = !pending;
+      group.add(membrane, rim);
+      // Exact surface copy, including the thin edge. Empty corners stay empty;
+      // both sides route to this disc's own supporting stalk, never a flower.
+      exactHitGeometry = mergeGeometries([membrane.geometry, rim.geometry])!;
+      hitRadius = 0;
     } else if (organ.kind === "berry") {
       const berry = appearance.berry;
       if (!berry) throw new Error(`Missing berry appearance: ${graph.generatorVersion}`);

@@ -34,14 +34,18 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
   const stem = hex(a.branchColors.trunk), lateral = hex(a.branchColors.lateral);
   const leaf = hex(a.leaf.color), vein = hex(a.leaf.veinColor), bloom = hex(a.bloom.color);
   const bud = hex(a.budColor), berry = hex(a.berry?.color ?? a.budColor);
-  const wood = ["flowering-branch", "bare-branch", "berry-twig", "lobed-leaf"].includes(familyId);
+  const wood = ["flowering-branch", "bare-branch", "berry-twig", "lobed-leaf", "silver-seed"].includes(familyId);
   const parts: Part[] = [{ label: wood ? "Wood" : "Stem", color: stem }];
-  const leafy = !["bare-branch", "berry-twig", "blossom-spray"].includes(familyId);
+  const leafy = !["bare-branch", "berry-twig", "blossom-spray", "silver-seed"].includes(familyId);
   const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower", "violet-sprig", "indigo-spire"].includes(familyId);
   if (leafy) parts.push({ label: "Leaves", color: leaf });
   if (flowering) parts.push({ label: "Flowers", color: bloom });
   if (familyId === "flowering-branch") parts.push({ label: "Buds", color: bud });
   if (familyId === "berry-twig") parts.push({ label: "Berries", color: berry });
+  if (familyId === "silver-seed") {
+    parts.push({ label: "Seed discs", color: hex(a.seedpod!.color) });
+    parts.push({ label: "Rims", color: hex(a.seedpod!.rimColor) });
+  }
   const blade = (x: number, y: number, rotation: number, scale = 1) => `<g transform="translate(${x} ${y}) rotate(${rotation}) scale(${scale})"><path d="M0 0 C-8 -7 -6 -16 0 -22 C7 -14 8 -7 0 0Z" fill="${leaf}"/>${path("M0 -1 Q1 -11 0 -20", vein, .8)}</g>`;
   const flower = (x: number, y: number, size = 1, tuft = false) => {
     const count = tuft ? 8 : 5;
@@ -84,6 +88,13 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
     case "berry-twig":
       drawing = path("M36 66 L43 10", stem, 2.6) + path("M39 47 L60 40 M41 31 L23 22 M42 22 L55 14", lateral, 1.6);
       for (const [x, y, px, py] of [[60, 36, 55, 42], [58, 46, 53, 42], [20, 18, 27, 24], [25, 28, 28, 24], [55, 10, 52, 16]]) drawing += path(`M${px} ${py} L${x} ${y}`, hex(a.branchColors.pedicel), 1) + `<circle cx="${x}" cy="${y}" r="3" fill="${berry}"/>`;
+      break;
+    case "silver-seed":
+      drawing = path("M39 67 Q42 36 43 12", stem, 1.6) + path("M40 50 L24 39 M41 35 L58 25 M42 23 L31 16", lateral, 1);
+      for (const [x, y, px, py, tilt] of [[24,29,24,39,-12],[33,35,34,43,20],[58,15,58,25,12],[50,22,50,29,-18],[31,7,31,16,-15],[40,9,40,17,20]]) {
+        drawing += path(`M${px} ${py} L${x} ${y+7}`, hex(a.branchColors.pedicel), .8)
+          + `<g transform="translate(${x} ${y}) rotate(${tilt})"><ellipse rx="5.4" ry="7.3" fill="${hex(a.seedpod!.color)}" stroke="${hex(a.seedpod!.rimColor)}" stroke-width=".9"/>${path("M0 6 L0 -6 M0 1 L3 -2 M0 -1 L-3 -3", hex(a.seedpod!.rimColor), .45)}</g>`;
+      }
       break;
     case "leafy-shoot":
       drawing = path("M42 66 Q40 38 43 10", stem) + blade(42, 56, -55, .8) + blade(41, 43, 55, .75) + blade(42, 29, -45, .7) + blade(43, 17, 20, .6);

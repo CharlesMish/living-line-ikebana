@@ -179,3 +179,13 @@ tone samples and tray silhouettes resolve by their durable generator version.
 `bellGeometry.ts` refines only the existing nodding-v2 draw while leaving its
 canonical graph and nodding-v1 arrays unchanged. Single flower remains registered
 and accessible under More cuttings. See the [candidate report](docs/development/reports/violet-cuttings/README.md).
+
+## Silver seed spray study
+
+`core/silverSeed.ts` adds versioned sparse dried stock and the semantic `seedpod`
+organ kind. The existing serializer, validator and craft cues explicitly accept
+that kind. `presentation/seedDiscGeometry.ts` constructs a closed shallow
+partition and a rim/vein mesh with both sides authored. `ThreeStudio` merges
+copies of those exact surfaces for picking and routes them to the existing
+supporting stalk operation. Scene tones have distinct membrane/rim colors;
+there are no new persistent graph fields, texture files or alpha-sort layers.

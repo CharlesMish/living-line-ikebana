@@ -30,6 +30,8 @@ export interface MaterialAppearance {
      */
     tuftScatter?: Readonly<{ azimuth: number; scale: number; tilt: number }>;
   }>;
+  /** Papery dried fruit partitions. Exact visible surfaces own acquisition. */
+  readonly seedpod?: Readonly<{ color: number; rimColor: number; roughness: number }>;
   /** Present only for a generator that emits berry organs. One sphere per organ. */
   readonly berry?: Readonly<{
     color: number;
@@ -198,12 +200,19 @@ const indigoSpire: MaterialAppearance = Object.freeze({
     hitRadius: 0.56, hitCenterY: 0.5 }),
   bloom: Object.freeze({ form: "indigo-floret", color: 0x6655a6, roughness: 0.87, hitRadius: 0.32, hitCenterY: 0.17 }),
 });
+const silverSeed: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x837052, lateral: 0x9a8261, twig: 0x9a8261, pedicel: 0xac9777, petiole: 0xac9777 }),
+  stemRoughness: 0.96,
+  leaf: flowering.leaf, bloom: flowering.bloom,
+  seedpod: Object.freeze({ color: 0xe0dfce, rimColor: 0xb3a485, roughness: 0.91 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "lobed-leaf-v1": lobedLeaf,
   "violet-sprig-v1": violetSprig,
   "indigo-spire-v1": indigoSpire,
+  "silver-seed-v1": silverSeed,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,

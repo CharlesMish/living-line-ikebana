@@ -96,6 +96,29 @@ the two acquisition hypotheses under **Testing tools**. They share the same mate
 
 Use `?bend=touch` to open directly in the touch-located variant. Omitting the parameter uses the fixed-point default; `?bend=fixed` currently falls back to that same default.
 
+## Placement cue and tap-to-place
+
+Ordinary play omits both flags. The source card still starts a drag on press, and the pin-field outline still appears only while that drag is held.
+
+- `?placeCue=1` — in Arrange, a quiet line shows the accepted planting area before a drag. It follows the layout’s planting ellipses, including oval, offset, long, and multi-area beds. The plate outside that line reads as a rim. Step Back and Photograph stay quiet. Dragging still seats on release, with the same acceptance rules.
+- `?placeTap=1` — includes the cue. Tap the source card to ready one cutting, then tap inside the pins to place it. Tap the card again, Cancel, or Escape to cancel. Dragging from the card still works; movement past 8 CSS pixels is a drag, and the tap that readies does not also place.
+
+These are development flags. A study packet can bake one condition into a self-contained file so the address bar does not carry them. After `npm run build`, or as part of that build:
+
+```bash
+LIVING_LINE_PLACE=all npm run build
+```
+
+`LIVING_LINE_PLACE` is read by `tools/build-standalone.mjs`. It also accepts `baseline`, `cue`, or `tap`. The three files are:
+
+| File | What it is |
+| --- | --- |
+| `dist/arrangement-1.html` | Current placement. Drag from the source card. |
+| `dist/arrangement-2.html` | Planting boundary, and the same drag. |
+| `dist/arrangement-3.html` | That boundary, drag, and tap-to-place. |
+
+The filenames and the page do not name the condition. `dist/ikebana-web-alpha-standalone.html` stays the unflagged build.
+
 ## Architecture
 
 - `src/core/` — deterministic renderer-free botanical graph and edit laws.

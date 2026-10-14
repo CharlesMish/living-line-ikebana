@@ -179,7 +179,7 @@ test("this integration catalog makes named candidate profiles available to the p
   const options = listWorkbenchFixtureOptions();
   assert.deepEqual(options.map((option) => option.id), [
     "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume", "arching-trailer",
-    "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig", "fern-frond",
+    "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig", "fern-frond", "compact-flower", "broad-blade", "lobed-leaf",
     "reference-pair", "references-plus-bare", "references-plus-single-flower", "all-four",
     "references-plus-reed", "references-plus-flower-volume", "references-plus-arching-trailer",
     "round3-three", "round3-palette",

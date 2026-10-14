@@ -44,6 +44,7 @@ export class GardenUI {
   private entries: GardenEntry[] = [];
   private pending: (() => void) | null = null;
   private viewedEntry: GardenEntry | null = null;
+  private justKeptId: string | null = null;
   private loaded = false;
   private compareIds: string[] = [];
   private comparing = false;
@@ -56,21 +57,14 @@ export class GardenUI {
     host.className = "garden-host";
     host.innerHTML = `
       <div class="garden-viewer" hidden aria-label="Kept arrangement">
-        <p><span class="eyebrow">Kept in your Garden</span><strong id="kept-title"></strong></p>
+        <p><span class="eyebrow">Saved original · view only</span><strong id="kept-title"></strong></p>
         <button type="button" id="garden-copy">Make a working copy</button>
         <button type="button" id="garden-return">Return to my bowl</button>
       </div>
       <dialog id="garden-dialog" class="garden-dialog" aria-labelledby="garden-title">
         <div class="panel-heading"><div><p class="eyebrow">A place for enough</p><h1 id="garden-title">Your Garden</h1></div>
           <button id="garden-close" class="icon-button" type="button" aria-label="Close Garden">×</button></div>
-        <p class="garden-intro">Keep a moment you want to return to. No score, no required finish.</p>
-        <details class="looking-study garden-study">
-          <summary>Optional study · Across the table</summary>
-          <p class="looking-prompt">${TABLE_TALK_STUDY_PROMPT}</p>
-          <p class="panel-note">${TABLE_TALK_STUDY_NOTE}</p>
-          <p class="panel-note">Keep one, copy it, revise it, and keep the revision. Then compare them here.</p>
-        </details>
-        <p class="panel-note">Saved in this browser on this device. Download a backup to keep your collection elsewhere.</p>
+        <p class="garden-intro">Keep a moment. Return to it with fresh eyes.</p>
         <p id="garden-error" class="garden-message" role="status" aria-live="polite"></p>
         <section id="garden-choice" class="garden-choice" hidden aria-labelledby="garden-choice-title">
           <h2 id="garden-choice-title">What about your current bowl?</h2>
@@ -78,17 +72,28 @@ export class GardenUI {
           <div class="garden-actions"><button type="button" id="garden-keep-first">Keep it, then continue</button><button type="button" id="garden-replace">Replace without keeping</button><button type="button" id="garden-cancel-choice">Cancel</button></div>
         </section>
         <form id="garden-keep-form" class="garden-keep-form">
-          <label for="garden-name">A name for this moment <span>(optional)</span></label>
+          <label for="garden-name">Name this moment <span>(optional)</span></label>
           <div class="garden-actions"><input id="garden-name" maxlength="80" placeholder="Untitled arrangement" autocomplete="off"/><button id="garden-keep" type="submit">Keep this bowl</button></div>
-          <p class="panel-note">Keeps the arrangement and this view. Your working bowl stays open.</p>
+          <p class="panel-note">Saves this view and arrangement. Your working bowl stays open.</p>
         </form>
-        <div class="garden-actions garden-tools"><button type="button" id="garden-new">Start a fresh bowl</button><button type="button" id="garden-export">Download backup</button><button type="button" id="garden-import">Import backup</button><input id="garden-file" type="file" accept="application/json,.json" hidden/></div>
-        <p id="garden-count" class="eyebrow"></p>
+        <div class="garden-collection-heading"><div><h2>Kept moments</h2><p id="garden-count" class="eyebrow"></p></div><button type="button" id="garden-new">Start a fresh bowl</button></div>
         <section id="garden-compare-bar" class="garden-compare-bar" hidden>
-          <p id="garden-compare-status">Choose two, then look at them together.</p>
+          <p id="garden-compare-status" role="status" aria-live="polite">Choose Compare on two moments.</p>
           <button type="button" id="garden-compare-go" disabled>Look at both</button>
         </section>
         <div id="garden-grid" class="garden-grid"></div>
+        <p class="panel-note garden-copy-note">Open a moment to look around. Make a working copy to revise it; the original stays here.</p>
+        <details id="garden-backups" class="garden-backups">
+          <summary>Backups &amp; storage</summary>
+          <p class="panel-note">Saved in this browser on this device. Download a backup to keep your collection elsewhere.</p>
+          <div class="garden-actions garden-tools"><button type="button" id="garden-export">Download backup</button><button type="button" id="garden-import">Import backup</button><input id="garden-file" type="file" accept="application/json,.json" hidden/></div>
+        </details>
+        <details class="looking-study garden-study">
+          <summary>Optional study · Across the table</summary>
+          <p class="looking-prompt">${TABLE_TALK_STUDY_PROMPT}</p>
+          <p class="panel-note">${TABLE_TALK_STUDY_NOTE}</p>
+          <p class="panel-note">Keep one, copy it, revise it, and keep the revision. Then compare them here.</p>
+        </details>
       </dialog>
       <dialog id="garden-compare-dialog" class="garden-dialog garden-compare" aria-labelledby="garden-compare-title">
         <div class="panel-heading"><div><p class="eyebrow">Same view and scale</p><h1 id="garden-compare-title">Compare two moments</h1></div>
@@ -151,7 +156,11 @@ export class GardenUI {
       input.value = "";
     }, { signal: this.controller.signal });
     this.find("#garden-keep-form").addEventListener("submit", (event) => {
-      event.preventDefault(); this.run(() => { this.keep(); this.message("Kept. You can leave it here, or keep working."); });
+      event.preventDefault(); this.run(() => {
+        this.keep(); this.message("Kept. Your working bowl is still open.");
+        // Show the moment that was just kept, rather than leaving it below the form.
+        this.find<HTMLButtonElement>(".garden-card-just-kept .garden-card-view").focus();
+      });
     }, { signal: this.controller.signal });
     this.dialog.addEventListener("close", () => {
       this.clearChoice();
@@ -173,7 +182,7 @@ export class GardenUI {
   private message(value: unknown) { this.error.textContent = value instanceof Error ? value.message : String(value); }
   private run(action: () => void) { try { action(); } catch (error) { this.message(error); } }
   open() {
-    this.actions.pause(); this.clearChoice(); this.message(""); this.reload();
+    this.actions.pause(); this.clearChoice(); this.justKeptId = null; this.message(""); this.reload();
     if (!this.dialog.open) this.dialog.showModal();
   }
   private reload() {
@@ -181,10 +190,12 @@ export class GardenUI {
     try { this.entries = this.store.load().entries; this.loaded = true; }
     catch { this.entries = []; this.message("This Garden could not be opened. Its stored data is untouched. Download a backup for recovery; keeping and importing are disabled."); }
     const grid = this.find("#garden-grid"); grid.replaceChildren();
-    this.find("#garden-count").textContent = this.loaded ? `${this.entries.length} / ${GARDEN_LIMIT} moments kept` : "Garden unavailable";
+    this.find("#garden-count").textContent = this.loaded ? `${this.entries.length} of ${GARDEN_LIMIT} spaces used` : "Garden unavailable";
     this.find<HTMLButtonElement>("#garden-import").disabled = !this.loaded;
     this.find<HTMLButtonElement>("#garden-keep").disabled = !this.loaded || this.actions.isViewing() || !this.actions.snapshot().plants.length;
-    this.find("#garden-keep-form").hidden = this.actions.isViewing();
+    this.find("#garden-keep-form").hidden = this.actions.isViewing() || !this.actions.snapshot().plants.length;
+    this.find(".garden-copy-note").hidden = !this.entries.length;
+    if (!this.loaded) this.find<HTMLDetailsElement>("#garden-backups").open = true;
     const available = new Set(this.entries.map((entry) => entry.id));
     this.compareIds = this.compareIds.filter((id) => available.has(id));
     const compareBar = this.find("#garden-compare-bar");
@@ -192,18 +203,23 @@ export class GardenUI {
     this.find<HTMLButtonElement>("#garden-compare-go").disabled = this.compareIds.length !== 2;
     this.find("#garden-compare-status").textContent = this.compareIds.length === 2
       ? "Two selected. The first is on the left."
-      : "Choose two, then look at them together.";
+      : this.compareIds.length === 1 ? "One selected. Choose one more moment."
+      : "Choose Compare on two moments.";
     if (this.loaded && !this.entries.length) {
       const empty = document.createElement("p"); empty.className = "garden-empty";
-      empty.textContent = "Your Garden starts with something you choose to keep. Arrange a cutting, step back, and decide whether this is a moment to save."; grid.append(empty);
+      empty.textContent = "Your kept arrangements will appear here. Arrange a cutting, choose a view, then Keep this bowl."; grid.append(empty);
     }
     for (const entry of this.entries) {
       const card = document.createElement("article"); card.className = "garden-card";
+      if (entry.id === this.justKeptId) card.classList.add("garden-card-just-kept");
       const view = document.createElement("button"); view.type = "button"; view.className = "garden-card-view";
+      view.setAttribute("aria-label", `View ${entry.title || "untitled arrangement"} in 3D. Saved original; read only.`);
       if (entry.thumbnail) { const image = document.createElement("img"); image.src = entry.thumbnail; image.alt = ""; image.loading = "lazy"; view.append(image); }
       else { const placeholder = document.createElement("span"); placeholder.className = "garden-placeholder"; placeholder.textContent = "Open arrangement"; view.append(placeholder); }
       const title = document.createElement("strong"); title.textContent = entry.title || "Untitled arrangement"; view.append(title);
       const date = document.createElement("span"); date.textContent = `${new Date(entry.keptAt).toLocaleDateString()} · ${entry.arrangement.plants.length} cutting${entry.arrangement.plants.length === 1 ? "" : "s"}`; view.append(date);
+      const viewLabel = document.createElement("span"); viewLabel.className = "garden-card-open";
+      viewLabel.textContent = entry.id === this.justKeptId ? "Just kept · View in 3D" : "View in 3D"; view.append(viewLabel);
       view.addEventListener("click", () => this.run(() => this.view(entry)));
       const remove = document.createElement("button"); remove.type = "button"; remove.className = "garden-remove"; remove.textContent = "Remove";
       remove.setAttribute("aria-label", `Remove ${entry.title || "untitled arrangement"}`);
@@ -218,10 +234,16 @@ export class GardenUI {
       });
       const actions = document.createElement("div");
       actions.className = "garden-card-actions";
+      const copy = document.createElement("button"); copy.type = "button"; copy.className = "garden-card-copy";
+      copy.textContent = "Make a working copy";
+      copy.setAttribute("aria-label", `Make a working copy of ${entry.title || "untitled arrangement"}. Keep the original.`);
+      copy.addEventListener("click", () => this.run(() => this.offerReplacement(entry.arrangement)));
+      actions.append(copy);
       if (this.entries.length >= 2) {
         const compare = document.createElement("button");
         compare.type = "button";
         compare.className = "garden-compare-toggle";
+        compare.dataset.entryId = entry.id;
         const selected = this.compareIds.includes(entry.id);
         compare.textContent = selected ? "Selected" : "Compare";
         compare.setAttribute("aria-pressed", String(selected));
@@ -230,6 +252,9 @@ export class GardenUI {
         compare.addEventListener("click", () => {
           this.compareIds = toggleComparisonChoice(this.compareIds, entry.id);
           this.reload();
+          // reload replaces the card buttons; retain keyboard position on this moment.
+          [...this.root.querySelectorAll<HTMLButtonElement>(".garden-compare-toggle")]
+            .find((button) => button.dataset.entryId === entry.id)?.focus({ preventScroll: true });
         });
         actions.append(compare);
       }
@@ -251,6 +276,7 @@ export class GardenUI {
       keptAt: new Date().toISOString(), thumbnail: this.actions.thumbnail(), arrangement: this.actions.snapshot(),
     };
     this.store.keep(entry);
+    this.justKeptId = entry.id;
     this.find<HTMLInputElement>("#garden-name").value = ""; this.reload();
   }
   private view(entry: GardenEntry) {

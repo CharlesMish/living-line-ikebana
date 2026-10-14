@@ -2,6 +2,7 @@ import { constrainBaseToProfile, inPlantingArea, profileBaseRadius, type VesselP
 import type { StemPrevention } from "./stemPrevention.ts";
 import {
   aimBranch,
+  applyAimRotation,
   applyPrune,
   bendBranch,
   clonePlantGraph,
@@ -15,6 +16,7 @@ import {
   type CutPlan,
   type PlantGraph,
   type Vec3,
+  type Quat,
 } from "../core/index.ts";
 import type {
   OperationContextMap,
@@ -25,7 +27,7 @@ import { cloneCameraPose, type CameraPose } from "./camera.ts";
 
 export interface StudioInputMap extends OperationInputMap {
   insert: { base: Vec3; valid: boolean };
-  aim: { target: Vec3 };
+  aim: { target: Vec3; headRotation?: Quat };
   bend: { target: Vec3 };
   base: { base: Vec3 };
   prune: { distance: number };
@@ -34,7 +36,7 @@ export interface StudioInputMap extends OperationInputMap {
 
 export interface StudioContextMap extends OperationContextMap {
   insert: Record<string, never>;
-  aim: { readonly surfaceGrip?: Readonly<Vec3> };
+  aim: { readonly surfaceGrip?: Readonly<Vec3>; readonly headTilt?: boolean };
   bend: Record<string, never>;
   base: Record<string, never>;
   prune: Record<string, never>;
@@ -66,8 +68,11 @@ export function createDomainAdapters(prevention?: StemPrevention, profile?: Vess
       const branch = graph.branches.get(spec.branchId);
       if (!branch) return clonePlantGraph(graph);
       const grabbed = spec.context.surfaceGrip ?? sampleBranch(branch, spec.grabbedMaterialDistance).position;
-      return prevention?.enabled() ? prevention.aim(graph, spec, input.target)
-        : aimBranch(graph, spec.branchId, grabbed, input.target);
+      const headRotation = spec.context.headTilt && graph.generatorVersion === "single-flower-v1"
+        && branch.kind === "pedicel" ? input.headRotation : undefined;
+      return prevention?.enabled() ? prevention.aim(graph, spec, input.target, headRotation)
+        : headRotation ? applyAimRotation(graph, spec.branchId, headRotation)
+          : aimBranch(graph, spec.branchId, grabbed, input.target);
     },
     bend(graph, spec, input) {
       if (prevention?.enabled()) return prevention.bend(graph, spec, input.target);

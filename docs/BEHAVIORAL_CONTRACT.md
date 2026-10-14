@@ -40,7 +40,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Each preview is a translation of the acquisition graph.
 - A valid release commits, selects the plant, advances the ordinal once, and autosaves committed graph state.
 - An invalid release or interruption discards the ghost, leaves the document and ordinal unchanged, and does not autosave.
-- The insertion target is the selected layout’s explicit planting areas on the insertion plane (radius `1.22` for Original). A destination outline follows that exact boundary throughout a tray drag, including while the source is over the rail or above the plane horizon and its ghost is hidden. Colour/text show validity; neither an outline nor the wider visible water changes the hit test. There is no whole-basin snapping.
+- The insertion target is the selected layout’s explicit planting areas on the insertion plane (radius `1.22` for Original). A destination outline follows that exact boundary throughout a tray drag, including while the source is over the rail or above the plane horizon and its ghost is hidden. Colour/text show validity; neither an outline nor the wider visible water changes the hit test. There is no whole-basin snapping. The opt-in planting cue draws this same boundary; it does not move, snap, or enlarge the accepted area (see *Placement cue and tap-to-place*).
 
 ### Aim
 
@@ -48,6 +48,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - It preserves all rest lengths, attachments, stock length, identity, and inactive history.
 - The seated trunk exit stays upward: its first-segment unit tangent has a minimum vertical component of `min(acquiredExit.y, clamp(0.08 / activeLength, 0, 1))`. If an Aim would cross that limit, its rigid rotation stops at the limit. The descending end of an arch is not itself clamped to insertion height; this is not a water/ceramic collision solver. Existing lower poses never jump on acquisition. Degenerate start or target directions produce no change.
 - A visible organ surface supplies the frozen world-space grip for Aim; the supporting branch root remains the pivot. Graph attachment distance still determines pruning and identity. A near-miss proxy without a surface intersection retains attachment-based Aim. Surface grip is transient acquisition context, never saved botanical state.
+- **Single-flower face tilt:** a direct hit on the visible `single-flower-v1` bloom intentionally uses a camera-axis tilt within the Aim transaction. Camera right/up and gain freeze at acquisition; horizontal/vertical displacement requests one degree per CSS pixel, with the combined rotation capped at 120 degrees per grab. The supporting pedicel and its active descendants rotate rigidly about the pedicel root. There is no new handle, independent petal edit, or axial-roll control. Stalk hits, proxy-only misses, other flowers, saved graphs and pruning stations retain their existing law. Return to the acquisition position is exact; cancellation, prevention, ordinary release and Undo keep their usual ownership.
 - Direction degeneracy uses the shared numerical geometry tolerance (`1e-6`
   units), not a minimum stalk or drag length. The September 22 correction
   removes the former `sqrt(0.02)`-unit dead zone, which froze short stalk grabs
@@ -105,8 +106,17 @@ Within a tier, choose smallest CSS-pixel distance to projected material, then sm
 For a direct hit on a visible stem, leaf or flower surface, projected-material
 distance is zero and depth comes from that surface. Enlarged hit proxies still
 admit nearby misses, ranked by their projected branch or organ attachment.
-Surface ranking never changes the acquired graph station: branches keep their
-projected arc distance, and organs keep their supporting-branch attachment.
+Ordinary stem surface ranking does not change the acquired graph station:
+branches keep their projected arc distance, and organs keep their supporting-branch attachment.
+The additive `broad-blade-v1` lamina is an explicit exception: a direct leaf-surface
+hit uses its triangle-interpolated original-stock UV distance, including while
+sliding a prune on the acquired blade. A surface grip carries the actual touched
+point for Aim. Off the blade, ordinary projected-midline fallback still applies.
+Branch projection converts the closest screen-segment fraction through the
+camera's perspective before deriving world position and rest-arc distance. The
+acquired station therefore projects back under that point of the visible line;
+preview and committed pruning use the same corrected station. This does not
+change acquisition envelopes or selected-target priority.
 
 Base and bend handles may acquire only for the already selected plant. Shape acquisition of a branch or organ may select its plant. Temporary handles are subordinate and appear only where they resolve ambiguity.
 
@@ -121,6 +131,21 @@ The visible bend bead has a minimum projected diameter of `12` CSS pixels;
 only its decoration scales, not canonical geometry or the original hit proxy.
 These are acquisition/readability bounds, not physical-phone acceptance.
 
+### Lobed-leaf study — additive material and exact surface acquisition
+
+`lobed-leaf-v1` adds one woody line, one subordinate fork, and four simple
+five-lobed leaf organs on four petioles at two opposite attachment nodes. Each
+blade is one connected surface. A petiole cut removes one whole leaf; a fork
+cut removes its distal descendants. There are no per-lobe edits. Existing
+Aim/Bend/prune ownership, rest lengths, identity, inactive history and storage
+fields are unchanged. Previously frozen generators and profiles are unchanged.
+
+This new form opts into exact lamina-plus-vein acquisition geometry instead of
+a containing sphere: visible lobe notches remain empty for picking. Both faces
+route a direct surface press to the existing supporting-petiole Aim and prune
+law. This exception applies only to the new leaf; older organ near-miss proxies
+and the structural-stem/handle fallback retain their existing behavior.
+
 ## 6. Persistence and recovery
 
 - Local storage key: `ikebana-web-alpha:studio-v2`; studio-v1 is a preserved read-only fallback.
@@ -131,11 +156,38 @@ These are acquisition/readability bounds, not physical-phone acceptance.
 - Corrupt or unsupported stored data fails closed to an empty session with a terse warning; it never partially hydrates a graph.
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
 
+Failed post-commit autosave leaves the committed working change in memory and
+shows a persistent unsaved warning with **Retry save**, separately from ordinary
+craft hints. Keep the page open until a complete working-document save succeeds.
+Retry first cancels a readied cutting and every live preview, then writes only
+the current committed plants, ordinal, camera and scene. It does not edit the
+graph, consume Undo, advance an ordinal or change the save format. Kept Garden
+viewing disables Retry; return to the working bowl first. Garden Keep, photo
+export, hints and cancellation cannot clear the warning. Successful working
+autosave, Retry, scene change or explicit bowl replacement clears it. A failed
+save-first Undo/Remove/Turn/scene/replacement proposal leaves the existing bowl
+and its previous unsaved state unchanged.
+
 ### Explicit botanical recovery — September 28 contract revision
+
+**Turn selected cutting — October 13 addition.** In Arrange, `Edit → Turn
+selected cutting` offers left/right 15-degree steps about the vertical axis
+through that cutting's seated root. The whole active graph and its material
+frames turn together; point heights, lean, stock lengths, attachments, organs,
+identity and inactive history remain unchanged. No camera motion or generator
+reroll occurs. The menu names the selected material and stays open for repeated
+steps. This is an explicit document command, not an acquired drag: the app
+cancels any live preview/readied insertion first. Each changed step saves once
+before replacing memory and creates one Undo checkpoint; save failure and
+no-motion turns retain the existing bowl/checkpoint. Step Back and kept Garden
+views cannot turn a cutting. With Prevent overlaps on, every requested step is
+checked over its entire rigid arc, including carried structural children. It
+stops at certified contact/work limits using the same exclusions and pre-existing
+pair exemptions as Aim. Repeated steps cannot jump across a new contact.
 
 The working coordinator keeps one transient botanical checkpoint, not a history
 stack. `Edit → Undo last edit` restores the state before the most recent changed
-Insert/Aim/Bend/base/Prune or Remove operation, including canonical inactive cut
+Insert/Aim/Bend/base/Prune, Turn or Remove operation, including canonical inactive cut
 history. Undo consumes the checkpoint and provides no redo. No-op releases,
 cancelled edits, failed/invalid insertions, camera moves and selection/tool/view
 commands retain the preceding checkpoint. A no-op release still follows the
@@ -148,7 +200,7 @@ can restore that cutting. Undo may also be invoked in Step Back. Kept Garden
 views cannot invoke either command. Opening Edit or using its recovery command
 cancels any live preview before recovery; it never stores that preview in history.
 
-Undo and Remove persist their proposed committed plants **before** replacing
+Undo, Turn and Remove persist their proposed committed plants **before** replacing
 in-memory plants or consuming/replacing the checkpoint. The app's save callback
 can veto the operation on failure; both working state and checkpoint then remain
 available for retry. Successful recovery is saved once. Camera framing and the
@@ -350,7 +402,7 @@ or materials are gated, and no cut, view visit, angle or water threshold is requ
 
 ### Optional stem-overlap inspection — September 28 presentation study
 
-`Angles → Stem overlaps` is off by default and session-only. It marks approximate
+`Angles → Stem overlaps` is on by default and session-only (owner-requested October 13 revision). It can be switched off; Prevent overlaps remains independently opt-in. It marks approximate
 3D penetration between active structural stems (trunk/lateral/twig) of separate
 cuttings using their current points and radii. Same-plant contact, organs/stalks,
 vessel and floor are not checked. Capsule envelopes are approximate at end caps
@@ -423,10 +475,132 @@ compatibility limits and evidence](development/reports/vessel-study/README.md).
 
 Vessel layout and appearance are presentation metadata alongside the canonical botanical document. Layout changes cancel owned previews first, retain every graph/history record, and never fit/scale/relocate existing plants. The same coordinator retains its Undo checkpoint. Footprint laws use the acquired connected planting area; existing protection and overlap markers remain authoritative.
 
-Garden v2 and studio v2 retain sceneVersion1, stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, fixed lighting and exact output pixels.
+Garden v2 and studio v2 retain stable layout/color/finish IDs, backdrop/perch, photo frame format and optional fibers. Plain scenes retain sceneVersion1; optional botanical tones, photo finishes and light recipes use sceneVersion2 so older readers refuse enhanced scenes rather than silently discard their appearance. Camera is a committed pose, independent of graph geometry. Garden View restores this metadata read-only; Return restores the exact working coordinator and scene. Compare restores each scene under the same temporary camera/world scale. Photograph uses a disposable renderer with independently owned materials, curated lighting and exact output pixels.
 
 New writes use separate v2 keys. Read-only v1 fallbacks remain byte-for-byte intact; missing presentation defaults to Original/Sand/Glaze/Paper/Ground. v1 Garden backups import through validation; v2 backups fail closed in older clients. Invalid/future data blocks writes instead of being overwritten. Stale guards include both v2 and legacy keys. A still-open older client has a separate legacy document; reload the updated app before continuing. No automatic personal-data rewrite or external creation upload occurs.
+
+The studio-craft presentation expansion adds stable Chalk/Iron color IDs, Satin/Speckled finish IDs, and Mist/Clay/Ink backdrop IDs to sceneVersion1. Existing IDs, default colors and Glaze/Stoneware properties stay unchanged. New procedural maps affect ceramic shading only, belong to each studio, and are disposed with that renderer. No vessel vertices, planting areas, camera rules, botanical graphs or active selection change. Old clients that do not recognize a new ID continue to refuse that scene rather than substitute a different appearance.
+
+The same presentation pass adds a stable `plinth` perch ID and refines the existing stone and bench draws. Perches retain the exact vessel contact height and never move plants or planting targets. Previously kept stone/bench scenes receive the refined draw; their already-saved cover pixels are not rewritten. Each perch owns and disposes its procedural resources. Transparent photos omit the floor and all perches.
+
+Photograph now separates **Prepare PNG** from explicit Download, supported file Share, and Open image. Preparation retains a visible PNG and does not claim that a device saved it. A scene/framing change, close/reopen, or graphics loss invalidates pending encoding; an earlier prepared image remains available while the dialog stays open and is labelled when its frame is older. Share starts directly from its explicit button, and cancellation never initiates a download. Composition guides are UI only and never enter PNGs, Garden covers or saved scenes. Keep remains an explicit Garden write; preparation and delivery do not save the working bowl. Studio lighting remains the original default; optional photographic light presets are stored as presentation metadata.
+
+Photograph remembers one setup for the current working bowl while the page stays open. Closing, Escape, and Return to arranging retain only the photo backdrop, perch, lighting, all six frame choices, base camera, finish, grid and title. Reopening first cancels any live edit, then rebuilds from the latest committed plants, vessel and botanical tones; it never reinstates older plant geometry. The working-bowl identity survives ordinary edits, Undo and temporary Garden inspection. Only successful fresh-bowl/working-copy replacement advances it; a failed replacement leaves the draft intact. Read-only Garden photographs neither load nor replace this working draft. Reset photo setup explicitly resets to the current bowl's saved setting and view. Page reload discards the draft. None of these actions writes the working bowl or keeps a Garden entry automatically. Graphics loss retains the setup but requires a new renderer on reopen; prepared PNGs and pending encodes remain scoped to their original modal session.
+
+The Photograph Finish controls (Exposure, Contrast, Warmth, Saturation and Vignette) are presentation-only. Neutral bypasses all grading and retains the original draw. Active grading runs on the finished scene framebuffer and is shared by preview, PNG, Garden cover and restored scene; transparent alpha is preserved. It never changes lights, canonical plants, camera or UI pixels. Finish edits invalidate pending PNG encoding. Reset finish does not reset framing. Show original retains the sliders but saving while it is displayed intentionally saves the visible original. Non-neutral recipes use sceneVersion2 so older clients reject rather than discard them; plain legacy scenes remain version1. Unknown recipe fields/versions and invalid numeric ranges fail closed. See the [Photograph finish report](development/reports/botanical-darkroom/photograph.md) for evidence and unrun GPU/phone checks.
 
 ### Smaller pinbeds and base recovery (October 4)
 
 Small bed, Single small bowl and Medium oval add three stable layout IDs to the existing seven; Original remains the default. No graph schema, storage envelope or legacy fallback changes. Angles groups presets and stem checks; Studio groups Vessel/Photograph and Garden/Guide. A contact or bounded-work stop names Prevent overlaps during the grab and after release, with the Angles escape route. Actual collision protection is unchanged. See [release evidence and owner checks](development/PINBED_RELEASE.md).
+
+### Placement cue and tap-to-place (experiment)
+
+This is a named experiment. With neither flag, ordinary play is unchanged: the support plate is the single dark cylinder, the destination outline appears only during a tray drag, and a press on the source card begins that drag immediately. Keyboard activation still seats at the deterministic planting point.
+
+`?placeCue=1` draws the accepted planting ellipses in Arrange before any drag, using `profile.areas` / `inPlantingArea` / the same outline as validation. Sample points inside an ellipse are accepted and points outside are not; multi-area layouts keep a gap that is not a bed. The line is quiet while idle and stronger while a cutting is ready. It is hidden in Step Back, while Garden, Photograph, or Vessel covers Arrange, and during a drag, when the existing validity outline is the boundary. The Photograph canvas is built without the cue. The dark pin bed stops at the valid ellipse. The wider plate annulus is a stone rim, so the support plate does not promise its whole footprint. Acceptance is unchanged: no snapping and no relocation of a rejected point.
+
+`?placeTap=1` implies the cue. A tap on the source card (not the Materials menu) readies one cutting: the card is pressed, the boundary strengthens, and the status reads “Tap inside the pins to place.” A later tap at a valid scene position seats that cutting once through the ordinary `beginInsert` / `release` path. An invalid tap leaves it ready and says where the pins are. Tapping the card again, the Cancel button, or Escape cancels. Success ends readiness. It does not repeat. While idle, the source card reads “Drag or tap to place” so the tap is discoverable; builds without `placeTap` keep “drag to the pins”. Cancel occupies a reserved top-rail slot beside the source rather than covering bottom feedback. Idle and ready instructions share a layout footprint, so changing readiness alone does not resize the rail or change the stage projection.
+
+The card press captures its pointer immediately, before the 8px decision, and releases that capture if the press ends as a tap or a cancel. Travel is a drag only when it is strictly greater than 8 CSS pixels. That threshold sits in the 6–10px band: a slip of about 6px still readies or places, and an intentional drag is recognized before the cutting has moved far. The release that readies never also places. A scene drag past the threshold does not place on release. While a cutting is ready, a scene tap places instead of selecting; the status says so. Pointer and click do not both commit: placement listens to pointer release. Only in this tap build, a mouse, touch, or pen click does not activate the card, even when the touch click's detail is 0. Builds without tap-to-place keep the previous rule: a click activates only when its detail is 0. Keyboard activation remains that detail-0 click, and in the tap build it is also a click that is not a mouse, touch, or pen pointer.
+
+Ready, cancel, an invalid tap, and interruption do not create a plant, consume the seat ordinal, add an undo checkpoint, or write a save. The next identity stays the one a later success or an ordinary drag would use. A successful tap writes one plant, one undo checkpoint, and one save, the same as a successful drag. Undo removes it and persists that restored document; the ordinal does not rewind. Reload restores whatever save is current: the seated cutting after a placement save, or the undone bowl after undo.
+
+Readiness is cancelled, with no seat, before Garden, Photograph, or Vessel open; before a material change, a tool change, Undo, or Remove; before leaving Arrange (Step Back or Stop and look); and before Prevent overlaps is toggled, because that changes whether a seat is valid. Opening Angles or choosing Front, three-quarter, or Above does not cancel: those views do not change the planting areas. There is no redo. Blur, a hidden page, page hide, and resize or orientation change cancel readiness and an armed tap that has not become a drag; they do not seat. A pointer cancel during the arm does not ready and does not place. A pointer cancel during a scene tap leaves the cutting ready. An acquired drag still follows the existing interruption list; blur alone does not roll a drag back.
+
+A standalone study build may set `globalThis.__LL_PLACE__` to `"1"` or `"2"` instead of a URL flag. Players do not see flag names. See the README for the three files.
+
+An armed card or scene press has one pointer owner. A second pointer cannot
+replace that owner or place its cutting. Commands and system interruptions
+discard the held press before changing the camera or graphics; the later release
+cannot seat, save, consume an ordinal, or add an undo checkpoint. This is distinct
+from idle readiness: Angles can retain the ready cutting for a new tap. Premature
+capture loss cancels the held press; implicit loss after a completed release is a
+no-op. A projection-changing stage measurement clears the press before applying
+the lens. Release also checks current canvas size/projection and pointer travel,
+including when no intermediate move or resize event was delivered.
+
+### Botanical tones (October 13)
+
+Studio offers named, material-specific tone choices. A setting applies to all
+cuttings of that material family in one bowl, including new stock; it is not a
+random reroll or a per-organ paint operation. Natural preserves the accepted
+appearance. Color edits reuse material and geometry identities and leave graph,
+seed, frame, hit proxy, prune opacity and acquisition behavior unchanged. The
+nodding bell retains its green collar. Reed and trailer keep their natural greens.
+
+The chooser shows all three named looks with small unlit botanical samples and
+part-color strips derived from the appearance resolver. Families in the committed
+bowl appear first; remaining choices are folded under Other cuttings. Samples
+represent colors and recognizable forms, not the exact seed or final lit pixels.
+Choosing the already-selected look does not create another save.
+
+The optional `botanicalTones` scene field is a validated map of fixed family and
+preset IDs; absent means Natural. An explicit nonnatural color edit promotes the
+presentation envelope to sceneVersion 2 so old readers refuse rather than discard
+its settings. Legacy scenes stay version 1 until an enhanced presentation setting
+is explicitly saved. Unknown future versions/fields/presets fail closed. Garden,
+working copies, comparison and Photograph restore the same tones. Opening/changing
+these controls cancels active editing first, and scene save failure leaves the
+previous settings intact. Botanical schema and generator versions are unchanged.
+
+
+## Botanical stock and palette refinement, October 13
+
+The live catalog appends `compact-flower-v1`, `broad-blade-v1`, and `lobed-leaf-v1`.
+All twelve established tray IDs, their old versions, and frozen workbench profiles
+remain registered. Bare branch, Leafy shoot, and original Flower volume move under
+More cuttings; they are neither deleted nor converted in saved bowls. Compact
+flower has one small tufted organ on its own pedicel, not a scaled copy of the
+five-organ volume head. It retains the existing stalk and tuft acquisition law.
+
+Single flower's October 13 appearance revision replaces its shallow five-petal
+dish with a connected open cup and rear receptacle. Only derived mesh appearance
+changes: the `single-flower-v1` generator, fixture, frame, scale, 0.7 acquisition
+envelope, supporting-pedicel station and direct-head tilt law remain unchanged.
+Its Natural / Warm rose / Soft lilac recipes retain their IDs and colors.
+
+Lobed leaf keeps its front shape, color variation and front vein buffers. Its
+reverse uses a quieter, paler material response and its own surface-following
+veins. This does not fill notch gaps or change the canonical leaf, attachment,
+picking law or botanical tone IDs.
+
+Broad leaf has one persistent petiole/midrib branch and a derived continuous
+lamina. The lamina follows transported material frames through Aim and Bend.
+Original stock width and texture stations come from its immutable version/seed;
+a distal cut clips the blade without rescaling or retapering the remaining leaf.
+Prune preview and committed cut share the same geometry, and Undo restores the
+same stock. This adds no independent folding/twisting or leaf-area collision law:
+stem overlaps and Prevent overlaps still cover structural stems only.
+
+Botanical tone edits and Photograph finish edits preserve one another's optional
+metadata. Resetting either removes only its own recipe; an already enhanced scene
+stays version2. Invalid or future data refuses load/import without modifying bytes.
+See [the combined report](development/reports/botanical-darkroom/README.md).
+
+### Quiet scenic photo backdrops
+
+`hills` (Mist hills) and `garden` (Garden shade) are additive, static painted photo backdrops. Their centre crop preserves aspect instead of stretching, and the same rendering path is used in preview, PNG, Garden covers and restored scenes. They add no world geometry, move no botanical material and alter no lighting. The existing floor/perch receives real scene shadows; the backdrop itself is unlit. Each renderer owns its procedural texture and releases it on replacement or close. Transparent omits it. All older backdrop IDs and default paper appearance remain unchanged; older readers reject unknown new IDs. See the [backdrop report](development/reports/photo-workflow/backdrops.md) for automated evidence and unrun GPU/phone checks.
+
+### Photograph camera and lighting — October 13 owner revision
+
+Photograph framing is evaluated from its chosen reference view on every change,
+never accumulated from the last slider result. Closer and screen-relative Across /
+Height have wider travel; optional Turn, Elevation and Tilt change only the photo
+camera. Altered elevation remains 3–87 degrees above the target, while an untouched
+reference (including Above) remains exact. Downward pan stops on its screen-space
+ray before the camera crosses y=0.12. Closing in on an already low frame may lift
+position and target equally to retain that clearance, without changing view
+direction, roll or requested radius. An untouched inherited lower pose remains
+exact; changed framing does not push it lower. Tilt is saved in the existing camera
+`up` vector, with no new camera schema or second roll recipe. Explicit presets and
+ordinary Step Back orbit retain their existing world-up behavior. Garden View
+restores the saved pose; Compare continues to use one shared temporary camera.
+
+Studio, Soft window and Evening reuse the existing hemisphere, key and fill
+lights and one shadow map. Studio reproduces the accepted light values; the other
+recipes intentionally change light direction and colour rather than post-process
+tone alone. The light choice applies to the preview, PNG and retained Garden
+scene. It changes no plant, vessel, frame, background alpha or working gesture law.
+Optional `photoLighting` is sceneVersion2 metadata: older strict readers refuse an
+unrecognized scene field rather than silently lose the choice. See the
+[camera and light report](development/reports/photo-workflow/camera-light.md).

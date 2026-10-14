@@ -1,6 +1,10 @@
 import type { BendStationId, BendStationsMode } from "./bendStations.ts";
 import type { CraftCue } from "./craftCues.ts";
 
+/** Idle card copy when tap-to-place is on. Builds without tap keep "drag to the pins". */
+export const PLACE_TAP_IDLE_VERB = "Drag or tap to place";
+const PLACE_TAP_READY_VERB = "Tap inside the pins";
+
 export type Posture = "arrange" | "step-back";
 export type CraftTool = "shape" | "prune";
 // The retained internal "move" token is labeled Pan in the interface.
@@ -23,6 +27,7 @@ export interface UIState {
   moreMenuOpen: boolean;
   canUndo: boolean;
   canRemove: boolean;
+  selectedCuttingName: string | null;
   selectedMaterialId: string;
   bendVariant: BendVariant;
   bendStationsMode: BendStationsMode;
@@ -35,9 +40,14 @@ export interface UIState {
   activeMaterialId: string | null;
   status: string;
   statusTone: StatusTone;
+  workingSavePending: boolean;
+  canRetryWorkingSave: boolean;
+  /** Source card is armed for a scene tap. Only used when tap placement is on. */
+  placeReady: boolean;
 }
 
 export type UICommand =
+  | { kind: "retry-working-save" }
   | { kind: "stop-and-look" }
   | { kind: "set-posture"; posture: Posture }
   | { kind: "set-tool"; tool: CraftTool }
@@ -51,6 +61,7 @@ export type UICommand =
   | { kind: "set-more-menu"; open: boolean }
   | { kind: "undo-edit" }
   | { kind: "remove-cutting" }
+  | { kind: "turn-cutting"; direction: "left" | "right" }
   | { kind: "select-material"; materialId: string }
   | { kind: "set-bend-variant"; bendVariant: BendVariant }
   | { kind: "set-bend-station"; station: BendStationId }
@@ -63,6 +74,14 @@ export type UICommand =
       clientY: number;
     }
   | { kind: "activate-material"; materialId: string }
+  | {
+      kind: "arm-material-pointer";
+      materialId: string;
+      pointerId: number;
+      clientX: number;
+      clientY: number;
+    }
+  | { kind: "cancel-place" }
   | { kind: "export-telemetry" };
 
 export type UICommandListener = (command: UICommand, sourceEvent: Event) => void;
@@ -78,6 +97,8 @@ export interface UIBindings {
   setExperimentPanelOpen(open: boolean): void;
   setTrayEnabled(enabled: boolean): void;
   setTrayDragging(dragging: boolean, materialId?: string | null): void;
+  focusSourceCard(): void;
+  focusStatus(): void;
   /** Shows the manual-copy telemetry panel with `text`, or hides it when `null`. */
   showTelemetryFallback(text: string | null): void;
   destroy(): void;
@@ -87,6 +108,8 @@ export interface CreateUIBindingsOptions {
   root?: HTMLElement;
   initialState?: Partial<UIState>;
   search?: string;
+  /** Source-card tap placement. Absent keeps the immediate drag. */
+  placeTap?: boolean;
 }
 
 /** Whether a scrollport still has rows past either edge. Subpixel remainder is not another row. */
@@ -111,7 +134,7 @@ const DEFAULT_STATE: UIState = {
   cameraMode: "orbit",
   view: "front",
   viewMenuOpen: false,
-  showStemOverlaps: false,
+  showStemOverlaps: true,
   preventStemOverlaps: false,
   stemOverlapCount: 0,
   materialMenuOpen: false,
@@ -119,6 +142,7 @@ const DEFAULT_STATE: UIState = {
   moreMenuOpen: false,
   canUndo: false,
   canRemove: false,
+  selectedCuttingName: null,
   selectedMaterialId: "flowering-branch",
   bendVariant: "fixed-bead",
   bendStationsMode: "off",
@@ -130,6 +154,9 @@ const DEFAULT_STATE: UIState = {
   activeMaterialId: null,
   status: "Place a cutting.",
   statusTone: "quiet",
+  workingSavePending: false,
+  canRetryWorkingSave: false,
+  placeReady: false,
 };
 
 function requireElement<T extends Element>(scope: ParentNode, selector: string): T {
@@ -147,15 +174,59 @@ export function bendVariantFromSearch(search: string): BendVariant {
     : "fixed-bead";
 }
 
+function createPlaceCancel(root: HTMLElement): HTMLButtonElement {
+  const existing = root.querySelector<HTMLButtonElement>("#place-cancel");
+  if (existing) return existing;
+  const button = root.ownerDocument.createElement("button");
+  button.type = "button";
+  button.id = "place-cancel";
+  button.className = "place-cancel";
+  button.dataset.testid = "place-cancel";
+  button.textContent = "Cancel";
+  button.setAttribute("aria-label", "Cancel placement");
+  button.hidden = true;
+  // Reserve a rail slot even while hidden. Showing Cancel must not change the
+  // measured stage inset and interrupt the placement that just became ready.
+  const slot = root.ownerDocument.createElement("div");
+  slot.className = "place-cancel-slot";
+  slot.append(button);
+  requireElement<HTMLElement>(root, ".material-dock").append(slot);
+  return button;
+}
+
+function setPlacementInstruction(card: HTMLButtonElement, ready: boolean): void {
+  const verb = card.querySelector<HTMLElement>(".material-verb");
+  if (!verb) return;
+  if (verb.dataset.placeInstruction !== "true") {
+    const idleText = card.ownerDocument.createElement("span");
+    idleText.dataset.placeInstruction = "idle";
+    idleText.textContent = PLACE_TAP_IDLE_VERB;
+    const readyText = card.ownerDocument.createElement("span");
+    readyText.dataset.placeInstruction = "ready";
+    readyText.textContent = PLACE_TAP_READY_VERB;
+    verb.replaceChildren(idleText, readyText);
+    verb.dataset.placeInstruction = "true";
+  }
+  // Both copies occupy the same grid cell, so even enlarged text has the same
+  // height in idle and ready. Only the active instruction is exposed/readable.
+  verb.querySelector('[data-place-instruction="idle"]')?.setAttribute("aria-hidden", String(ready));
+  verb.querySelector('[data-place-instruction="ready"]')?.setAttribute("aria-hidden", String(!ready));
+}
+
 export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindings {
   const rootCandidate = options.root ?? document.querySelector<HTMLElement>("#app");
   if (!rootCandidate) {
     throw new Error("UI shell is missing required element: #app");
   }
   const root: HTMLElement = rootCandidate;
+  const placeTap = options.placeTap === true;
+  root.dataset.placeTap = String(placeTap);
 
   const studio = requireElement<HTMLElement>(root, "#studio");
   const status = requireElement<HTMLElement>(root, "#status");
+  const saveWarning = requireElement<HTMLElement>(root, "#working-save-warning");
+  const saveWarningText = requireElement<HTMLElement>(root, "#working-save-message");
+  const retrySave = requireElement<HTMLButtonElement>(root, "#retry-working-save");
   const craftCue = requireElement<HTMLElement>(root, "#craft-cue");
   const cueTitle = requireElement<HTMLElement>(craftCue, "[data-cue-title]");
   const cueDetail = requireElement<HTMLElement>(craftCue, "[data-cue-detail]");
@@ -181,6 +252,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   const editOptions = requireElement<HTMLElement>(root, "#edit-options");
   const undoEdit = requireElement<HTMLButtonElement>(root, "#undo-edit");
   const removeCutting = requireElement<HTMLButtonElement>(root, "#remove-cutting");
+  const turnLeft = requireElement<HTMLButtonElement>(root, "#turn-cutting-left");
+  const turnRight = requireElement<HTMLButtonElement>(root, "#turn-cutting-right");
   const materialMenu = requireElement<HTMLElement>(root, ".material-menu");
   const materialsToggle = requireElement<HTMLButtonElement>(root, "#materials-toggle");
   const materialOptionsFrame = requireElement<HTMLElement>(root, ".material-options-frame");
@@ -191,6 +264,8 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   if (!sourceCard.dataset.materialId) {
     throw new Error("UI shell is missing required element: [data-material-id]");
   }
+  const placeCancel = placeTap ? createPlaceCancel(root) : null;
+  status.tabIndex = -1;
   const paletteChoices = [...root.querySelectorAll<HTMLButtonElement>("[data-material-choice]")];
   if (paletteChoices.length === 0) {
     throw new Error("UI shell is missing required element: [data-material-choice]");
@@ -225,7 +300,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     if (command.kind !== "set-more-menu" && currentState.moreMenuOpen) {
       setState({ moreMenuOpen: false });
     }
-    if (command.kind !== "set-edit-menu" && currentState.editMenuOpen) {
+    if (command.kind !== "set-edit-menu" && command.kind !== "turn-cutting" && currentState.editMenuOpen) {
       setState({ editMenuOpen: false });
       if (command.kind === "undo-edit" || command.kind === "remove-cutting") {
         editToggle.focus({ preventScroll: true });
@@ -265,6 +340,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     }
   }
 
+  const moreCuttings = root.querySelector<HTMLDetailsElement>("#material-more");
   let materialMenuWasOpen = false;
 
   function syncMaterialScrollCues(): void {
@@ -284,7 +360,9 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
 
   function revealPressedMaterialChoice(): void {
     const pressed = paletteChoices.find((choice) => choice.getAttribute("aria-pressed") === "true");
-    if (!pressed || materialOptions.clientHeight === 0) return;
+    if (!pressed) return;
+    if (moreCuttings?.contains(pressed)) moreCuttings.open = true;
+    if (materialOptions.clientHeight === 0) return;
     const panelRect = materialOptions.getBoundingClientRect();
     const borderTop = Number.parseFloat(getComputedStyle(materialOptions).borderTopWidth) || 0;
     const viewTop = panelRect.top + borderTop;
@@ -315,6 +393,11 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     editOptions.hidden = !currentState.editMenuOpen;
     undoEdit.disabled = !currentState.canUndo;
     removeCutting.disabled = !currentState.canRemove;
+    turnLeft.disabled = turnRight.disabled = !currentState.canRemove;
+    requireElement<HTMLElement>(root, "#turn-cutting-selection").textContent = currentState.selectedCuttingName
+      ? `${currentState.selectedCuttingName[0].toUpperCase()}${currentState.selectedCuttingName.slice(1)}` : "In Shape, tap a stem to select it.";
+    requireElement<HTMLElement>(root, "#turn-cutting-note").textContent = currentState.posture === "step-back"
+      ? "Available in your working bowl’s Arrange mode." : "Turns around its seat; keeps its lean.";
     viewToggle.setAttribute("aria-expanded", String(currentState.viewMenuOpen));
     viewOptions.hidden = !currentState.viewMenuOpen;
     const stationChoices = currentState.bendStationsMode === "on" ? currentState.bendStationChoices : [];
@@ -388,9 +471,25 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     } else if (sourceCard.dataset.materialId !== currentState.selectedMaterialId && !currentState.trayDragging) {
       sourceCard.dataset.materialId = currentState.selectedMaterialId;
     }
+    if (placeTap) {
+      const ready = currentState.placeReady;
+      const label = sourceCard.querySelector(".material-name")?.textContent?.trim() || "cutting";
+      sourceCard.setAttribute("aria-pressed", String(ready));
+      sourceCard.setAttribute("aria-label", ready
+        ? `${label}. Ready to place. Tap inside the pins.`
+        : `Drag ${label} to the pins, or tap to ready it`);
+      setPlacementInstruction(sourceCard, ready);
+      if (placeCancel) placeCancel.hidden = !ready;
+    }
 
     status.textContent = currentState.status;
     status.dataset.tone = currentState.statusTone;
+    saveWarning.hidden = !currentState.workingSavePending;
+    retrySave.disabled = !currentState.canRetryWorkingSave;
+    const saveMessage = currentState.canRetryWorkingSave
+      ? "Changes aren’t saved on this device. Keep this page open."
+      : "Your working bowl has unsaved changes. Keep this page open and return to it to retry.";
+    if (saveWarningText.textContent !== saveMessage) saveWarningText.textContent = saveMessage;
   }
 
   function setState(patch: Partial<UIState>): void {
@@ -474,14 +573,26 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     if (currentState.canUndo) emit({ kind: "undo-edit" }, event);
   }, listenerOptions);
 
+  retrySave.addEventListener("click", (event) => {
+    if (currentState.canRetryWorkingSave) emit({ kind: "retry-working-save" }, event);
+  }, listenerOptions);
+
   removeCutting.addEventListener("click", (event) => {
     if (currentState.canRemove) emit({ kind: "remove-cutting" }, event);
+  }, listenerOptions);
+
+  turnLeft.addEventListener("click", (event) => {
+    if (currentState.canRemove) emit({ kind: "turn-cutting", direction: "left" }, event);
+  }, listenerOptions);
+  turnRight.addEventListener("click", (event) => {
+    if (currentState.canRemove) emit({ kind: "turn-cutting", direction: "right" }, event);
   }, listenerOptions);
 
   materialsToggle.addEventListener("click", (event) => {
     emit({ kind: "set-material-menu", open: !currentState.materialMenuOpen }, event);
   }, listenerOptions);
 
+  moreCuttings?.addEventListener("toggle", syncMaterialScrollCues, listenerOptions);
   materialOptions.addEventListener("scroll", () => {
     syncMaterialScrollCues();
   }, listenerOptions);
@@ -614,15 +725,32 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       ) return;
       event.preventDefault();
       emit(
-        {
-          kind: "begin-material-drag",
-          materialId,
-          pointerId: event.pointerId,
-          clientX: event.clientX,
-          clientY: event.clientY,
-        },
+        placeTap
+          ? {
+              kind: "arm-material-pointer",
+              materialId,
+              pointerId: event.pointerId,
+              clientX: event.clientX,
+              clientY: event.clientY,
+            }
+          : {
+              kind: "begin-material-drag",
+              materialId,
+              pointerId: event.pointerId,
+              clientX: event.clientX,
+              clientY: event.clientY,
+            },
         event,
       );
+    },
+    listenerOptions,
+  );
+
+  placeCancel?.addEventListener(
+    "click",
+    (event) => {
+      emit({ kind: "cancel-place" }, event);
+      sourceCard.focus({ preventScroll: true });
     },
     listenerOptions,
   );
@@ -631,9 +759,16 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
     "click",
     (event) => {
       const materialId = sourceCard.dataset.materialId;
-      // Pointer activation is acquired on pointerdown; detail === 0 is keyboard activation.
+      // Pointer presses are owned by pointerdown. detail === 0 remains the
+      // keyboard path in every build. Only tap-to-place also ignores a
+      // mouse, touch, or pen click, because those clicks can report detail 0.
+      const pointerType = "pointerType" in event ? event.pointerType : "";
+      const placeTapPointerClick = placeTap && (
+        pointerType === "mouse" || pointerType === "touch" || pointerType === "pen"
+      );
       if (
         !currentState.trayEnabled
+        || placeTapPointerClick
         || event.detail !== 0
         || !materialId
         || materialId.trim().length === 0
@@ -679,6 +814,12 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
         trayDragging: dragging,
         activeMaterialId: dragging ? materialId : null,
       });
+    },
+    focusSourceCard() {
+      sourceCard.focus({ preventScroll: true });
+    },
+    focusStatus() {
+      status.focus({ preventScroll: true });
     },
     showTelemetryFallback(text) {
       telemetryExportPanel.hidden = text === null;

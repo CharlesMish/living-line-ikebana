@@ -293,6 +293,23 @@ async function inlineHtmlMedia(html) {
   return output;
 }
 
+/**
+ * Study packets bake one condition without a URL flag.
+ * `1` is the planting boundary; `2` is that boundary plus tap-to-place.
+ * The page title and filename do not name the condition.
+ */
+function withPlaceBake(html, token) {
+  if (!token) return html;
+  const injection = `<script>globalThis.__LL_PLACE__=${JSON.stringify(token)};</script>\n`;
+  return html.replace(/<script\b/i, `${injection}<script`);
+}
+
+const PLACE_FILES = {
+  baseline: { file: "arrangement-1.html", token: "" },
+  cue: { file: "arrangement-2.html", token: "1" },
+  tap: { file: "arrangement-3.html", token: "2" },
+};
+
 try {
   let html = await readFile(inputHtmlPath, "utf8");
   html = await inlineStylesheets(html);
@@ -310,6 +327,16 @@ try {
   html = html.replace(/^(?:<!doctype html>\s*)?/i, (doctype) => `${doctype}${banner}`);
   await writeFile(outputHtmlPath, html, "utf8");
   console.log(`Wrote ${path.relative(projectDirectory, outputHtmlPath)}.`);
+
+  const requested = process.env.LIVING_LINE_PLACE ?? "";
+  const names = requested === "all" ? Object.keys(PLACE_FILES) : requested ? [requested] : [];
+  for (const name of names) {
+    const entry = PLACE_FILES[name];
+    if (!entry) throw new Error(`LIVING_LINE_PLACE must be baseline, cue, tap, or all (got ${requested}).`);
+    const target = path.join(distributionDirectory, entry.file);
+    await writeFile(target, withPlaceBake(html, entry.token), "utf8");
+    console.log(`Wrote ${path.relative(projectDirectory, target)}.`);
+  }
 } catch (error) {
   console.error(error instanceof Error ? error.stack ?? error.message : error);
   process.exitCode = 1;

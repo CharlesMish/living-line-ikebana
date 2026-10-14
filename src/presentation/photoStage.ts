@@ -1,8 +1,26 @@
 import * as THREE from "three";
-import type { StudioCameraPose } from "./ThreeStudio.ts";
+import { createPerchSurface } from "./perchSurfaces.ts";
+import { timberGeometry, honedStoneGeometry, plasterGeometry } from "./perchGeometry.ts";
 
-export type PhotoBackdrop = "paper" | "sage" | "dusk" | "transparent";
-export type PhotoPerch = "ground" | "stone" | "bench";
+export const PHOTO_BACKDROPS = [
+  { id: "paper", label: "Warm paper" },
+  { id: "sage", label: "Sage wall" },
+  { id: "dusk", label: "Dusk wall" },
+  { id: "mist", label: "Mist wall" },
+  { id: "clay", label: "Clay wall" },
+  { id: "ink", label: "Ink wall" },
+  { id: "hills", label: "Mist hills" },
+  { id: "garden", label: "Garden shade" },
+  { id: "transparent", label: "Transparent" },
+] as const;
+export type PhotoBackdrop = typeof PHOTO_BACKDROPS[number]["id"];
+export type PhotoPerch = "ground" | "stone" | "bench" | "plinth";
+export const PHOTO_PERCHES: readonly { id: PhotoPerch; label: string }[] = [
+  { id: "ground", label: "Ground" },
+  { id: "stone", label: "Low stone" },
+  { id: "bench", label: "Small bench" },
+  { id: "plinth", label: "Plaster plinth" },
+];
 export type PhotoFormat = "landscape" | "portrait" | "square";
 export const PHOTO_SIZES: Record<PhotoFormat, { width: number; height: number }> = {
   landscape: { width: 1600, height: 1200 },
@@ -13,6 +31,11 @@ export const PHOTO_COLORS: Record<Exclude<PhotoBackdrop, "transparent">, { wall:
   paper: { wall: 0xeee9dd, floor: 0xe3dccf },
   sage: { wall: 0xcbd3c8, floor: 0xaab6a5 },
   dusk: { wall: 0x646d76, floor: 0x535e67 },
+  mist: { wall: 0xb8c7d0, floor: 0x9eafb9 },
+  clay: { wall: 0xc1a398, floor: 0xac8f83 },
+  ink: { wall: 0x414f59, floor: 0x35444e },
+  hills: { wall: 0xced7c9, floor: 0xb8c2b4 },
+  garden: { wall: 0xcfd6c3, floor: 0xb5bcad },
 };
 
 /** All perch tops meet the unchanged vessel bottom. Nothing botanical moves. */
@@ -29,30 +52,48 @@ export function photoSupportBounds(supports: readonly PerchSupport[]) {
 }
 export function createPhotoPerch(perch: PhotoPerch, supports: readonly PerchSupport[] = [{ contactY: .04, footprintXZ: { minX: -2.64, maxX: 2.64, minZ: -2.64, maxZ: 2.64 } }]): { group: THREE.Group; floorY: number } {
   const group = new THREE.Group();
+  group.name = `photo-perch-${perch}`;
   const support = photoSupportBounds(supports);
-  const material = new THREE.MeshStandardMaterial({ color: perch === "stone" ? 0xa5a092 : 0x75614d, roughness: 0.92 });
-  const mesh = (geometry: THREE.BufferGeometry, x: number, y: number, z: number) => {
+  const mesh = (name: string, geometry: THREE.BufferGeometry, material: THREE.Material | THREE.Material[], x: number, y: number, z: number) => {
     const part = new THREE.Mesh(geometry, material); part.position.set(x, y, z);
+    part.name = name;
     part.castShadow = true; part.receiveShadow = true; group.add(part);
   };
-  if (perch === "stone") mesh(new THREE.CylinderGeometry(support.radius, support.radius + .03, .16, 80), support.x, support.topY - .08, support.z);
-  if (perch === "bench") {
-    mesh(new THREE.BoxGeometry(support.width, .18, support.depth), support.x, support.topY - .09, support.z);
-    for (const x of [-1, 1]) for (const z of [-1, 1]) mesh(new THREE.BoxGeometry(.18, 1.25, .18), support.x + x * (support.width / 2 - .8), support.topY - .18 - .625, support.z + z * (support.depth / 2 - .8));
+  if (perch === "ground") return { group, floorY: -.02 };
+  if (perch === "stone") {
+    const height = .22;
+    mesh("honed-stone", honedStoneGeometry(support.radius + .03, height), createPerchSurface("stone"), support.x, support.topY - height / 2, support.z);
+    return { group, floorY: support.topY - height };
   }
-  // A ground perch has no meshes; release its unused material immediately.
-  if (perch === "ground") material.dispose();
-  return { group, floorY: perch === "ground" ? -0.02 : perch === "stone" ? support.topY - .16 : support.topY - .18 - 1.25 };
+  if (perch === "bench") {
+    const wood = createPerchSurface("wood"), end = createPerchSurface("endgrain");
+    const thickness = .22, legHeight = 1.22, boardGap = .012;
+    const boardDepth = (support.depth - boardGap * 2) / 3;
+    for (let index = 0; index < 3; index++) {
+      mesh(`bench-board-${index}`, timberGeometry(support.width, thickness, boardDepth, "x", index * .31, true), [wood, end],
+        support.x, support.topY - thickness / 2, support.z + (index - 1) * (boardDepth + boardGap));
+    }
+    const insetX = support.width / 2 - .7, insetZ = support.depth / 2 - .65;
+    for (const x of [-1, 1]) for (const z of [-1, 1]) {
+      mesh(`bench-leg-${x}-${z}`, timberGeometry(.25, legHeight, .25, "y", x * .4 + z * .17), wood,
+        support.x + x * insetX, support.topY - thickness - legHeight / 2, support.z + z * insetZ);
+    }
+    // Aprons meet the inside leg faces, as real joinery would. The quiet reveal
+    // under the eased top adds a contact shadow without painted fake shadows.
+    for (const sign of [-1, 1]) {
+      mesh(`bench-long-apron-${sign}`, timberGeometry(insetX * 2 - .25, .28, .14, "x", sign * .23), wood,
+        support.x, support.topY - thickness - .17, support.z + sign * insetZ);
+      mesh(`bench-end-apron-${sign}`, timberGeometry(.14, .28, insetZ * 2 - .25, "z", sign * .37), wood,
+        support.x + sign * insetX, support.topY - thickness - .17, support.z);
+    }
+    return { group, floorY: support.topY - thickness - legHeight };
+  }
+  const plaster = createPerchSurface("plaster"), height = .68, footHeight = .06;
+  mesh("plinth-body", plasterGeometry(support.width, height - footHeight, support.depth), plaster,
+    support.x, support.topY - (height - footHeight) / 2, support.z);
+  mesh("plinth-recessed-foot", plasterGeometry(support.width - .22, footHeight, support.depth - .22), plaster,
+    support.x, support.topY - height + footHeight / 2, support.z);
+  return { group, floorY: support.topY - height };
 }
 
-/** Screen-space framing from a fixed pose; repeated updates never accumulate. */
-export function framePhotoCamera(pose: StudioCameraPose, zoom: number, horizontal: number, vertical: number): StudioCameraPose {
-  const target = new THREE.Vector3(pose.target.x, pose.target.y, pose.target.z);
-  const delta = new THREE.Vector3(pose.position.x, pose.position.y, pose.position.z).sub(target);
-  const forward = delta.clone().normalize().negate();
-  const right = forward.clone().cross(new THREE.Vector3(pose.up.x, pose.up.y, pose.up.z)).normalize();
-  const screenUp = right.clone().cross(forward).normalize();
-  const shift = right.multiplyScalar(-horizontal).add(screenUp.multiplyScalar(-vertical));
-  target.add(shift); const position = target.clone().add(delta.multiplyScalar(1 / zoom));
-  return { position: { x: position.x, y: position.y, z: position.z }, target: { x: target.x, y: target.y, z: target.z }, up: { ...pose.up } };
-}
+export { framePhotoCamera } from "./photoFraming.ts";

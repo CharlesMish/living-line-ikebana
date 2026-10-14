@@ -15,6 +15,8 @@ export const SINGLE_FLOWER_RESPONSE = Object.freeze({ stem: 0.46, stalk: 0.18 })
 export const REED_RESPONSE = Object.freeze({ culm: 0.56 });
 /** Stem carries a flower head: stiffer than a single slender stem, softer than woody stock. */
 export const FLOWER_VOLUME_RESPONSE = Object.freeze({ stem: 0.55, group: 0.2, stalk: 0.18 });
+/** Light single head on a shorter stem; stock response is copied once. */
+export const COMPACT_FLOWER_RESPONSE = Object.freeze({ stem: 0.46, stalk: 0.18 });
 /** Supple cane: more yielding than flowering wood (0.72), less ribbon-like than the leafy stem (0.39). */
 export const ARCHING_TRAILER_RESPONSE = Object.freeze({ cane: 0.5, stalk: 0.18 });
 /** Spray stem holds a fan better than the leafy ribbon (0.39) and yields more than a reed (0.56). Arms open more readily than the stem. */
@@ -42,3 +44,6 @@ export const BERRY_TWIG_RESPONSE = Object.freeze({ wood: 0.78, cluster: 0.52, st
  * Pinna stalks are petioles, so the shared solver bends the rachis only.
  */
 export const FERN_FROND_RESPONSE = Object.freeze({ rachis: 0.43, stalk: 0.18 });
+
+/** Sparse woody line and subordinate fork; leaf stalks remain rigid under Bend. */
+export const LOBED_LEAF_RESPONSE = Object.freeze({ wood: 0.70, fork: 0.49, stalk: 0.18 });

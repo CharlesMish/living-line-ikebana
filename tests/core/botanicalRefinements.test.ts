@@ -18,8 +18,11 @@ const materials = ["fern-frond", "blossom-spray", "nodding-flower"];
 const seeds = [0, 8278, 9255, 10232, 0xffffffff];
 const make = (material: string, seed = 8278) => getMaterialDefinition(material)!.generator.generate("plant-1", seed, base);
 
-test("revised catalog remains twelve; v1 graphs load unchanged and v2 is deterministic", () => {
-  assert.equal(getMaterialDefinitions().length, 12);
+test("the established twelve stay ordered; v1 graphs load unchanged and v2 is deterministic", () => {
+  assert.deepEqual(getMaterialDefinitions().slice(0, 12).map((material) => material.materialId), [
+    "flowering-branch", "leafy-shoot", "bare-branch", "single-flower", "reed", "flower-volume",
+    "arching-trailer", "foliage-fan", "blossom-spray", "nodding-flower", "berry-twig", "fern-frond",
+  ]);
   for (const material of materials) for (const seed of seeds) {
     const old = getGeneratorDefinition(`${material}-v1`)!.generate("plant-1", seed, base);
     const saved = serializePlantGraph(old);

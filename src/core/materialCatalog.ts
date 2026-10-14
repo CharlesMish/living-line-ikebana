@@ -1,3 +1,5 @@
+import { createBroadBlade, BROAD_BLADE_VERSION } from "./broadBlade.ts";
+import { createLobedLeaf, LOBED_LEAF_VERSION } from "./lobedLeaf.ts";
 import { createArchingTrailer, ARCHING_TRAILER_VERSION } from "./archingTrailer.ts";
 import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
@@ -9,6 +11,7 @@ import { createNoddingFlower, NODDING_FLOWER_VERSION } from "./noddingFlower.ts"
 import { createBerryTwig, BERRY_TWIG_VERSION } from "./berryTwig.ts";
 import { createBareBranch, BARE_BRANCH_VERSION } from "./bareBranch.ts";
 import { createFlowerVolume, FLOWER_VOLUME_VERSION } from "./flowerVolume.ts";
+import { createCompactFlower, COMPACT_FLOWER_VERSION } from "./compactFlower.ts";
 import { createFloweringBranch, successfulSeatIdentity } from "./generator.ts";
 import { createLeafyShoot, LEAFY_SHOOT_VERSION } from "./leafyShoot.ts";
 import { createReed, REED_VERSION } from "./reed.ts";
@@ -80,6 +83,11 @@ const flowerVolumeV1: GeneratorDefinition = Object.freeze({
   generate: createFlowerVolume,
 });
 
+const compactFlowerV1: GeneratorDefinition = Object.freeze({
+  generatorVersion: COMPACT_FLOWER_VERSION,
+  generate: createCompactFlower,
+});
+
 const archingTrailerV1: GeneratorDefinition = Object.freeze({
   generatorVersion: ARCHING_TRAILER_VERSION,
   generate: createArchingTrailer,
@@ -110,9 +118,13 @@ const fernFrondV1: GeneratorDefinition = Object.freeze({
   generate: createFernFrond,
 });
 
+const broadBladeV1: GeneratorDefinition = Object.freeze({ generatorVersion: BROAD_BLADE_VERSION, generate: createBroadBlade });
+
 const fernFrondV2: GeneratorDefinition = Object.freeze({ generatorVersion: FERN_FROND_V2_VERSION, generate: createFernFrondV2 });
 const blossomSprayV2: GeneratorDefinition = Object.freeze({ generatorVersion: BLOSSOM_SPRAY_V2_VERSION, generate: createBlossomSprayV2 });
 const noddingFlowerV2: GeneratorDefinition = Object.freeze({ generatorVersion: NODDING_FLOWER_V2_VERSION, generate: createNoddingFlowerV2 });
+
+const lobedLeafV1: GeneratorDefinition = Object.freeze({ generatorVersion: LOBED_LEAF_VERSION, generate: createLobedLeaf });
 
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
@@ -133,6 +145,9 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   fernFrondV2,
   blossomSprayV2,
   noddingFlowerV2,
+  compactFlowerV1,
+  broadBladeV1,
+  lobedLeafV1,
 ]);
 
 /**
@@ -156,6 +171,9 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "nodding-flower", generator: noddingFlowerV2 }),
   Object.freeze({ materialId: "berry-twig", generator: berryTwigV1 }),
   Object.freeze({ materialId: "fern-frond", generator: fernFrondV2 }),
+  Object.freeze({ materialId: "compact-flower", generator: compactFlowerV1 }),
+  Object.freeze({ materialId: "broad-blade", generator: broadBladeV1 }),
+  Object.freeze({ materialId: "lobed-leaf", generator: lobedLeafV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

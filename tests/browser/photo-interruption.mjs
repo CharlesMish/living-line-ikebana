@@ -17,21 +17,25 @@ try {
  assert.equal(after.s.canonicalHash,before.s.canonicalHash);assert.equal(after.s.successfulSeatOrdinal,before.s.successfulSeatOrdinal);assert.equal(after.s.posture,'arrange');assert.deepEqual(after.a,before.a);
  results.push('opening Photograph during insertion cancels, later release is inert, no ordinal or autosave write');
  await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-dialog[open]').waitFor();
+ await page.locator('#photo-tab-save').click();
  // Synthetic export failure then retry; native output is untouched.
  await page.evaluate(()=>{window.originalToBlob=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(cb){cb(null);};});
  await page.locator('#photo-export').click();await page.waitForFunction(()=>!document.querySelector('#photo-export').disabled);assert.match(await page.locator('#photo-message').textContent(),/could not create/);
  await page.evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.originalToBlob;});
- const download=page.waitForEvent('download');await page.locator('#photo-export').click();await download;await page.waitForFunction(()=>!document.querySelector('#photo-export').disabled);
- results.push('PNG encoding failure releases busy state; retry produces a download');
+ await page.locator('#photo-export').click();await page.waitForFunction(()=>!document.querySelector('#photo-export').disabled);await page.locator('#photo-result:not([hidden])').waitFor();
+ assert.match(await page.locator('#photo-result-image').getAttribute('src'),/^blob:/);
+ const download=page.waitForEvent('download');await page.locator('#photo-download').click();await download;
+ results.push('PNG encoding failure releases busy state; retry retains a PNG and explicit Download produces a file');
  // Delayed callback then Close: no stale download and reopened session captures again.
  await page.evaluate(()=>{window.originalToBlob=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(cb,type){window.originalToBlob.call(this,b=>setTimeout(()=>cb(b),300),type);};});
  let downloads=0;page.on('download',()=>downloads++);
  await page.locator('#photo-export').click();await page.locator('#photo-close').click();await page.waitForTimeout(400);assert.equal(downloads,0);
  await page.evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.originalToBlob;});
- results.push('Close during pending PNG encoding cancels delivery; session token prevents stale download');
+ assert.equal(await page.locator('#photo-result').isVisible(),false);
+ results.push('Close during pending PNG encoding cancels delivery; session token prevents stale image or download');
  // Unknown v2 data must survive a failed Keep unchanged.
  await page.evaluate(async()=>{const{createWorkbenchFixture}=await import('/src/app/workbench.ts');const f=createWorkbenchFixture('reed',8278,1);localStorage.setItem('ikebana-web-alpha:workbench-studio-v1',JSON.stringify({storageVersion:1,savedAt:new Date().toISOString(),nextSuccessfulOrdinal:2,plants:f.plants}));localStorage.setItem('ikebana-web-alpha:workbench-garden-v1','{"gardenVersion":99,"precious":"synthetic"}');});
- await page.reload();await page.locator('[data-ready=true]').waitFor();await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-keep').click();
+ await page.reload();await page.locator('[data-ready=true]').waitFor();await page.getByTestId('more-toggle').click();await page.locator('#photo-open').click();await page.locator('#photo-tab-save').click();await page.locator('#photo-keep').click();
  assert.equal(await page.evaluate(()=>localStorage.getItem('ikebana-web-alpha:workbench-garden-v1')),'{"gardenVersion":99,"precious":"synthetic"}');
  results.push('unsupported Garden version fails closed and keeps its exact bytes');
 }finally{await browser.close();await writeFile((process.env.IKEBANA_EVIDENCE_DIR??'.')+'/photo-interruption-results.json',JSON.stringify(results,null,2));}

@@ -26,3 +26,59 @@ jobs:
 
       - name: Verify types, tests, and build
         run: npm run verify
+
+  rendered-evidence:
+    name: Rendered evidence (Chromium, assisted)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked application dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install isolated browser tooling
+        # Tool-only dependency: neither package.json nor the application lock changes.
+        run: |
+          npm install --prefix "$RUNNER_TEMP/living-line-browser" --no-package-lock --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          node "$RUNNER_TEMP/living-line-browser/node_modules/playwright/cli.js" install --with-deps chromium
+
+      - name: Check out the reported prune regression baseline
+        uses: actions/checkout@v7
+        with:
+          ref: 85af92682d6e057c77f2b5db89dffd3f11ccf6c6
+          path: .ci-prune-baseline
+          persist-credentials: false
+
+      - name: Build the isolated prune regression baseline
+        working-directory: .ci-prune-baseline
+        run: |
+          npm ci
+          npm run build
+
+      - name: Capture rendered workflow evidence
+        env:
+          IKEBANA_RENDER_EVIDENCE: "1"
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/living-line-browser/node_modules/playwright/index.mjs
+          IKEBANA_EVIDENCE_DIR: artifacts/rendered-evidence
+          IKEBANA_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          IKEBANA_PRUNE_BASELINE_DIR: ${{ github.workspace }}/.ci-prune-baseline
+        run: node tests/browser/rendered-evidence.mjs
+
+      - name: Upload screenshots, PNGs, and checks
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/rendered-evidence/
+          if-no-files-found: warn
+          retention-days: 14

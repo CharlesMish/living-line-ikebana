@@ -1,6 +1,9 @@
+import { withBotanicalTones } from "./scene.ts";
+import { BotanicalTonesUI } from "./botanicalTonesUI.ts";
 import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
 import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
+import { captureFlowerHeadTilt, flowerHeadTiltRotation, singleFlowerHead, type FlowerHeadTiltFrame } from "./flowerHeadAim.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
@@ -94,6 +97,7 @@ import { GardenUI } from "./gardenUI.ts";
 import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
 
+import { placePointerKind, placePointerTravel } from "./placeTap.ts";
 import { CraftSound } from "./sound.ts";
 import { cutCue, shapeCue } from "./craftCues.ts";
 import { TelemetryStore, TELEMETRY_INSTRUMENT_VERSION, type PersistedTelemetry } from "./telemetry.ts";
@@ -132,6 +136,7 @@ type AimGesture = PointerBase & {
   plane: SpatialPlane;
   startPlaneHit: Vec3;
   grabbedPoint: Vec3;
+  headTilt?: { frame: FlowerHeadTiltFrame; startClientX: number; startClientY: number };
 };
 
 type BendGesture = PointerBase & {
@@ -274,6 +279,7 @@ export class IkebanaApp {
   private readonly storageKeys = sceneStorageKeys(new URL(location.href), this.config.workbench, this.config.vesselProfile?.id);
   private suppressSave = false;
   private vesselAppearanceUI?: VesselAppearanceUI;
+  private botanicalTonesUI?: BotanicalTonesUI;
   private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
   private readonly initialSaved = this.store.load();
   private readonly sound = new CraftSound();
@@ -302,13 +308,33 @@ export class IkebanaApp {
   private restored = false;
   private loadWarning = false;
   private lastSaveSucceeded = true;
+  /** Committed working changes that have not reached storage. Never serialized. */
+  private workingSavePending = false;
   private removeUIListener: (() => void) | null = null;
   private hovering = false;
   private preventionByCoordinator = new WeakMap<Coordinator, StemPrevention>();
   private gardenUI!: GardenUI;
   private photograph: Photograph | null = null;
+  /** Stable across edits; only explicit document replacement starts a new photo setup. */
+  private photoDraftContext = 0;
   private workingSession: { coordinator: Coordinator; selectedBranchId: string | null; cameraIsFree: boolean; scene: SceneSettings } | null = null;
   private gardenComparison: { session: GardenComparison; viewports: [ComparisonViewport, ComparisonViewport] } | null = null;
+  private placeArm: {
+    pointerId: number;
+    origin: "card" | "scene";
+    materialId: string;
+    x: number;
+    y: number;
+    capture: HTMLElement;
+    exceeded: boolean;
+    canvasSize: { width: number; height: number } | null;
+    projection: { viewportHeight: number; verticalFov: number } | null;
+  } | null = null;
+  private placeReadyMaterialId: string | null = null;
+  /** Photograph, Garden, and Vessel cover the arranging view, so the cue stays quiet. */
+  private suppressPlantingCue = false;
+  /** Set in the window capture phase, before menus close on the same press. */
+  private chromeDismissPress = false;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -339,6 +365,7 @@ export class IkebanaApp {
     this.telemetryStore.prime();
     this.ui = createUIBindings({
       root,
+      placeTap: this.config.placeTap,
       initialState: {
         bendVariant: uiVariant(this.bendVariant),
         bendStationsMode: this.bendStationsMode,
@@ -372,6 +399,8 @@ export class IkebanaApp {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
         snapshot: () => this.arrangementSnapshot(),
+        context: () => this.workingSession ? null : this.photoDraftContext,
+        returnToArrange: () => { if (!this.workingSession) this.handleUICommand({ kind: "set-posture", posture: "arrange" }, new Event("photo-return")); },
         canKeep: () => !this.workingSession,
         keep: (snapshot, thumbnail, title) => this.gardenUI.keepPhotograph(snapshot, thumbnail, title),
       });
@@ -383,7 +412,8 @@ export class IkebanaApp {
   private createStudio() {
     const studio = new ThreeStudio(this.canvas, {
       debugHitTargets: this.config.debug, pinnateDraw: this.config.pinnateDraw, fanLeafDraw: this.config.fanLeafDraw,
-      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, stageLens: true,
+      vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, botanicalTones: this.scene.botanicalTones, photoAdjustments: this.scene.photoAdjustments, photoLighting: this.scene.photoLighting, stageLens: true,
+      placeCue: this.config.placeCue,
       onCanvasResize: () => this.onViewportChanged(),
     });
     studio.setPhotoStage(this.scene.backdropId, this.scene.perchId);
@@ -395,10 +425,15 @@ export class IkebanaApp {
     this.scene = next; this.vesselAppearance = next; this.config.vesselProfile = sceneProfile(next);
     this.root.dataset.vesselStudy = next.layoutId;
     if (rebuild) { this.studio.dispose(); this.studio = this.createStudio(); this.measureStage(); }
-    else { this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
+    else { this.studio.setPhotoLighting(next.photoLighting); this.studio.setPhotoAdjustments(next.photoAdjustments); this.studio.setBotanicalTones(next.botanicalTones); this.studio.setVesselAppearance(next); this.studio.setPhotoStage(next.backdropId, next.perchId); this.studio.setStemFibers(next.stemFibers); }
     this.setupVesselUI();
   }
   private setupVesselUI() {
+    if (this.botanicalTonesUI) this.botanicalTonesUI.update(this.scene.botanicalTones, !this.workingSession);
+    else this.botanicalTonesUI = new BotanicalTonesUI(this.root, this.scene.botanicalTones,
+      () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
+      botanicalTones => this.changeScene(withBotanicalTones(this.scene, botanicalTones)),
+      () => [...this.coordinator.getPresentationState().document.plants.values()].map(graph => graph.generatorVersion));
     if (this.vesselAppearanceUI) {
       this.vesselAppearanceUI.update(sceneProfile(this.scene).label, this.scene, this.scene.layoutId, !this.workingSession);
       return;
@@ -417,6 +452,7 @@ export class IkebanaApp {
       this.ui.setStatus("Could not save the scene. Your previous setting is unchanged.", "warning");
       this.setupVesselUI(); return;
     }
+    this.markWorkingSaved();
     this.applyScene(scene); this.syncPresentation();
   }
   private restoreCamera(camera: CameraPose) {
@@ -429,7 +465,7 @@ export class IkebanaApp {
     this.started = true;
     const options = { signal: this.abortController.signal };
     this.removeUIListener = this.ui.onCommand((command, event) => this.handleUICommand(command, event));
-    this.canvas.addEventListener("pointerdown", this.onCanvasPointerDown, options);
+    this.canvas.addEventListener("pointerdown", (event) => this.handleCanvasPointerDown(event), options);
     this.canvas.addEventListener("pointerleave", () => { if (!this.gesture) this.clearHover(); }, options);
     this.canvas.addEventListener("wheel", this.onWheel, { ...options, passive: false });
     this.canvas.addEventListener("contextmenu", this.preventDefault, options);
@@ -444,6 +480,9 @@ export class IkebanaApp {
     window.addEventListener("resize", this.onViewportChanged, options);
     window.addEventListener("orientationchange", this.onViewportChanged, options);
     window.addEventListener("keydown", (event) => this.handleKeyDown(event), options);
+    window.addEventListener("blur", () => this.handleWindowBlur(), options);
+    window.addEventListener("pointerdown", this.onWindowPointerDown, { ...options, capture: true });
+    document.addEventListener("close", this.onDialogClose, { ...options, capture: true });
     window.visualViewport?.addEventListener("resize", this.onVisualViewportChanged, options);
 
     this.ui.setStatus(
@@ -480,6 +519,7 @@ export class IkebanaApp {
     this.photograph?.destroy();
     this.gardenUI?.destroy();
     this.vesselAppearanceUI?.destroy();
+    this.botanicalTonesUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();
     if (window.__IKEBANA_TEST__) delete window.__IKEBANA_TEST__;
@@ -533,7 +573,7 @@ export class IkebanaApp {
         },
         beforeRecoveryCommit: (event) => {
           if (this.workingSession) return false;
-          return this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
+          return this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal, "proposal");
         },
         onAutosave: (event) => {
           if (this.workingSession || this.suppressSave) return; // Garden viewing can never write the working bowl.
@@ -551,7 +591,7 @@ export class IkebanaApp {
           // evict it and retry the graph save exactly once — before ever
           // reporting a save failure to the tester.
           // Recovery was persisted before replacing memory. Do not write it twice.
-          if (event.operation !== "undo" && event.operation !== "remove") {
+          if (event.operation !== "undo" && event.operation !== "remove" && event.operation !== "turn") {
             this.saveWorkingPlants(event.document.plants, event.document.successfulPlantOrdinal);
           }
           // Recorded only after the graph save (and any eviction/retry) has
@@ -564,7 +604,7 @@ export class IkebanaApp {
     (this.preventionByCoordinator ??= new WeakMap()).set(coordinator, prevention);
   }
 
-  private saveWorkingPlants(plants: ReadonlyMap<string, PlantGraph>, ordinal: number) {
+  private saveWorkingPlants(plants: ReadonlyMap<string, PlantGraph>, ordinal: number, phase: "committed" | "proposal" = "committed") {
     const canonical = [...plants.values()]
       .sort((left, right) => left.id.localeCompare(right.id)).map(toCanonicalPlantGraph);
     this.lastSaveSucceeded = this.store.save(ordinal + 1, canonical);
@@ -572,12 +612,45 @@ export class IkebanaApp {
       this.telemetryStore.clear();
       this.lastSaveSucceeded = this.store.save(ordinal + 1, canonical);
     }
-    if (!this.lastSaveSucceeded) this.ui.setStatus("Could not save this change.", "warning");
+    if (this.lastSaveSucceeded) this.markWorkingSaved();
+    else {
+      // A rejected save-first proposal did not change memory. It must neither
+      // invent an unsaved change nor forget an earlier failed autosave.
+      if (phase === "committed") this.workingSavePending = true;
+      this.syncWorkingSaveFeedback();
+      this.ui.setStatus(phase === "proposal" ? "Could not save this change." : "Change kept in this session.", phase === "proposal" ? "warning" : "quiet");
+    }
     return this.lastSaveSucceeded;
+  }
+
+  private syncWorkingSaveFeedback() {
+    this.ui.setState({ workingSavePending: Boolean(this.workingSavePending), canRetryWorkingSave: Boolean(this.workingSavePending) && !this.workingSession });
+  }
+
+  private markWorkingSaved() {
+    this.lastSaveSucceeded = true;
+    this.workingSavePending = false;
+    this.syncWorkingSaveFeedback();
+  }
+
+  private retryWorkingSave() {
+    if (this.workingSession) {
+      this.ui.setStatus("Return to your working bowl before retrying its save.", "warning");
+      return;
+    }
+    if (!this.workingSavePending) return;
+    this.cancelPlaceReadiness("interrupt");
+    this.interruptActive("view-command", false);
+    const document = this.coordinator.getDocumentSnapshot();
+    if (this.saveWorkingPlants(document.plants, document.successfulPlantOrdinal)) {
+      this.ui.setStatus("Working bowl saved on this device.");
+      if (typeof this.ui.focusStatus === "function") this.ui.focusStatus();
+    }
   }
 
   private recoverWorkingEdit(operation: "undo" | "remove") {
     if (this.workingSession) return;
+    this.cancelPlaceReadiness("interrupt");
     this.interruptActive("view-command", false);
     this.metrics.resetAttempt();
     this.ui.setState({ editMenuOpen: false, materialMenuOpen: false, viewMenuOpen: false });
@@ -596,9 +669,35 @@ export class IkebanaApp {
     this.syncPresentation();
   }
 
+  private turnWorkingCutting(direction: "left" | "right") {
+    if (this.workingSession) return;
+    this.cancelPlaceReadiness("interrupt");
+    this.interruptActive("view-command", false);
+    this.metrics.resetAttempt();
+    const prevention = this.preventionByCoordinator.get(this.coordinator);
+    if (!prevention) return;
+    const sequence = this.coordinator.getDebugState().commitSequence;
+    const radians = (direction === "left" ? -1 : 1) * Math.PI / 12;
+    const result = this.coordinator.commandTurnSelected(snapshot => prevention.turn(snapshot, radians));
+    if (!result.ok) {
+      if (result.reason === "save-failed") this.ui.setStatus("Could not save this change. Your bowl is unchanged.", "warning");
+      return;
+    }
+    const changed = this.coordinator.getDebugState().commitSequence !== sequence;
+    const reason = prevention.feedback.reason;
+    const stopped = reason !== "clear";
+    this.ui.setStatus(reason !== "clear"
+      ? PREVENTION_MESSAGES[reason]
+      : changed ? "Cutting turned. Undo reverses this step." : "Cutting unchanged.", stopped ? "warning" : "quiet");
+    this.syncPresentation();
+  }
+
   private handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Escape") {
       if (this.coordinator.getDebugState().active) this.interruptActive("explicit-cancel");
+      // A menu that already consumed Escape keeps a ready cutting. Otherwise
+      // Escape cancels readiness and does not seat it.
+      if (!event.defaultPrevented) this.cancelPlaceReadiness("escape");
       return;
     }
     if (event.defaultPrevented || event.repeat || !(event.ctrlKey || event.metaKey)
@@ -618,6 +717,9 @@ export class IkebanaApp {
 
   private pauseForGarden() {
     this.interruptActive("posture-command", false);
+    this.cancelPlaceReadiness("interrupt");
+    this.suppressPlantingCue = true;
+    this.syncPlantingCue();
     this.metrics.resetAttempt();
     // The modal interrupts editing but does not change the working posture.
     // Viewing a kept entry uses its own read-only Step Back coordinator below.
@@ -648,6 +750,7 @@ export class IkebanaApp {
     this.restoreCamera(snapshot.camera);
     this.ui.setState({ posture: "step-back", tool: "shape", trayEnabled: false, materialMenuOpen: false });
     this.ui.setStatus("A kept moment. Orbit or pan to look; make a copy to change it.");
+    this.syncWorkingSaveFeedback();
     this.syncPresentation();
   }
 
@@ -662,6 +765,7 @@ export class IkebanaApp {
     this.cameraIsFree = saved.cameraIsFree;
     this.ui.setState({ posture: this.coordinator.getDebugState().posture, tool: this.coordinator.getDebugState().tool, trayEnabled: true });
     this.ui.setStatus("Your working bowl is here.");
+    this.syncWorkingSaveFeedback();
     this.syncPresentation();
   }
 
@@ -722,6 +826,8 @@ export class IkebanaApp {
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene: snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene), camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    this.markWorkingSaved();
+    this.photoDraftContext++;
     this.applyScene(snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene));
     const loaded = getLastWorkbenchFixtureLoad();
     if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
@@ -767,11 +873,15 @@ export class IkebanaApp {
   private handleUICommand(command: UICommand, sourceEvent: Event) {
     this.sound.unlock();
     if (this.workingSession && (command.kind === "set-posture" && command.posture === "arrange"
-      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant", "undo-edit", "remove-cutting"].includes(command.kind))) {
+      || ["set-tool", "begin-material-drag", "activate-material", "select-material", "set-bend-variant", "undo-edit", "remove-cutting", "turn-cutting", "arm-material-pointer"].includes(command.kind))) {
       this.ui.setStatus("This is a kept arrangement. Make a working copy to change it.");
       return;
     }
     switch (command.kind) {
+      case "retry-working-save": {
+        this.retryWorkingSave();
+        break;
+      }
       case "set-more-menu": {
         this.interruptActive("view-command", false);
         this.ui.setState({ moreMenuOpen: command.open, editMenuOpen: false, viewMenuOpen: false, materialMenuOpen: false, experimentPanelOpen: false });
@@ -787,7 +897,12 @@ export class IkebanaApp {
         this.recoverWorkingEdit(command.kind === "undo-edit" ? "undo" : "remove");
         break;
       }
+      case "turn-cutting": {
+        this.turnWorkingCutting(command.direction);
+        break;
+      }
       case "stop-and-look": {
+        this.cancelPlaceReadiness("interrupt");
         this.interruptActive("posture-command");
         this.metrics.resetAttempt();
         this.coordinator.commandPosture("step-back");
@@ -796,6 +911,7 @@ export class IkebanaApp {
         break;
       }
       case "set-posture": {
+        this.cancelPlaceReadiness("interrupt");
         this.interruptActive("posture-command");
         // A miss recorded under the old posture must never attach to a hit
         // recorded after this boundary.
@@ -806,6 +922,7 @@ export class IkebanaApp {
         break;
       }
       case "set-tool": {
+        this.cancelPlaceReadiness("interrupt");
         this.interruptActive("tool-command");
         // Same context-boundary rule as posture, for the shape/prune tool.
         this.metrics.resetAttempt();
@@ -835,6 +952,7 @@ export class IkebanaApp {
         break;
       }
       case "set-stem-prevention": {
+        this.cancelPlaceReadiness("interrupt");
         this.interruptActive("experiment-command", false);
         this.ui.setState({ preventStemOverlaps: command.enabled, viewMenuOpen: false });
         this.ui.setStatus(command.enabled
@@ -871,6 +989,7 @@ export class IkebanaApp {
         break;
       }
       case "select-material": {
+        this.cancelPlaceReadiness("interrupt");
         this.interruptActive("view-command");
         this.ui.setState({
           selectedMaterialId: command.materialId,
@@ -882,6 +1001,7 @@ export class IkebanaApp {
         break;
       }
       case "set-bend-variant": {
+        this.cancelPlaceReadiness("interrupt");
         const transactionActive = this.coordinator.getDebugState().active !== null;
         // Cancel while bend-stations recording is still suppressed, then hide
         // station controls before the coordinator enters touch behavior.
@@ -923,6 +1043,7 @@ export class IkebanaApp {
         break;
       }
       case "set-experiment-panel": {
+        this.cancelPlaceReadiness("interrupt");
         this.interruptActive("experiment-command");
         this.ui.setExperimentPanelOpen(command.open);
         break;
@@ -932,11 +1053,42 @@ export class IkebanaApp {
         this.beginMaterialDrag(command, sourceEvent);
         break;
       }
+      case "arm-material-pointer": {
+        if (!this.config.placeTap || !(sourceEvent instanceof PointerEvent)) return;
+        if (this.gesture || this.placeArm || this.coordinator.getDebugState().posture !== "arrange") return;
+        const capture = this.materialCaptureElement(sourceEvent)
+          ?? this.ui.root.querySelector<HTMLElement>("[data-material-id]");
+        if (!capture) return;
+        this.placeArm = {
+          pointerId: command.pointerId,
+          origin: "card",
+          materialId: command.materialId,
+          x: command.clientX,
+          y: command.clientY,
+          capture,
+          exceeded: false,
+          canvasSize: this.currentCanvasSize(),
+          projection: this.currentProjection(),
+        };
+        // Capture before the 8px decision. Otherwise the browser can take the
+        // touch for scrolling and cancel the drag that follows.
+        this.capturePointer(capture, command.pointerId);
+        break;
+      }
+      case "cancel-place": {
+        this.cancelPlaceReadiness("cancel");
+        break;
+      }
       case "activate-material": {
+        const ordinalBeforeKeyboard = this.coordinator.getDebugState().successfulPlantOrdinal;
         this.activateMaterial(command.materialId);
+        if (this.coordinator.getDebugState().successfulPlantOrdinal !== ordinalBeforeKeyboard) {
+          this.endPlaceReadiness();
+        }
         break;
       }
       case "export-telemetry": {
+        this.cancelPlaceReadiness("interrupt");
         // Export is persistent chrome, exactly like the other experiment-panel
         // commands: it cancels any active transaction first (which resolves
         // that acquisition as "cancelled", never leaving it as a silent
@@ -951,6 +1103,7 @@ export class IkebanaApp {
   private beginMaterialDrag(
     command: Extract<UICommand, { kind: "begin-material-drag" }>,
     event: PointerEvent,
+    captureOverride?: HTMLElement,
   ) {
     if (this.gesture || this.coordinator.getDebugState().posture !== "arrange") return;
     const prepared = this.prepareMaterialInsertion(command.materialId);
@@ -963,7 +1116,7 @@ export class IkebanaApp {
     };
     const intersection = this.studio.intersectKenzanPlane(command.clientX, command.clientY);
     const input = placementInputFromIntersection(intersection);
-    const capture = this.materialCaptureElement(event);
+    const capture = captureOverride ?? this.materialCaptureElement(event);
     if (!capture) return;
     const gesture: InsertGesture = {
       kind: "insert",
@@ -1000,7 +1153,7 @@ export class IkebanaApp {
   }
 
   private activateMaterial(materialId: string) {
-    if (this.gesture || this.coordinator.getDebugState().posture !== "arrange") return;
+    if (this.gesture || this.placeArm || this.coordinator.getDebugState().posture !== "arrange") return;
     const prepared = this.prepareMaterialInsertion(materialId);
     if (!prepared) return;
     const reservation = {
@@ -1049,11 +1202,35 @@ export class IkebanaApp {
   }
 
   private onCanvasPointerDown = (event: PointerEvent) => {
+    this.handleCanvasPointerDown(event);
+  };
+
+  private handleCanvasPointerDown(event: PointerEvent) {
     if (event.button !== 0) return;
     event.preventDefault();
     this.sound.unlock();
     if (this.gesture) {
       if (this.gesture.kind === "camera") this.addCameraPointer(event);
+      return;
+    }
+    // A held card/scene tap has the same single-owner rule as an edit.
+    if (this.placeArm) return;
+    if (this.placeReadyMaterialId && this.config.placeTap) {
+      // A press that is only closing a menu must not seat the ready cutting.
+      if (this.chromeDismissPress || this.coordinator.getDebugState().posture !== "arrange" || this.workingSession) return;
+      event.preventDefault();
+      this.placeArm = {
+        pointerId: event.pointerId,
+        origin: "scene",
+        materialId: this.placeReadyMaterialId,
+        x: event.clientX,
+        y: event.clientY,
+        capture: this.canvas,
+        exceeded: false,
+        canvasSize: this.currentCanvasSize(),
+        projection: this.currentProjection(),
+      };
+      this.capturePointer(this.canvas, event.pointerId);
       return;
     }
     this.clearHover();
@@ -1141,11 +1318,14 @@ export class IkebanaApp {
     const graph = this.coordinator.getDocumentSnapshot().plants.get(candidate.plantId);
     const branch = graph?.branches.get(candidate.branchId);
     if (!graph || !branch?.active) return;
-    // A petal press should turn around the supporting stalk from the part the
-    // player actually touched, not from its often tiny hidden attachment lever.
-    const surfaceGrip = candidate.kind === "organ" && candidate.aimPoint
+    // A visible organ or branch-bound blade supplies the part actually touched,
+    // not its hidden attachment/centreline lever. Ordinary tubes omit aimPoint.
+    const surfaceGrip = candidate.aimPoint
       ? Object.freeze({ ...candidate.aimPoint }) : undefined;
     const grabbedPoint = surfaceGrip ?? sampleBranch(branch, candidate.materialDistance).position;
+    const headTilt = surfaceGrip && singleFlowerHead(graph, branch.id, candidate.organId)
+      ? { frame: captureFlowerHeadTilt(this.studio.getCameraAxes()), startClientX: event.clientX, startClientY: event.clientY }
+      : undefined;
     const plane = this.studio.cameraFacingPlaneThrough(grabbedPoint);
     const startPlaneHit = this.studio.intersectClientPlane(event.clientX, event.clientY, plane) ?? grabbedPoint;
     const gesture: AimGesture = {
@@ -1156,6 +1336,7 @@ export class IkebanaApp {
       plane,
       startPlaneHit,
       grabbedPoint,
+      headTilt,
     };
     this.assignSelectedBranch(branch.id);
     this.setGesture(gesture);
@@ -1166,13 +1347,13 @@ export class IkebanaApp {
         plantId: graph.id,
         branchId: branch.id,
         grabbedMaterialDistance: candidate.materialDistance,
-        context: Object.freeze({ surfaceGrip }),
+        context: Object.freeze({ surfaceGrip, headTilt: Boolean(headTilt) }),
       },
       { target: grabbedPoint },
     );
     if (!result.ok) return this.abortFailedBegin(gesture);
     this.recordHit(event, "aim");
-    this.ui.setStatus("Shape the line.");
+    this.ui.setStatus(headTilt ? "Turn the flower face." : "Shape the line.");
   }
 
   private assignSelectedBranch(branchId: string | null) {
@@ -1344,6 +1525,31 @@ export class IkebanaApp {
   };
 
   private handlePointerMove(event: PointerEvent) {
+    const arm = this.placeArm;
+    if (arm && arm.pointerId === event.pointerId && !this.gesture) {
+      if (event.pointerType === "mouse" && (event.buttons & 1) === 0) {
+        this.takePlaceArm(true);
+        return;
+      }
+      if (placePointerKind(placePointerTravel(arm.x, arm.y, event.clientX, event.clientY)) === "drag") {
+        if (arm.origin === "scene") {
+          arm.exceeded = true;
+          return;
+        }
+        // Keep the capture. Releasing it here would cancel the drag that is
+        // about to acquire the same pointer.
+        this.placeArm = null;
+        this.endPlaceReadiness();
+        this.beginMaterialDrag({
+          kind: "begin-material-drag",
+          materialId: arm.materialId,
+          pointerId: arm.pointerId,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        }, event, arm.capture);
+      }
+      return;
+    }
     const gesture = this.gesture;
     if (!gesture) { this.updateHover(event); return; }
     if (!this.gestureOwnsPointer(event.pointerId)) return;
@@ -1368,6 +1574,14 @@ export class IkebanaApp {
       gesture.pendingVisible = intersection !== null;
       this.coordinator.updateInsert(event.pointerId, placementInputFromIntersection(intersection));
       this.ui.setStatus(this.placementStatus(Boolean(intersection?.valid)));
+      return;
+    }
+    if (gesture.kind === "aim" && gesture.headTilt) {
+      const { frame, startClientX, startClientY } = gesture.headTilt;
+      this.coordinator.updateAim(event.pointerId, {
+        target: gesture.grabbedPoint,
+        headRotation: flowerHeadTiltRotation(frame, event.clientX - startClientX, event.clientY - startClientY),
+      });
       return;
     }
     if (gesture.kind === "aim" || gesture.kind === "bend") {
@@ -1459,13 +1673,14 @@ export class IkebanaApp {
    * delivered its resize events. Layout is current here, so compare directly:
    * a changed canvas cancels instead of committing a preview made on the old one.
    */
-  private canvasChangedSinceAcquisition() {
-    const acquired = this.gestureCanvasSize;
+  private canvasChangedSinceAcquisition(
+    acquired = this.gestureCanvasSize,
+    projection = this.gestureProjection,
+  ) {
     const now = this.currentCanvasSize();
     if (acquired && now && (now.width !== acquired.width || now.height !== acquired.height)) return true;
     // Defence in depth: any projection change (for example an inset-only
     // remeasure) since acquisition also refuses to commit.
-    const projection = this.gestureProjection;
     const current = this.currentProjection();
     return Boolean(projection && current && (
       Math.abs(projection.viewportHeight - current.viewportHeight) > 1e-6
@@ -1473,6 +1688,38 @@ export class IkebanaApp {
   }
 
   private handlePointerUp(event: PointerEvent) {
+    if (this.placeArm && this.placeArm.pointerId === event.pointerId && !this.gesture) {
+      const arm = this.takePlaceArm(true);
+      if (!arm) return;
+      event.preventDefault();
+      if (this.canvasChangedSinceAcquisition(arm.canvasSize, arm.projection)) {
+        this.cancelPlaceReadiness("resize");
+        this.scheduleStageMeasure();
+        return;
+      }
+      // Some input providers deliver down/up without the intermediate move.
+      // Such a release still must not turn a drag into a placement tap.
+      const travelled = placePointerKind(placePointerTravel(arm.x, arm.y, event.clientX, event.clientY)) === "drag";
+      if (arm.origin === "scene") {
+        if (arm.exceeded || travelled) {
+          this.ui.setStatus("Tap inside the pins to place.");
+          return;
+        }
+        this.commitPlaceTap(arm.materialId, event.pointerId, event.clientX, event.clientY);
+        return;
+      }
+      if (travelled) return;
+      if (this.placeReadyMaterialId === arm.materialId) {
+        this.cancelPlaceReadiness("card");
+        return;
+      }
+      this.placeReadyMaterialId = arm.materialId;
+      this.ui.setState({ placeReady: true });
+      this.ui.setStatus("Tap inside the pins to place.");
+      if (typeof this.ui.focusSourceCard === "function") this.ui.focusSourceCard();
+      this.syncPlantingCue();
+      return;
+    }
     const gesture = this.gesture;
     if (!gesture) return;
     if (gesture.kind === "camera") {
@@ -1551,35 +1798,78 @@ export class IkebanaApp {
   }
 
   private onPointerCancel = (event: PointerEvent) => {
+    this.handlePointerCancel(event);
+  };
+
+  private handlePointerCancel(event: PointerEvent) {
+    if (this.placeArm?.pointerId === event.pointerId) {
+      const origin = this.placeArm.origin;
+      this.takePlaceArm(true);
+      if (origin === "scene" && this.placeReadyMaterialId) this.ui.setStatus("Tap inside the pins to place.");
+      return;
+    }
     if (!this.gestureOwnsPointer(event.pointerId)) return;
     this.interruptActive("pointer-cancel");
-  };
+  }
 
   private onLostPointerCapture = (event: Event) => {
-    if (!(event instanceof PointerEvent) || !this.gestureOwnsPointer(event.pointerId)) return;
-    this.interruptActive("lost-capture");
+    this.handleLostPointerCapture(event);
   };
+
+  private handleLostPointerCapture(event: Event) {
+    if (!(event instanceof PointerEvent)) return;
+    if (this.placeArm?.pointerId === event.pointerId) {
+      this.takePlaceArm(false);
+      return;
+    }
+    if (!this.gestureOwnsPointer(event.pointerId)) return;
+    this.interruptActive("lost-capture");
+  }
 
   private onVisibilityChange = () => {
-    if (document.hidden) {
-      this.interruptActive("visibility-hidden", false);
-      // Not the craft-critical commit path: safe to flush synchronously
-      // here so a buffered telemetry write isn't lost if the tab is closed.
-      this.telemetryStore.flush();
-    }
+    if (typeof document !== "undefined" && document.hidden) this.notePageHidden();
   };
 
+  private notePageHidden() {
+    this.cancelPlaceReadiness("visibility");
+    this.interruptActive("visibility-hidden", false);
+    // Not the craft-critical commit path: safe to flush synchronously
+    // here so a buffered telemetry write isn't lost if the tab is closed.
+    this.telemetryStore?.flush();
+  }
+
   private onPageHide = () => {
+    this.cancelPlaceReadiness("visibility");
     this.interruptActive("system-interruption", false);
     this.telemetryStore.flush();
   };
   private onViewportChanged = () => {
-    this.interruptActive("system-interruption", false);
-    this.scheduleStageMeasure();
+    this.noteViewportChange();
   };
   private onVisualViewportChanged = () => {
+    this.noteViewportChange();
+  };
+  private noteViewportChange() {
+    this.cancelPlaceReadiness("resize");
     this.interruptActive("system-interruption", false);
     this.scheduleStageMeasure();
+  }
+  private handleWindowBlur() {
+    if (!this.config?.placeTap) return;
+    this.cancelPlaceReadiness("blur");
+  }
+  private onWindowPointerDown = () => {
+    if (!this.config.placeTap) return;
+    const state = this.ui.state;
+    this.chromeDismissPress = Boolean(
+      state.viewMenuOpen || state.materialMenuOpen || state.editMenuOpen || state.moreMenuOpen || state.experimentPanelOpen,
+    );
+  };
+  private onDialogClose = (event: Event) => {
+    if (!(event.target instanceof HTMLDialogElement)) return;
+    if (document.querySelector("dialog[open]")) return;
+    this.suppressPlantingCue = false;
+    this.syncPlantingCue();
   };
 
   /**
@@ -1609,17 +1899,21 @@ export class IkebanaApp {
     const canvas = this.canvas.getBoundingClientRect();
     const inset = Math.max(0, chrome ? chrome.getBoundingClientRect().bottom - canvas.top : 0);
     if (this.studio.stageTopInsetChangesProjection(inset)
-      && (this.gesture || this.coordinator.getDebugState().active)) {
+      && (this.placeArm || this.gesture || this.coordinator.getDebugState().active)) {
       this.interruptActive("system-interruption", false);
     }
     this.studio.setStageTopInset(inset);
   }
 
   private onContextLost = (event: Event) => {
+    this.handleContextLost(event);
+  };
+
+  private handleContextLost(event: Event) {
     event.preventDefault();
     this.interruptActive("system-interruption", false);
     this.ui.setStatus("Keeping the arrangement safe.");
-  };
+  }
 
   private onContextRestored = () => {
     this.syncPresentation();
@@ -1821,6 +2115,9 @@ export class IkebanaApp {
   }
 
   private interruptActive(reason: CancelReason, announce = true) {
+    // Preserve idle readiness across Angles commands, but discard any held
+    // pointer before commands, graphics recovery, or projection changes.
+    this.takePlaceArm(true);
     this.clearHover();
     const gesture = this.gesture;
     if (gesture) {
@@ -1981,6 +2278,7 @@ export class IkebanaApp {
     this.ui.setState({
       canUndo: !this.workingSession && this.coordinator.canUndo(),
       canRemove: !this.workingSession && debug.posture === "arrange" && Boolean(selectedPlantId),
+      selectedCuttingName: selectedGraph ? getMaterialDefinitions().find(material => material.generator.generatorVersion === selectedGraph.generatorVersion)?.materialId.replaceAll("-", " ") ?? "cutting" : null,
       bendStationsMode: this.bendStationsMode,
       bendStationChoices: showStationChoices ? stations.map((station) => station.id) : [],
       bendStationSelected: showStationChoices && stationBranch
@@ -2021,6 +2319,87 @@ export class IkebanaApp {
       || this.ui.state.activeMaterialId !== activeMaterialId
     ) {
       this.ui.setTrayDragging(dragging, activeMaterialId);
+    }
+    this.syncPlantingCue();
+  }
+
+  /** Drag keeps the validity outline. Ready uses the stronger idle line. */
+  private syncPlantingCue() {
+    if (!this.config?.placeCue || typeof this.studio?.setPlantingCue !== "function") return;
+    const posture = this.coordinator?.getDebugState?.().posture;
+    const dragging = this.gesture?.kind === "insert";
+    const mode = this.suppressPlantingCue || this.workingSession || posture !== "arrange" || dragging
+      ? "off"
+      : this.placeReadyMaterialId
+        ? "strong"
+        : "quiet";
+    this.studio.setPlantingCue(mode);
+  }
+
+  private endPlaceReadiness() {
+    if (!this.placeReadyMaterialId && !this.ui.state?.placeReady) return;
+    this.placeReadyMaterialId = null;
+    this.ui.setState({ placeReady: false });
+    this.syncPlantingCue();
+  }
+
+  private takePlaceArm(release: boolean) {
+    const arm = this.placeArm;
+    this.placeArm = null;
+    if (release && arm) this.releasePointer(arm.capture, arm.pointerId);
+    return arm;
+  }
+
+  private cancelPlaceReadiness(reason: "escape" | "card" | "cancel" | "interrupt" | "blur" | "visibility" | "resize") {
+    this.takePlaceArm(true);
+    if (!this.placeReadyMaterialId) return;
+    this.placeReadyMaterialId = null;
+    this.ui.setState({ placeReady: false });
+    this.ui.setStatus("Placement cancelled.");
+    if (reason !== "blur" && reason !== "visibility" && typeof this.ui.focusSourceCard === "function") {
+      this.ui.focusSourceCard();
+    }
+    this.syncPlantingCue();
+  }
+
+  /**
+   * A scene tap seats through the same begin/update/release as a drag.
+   * An invalid point never opens that transaction, so the ordinal, undo
+   * checkpoint and save stay untouched and the cutting stays ready.
+   */
+  private commitPlaceTap(materialId: string, pointerId: number, clientX: number, clientY: number) {
+    const before = this.coordinator.getDebugState().successfulPlantOrdinal;
+    const intersection = this.studio.intersectKenzanPlane(clientX, clientY);
+    const input = placementInputFromIntersection(intersection);
+    if (!input.valid) {
+      this.ui.setStatus(intersection
+        ? "Outside the pins. Tap inside the outline to place."
+        : "Tap inside the outline to place.");
+      return;
+    }
+    this.beginMaterialDrag({
+      kind: "begin-material-drag",
+      materialId,
+      pointerId,
+      clientX,
+      clientY,
+    }, { target: this.canvas, preventDefault() {} } as unknown as PointerEvent, this.canvas);
+    const began = this.gesture?.kind === "insert";
+    if (began) {
+      this.handlePointerUp({
+        pointerId,
+        clientX,
+        clientY,
+        preventDefault() {},
+      } as unknown as PointerEvent);
+    }
+    if (this.coordinator.getDebugState().successfulPlantOrdinal !== before) {
+      this.endPlaceReadiness();
+      if (typeof this.ui.focusStatus === "function") this.ui.focusStatus();
+      return;
+    }
+    if (began && this.ui.state?.status !== PREVENTION_MESSAGES.insertion) {
+      this.ui.setStatus("Outside the pins. Tap inside the outline to place.");
     }
   }
 
@@ -2120,6 +2499,7 @@ export class IkebanaApp {
         this.metrics.setBendVariant(this.bendVariant);
         this.studio.clearGraphs();
         this.studio.setPendingGraph(null);
+        this.photoDraftContext++;
         this.replaceCoordinator(new Map(), 0);
         this.ui.setState({
           posture: "arrange",

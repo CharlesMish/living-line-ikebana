@@ -51,7 +51,7 @@ function setup() {
   const choice = document.element("flowering-choice");
   choice.dataset.materialChoice = "flowering-branch";
   document.matches.set("[data-material-choice]", [choice]);
-  for (const selector of ["#edit-toggle", "#edit-options", "#undo-edit", "#remove-cutting"]) {
+  for (const selector of ["#edit-toggle", "#edit-options", "#undo-edit", "#remove-cutting", "#turn-cutting-left", "#turn-cutting-right"]) {
     document.element(selector).parent = document.element(".edit-menu");
   }
   for (const selector of ["#more-toggle", "#more-options", "#garden-open", "#experiment-toggle"]) {
@@ -164,6 +164,25 @@ test("Edit shares disclosure ownership with View and Materials and returns actio
   } finally { h.close(); }
 });
 
+test("Turn controls name the selected material, stay open for repeats and respect unavailable state", () => {
+  const h = setup();
+  try {
+    h.click("#turn-cutting-left"); assert.equal(h.commands.length, 0);
+    assert.equal(h.document.element("#turn-cutting-left").disabled, true);
+    assert.equal(h.document.element("#turn-cutting-selection").textContent, "In Shape, tap a stem to select it.");
+    h.ui.setState({ canRemove: true, selectedCuttingName: "blossom spray" });
+    h.click("#edit-toggle"); h.click("#turn-cutting-left"); h.click("#turn-cutting-right");
+    assert.equal(h.ui.state.editMenuOpen, true);
+    assert.equal(h.document.element("#turn-cutting-selection").textContent, "Blossom spray");
+    assert.deepEqual(h.commands.slice(-2), [
+      { kind: "turn-cutting", direction: "left" }, { kind: "turn-cutting", direction: "right" },
+    ]);
+    h.ui.setState({ canRemove: false }); const count = h.commands.length;
+    h.click("#turn-cutting-right"); assert.equal(h.commands.length, count);
+    assert.equal(h.document.element("#turn-cutting-right").disabled, true);
+  } finally { h.close(); }
+});
+
 test("Escape, outside press and focus leaving Edit dismiss without a recovery command", () => {
   const h = setup();
   try {
@@ -192,14 +211,16 @@ test("Escape, outside press and focus leaving Edit dismiss without a recovery co
   } finally { h.close(); }
 });
 
-test("stem inspection toggle exposes scope/count and returns focus without changing camera", () => {
+test("stem inspection starts on, remains optional, and exposes scope/count without changing camera", () => {
   const h = setup();
   try {
-    assert.equal(h.document.element("#stem-overlaps-toggle").getAttribute("aria-pressed"), "false");
-    assert.equal(h.document.element("#stem-overlaps-note").hidden, true);
+    assert.equal(h.document.element("#stem-overlaps-toggle").getAttribute("aria-pressed"), "true");
+    assert.equal(h.document.element("#stem-overlaps-note").hidden, false);
     h.ui.setState({ viewMenuOpen: true });
     h.click("#stem-overlaps-toggle");
-    assert.deepEqual(h.commands, [{ kind: "set-stem-overlaps", visible: true }]);
+    assert.deepEqual(h.commands, [{ kind: "set-stem-overlaps", visible: false }]);
+    h.ui.setState({ showStemOverlaps: false });
+    assert.equal(h.document.element("#stem-overlaps-note").hidden, true);
     assert.equal(h.document.activeElement, h.document.element("#view-toggle"));
     h.ui.setState({ showStemOverlaps: true, stemOverlapCount: 2 });
     assert.equal(h.document.element("#stem-overlaps-toggle").getAttribute("aria-pressed"), "true");
@@ -222,4 +243,25 @@ test("prevention is an explicit default-off study and returns focus to View", ()
   assert.equal(h.document.element('#stem-prevention-note').hidden,false);
   assert.equal(h.document.activeElement,h.document.element('#view-toggle'));
  } finally {h.close();}
+});
+
+test("unsaved feedback outlasts hints and craft cues, and Retry is disabled for kept Garden views", () => {
+  const h = setup();
+  try {
+    const warning = h.document.element("#working-save-warning"), retry = h.document.element("#retry-working-save");
+    assert.equal(warning.hidden, true); assert.equal(retry.disabled, true);
+    h.click("#retry-working-save"); assert.equal(h.commands.length, 0);
+    h.ui.setState({ workingSavePending: true, canRetryWorkingSave: true });
+    h.ui.setStatus("Choose where to cut.");
+    h.ui.setCraftCue({ kind: "cut", title: "Tip + 1 leaf", detail: "Release to cut." });
+    assert.equal(warning.hidden, false); assert.equal(retry.disabled, false);
+    assert.equal(h.document.element("#craft-cue").hidden, false);
+    assert.match(h.document.element("#working-save-message").textContent, /Keep this page open/);
+    h.click("#retry-working-save"); assert.deepEqual(h.commands, [{ kind: "retry-working-save" }]);
+    h.ui.setState({ canRetryWorkingSave: false });
+    assert.equal(warning.hidden, false); assert.equal(retry.disabled, true);
+    assert.match(h.document.element("#working-save-message").textContent, /return to it to retry/);
+    h.click("#retry-working-save"); assert.equal(h.commands.length, 1);
+    h.ui.setState({ workingSavePending: false }); assert.equal(warning.hidden, true);
+  } finally { h.close(); }
 });

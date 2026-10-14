@@ -31,7 +31,7 @@ export type TransactionKind =
   | "camera";
 
 export type GraphCommitKind = Exclude<TransactionKind, "camera">;
-export type RecoveryOperation = "undo" | "remove";
+export type RecoveryOperation = "undo" | "remove" | "turn";
 
 export interface OperationInputMap {
   insert: unknown;
@@ -193,7 +193,7 @@ export interface CoordinatorOptions<Graph, Camera> {
   readonly onChange?: () => void;
   readonly onCancel?: (event: CancelEvent) => void;
   readonly onAutosave?: (event: AutosaveEvent<Graph, Camera>) => void;
-  /** Explicit undo/removal writes first. False or a thrown error vetoes recovery. */
+  /** Explicit undo/removal/turn writes first. False or a thrown error vetoes the command. */
   readonly beforeRecoveryCommit?: (event: RecoveryCommitEvent<Graph, Camera>) => boolean;
 }
 

@@ -1,3 +1,4 @@
+import { createLobedLeafGeometry, createLobedLeafVeinGeometry } from "./lobedLeafGeometry.ts";
 import * as THREE from "three";
 
 /**
@@ -18,7 +19,9 @@ import * as THREE from "three";
  * - Petal: use directly, without the old sphere scale/radial offset; retain each
  *   petal's rotation.z = index * 2 PI / petalCount. Salt the seed by petal index.
  *   `cupped` keeps the flowering seven-petal cup; `open-face` is a shallower
- *   five-petal dish whose local +Z follows the supporting material frame.
+ *   five-petal reference dish whose local +Z follows the supporting material
+ *   frame. Single flower now uses `open-cup`, the separately authored corolla
+ *   and rear receptacle in openCupGeometry.ts; its graph and facing stay exact.
  *   `tufted` is a shorter, rounder eight-petal cup for a flower-volume head.
  *   Instance scatter, when the appearance asks for it, varies only the rebuildable
  *   petal matrices. `bell` is one shell whose mouth continues local +Y. A short
@@ -120,8 +123,8 @@ function bladeSurface(
   return geometry;
 }
 
-export type LeafForm = "elliptic" | "lanceolate" | "pinnate";
-export type BloomForm = "cupped" | "open-face" | "tufted" | "bell";
+export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
+export type BloomForm = "cupped" | "open-face" | "open-cup" | "tufted" | "bell";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
 export type PinnateDraw = "baseline" | "tapered" | "quilled";
@@ -136,7 +139,7 @@ export interface LeafDrawOptions {
 /** Shipped frond draw when the caller does not pass an override. */
 export const ACCEPTED_PINNATE_DRAW: PinnateDraw = "tapered";
 
-/** Rebuildable bloom parts. Cupped and open-face numbers match the prior path. */
+/** Rebuildable bloom parts. Cupped and legacy open-face values stay fixed. */
 export interface BloomSurfaceProfile {
   readonly petalCount: number;
   readonly centerRadius: number;
@@ -157,6 +160,12 @@ export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
     return {
       petalCount: 5, centerRadius: 0.11, centerScaleZ: 0.36, centerZ: 0.042, centerColor: 0xc49a58,
       antherRadius: 0.022, antherRing: 0.155, antherZ: 0.05, antherCount: 12,
+    };
+  }
+  if (form === "open-cup") {
+    return {
+      petalCount: 5, centerRadius: 0.105, centerScaleZ: 0.56, centerZ: 0.05, centerColor: 0x8a623e,
+      antherRadius: 0.014, antherRing: 0.14, antherZ: 0.095, antherCount: 18,
     };
   }
   if (form === "tufted") {
@@ -550,6 +559,7 @@ function resolvedFanLeaf(form: LeafForm, draw?: LeafDrawOptions): FanLeafDraw {
  * Fan profiles reuse the elliptic grid so foliage-fan draw cost stays on the same mesh.
  */
 export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
+  if (form === "lobed") return createLobedLeafGeometry(seed);
   if (form === "pinnate") return createPinnatePinnaGeometry(seed, resolvedPinnate(draw));
   const profile = resolvedFanLeaf(form, draw);
   if (profile === "shared") {
@@ -563,6 +573,7 @@ export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?:
  * it. At its widest it is 0.0056 units, so it remains a vein rather than a stripe.
  */
 export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
+  if (form === "lobed") return createLobedLeafVeinGeometry(seed);
   if (form === "pinnate") return createPinnateCostaGeometry(seed, resolvedPinnate(draw));
   const profile = resolvedFanLeaf(form, draw);
   return bladeSurface("living-line/leaf-midrib", (t, across) => {
@@ -684,6 +695,7 @@ export function tuftInstancePose(
 }
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
+  if (form === "open-cup") throw new Error("open-cup is a complete authored corolla, not a repeated petal");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal");
   }

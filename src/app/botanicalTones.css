@@ -1,0 +1,25 @@
+.botanical-tones-dialog { width: min(54rem, calc(100vw - 1.5rem)); }
+.botanical-tones-dialog > p { line-height: 1.5; }
+.botanical-tones-dialog h2 { margin: 1.2rem 0 .6rem; font-size: 1rem; }
+.botanical-tones-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; margin-block: .75rem 1rem; }
+.botanical-tone-card { min-width: 0; padding: .7rem; border: 1px solid #d8d5c9; border-radius: .85rem; background: #f8f6ef; }
+.botanical-tone-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem .65rem; margin-bottom: .65rem; }
+.botanical-tone-heading h3 { margin: 0; font-size: .95rem; font-weight: 600; }
+.botanical-tone-count { font-size: .75rem; color: #63685a; }
+.botanical-tone-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+.botanical-tones-dialog .botanical-tone-choice { display: flex; flex-direction: column; align-items: center; justify-content: start; gap: .3rem; min-width: 0; min-height: 2.75rem; padding: .3rem .2rem .4rem; border: 1px solid #d1d2c5; border-radius: .6rem; background: #efeee5; color: #34412f; text-align: center; box-shadow: none; }
+.botanical-tones-dialog .botanical-tone-choice[aria-pressed="true"] { border-color: #526b45; outline: 1px solid #526b45; background: #e7ecdf; }
+.botanical-tones-dialog .botanical-tone-choice:focus-visible, .botanical-tones-other > summary:focus-visible { outline: 3px solid #56734b; outline-offset: 3px; }
+.botanical-tone-sample { display: block; width: min(100%, 5.25rem); height: 4.5rem; flex: none; }
+.botanical-tone-name { font-size: .82rem; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.botanical-tone-swatches { display: flex; justify-content: center; width: min(86%, 4rem); height: .45rem; gap: 1px; overflow: hidden; border: 1px solid #34412f38; border-radius: .25rem; }
+.botanical-tone-swatches > span { flex: 1; background: var(--sample-color); }
+.botanical-tone-selected { visibility: hidden; margin-top: auto; font-size: .65rem; font-weight: 600; line-height: 1.2; }
+.botanical-tone-choice[aria-pressed="true"] .botanical-tone-selected { visibility: visible; }
+.botanical-tones-dialog summary { min-height: 2.75rem; padding-block: .7rem; cursor: pointer; }
+.botanical-tones-other { border-top: 1px solid #d8d5c9; }
+@media (max-width: 680px) { .botanical-tones-grid { grid-template-columns: 1fr; } }
+@media (prefers-contrast: more) { .botanical-tone-card, .botanical-tones-dialog .botanical-tone-choice { border-color: currentColor; } }
+
+.botanical-tones-dialog .botanical-tone-choice:hover { background: #e4e8da; }
+.botanical-tones-dialog .botanical-tone-choice[aria-pressed="true"]:hover { background: #dce5d1; }

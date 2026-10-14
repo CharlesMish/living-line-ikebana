@@ -5,7 +5,7 @@ export function installStudioMenus(root: HTMLElement) {
   root.dataset.studioMenus = "true";
   const more = root.querySelector<HTMLButtonElement>("#more-toggle")!;
   more.querySelector("span")!.textContent = "Studio";
-  more.setAttribute("aria-label", "Studio — Vessel, Photograph, Garden and Guide");
+  more.setAttribute("aria-label", "Studio — Vessel, Botanical tones, Photograph, Garden and Guide");
   const hint = document.createElement("small"); hint.className = "studio-destinations";
   hint.innerHTML = "<span>Vessel ·</span> <span>Photo</span>"; more.append(hint);
   const views = root.querySelector<HTMLElement>("#view-options")!;
@@ -19,11 +19,11 @@ export function installStudioMenus(root: HTMLElement) {
   checksNote.textContent = "Inspection marks contacts. Protection can stop planting or movement.";
   views.insertBefore(checksNote, root.querySelector("#stem-overlaps-toggle"));
   const menu = root.querySelector<HTMLElement>("#more-options")!;
-  menu.setAttribute("aria-label", "Vessel, Photograph, Garden and Guide");
+  menu.setAttribute("aria-label", "Vessel, Botanical tones, Photograph, Garden and Guide");
   const vessel = root.querySelector<HTMLButtonElement>("#vessel-appearance-open")!;
   const photo = root.querySelector<HTMLButtonElement>("#photo-open")!;
   const note = document.createElement("span"); note.textContent = "Background, perch and image"; photo.append(note);
-  menu.prepend(heading("Set the scene"), vessel, photo, heading("Keep and learn"));
+  menu.prepend(heading("Set the scene"), vessel, ...(root.querySelector("#botanical-tones-open") ? [root.querySelector("#botanical-tones-open")!] : []), photo, heading("Keep and learn"));
   const layout = root.querySelector<HTMLSelectElement>("#vessel-layout")!;
   const currentLayout = layout.value;
   const options = [...layout.options];

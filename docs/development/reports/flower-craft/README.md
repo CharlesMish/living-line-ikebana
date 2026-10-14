@@ -34,8 +34,10 @@ It does not inject a graph or claim ordinary pointer placement usability.
 The exact prior preview is separately checked out and built for matched Compact
 and Blossom spray captures. The new build uses the same canonical plants and
 camera controls. The new stocks are captured from Front, three-quarter and Above,
-with close photographs, alternate tones and a reverse view after twelve explicit
-15-degree turns. Garden backup export and working reload check preserved graphs
+with 2.8× three-quarter photographs, alternate tones and a reverse view after twelve explicit
+15-degree turns. Front and Above select whole-view presets; they are not close-ups.
+Compact additionally gets 4.8× head-focused captures via ordinary Close detail
+input, using recorded framing points from the first rendered run. Garden backup export and working reload check preserved graphs
 and tones. Images are review evidence, not automatically approved pixel goldens.
 
 Run/build IDs and final verification counts are recorded on the draft integration

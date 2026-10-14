@@ -25,6 +25,20 @@ export async function checkVioletCuttings({ browser, baseURL, output,
     };
     const studio = async id => { await page.getByTestId("more-toggle").click(); await page.locator(`#${id}`).click(); };
     const view = async id => { await page.getByTestId("view-toggle").click(); await page.getByTestId(`view-${id}`).click(); };
+    // Frozen Compact seed 8278: these framing points come from the inspected
+    // 1100×850 images in run 202, not guessed material acquisition coordinates.
+    // Close detail is an ordinary photo UI operation; it changes no plant.
+    const compactDetail = async (suffix, turned = false) => {
+      const canvas = page.locator("#photo-canvas"), box = await canvas.boundingBox();
+      await page.locator("#photo-detail").click();
+      await canvas.click({ position: { x: box.width * (turned ? .59 : .45), y: box.height * .08 } });
+      await page.locator("#photo-zoom").focus(); await page.keyboard.press("End");
+      assert.equal(await page.locator("#photo-zoom").inputValue(), "4.8");
+      await capture(suffix);
+      record.detailFrames ??= [];
+      record.detailFrames.push({ suffix, framing: await page.evaluate(() =>
+        Object.fromEntries(["zoom", "horizontal", "vertical"].map(id => [id, document.querySelector(`#photo-${id}`).value]))) });
+    };
     try {
       const url = new URL(baseURL); url.searchParams.set("test", "1");
       await page.goto(url.href, { waitUntil: "networkidle" });
@@ -77,6 +91,7 @@ export async function checkVioletCuttings({ browser, baseURL, output,
         // whose Closer range is wider. Step keys use the real native control.
         for (let i = 0; i < 225; i++) await page.keyboard.press("ArrowRight");
         await capture(`photo-${look}`);
+        if (extended && material === "compact-flower") await compactDetail(`head-detail-${look}`);
         if (extended && look === "natural") {
           for (const angle of ["front", "above"]) {
             await page.locator("#photo-view").selectOption(angle);
@@ -94,7 +109,14 @@ export async function checkVioletCuttings({ browser, baseURL, output,
       await capture("rear-toned");
       if (extended) {
         await studio("photo-open"); await page.locator("#photo-tab-frame").click();
-        await capture("photo-rear"); await page.locator("#photo-return").click();
+        if (material === "compact-flower") {
+          await page.locator("#photo-view").selectOption("three-quarter");
+          await page.locator("#photo-zoom").focus(); await page.keyboard.press("Home");
+          for (let i = 0; i < 225; i++) await page.keyboard.press("ArrowRight");
+        }
+        await capture("photo-rear");
+        if (material === "compact-flower") await compactDetail("head-detail-turned", true);
+        await page.locator("#photo-return").click();
       }
       const saved = await state();
       await studio("garden-open"); await page.locator("#garden-name").fill(`${material} rendered study`);

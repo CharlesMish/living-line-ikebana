@@ -652,3 +652,13 @@ unknown materials/tones rather than discard them. Single flower moves into More
 cuttings; its generator, frame, direct-head control and saved graphs stay intact.
 Nodding v2's thinner, lobed bell is appearance only; v1's arrays and both versions'
 canonical graph, acquisition envelope and shaping remain unchanged.
+
+### Starry pincushion — additive stock study
+
+`starry-pincushion-v1` adds three independently supported heads at different
+heights and two small divided leaves. Each head is one existing bloom organ;
+its tiny florets and pointed bracts are derived visual parts, not independently
+editable graph records. Cutting above the middle arm retains both lower heads.
+The stock uses existing Aim, Bend, Prune, insertion, Undo and persistence laws.
+Its tone recipes do not change geometry or targeting. Existing generator
+versions, canonical fixtures and historical profile meanings remain frozen.

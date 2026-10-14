@@ -25,6 +25,8 @@ export const BOTANICAL_FAMILIES = [
     tone("lavender", "Pale lavender", { bloom: 0xc1a6df }), tone("amethyst", "Amethyst", { bloom: 0x8561b1 })] },
   { id: "indigo-spire", label: "Indigo spire", versions: ["indigo-spire-v1"], tones: [natural,
     tone("blue", "Blue dusk", { bloom: 0x657dba }), tone("lilac", "Silver lilac", { bloom: 0xafa0c9 })] },
+  { id: "starry-pincushion", label: "Starry pincushion", versions: ["starry-pincushion-v1"], tones: [natural,
+    tone("plum", "Muted plum", { bloom: 0xbb8fa9 }), tone("green", "Pale green", { bloom: 0xd1dfb6 })] },
   { id: "compact-flower", label: "Compact flower", versions: ["compact-flower-v1"], tones: [natural,
     tone("ivory", "Warm ivory", { bloom: 0xe7d8b7 }), tone("plum", "Muted plum", { bloom: 0x98708e })] },
   { id: "flower-volume", label: "Flower volume", versions: ["flower-volume-v1"], more: true, tones: [natural,

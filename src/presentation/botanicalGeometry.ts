@@ -125,7 +125,7 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
-export type BloomForm = "cupped" | "open-face" | "open-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret";
+export type BloomForm = "cupped" | "open-face" | "open-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret" | "starry-head";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
 export type PinnateDraw = "baseline" | "tapered" | "quilled";
@@ -154,7 +154,7 @@ export interface BloomSurfaceProfile {
 }
 
 export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
-  if (form === "violet-floret" || form === "indigo-floret") throw new Error("violet florets are complete authored corollas, not radial petal profiles");
+  if (form === "violet-floret" || form === "indigo-floret" || form === "starry-head") throw new Error("this bloom uses a complete authored head, not radial petal profiles");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal profile");
   }
@@ -697,7 +697,7 @@ export function tuftInstancePose(
 }
 
 export function createBloomPetalGeometry(seed = 0, form: BloomForm = "cupped"): THREE.BufferGeometry {
-  if (form === "violet-floret" || form === "indigo-floret") throw new Error("violet florets are complete authored corollas, not repeated petals");
+  if (form === "violet-floret" || form === "indigo-floret" || form === "starry-head") throw new Error("this bloom uses a complete authored head, not repeated petals");
   if (form === "open-cup") throw new Error("open-cup is a complete authored corolla, not a repeated petal");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal");

@@ -198,12 +198,20 @@ const indigoSpire: MaterialAppearance = Object.freeze({
     hitRadius: 0.56, hitCenterY: 0.5 }),
   bloom: Object.freeze({ form: "indigo-floret", color: 0x6655a6, roughness: 0.87, hitRadius: 0.32, hitCenterY: 0.17 }),
 });
+const starryPincushion: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x65775a, lateral: 0x718264, twig: 0x718264, pedicel: 0x7a8b6c, petiole: 0x718264 }),
+  stemRoughness: 0.84,
+  leaf: Object.freeze({ form: "lobed", color: 0x5e7453, veinColor: 0x9da982, roughness: 0.81,
+    hitRadius: 0, hitCenterY: 0, surfacePicking: true }),
+  bloom: Object.freeze({ form: "starry-head", color: 0xf1ead5, roughness: 0.86, hitRadius: 0.36 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
   "lobed-leaf-v1": lobedLeaf,
   "violet-sprig-v1": violetSprig,
   "indigo-spire-v1": indigoSpire,
+  "starry-pincushion-v1": starryPincushion,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,

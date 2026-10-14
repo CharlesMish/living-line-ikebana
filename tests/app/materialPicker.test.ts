@@ -16,7 +16,7 @@ test("insertion bindings stay on one source card; palette choices cannot insert"
   assert.deepEqual(choiceIds, [
     "flowering-branch", "reed", "arching-trailer", "foliage-fan",
     "blossom-spray", "nodding-flower", "berry-twig", "fern-frond", "compact-flower",
-    "lobed-leaf", "broad-blade", "violet-sprig", "indigo-spire", "single-flower", "bare-branch", "leafy-shoot", "flower-volume",
+    "lobed-leaf", "broad-blade", "violet-sprig", "indigo-spire", "starry-pincushion", "single-flower", "bare-branch", "leafy-shoot", "flower-volume",
   ]);
 
   const optionsBlock = html.slice(html.indexOf('id="material-options"'), html.indexOf("</nav>", html.indexOf('id="material-options"')));
@@ -58,7 +58,7 @@ test("Single flower remains available with its source template under More cuttin
   const more = html.slice(start, html.indexOf("</details>", start));
   assert.match(more, /data-material-choice="single-flower"/);
   assert.match(html, /id="material-template-single-flower"/);
-  for (const id of ["violet-sprig", "indigo-spire"]) {
+  for (const id of ["violet-sprig", "indigo-spire", "starry-pincushion"]) {
     assert.ok(html.indexOf(`data-material-choice="${id}"`) < start);
     const templateStart = html.indexOf(`id="material-template-${id}"`);
     const template = html.slice(templateStart, html.indexOf("</template>", templateStart));

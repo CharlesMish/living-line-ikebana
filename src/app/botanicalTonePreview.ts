@@ -37,7 +37,7 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
   const wood = ["flowering-branch", "bare-branch", "berry-twig", "lobed-leaf"].includes(familyId);
   const parts: Part[] = [{ label: wood ? "Wood" : "Stem", color: stem }];
   const leafy = !["bare-branch", "berry-twig", "blossom-spray"].includes(familyId);
-  const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower", "violet-sprig", "indigo-spire"].includes(familyId);
+  const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower", "violet-sprig", "indigo-spire", "starry-pincushion"].includes(familyId);
   if (leafy) parts.push({ label: "Leaves", color: leaf });
   if (flowering) parts.push({ label: "Flowers", color: bloom });
   if (familyId === "flowering-branch") parts.push({ label: "Buds", color: bud });
@@ -70,6 +70,12 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
       drawing = path("M41 66 Q38 46 42 23", stem, 1.6) + path("M40 49 L24 39 L17 27 M41 37 L58 32 L66 19 M42 27 L34 13", lateral, 1.2) + blade(40, 55, -55, .4) + blade(40, 45, 55, .35)
         + flower(17, 26, .5) + flower(26, 32, .5) + flower(57, 30, .45) + flower(66, 18, .45) + flower(34, 12, .45) + flower(45, 19, .4);
       break;
+    case "starry-pincushion": {
+      const star = (x: number, y: number) => `<g transform="translate(${x} ${y})">${Array.from({ length: 10 }, (_, i) => `<path d="M-1 0 Q-3 -5 0 -10 Q3 -5 1 0Z" transform="rotate(${i * 36})" fill="${bloom}" stroke="${leaf}" stroke-width=".35"/>`).join("")}<circle r="4.2" fill="${bloom}" stroke="${leaf}" stroke-width="1"/><circle cx="-1.5" cy="-1" r=".8" fill="${leaf}"/><circle cx="1.5" cy="1" r=".8" fill="${leaf}"/></g>`;
+      drawing = path("M41 66 Q37 45 41 17 M40 48 Q22 43 19 31 M40 35 Q55 33 61 22", stem, 1.5)
+        + blade(39, 55, -50, .4) + blade(40, 43, 45, .35) + star(19, 29) + star(61, 20) + star(41, 13);
+      break;
+    }
     case "indigo-spire":
       drawing = path("M41 67 L41 9", stem, 1.7) + blade(41, 54, -60, .5) + blade(41, 54, 60, .5);
       for (let tier = 0; tier < 4; tier++) {

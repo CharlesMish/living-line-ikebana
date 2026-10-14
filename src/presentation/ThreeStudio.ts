@@ -1,3 +1,4 @@
+import { createStarryHeadGeometry } from "./starryHeadGeometry.ts";
 import { createVioletFloretGeometry, createIndigoFloretGeometry } from "./violetBloomGeometry.ts";
 import { applyPhotoLighting, disposePhotoLighting, validatePhotoLighting, type PhotoLightRig, type PhotoLightingId } from "./photoLighting.ts";
 import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
@@ -979,7 +980,16 @@ export class ThreeStudio {
       const bellPalette = bloom.form === "bell" && originalBloom.collarColor !== undefined
         ? { petal: originalBloom.color, collar: originalBloom.collarColor } : undefined;
       const petalMaterial = bodyMaterial(bellPalette ? 0xffffff : bloom.color, bloom.roughness, true, next => bellPalette ? 0xffffff : next.bloom.color);
-      if (bloom.form === "violet-floret" || bloom.form === "indigo-floret") {
+      if (bloom.form === "starry-head") {
+        const head = new THREE.Mesh(createStarryHeadGeometry(seed), petalMaterial);
+        head.castShadow = !pending;
+        group.add(head);
+        const calyx = new THREE.Mesh(new THREE.SphereGeometry(0.062, 8, 6),
+          bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
+        calyx.scale.z = 0.45;
+        calyx.position.z = -0.015;
+        group.add(calyx);
+      } else if (bloom.form === "violet-floret" || bloom.form === "indigo-floret") {
         const violet = bloom.form === "violet-floret";
         const corolla = new THREE.Mesh(violet ? createVioletFloretGeometry(seed) : createIndigoFloretGeometry(seed), petalMaterial);
         corolla.castShadow = !pending;

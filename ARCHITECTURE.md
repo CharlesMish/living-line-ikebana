@@ -179,3 +179,11 @@ tone samples and tray silhouettes resolve by their durable generator version.
 `bellGeometry.ts` refines only the existing nodding-v2 draw while leaving its
 canonical graph and nodding-v1 arrays unchanged. Single flower remains registered
 and accessible under More cuttings. See the [candidate report](docs/development/reports/violet-cuttings/README.md).
+
+## Starry pincushion study
+
+`core/starryPincushion.ts` adds `starry-pincushion-v1`: three flower heads on
+separately prunable arms, using existing branch, bloom and leaf records.
+`presentation/starryHeadGeometry.ts` derives one merged, closed head surface
+with ten bracts and a compact floret dome. Tone recipes and tray/preview
+silhouettes are presentation only. All frozen profile definitions stay intact.

@@ -27,13 +27,13 @@ try {
   assert.ok(await page.locator('#vessel-appearance-dialog').isVisible());await page.locator('#vessel-appearance-close').click();
   assert.deepEqual(await canonical(page),before);assert.equal((await scene(page)).vessels[0].appearance.colorId,'celadon');
   await page.getByTestId('posture-step-back').click();await more(page,'photo-open');
-  await page.locator('#photo-tab-scene').click();await page.locator('#photo-backdrop').selectOption('sage');await page.locator('#photo-tab-scene').click();await page.locator('#photo-perch').selectOption('stone');
+  await page.locator('#photo-tab-scene').click();await page.locator('#photo-backdrop-choice-sage').click();await page.locator('#photo-tab-scene').click();await page.locator('#photo-perch').selectOption('stone');
   await capture(page,`${id}-sage-stone`);assert.deepEqual(await canonical(page),before);
   await page.locator('#photo-name').fill(`Synthetic ${id}`);await page.locator('#photo-keep').click();assert.match(await page.locator('#photo-message').textContent(),/kept/);
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('ikebana-integration-preview:garden-v2')));
   assert.equal(saved.entries[0].arrangement.scene.layoutId,id);assert.equal(saved.entries[0].arrangement.scene.finishId,'stoneware');
   assert.deepEqual(saved.entries[0].arrangement.plants,before.plants);
-  await page.locator('#photo-tab-scene').click();await page.locator('#photo-backdrop').selectOption('transparent');await page.locator('#photo-tab-frame').click();await page.locator('#photo-format').selectOption('portrait');await capture(page,`${id}-transparent`);
+  await page.locator('#photo-tab-scene').click();await page.locator('#photo-backdrop-choice-transparent').click();await page.locator('#photo-tab-frame').click();await page.locator('#photo-format').selectOption('portrait');await capture(page,`${id}-transparent`);
   await page.locator('#photo-close').click();
   for(let i=0;i<2;i++){await more(page,'photo-open');await page.keyboard.press('Escape');}
   assert.deepEqual(await canonical(page),before);
@@ -60,7 +60,7 @@ try {
  result.checks.push('legacy read has no eager rewrite, defaults Original/Sand/Glaze');
  await more(page,'vessel-appearance-open');await page.locator('#vessel-layout').selectOption('vessel-pair');await page.locator('#vessel-color').selectOption('charcoal');await page.locator('#vessel-finish').selectOption('stoneware');await page.locator('#vessel-appearance-close').click();
  const workBefore=await canonical(page);const stored=await page.evaluate(()=>localStorage.getItem('ikebana-web-alpha:studio-v2'));assert.deepEqual(JSON.parse(stored).plants,workBefore.plants);
- await page.getByTestId('posture-step-back').click();await more(page,'photo-open');await page.locator('#photo-tab-scene').click();await page.locator('#photo-backdrop').selectOption('dusk');await page.locator('#photo-tab-scene').click();await page.locator('#photo-perch').selectOption('bench');await page.locator('#photo-tab-frame').click();await page.locator('#photo-view').selectOption('three-quarter');await page.locator('#photo-tab-frame').click();await page.locator('#photo-format').selectOption('square');
+ await page.getByTestId('posture-step-back').click();await more(page,'photo-open');await page.locator('#photo-tab-scene').click();await page.locator('#photo-backdrop-choice-dusk').click();await page.locator('#photo-tab-scene').click();await page.locator('#photo-perch').selectOption('bench');await page.locator('#photo-tab-frame').click();await page.locator('#photo-view').selectOption('three-quarter');await page.locator('#photo-tab-frame').click();await page.locator('#photo-format').selectOption('square');
  await capture(page,'pair-dusk-bench');await page.locator('#photo-name').fill('Portable pair');await page.locator('#photo-keep').click();
  const kept=await page.evaluate(()=>JSON.parse(localStorage.getItem('ikebana-web-alpha:garden-v2')));assert.equal(kept.entries.length,2);
  await page.locator('#photo-close').click();await more(page,'garden-open');

@@ -322,6 +322,30 @@ test("return to arranging remembers photo choices but reopens the latest plants,
   } finally { h.close(); }
 });
 
+test("visual backdrop choices start with the working scene, preserve a customized draft, and reset explicitly to the latest bowl", () => {
+  const h = setup({ ...DEFAULT_SCENE, backdropId: "hills" });
+  try {
+    assert.equal(h.find("photo-backdrop-choice-hills").getAttribute("aria-pressed"), "true");
+    assert.equal(h.find("photo-backdrop").value, "hills");
+    h.click("photo-backdrop-choice-clay");
+    assert.equal(h.find("photo-backdrop").value, "clay");
+    assert.equal(h.find("photo-backdrop-choice-clay").getAttribute("aria-pressed"), "true");
+    assert.equal(h.find("photo-backdrop-choice-hills").getAttribute("aria-pressed"), "false");
+    h.click("photo-return");
+    const latest = createWorkbenchFixture("mixed", 8278, 2); latest.scene = { ...DEFAULT_SCENE, backdropId: "garden" };
+    h.snapshot = latest; h.click("photo-open");
+    assert.equal(h.find("photo-backdrop").value, "clay", "changing arranging backdrop cannot replace an existing photo setup");
+    h.click("photo-reset-setup");
+    assert.equal(h.find("photo-backdrop").value, "garden");
+    assert.equal(h.find("photo-backdrop-choice-garden").getAttribute("aria-pressed"), "true");
+    h.click("photo-backdrop-choice-transparent");
+    assert.equal(h.find("photo-perch").disabled, true);
+    h.click("photo-return"); h.context = 1; h.click("photo-open");
+    assert.equal(h.find("photo-backdrop").value, "garden", "a new working bowl starts from its scene rather than the old draft");
+    assert.equal(h.find("photo-perch").disabled, false); assert.equal(h.saves, 0);
+  } finally { h.close(); }
+});
+
 test("read-only Garden photographs neither receive nor overwrite the working bowl setup", () => {
   const h = setup();
   try {

@@ -40,14 +40,14 @@ try {
  };
  await capture('paper-ground-clean');await page.screenshot({path:`${dir}/photo-controls-desktop.png`});
  await photoTab('scene');await page.locator('#photo-perch').selectOption('stone');await capture('paper-stone');
- await photoTab('scene');await page.locator('#photo-backdrop').selectOption('sage');await capture('sage-stone');
- await photoTab('scene');await page.locator('#photo-backdrop').selectOption('dusk');await photoTab('scene');await page.locator('#photo-perch').selectOption('bench');await photoTab('frame');await page.locator('#photo-view').selectOption('three-quarter');await set('zoom','1.25');await capture('dusk-bench');
+ await photoTab('scene');await page.locator('#photo-backdrop-choice-sage').click();await capture('sage-stone');
+ await photoTab('scene');await page.locator('#photo-backdrop-choice-dusk').click();await photoTab('scene');await page.locator('#photo-perch').selectOption('bench');await photoTab('frame');await page.locator('#photo-view').selectOption('three-quarter');await set('zoom','1.25');await capture('dusk-bench');
  await photoTab('frame');await page.locator('#photo-format').selectOption('portrait');await capture('portrait-dusk');
- await photoTab('scene');await page.locator('#photo-perch').selectOption('plinth');for(const backdrop of ['mist','clay','ink']){await photoTab('scene');await page.locator('#photo-backdrop').selectOption(backdrop);await capture(`${backdrop}-plinth`);}
- await photoTab('scene');await page.locator('#photo-backdrop').selectOption('transparent');await capture('portrait-transparent');
+ await photoTab('scene');await page.locator('#photo-perch').selectOption('plinth');for(const backdrop of ['mist','clay','ink']){await photoTab('scene');await page.locator(`#photo-backdrop-choice-${backdrop}`).click();await capture(`${backdrop}-plinth`);}
+ await photoTab('scene');await page.locator('#photo-backdrop-choice-transparent').click();await capture('portrait-transparent');
  assert.equal(await page.locator('#photo-perch').isEnabled(),false);
  await photoTab('frame');await page.locator('#photo-format').selectOption('square');await capture('square-transparent');
- await photoTab('frame');await page.locator('#photo-format').selectOption('landscape');await photoTab('scene');await page.locator('#photo-backdrop').selectOption('paper');await photoTab('scene');await page.locator('#photo-perch').selectOption('ground');await photoTab('frame');await page.locator('#photo-view').selectOption('front');await set('zoom','1.8');
+ await photoTab('frame');await page.locator('#photo-format').selectOption('landscape');await photoTab('scene');await page.locator('#photo-backdrop-choice-paper').click();await photoTab('scene');await page.locator('#photo-perch').selectOption('ground');await photoTab('frame');await page.locator('#photo-view').selectOption('front');await set('zoom','1.8');
  await capture('fiber-baseline');await photoTab('scene');await page.locator('#photo-fibers').check();await capture('fiber-candidate');await photoTab('scene');await page.locator('#photo-fibers').uncheck();await capture('fiber-restored');
  const beforeKeep=await page.evaluate(()=>({state:window.__IKEBANA_TEST__.getState(),audit:window.__IKEBANA_TEST__.getAutosaveAudit(),storage:localStorage.getItem('ikebana-web-alpha:workbench-studio-v2'),legacyStorage:localStorage.getItem('ikebana-web-alpha:workbench-studio-v1')}));
  assert.equal(beforeKeep.state.canonicalHash,initial.state.canonicalHash);assert.equal(beforeKeep.state.cameraHash,initial.state.cameraHash);assert.deepEqual(beforeKeep.audit,initial.audit);assert.equal(beforeKeep.storage,initial.storage);assert.equal(beforeKeep.legacyStorage,initial.legacyStorage);

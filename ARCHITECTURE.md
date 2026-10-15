@@ -174,6 +174,26 @@ planting coordinates do not depend on these presentation controls.
 See [the photo-workflow report](docs/development/reports/photo-workflow/README.md)
 for the combined evidence and remaining visual acceptance.
 
+## Visiting a kept collection
+
+`GardenVisitUI` owns a disposable modal and explicit reference choices through
+`GardenDisplayStore`. It delegates working-copy replacement to the existing
+Garden UI rather than writing working state itself. The separate display key
+is stale-guarded and never changes the Garden backup schema.
+
+`GardenVisitStudio` owns one renderer and one shared room for three saved
+arrangements. `ThreeStudio.createDisplayGroup` uses the established vessel and
+botanical builders through a canvas-free derivation path: no extra WebGL contexts,
+observers, camera commands or input adapters. Each group owns independent materials
+and textures, even if multiple entries contain the same plant IDs. Visible bounds
+allocate display spacing; no graph is scaled, rerolled or edited. Covers become
+unlit textures and late image loads are generation-guarded. The visitor renders
+on demand and disposes all scene resources on close.
+
+`BackdropPicker` supplies controlled, labeled visual choices to both working
+Studio and Photograph. Working choices use `changeScene` and its save-first
+boundary; photo choices remain in the existing PhotoDraftMemory ownership.
+
 ## Violet cuttings
 
 `violetSprig.ts` and `indigoSpire.ts` add two deterministic v1 stocks with multiple

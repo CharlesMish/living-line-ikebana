@@ -376,11 +376,11 @@ function createWaterlineParts() {
 }
 
 export class ThreeStudio {
-  public readonly canvas: HTMLCanvasElement;
+  public readonly canvas: HTMLCanvasElement | null;
 
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera(STUDIO_VERTICAL_FOV, 1, 0.1, 80);
-  private readonly renderer: THREE.WebGLRenderer;
+  private readonly renderer: THREE.WebGLRenderer | null;
   private readonly raycaster = new THREE.Raycaster();
   private readonly botanicalRoot = new THREE.Group();
   private readonly pendingRoot = new THREE.Group();
@@ -434,7 +434,7 @@ export class ThreeStudio {
   private renderFrame: number | null = null;
   private disposed = false;
 
-  constructor(canvas: HTMLCanvasElement, options: ThreeStudioOptions = {}) {
+  constructor(canvas: HTMLCanvasElement | null, options: ThreeStudioOptions = {}) {
     this.canvas = canvas;
     this.botanicalTones = validateBotanicalTones(options.botanicalTones);
     this.options = {
@@ -450,19 +450,19 @@ export class ThreeStudio {
       onCanvasResize: options.onCanvasResize,
       placeCue: options.placeCue === true,
     };
-    this.canvas.style.touchAction = "none";
-
-    this.renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.04;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // Null is reserved for createDisplayGroup: derive the exact same material
+    // surfaces without allocating a canvas, renderer, observer or animation loop.
+    this.renderer = canvas ? new THREE.WebGLRenderer({
+      canvas, antialias: true, alpha: true, powerPreference: "high-performance",
+    }) : null;
+    if (canvas && this.renderer) {
+      canvas.style.touchAction = "none";
+      this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+      this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      this.renderer.toneMappingExposure = 1.04;
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
 
     this.scene.add(this.botanicalRoot, this.pendingRoot);
     const studioParts = this.buildStudio();
@@ -478,6 +478,7 @@ export class ThreeStudio {
       this.cutCollar,
     );
 
+    if (!canvas) return;
     this.setPhotoAdjustments(options.photoAdjustments);
     this.setPhotoLighting(options.photoLighting);
     this.setCanonicalView("front", false);
@@ -489,43 +490,81 @@ export class ThreeStudio {
     this.requestRender();
   }
 
+  /** Derive saved geometry into a caller-owned scene. There is no WebGL context,
+   * camera command, event listener, storage access, or graph mutation here. Each
+   * call owns independent materials/maps, including when plant IDs repeat. */
+  static createDisplayGroup(graphs: Iterable<PlantGraph>, options: Pick<ThreeStudioOptions,
+    "vesselProfile" | "vesselAppearance" | "botanicalTones"> & { stemFibers?: boolean } = {}) {
+    const builder = new ThreeStudio(null, { ...options, photography: true });
+    const group = new THREE.Group();
+    group.name = "kept-arrangement";
+    try {
+      builder.setStemFibers(options.stemFibers ?? false);
+      builder.setGraphs(graphs);
+      // Hidden affordances and invisible hit proxies stay with their builder for
+      // disposal, but never participate in display bounds or ray selection.
+      for (const plant of builder.plants.values()) {
+        for (const branch of plant.branches.values()) branch.hit.visible = false;
+        for (const organ of plant.organs.values()) organ.hit.visible = false;
+      }
+      const decoration = new Set<THREE.Object3D>([builder.pendingRoot,
+        builder.baseHandle.group, builder.bendHandle.group, builder.touchCue,
+        builder.cutCollar, builder.kenzanGlow]);
+      for (const child of [...builder.scene.children]) if (!decoration.has(child)) group.add(child);
+      let disposed = false;
+      return { group, dispose() {
+        if (disposed) return;
+        disposed = true;
+        group.removeFromParent();
+        builder.scene.add(group);
+        builder.dispose();
+        group.clear();
+      } };
+    } catch (error) {
+      // Some successfully derived children may already have moved into group.
+      builder.scene.add(group); builder.dispose(); throw error;
+    }
+  }
+
   private buildStudio() {
     const profile = this.options.vesselProfile ?? ORIGINAL_VESSEL;
     this.scene.background = new THREE.Color(0xeee9dd);
     this.scene.fog = new THREE.Fog(0xeee9dd, 13, 27);
 
-    const hemisphere = new THREE.HemisphereLight(0xfffaec, 0x657064, 1.95);
-    this.scene.add(hemisphere);
-    // A steep, slightly frontal key keeps stem shadows short enough to land on
-    // the water and vessel rather than as a second silhouette on the floor.
-    const key = new THREE.DirectionalLight(0xfff3d8, 3.0);
-    key.position.set(-3.2, 12.5, 4.4);
-    key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
-    key.shadow.camera.left = -6;
-    key.shadow.camera.right = 6;
-    key.shadow.camera.top = 6;
-    key.shadow.camera.bottom = -6;
-    key.shadow.camera.near = 4;
-    key.shadow.camera.far = 24;
-    key.shadow.bias = -0.0004;
-    key.shadow.normalBias = 0.02;
-    this.scene.add(key);
+    if (this.canvas) {
+      const hemisphere = new THREE.HemisphereLight(0xfffaec, 0x657064, 1.95);
+      this.scene.add(hemisphere);
+      // A steep, slightly frontal key keeps stem shadows short enough to land on
+      // the water and vessel rather than as a second silhouette on the floor.
+      const key = new THREE.DirectionalLight(0xfff3d8, 3.0);
+      key.position.set(-3.2, 12.5, 4.4);
+      key.castShadow = true;
+      key.shadow.mapSize.set(1024, 1024);
+      key.shadow.camera.left = -6;
+      key.shadow.camera.right = 6;
+      key.shadow.camera.top = 6;
+      key.shadow.camera.bottom = -6;
+      key.shadow.camera.near = 4;
+      key.shadow.camera.far = 24;
+      key.shadow.bias = -0.0004;
+      key.shadow.normalBias = 0.02;
+      this.scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xcddce0, 0.8);
-    fill.position.set(6, 4, -5);
-    this.scene.add(fill);
-    this.photoLightRig = { hemisphere, key, fill };
+      const fill = new THREE.DirectionalLight(0xcddce0, 0.8);
+      fill.position.set(6, 4, -5);
+      this.scene.add(fill);
+      this.photoLightRig = { hemisphere, key, fill };
 
-    const floor = new THREE.Mesh(
-      new THREE.CircleGeometry(20, 96),
-      new THREE.MeshStandardMaterial({ color: 0xe3dccf, roughness: 1 }),
-    );
-    floor.name = "studio-floor";
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -0.02;
-    floor.receiveShadow = true;
-    this.scene.add(floor);
+      const floor = new THREE.Mesh(
+        new THREE.CircleGeometry(20, 96),
+        new THREE.MeshStandardMaterial({ color: 0xe3dccf, roughness: 1 }),
+      );
+      floor.name = "studio-floor";
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -0.02;
+      floor.receiveShadow = true;
+      this.scene.add(floor);
+    }
 
     for (const part of vesselParts(profile)) {
       const vessel = new THREE.Mesh(
@@ -1506,7 +1545,8 @@ export class ThreeStudio {
   }
 
   private canvasCssSize() {
-    const rect = this.canvas.getBoundingClientRect();
+    if (!this.canvas) throw new Error("A display group has no canvas.");
+    const rect = this.canvas!.getBoundingClientRect();
     return {
       width: Math.max(1, Math.round(rect.width || this.canvas.clientWidth || 1)),
       height: Math.max(1, Math.round(rect.height || this.canvas.clientHeight || 1)),
@@ -1891,7 +1931,8 @@ export class ThreeStudio {
   }
 
   projectPoint(point: Vec3): ProjectedPoint {
-    const rect = this.canvas.getBoundingClientRect();
+    if (!this.canvas) throw new Error("A display group has no canvas.");
+    const rect = this.canvas!.getBoundingClientRect();
     const projected = toThree(point).project(this.camera);
     const ray = this.rayFromClient(
       rect.left + (projected.x * 0.5 + 0.5) * rect.width,
@@ -1939,7 +1980,7 @@ export class ThreeStudio {
     clientY: number,
     acquiredRay?: SpatialRay,
   ): ProjectedBranchPoint {
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = this.canvas!.getBoundingClientRect();
     const touch = new THREE.Vector2(clientX - rect.left, clientY - rect.top);
     const pointerRay = acquiredRay ?? this.rayFromClient(clientX, clientY);
     let best: ProjectedBranchPoint | null = null;
@@ -2152,7 +2193,7 @@ export class ThreeStudio {
   }
 
   private screenProximityCandidates(clientX: number, clientY: number, ray: THREE.Ray): HitCandidate[] {
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = this.canvas!.getBoundingClientRect();
     if (clientX < rect.left || clientX > rect.left + rect.width
       || clientY < rect.top || clientY > rect.top + rect.height) return [];
     const result: HitCandidate[] = [];
@@ -2196,7 +2237,8 @@ export class ThreeStudio {
   }
 
   private setRaycaster(clientX: number, clientY: number) {
-    const rect = this.canvas.getBoundingClientRect();
+    if (!this.canvas) throw new Error("A display group has no canvas.");
+    const rect = this.canvas!.getBoundingClientRect();
     const width = Math.max(1, rect.width);
     const height = Math.max(1, rect.height);
     const pointer = new THREE.Vector2(
@@ -2209,7 +2251,7 @@ export class ThreeStudio {
   }
 
   private resize() {
-    if (this.disposed) return;
+    if (!this.canvas || !this.renderer || this.disposed) return;
     const { width, height } = this.canvasCssSize();
     const previous = this.lastCanvasSize;
     this.lastCanvasSize = { width, height };
@@ -2222,7 +2264,7 @@ export class ThreeStudio {
   }
 
   requestRender() {
-    if (this.disposed || this.renderFrame != null) return;
+    if (!this.canvas || this.disposed || this.renderFrame != null) return;
     this.renderFrame = requestAnimationFrame(() => {
       this.renderFrame = null;
       this.renderNow();
@@ -2243,12 +2285,12 @@ export class ThreeStudio {
       this.atmosphericBackdrop = { id: backdrop, texture: createAtmosphericBackdrop(backdrop) };
     }
     if (backdrop === "transparent") {
-      this.scene.background = null; this.scene.fog = null; this.renderer.setClearColor(0x000000, 0);
+      this.scene.background = null; this.scene.fog = null; this.renderer?.setClearColor(0x000000, 0);
     } else {
       const colors = PHOTO_COLORS[backdrop];
       this.scene.background = this.atmosphericBackdrop?.texture ?? new THREE.Color(colors.wall);
       this.scene.fog = new THREE.Fog(colors.wall, 13, 27);
-      floor.material.color.setHex(colors.floor); this.renderer.setClearColor(colors.wall, 1);
+      floor.material.color.setHex(colors.floor); this.renderer?.setClearColor(colors.wall, 1);
     }
     this.requestRender();
   }
@@ -2278,7 +2320,7 @@ export class ThreeStudio {
   /** Exact photo pixels, independent of device DPR. Copy immediately before
    * restoring the preview renderer/projection, including on export failure. */
   capturePhotoFrame(width: number, height: number): HTMLCanvasElement {
-    if (!this.options.photography || !Number.isInteger(width) || !Number.isInteger(height)
+    if (!this.canvas || !this.renderer || !this.options.photography || !Number.isInteger(width) || !Number.isInteger(height)
       || width < 1 || height < 1 || width > 2048 || height > 2048) throw new Error("Invalid photo size.");
     if (this.renderer.getContext().isContextLost()) throw new Error("Graphics are unavailable. Close Photograph and reopen it.");
     const size = this.renderer.getSize(new THREE.Vector2());
@@ -2306,6 +2348,9 @@ export class ThreeStudio {
       if (this.stemOverlaps) this.stemOverlaps.group.visible = false;
       this.setSelection(null);
       this.renderNow();
+      // Thumbnail capture is best-effort. A derivation-only builder has no
+      // canvas and must obey the same null-on-failure contract as a lost GPU.
+      if (!this.canvas) return null;
       const thumbnail = document.createElement("canvas");
       thumbnail.width = 360; thumbnail.height = 270;
       const context = thumbnail.getContext("2d");
@@ -2324,6 +2369,7 @@ export class ThreeStudio {
   }
 
   getRendererStats() {
+    if (!this.canvas || !this.renderer) throw new Error("A display group has no canvas or renderer.");
     this.renderNow();
     const { render, memory } = this.renderer.info;
     return { calls: render.calls, triangles: render.triangles, lines: render.lines,
@@ -2346,7 +2392,7 @@ export class ThreeStudio {
   }
 
   renderNow() {
-    if (this.disposed) return;
+    if (!this.canvas || !this.renderer || this.disposed) return;
     if (this.bendHandle.group.visible) {
       this.bendHandle.group.quaternion.copy(this.camera.quaternion);
       this.updateBendCueScale();
@@ -2357,7 +2403,7 @@ export class ThreeStudio {
       this.scene.fog.near = fog.near;
       this.scene.fog.far = fog.far;
     }
-    this.stemOverlaps?.update(this.camera, this.canvas.getBoundingClientRect().height);
+    this.stemOverlaps?.update(this.camera, this.canvas!.getBoundingClientRect().height);
     if (this.atmosphericBackdrop) fitAtmosphericBackdrop(this.atmosphericBackdrop.texture, this.camera.aspect);
     this.renderer.render(this.scene, this.camera);
     this.photoGrade?.apply(this.renderer);
@@ -2429,6 +2475,7 @@ export class ThreeStudio {
 
   /** Development-only hook used to verify the graph survives WebGL loss. */
   debugForceContextLoss() {
+    if (!this.canvas || !this.renderer) throw new Error("A display group has no canvas or renderer.");
     const supported = Boolean(this.renderer.extensions.get("WEBGL_lose_context"));
     if (!supported) return false;
     this.renderer.forceContextLoss();
@@ -2436,6 +2483,7 @@ export class ThreeStudio {
   }
 
   debugForceContextRestore() {
+    if (!this.canvas || !this.renderer) throw new Error("A display group has no canvas or renderer.");
     const supported = Boolean(this.renderer.extensions.get("WEBGL_lose_context"));
     if (!supported) return false;
     this.renderer.forceContextRestore();
@@ -2463,7 +2511,7 @@ export class ThreeStudio {
       this.scene.remove(this.photoPerch); disposePhotoPerch(this.photoPerch); this.photoPerch = null;
     }
     disposeObject(this.scene);
-    this.renderer.dispose();
+    this.renderer?.dispose();
     this.plants.clear();
     this.pendingPlant = null;
   }

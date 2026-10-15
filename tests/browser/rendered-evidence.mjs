@@ -19,6 +19,7 @@ import { checkPrintWall } from "./print-wall.mjs";
 import { checkPhotoDetail } from "./photo-detail.mjs";
 import { checkVioletCuttings } from "./violet-cuttings.mjs";
 import { checkFlowerCraft } from "./flower-craft.mjs";
+import { checkGardenVisit } from "./garden-visit.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -215,10 +216,28 @@ async function exercise(config) {
     assert.deepEqual(beforePhoto.canonical, seated.canonical);
     result.checks.push("In-bowl tone cards and a selected visual swatch render without changing botanical geometry");
 
+    await openStudio("working-backdrop-open");
+    await page.locator("#working-backdrop-dialog[open]").waitFor();
+    assert.equal(await page.locator("#working-backdrop-choice-transparent").count(), 0,
+      "Transparency remains a photograph-only option");
+    await activate(page.locator("#working-backdrop-choice-sage"));
+    assert.equal(await page.locator("#working-backdrop-choice-sage").getAttribute("aria-pressed"), "true");
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("ikebana-web-alpha:studio-v2")).scene.backdropId), "sage");
+    await capture("working-backdrop-choices");
+    await activate(page.locator("#working-backdrop-close"));
+    const afterBackdrop = await readState(page);
+    assert.deepEqual(afterBackdrop.canonical, beforePhoto.canonical);
+    assert.equal(afterBackdrop.state.cameraHash, beforePhoto.state.cameraHash);
+    assert.deepEqual(afterBackdrop.audit, beforePhoto.audit);
+    await capture("arrange-sage-backdrop");
+    result.checks.push("Visual backdrop tiles change and save the arranging scene without changing plants, camera or commit audit");
+
     await openStudio("photo-open");
     await page.locator("#photo-dialog[open]").waitFor();
     await activate(page.locator("#photo-tab-scene"));
-    await page.locator("#photo-backdrop").selectOption("hills");
+    assert.equal(await page.locator("#photo-backdrop-choice-sage").getAttribute("aria-pressed"), "true",
+      "First Photograph setup inherits the working backdrop");
+    await activate(page.locator('#photo-backdrop-choice-hills'));
     await page.locator("#photo-perch").selectOption("stone");
     await page.locator("#photo-lighting").selectOption("evening");
     await activate(page.locator("#photo-tab-frame"));
@@ -272,6 +291,9 @@ async function exercise(config) {
 
     await activate(page.locator("#photo-return"));
     await page.waitForFunction(() => !document.querySelector("#photo-dialog").open);
+    await openStudio("working-backdrop-open");
+    await activate(page.locator("#working-backdrop-choice-clay"));
+    await activate(page.locator("#working-backdrop-close"));
     await openStudio("photo-open");
     assert.equal(await page.locator("#photo-backdrop").inputValue(), "hills");
     assert.equal(await page.locator("#photo-lighting").inputValue(), "evening");
@@ -280,7 +302,7 @@ async function exercise(config) {
     const setupNote = page.locator(".photo-setup-note");
     if ((await setupNote.getAttribute("open")) === null) await activate(setupNote.locator("summary"));
     await activate(page.locator("#photo-reset-setup"));
-    assert.equal(await page.locator("#photo-backdrop").inputValue(), "paper");
+    assert.equal(await page.locator("#photo-backdrop").inputValue(), "clay");
     assert.equal(await page.locator("#photo-lighting").inputValue(), "studio");
     await activate(page.locator("#photo-close"));
     const afterPhoto = await readState(page);
@@ -288,6 +310,7 @@ async function exercise(config) {
     assert.equal(afterPhoto.state.cameraHash, beforePhoto.state.cameraHash);
     assert.deepEqual(afterPhoto.audit, beforePhoto.audit);
     result.checks.push("Photo return/resume/reset preserves exact working graph, camera, ordinal and commit autosave audit");
+    result.checks.push("Changing working backdrop preserves a customized Photograph draft; explicit Reset inherits the new working backdrop");
     result.printWall = await checkPrintWall({ page, activate, capture, readState });
     result.checks.push("Print wall preserves stored pixels and documents, displays portrait/square covers, and opens read-only originals");
     if (config.width === 390) {
@@ -315,6 +338,7 @@ try {
   record.browser = browser.version();
   for (const config of cases) await exercise(config);
   record.violetCuttings = await checkVioletCuttings({ browser, baseURL, output });
+  record.gardenVisit = await checkGardenVisit({ browser, baseURL, output, cases });
   record.flowerCraft = await checkFlowerCraft({ browser, baseURL, output });
   record.prunePreview = await runPrunePreviewComparison({ browser, baseURL, output });
   assert.equal(record.prunePreview.status, "PASS", JSON.stringify(record.prunePreview));

@@ -21,6 +21,17 @@ function surfaceZ(seed: number, x: number, y: number) {
   return .019 * (1 - normalizedY * normalizedY) - .036 * x * x
     + (noise(seed, 9) - .5) * .045 * x + .002 * Math.sin(23 * y + 2 * x);
 }
+function paperColor(seed: number, x: number, y: number, radius: number, side: number): number[] {
+  const nx = x / .26, ny = (y - .32) / .32;
+  // A dry septum reads as a largely even sheet. These broad, quiet patches
+  // suggest paper without inventing a leaf midrib or macroscopic radial veins;
+  // the real cellulose structure is much smaller than this rendered surface.
+  const patch = .012 * Math.sin(2.1 * nx + 1.3 * ny + noise(seed, 4) * Math.PI * 2)
+    * Math.cos(1.8 * ny - .7 * nx + noise(seed, 5) * Math.PI * 2)
+    + .005 * Math.sin(3.3 * nx - 2.5 * ny + noise(seed, 6) * Math.PI * 2);
+  const shade = .96 - .022 * radius * radius + patch - (side < 0 ? .012 : 0);
+  return [shade, shade * .995, shade * .97];
+}
 function finish(name: string, positions: number[], colors: number[], indices: number[]) {
   const g = new THREE.BufferGeometry(); g.name = name;
   g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
@@ -36,18 +47,14 @@ export function createSeedDiscGeometry(seed = 0): THREE.BufferGeometry {
   const faceSize = 1 + RINGS * SEGMENTS;
   for (const side of [1, -1]) {
     positions.push(0, .32, surfaceZ(seed, 0, .32) + side * HALF_THICKNESS);
-    colors.push(.98, .98, .965);
+    colors.push(...paperColor(seed, 0, .32, 0, side));
     for (let ring = 1; ring <= RINGS; ring++) {
       const r = ring / RINGS;
       for (let i = 0; i < SEGMENTS; i++) {
         const angle = i / SEGMENTS * Math.PI * 2, p = outline(seed, angle);
         const x = p.x * r, y = .32 + (p.y - .32) * r;
         positions.push(x, y, surfaceZ(seed, x, y) + side * HALF_THICKNESS);
-        // Radial fibres and a subdued darker margin, with a slightly chalkier
-        // reverse. The dry septum has shed the large seeds and outer valves.
-        const fibre = .023 * Math.sin(angle * 17 + r * 3 + noise(seed, 4));
-        const shade = .96 - r * r * .10 + fibre + (side < 0 ? -.025 : 0);
-        colors.push(shade, shade * .995, shade * .96);
+        colors.push(...paperColor(seed, x, y, r, side));
       }
     }
     const offset = side === 1 ? 0 : faceSize;
@@ -67,25 +74,10 @@ export function createSeedDiscGeometry(seed = 0): THREE.BufferGeometry {
   return finish("living-line/seed-disc", positions, colors, indices);
 }
 
-/** One owned accessory mesh: rounded fibrous rim, a
- * faint branching vein network on BOTH faces. Veins use the actual triangulated
- * membrane height so a shaded line cannot poke through the opposing surface. */
-export function createSeedDiscRimGeometry(seed = 0, membrane?: THREE.BufferGeometry): THREE.BufferGeometry {
+/** One owned accessory mesh: the rounded rim of the retained dry partition.
+ * Its interior has no raised midrib or branching leaf-vein network. */
+export function createSeedDiscRimGeometry(seed = 0): THREE.BufferGeometry {
   const positions: number[] = [], colors: number[] = [], indices: number[] = [];
-  const membraneGeometry = membrane ?? createSeedDiscGeometry(seed);
-  const p = membraneGeometry.getAttribute("position"), ix = membraneGeometry.index!;
-  const sample = (x: number, y: number): number => {
-    // First face has (2 * RINGS - 1) * SEGMENTS triangles.
-    for (let t = 0; t < (2 * RINGS - 1) * SEGMENTS * 3; t += 3) {
-      const a = ix.getX(t), b = ix.getX(t + 1), c = ix.getX(t + 2);
-      const ax = p.getX(a), ay = p.getY(a), bx = p.getX(b), by = p.getY(b), cx = p.getX(c), cy = p.getY(c);
-      const det = (by-cy)*(ax-cx)+(cx-bx)*(ay-cy);
-      const u = ((by-cy)*(x-cx)+(cx-bx)*(y-cy))/det;
-      const v = ((cy-ay)*(x-cx)+(ax-cx)*(y-cy))/det;
-      if (u >= -1e-7 && v >= -1e-7 && u + v <= 1 + 1e-7) return u*p.getZ(a)+v*p.getZ(b)+(1-u-v)*p.getZ(c)-HALF_THICKNESS;
-    }
-    throw new Error("Seed-disc vein left its partition.");
-  };
   // Closed tubular rim. A pale brown edge keeps the silver visible against paper.
   const ringSides = 5;
   for (let i = 0; i < SEGMENTS; i++) {
@@ -104,30 +96,5 @@ export function createSeedDiscRimGeometry(seed = 0, membrane?: THREE.BufferGeome
     const c = i * ringSides + (j + 1) % ringSides, d = ((i + 1) % SEGMENTS) * ringSides + (j + 1) % ringSides;
     indices.push(a, b, c, b, d, c);
   }
-  const ribbon = (from: THREE.Vector2, to: THREE.Vector2, width: number, side: number) => {
-    const offset = positions.length / 3, direction = to.clone().sub(from);
-    const across = new THREE.Vector2(-direction.y, direction.x).normalize();
-    for (let row = 0; row <= 12; row++) {
-      const t = row / 12, point = from.clone().lerp(to, t);
-      for (const edge of [-1, 1]) {
-        const x = point.x + across.x * width * (1 - t * .6) * edge;
-        const y = point.y + across.y * width * (1 - t * .6) * edge;
-        positions.push(x, y, sample(x, y) + side * (HALF_THICKNESS + .0024));
-        colors.push(1.18, 1.16, 1.10);
-      }
-    }
-    for (let row = 0; row < 12; row++) {
-      const a = offset + row * 2;
-      const faces = [a, a + 2, a + 1, a + 1, a + 2, a + 3];
-      for (let t = 0; t < faces.length; t += 3) indices.push(...(side === 1 ? faces.slice(t, t + 3) : [faces[t]!, faces[t + 2]!, faces[t + 1]!]));
-    }
-  };
-  for (const side of [1, -1]) {
-    ribbon(new THREE.Vector2(0, .035), new THREE.Vector2(0, .6), .0017, side);
-    for (const y of [.16, .29, .41]) for (const sign of [-1, 1]) {
-      ribbon(new THREE.Vector2(0, y), new THREE.Vector2(sign * (.17 - Math.abs(y - .28) * .3), y + .12), .0010, side);
-    }
-  }
-  if (!membrane) membraneGeometry.dispose();
   return finish("living-line/seed-disc-rim", positions, colors, indices);
 }

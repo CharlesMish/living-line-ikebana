@@ -78,6 +78,19 @@ jobs:
           npm ci
           npm run build
 
+      - name: Check out the Silver seed anatomy baseline
+        uses: actions/checkout@v7
+        with:
+          ref: 7a9a12dab892e48e758de845b5e091ec25431a47
+          path: .ci-seed-baseline
+          persist-credentials: false
+
+      - name: Build the isolated Silver seed anatomy baseline
+        working-directory: .ci-seed-baseline
+        run: |
+          npm ci
+          npm run build
+
       - name: Capture rendered workflow evidence
         # Flower-craft matched images use a separately built owner-preview head.
         env:
@@ -87,6 +100,7 @@ jobs:
           IKEBANA_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
           IKEBANA_PRUNE_BASELINE_DIR: ${{ github.workspace }}/.ci-prune-baseline
           IKEBANA_FLOWER_BASELINE_DIR: ${{ github.workspace }}/.ci-flower-baseline
+          IKEBANA_SEED_BASELINE_DIR: ${{ github.workspace }}/.ci-seed-baseline
         run: node tests/browser/rendered-evidence.mjs
 
       - name: Upload screenshots, PNGs, and checks

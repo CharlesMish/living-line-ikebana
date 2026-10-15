@@ -217,7 +217,9 @@ silhouettes are presentation only. All frozen profile definitions stay intact.
 `core/silverSeed.ts` adds versioned sparse dried stock and the semantic `seedpod`
 organ kind. The existing serializer, validator and craft cues explicitly accept
 that kind. `presentation/seedDiscGeometry.ts` constructs a closed shallow
-partition and a rim/vein mesh with both sides authored. `ThreeStudio` merges
+partition with quiet paper shading and a closed perimeter rim. The Argon
+follow-up removes the earlier leaf-like vein ribbons; both membrane faces remain
+authored. `ThreeStudio` merges
 copies of those exact surfaces for picking and routes them to the existing
 supporting stalk operation. Scene tones have distinct membrane/rim colors;
 there are no new persistent graph fields, texture files or alpha-sort layers.

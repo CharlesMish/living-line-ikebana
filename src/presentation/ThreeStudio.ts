@@ -1148,7 +1148,7 @@ export class ThreeStudio {
       if (!pod) throw new Error(`Missing seedpod appearance: ${graph.generatorVersion}`);
       const membrane = new THREE.Mesh(createSeedDiscGeometry(seed),
         bodyMaterial(pod.color, pod.roughness, true, next => next.seedpod!.color));
-      const rim = new THREE.Mesh(createSeedDiscRimGeometry(seed, membrane.geometry),
+      const rim = new THREE.Mesh(createSeedDiscRimGeometry(seed),
         bodyMaterial(pod.rimColor, .96, true, next => next.seedpod!.rimColor));
       membrane.castShadow = !pending; rim.castShadow = !pending;
       group.add(membrane, rim);

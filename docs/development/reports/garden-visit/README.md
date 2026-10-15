@@ -11,7 +11,7 @@ separate local display preferences. No botanical generators or craft laws change
    while arranging; the accepted choice reloads with the working bowl. Photograph
    uses the same visual picker and additionally offers Transparent. A customized
    photo setup stays as you left it; Reset photo setup adopts the working setting.
-2. Keep up to three moments in Garden (Photograph → Save keeps a prepared image
+2. Keep a few moments in Garden (Photograph → Save keeps a prepared image
    and the corresponding arrangement). Studio → Garden → Visit your Garden opens
    the three most recent moments with their real vessel and botanical surfaces.
 3. Tap a piece or use Left/Centre/Right to approach it. Drag to orbit, pinch or use

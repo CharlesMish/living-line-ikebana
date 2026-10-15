@@ -145,6 +145,7 @@ test("Rejected display save keeps visible selection, renderer and previous prefe
     assert.equal(h.find("visit-position-0").dataset.entryId,"a");
     assert.equal(h.snapshots.length,count); assert.equal(h.raw(),null);
     assert.match(h.find("visit-message").textContent,/could not be saved/);
+    assert.match(h.find("visit-picker-message").textContent,/could not be saved/);
     assert.equal(h.find("visit-picker").hidden,false);
     h.fail(false); h.click("visit-choice-d"); assert.equal(h.find("visit-position-0").dataset.entryId,"d");
   } finally { h.finish(); }

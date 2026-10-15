@@ -12,8 +12,10 @@
 .backdrop-dialog { width: min(27rem, calc(100vw - 2rem)); max-height: min(70dvh, 34rem); box-sizing: border-box; padding: 1rem; margin: auto 1rem 1rem auto; border: 1px solid #d0cdbf; border-radius: 1.1rem; background: #f5f2e9; color: #3f4938; box-shadow: 0 12px 44px #1f2d2529; overflow-y: auto; overscroll-behavior: contain; }
 .backdrop-dialog::backdrop { background: transparent; }
 .backdrop-dialog .panel-heading { margin-bottom: .65rem; }
+.backdrop-dialog .panel-heading button { min-height: 42px; padding: 8px 14px; border: 1px solid #c9c6b9; border-radius: .75rem; background: #faf8f1; color: #434b3c; font: inherit; cursor: pointer; }
+.backdrop-dialog .panel-heading button:focus-visible { outline: 3px solid #738764; outline-offset: 2px; }
 .backdrop-dialog h1 { font-size: 1.2rem; margin: 0; }
-.backdrop-dialog .backdrop-choices { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.backdrop-dialog .backdrop-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, 4.6rem), 1fr)); }
 .backdrop-dialog .panel-note { font-size: .78rem; line-height: 1.4; margin: .7rem 0 0; }
 .backdrop-dialog .backdrop-sample { height: 2.5rem; }
 .backdrop-dialog .backdrop-name { font-size: .75rem; }

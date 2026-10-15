@@ -38,15 +38,16 @@ export class GardenVisitUI {
       <div class="visit-stage">
         <canvas id="garden-visit-canvas" aria-label="Three saved arrangements and their framed photographs" tabindex="0"></canvas>
         <div id="visit-scene-error" class="visit-scene-error" hidden><p>The garden view is unavailable. Your saved work is safe.</p><button id="visit-retry" type="button">Try the view again</button></div>
-        <section id="visit-print-panel" class="visit-print-panel" role="dialog" aria-modal="true" hidden aria-labelledby="visit-print-title"><header><h2 id="visit-print-title">Kept photograph</h2><button id="visit-print-close" type="button">Back to the garden</button></header><img id="visit-print-image" alt=""/><p>Your kept photograph. The arrangement beside it lives in the garden’s shared light.</p></section>
-        <section id="visit-picker" class="visit-picker" role="dialog" aria-modal="true" hidden aria-labelledby="visit-picker-title"><header><div><p class="eyebrow">Choose a kept moment</p><h2 id="visit-picker-title">On display</h2></div><button id="visit-picker-close" type="button">Done</button></header><p id="visit-picker-message" class="visit-message" role="status" aria-live="polite"></p><div id="visit-choices" class="visit-choices"></div><button id="visit-empty" type="button">Leave this position empty</button><p class="panel-note">Choosing a moment already on display swaps its position. Your saved arrangements stay untouched.</p></section>
       </div>
       <footer class="visit-controls">
         <nav class="visit-positions" aria-label="Garden positions"><button id="visit-overview" type="button" aria-pressed="true">Overview</button>${POSITIONS.map((name, index) => `<button id="visit-position-${index}" type="button" aria-pressed="false"><span>${name}</span><strong id="visit-label-${index}">Empty position</strong></button>`).join("")}</nav>
         <div class="visit-caption"><div><p id="visit-selected-title">A place for your kept moments</p><p id="visit-help">Tap a piece to approach it. Drag to look around.</p></div><div class="visit-zoom"><button id="visit-zoom-out" type="button" aria-label="Move farther away">−</button><button id="visit-zoom-in" type="button" aria-label="Move closer">+</button></div></div>
         <div id="visit-piece-actions" class="visit-piece-actions" hidden><button id="visit-change" type="button">Choose moment</button><button id="visit-print" type="button">View photograph</button><button id="visit-copy" type="button">Make a working copy</button></div>
         <p id="visit-message" class="visit-message" role="status" aria-live="polite"></p>
-      </footer>`;
+      </footer>
+      <section id="visit-print-panel" class="visit-print-panel" role="dialog" aria-modal="true" hidden aria-labelledby="visit-print-title"><header><h2 id="visit-print-title">Kept photograph</h2><button id="visit-print-close" type="button">Back to the garden</button></header><img id="visit-print-image" alt=""/><p>Your kept photograph. The arrangement beside it lives in the garden’s shared light.</p></section>
+      <section id="visit-picker" class="visit-picker" role="dialog" aria-modal="true" hidden aria-labelledby="visit-picker-title"><header><div><p class="eyebrow">Choose a kept moment</p><h2 id="visit-picker-title">On display</h2></div><button id="visit-picker-close" type="button">Done</button></header><p id="visit-picker-message" class="visit-message" role="status" aria-live="polite"></p><div id="visit-choices" class="visit-choices"></div><button id="visit-empty" type="button">Leave this position empty</button><p class="panel-note">Choosing a moment already on display swaps its position. Your saved arrangements stay untouched.</p></section>
+`;
     root.append(this.dialog);
     const on = (id: string, fn: () => void) => this.find(id).addEventListener("click", () => this.run(fn), { signal: this.abort.signal });
     on("visit-close", () => this.dialog.close());
@@ -91,7 +92,9 @@ export class GardenVisitUI {
     this.find("visit-message").textContent = value;
     // The footer is inert while this picker is open, so its failure message
     // must also be available inside the active panel's accessibility tree.
-    this.find("visit-picker-message").textContent = !this.find("visit-picker").hidden ? value : "";
+    const picker = this.find("visit-picker");
+    this.find("visit-picker-message").textContent = !picker.hidden ? value : "";
+    if (!picker.hidden && value) picker.scrollTop = 0;
   }
   private currentEntry() { return this.selected === null ? null : resolveGardenDisplay(this.slots, this.entries)[this.selected]; }
 
@@ -209,6 +212,9 @@ export class GardenVisitUI {
 
   private overlay(active: boolean) {
     this.find("garden-visit-canvas").inert = active;
+    // Both overlays are dialog-level siblings. Keep the entire unchanged stage
+    // inert, including graphics recovery controls beneath the active panel.
+    this.dialog.querySelector<HTMLElement>(".visit-stage")!.inert = active;
     this.dialog.querySelector<HTMLElement>(".visit-controls")!.inert = active;
     this.dialog.querySelector<HTMLElement>(".visit-heading")!.inert = active;
   }

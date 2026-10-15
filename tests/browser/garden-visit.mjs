@@ -29,6 +29,55 @@ async function renderedSlots(page, ids) {
   }, ids ?? null);
   return page.locator("#garden-visit-canvas").evaluate(el => JSON.parse(el.dataset.gardenVisitStats));
 }
+async function overlayLayout(page, panelId, closeId, config) {
+  await painted(page);
+  const layout = await page.evaluate(({ panelId, closeId }) => {
+    const rect = element => { const box = element.getBoundingClientRect(); return { x: box.x, y: box.y, width: box.width, height: box.height }; };
+    const panel = document.getElementById(panelId), close = document.getElementById(closeId);
+    const closeBox = close.getBoundingClientRect();
+    const top = document.elementFromPoint(closeBox.x + closeBox.width / 2, closeBox.y + closeBox.height / 2);
+    const result = { dialog: rect(document.getElementById("garden-visit")), panel: rect(panel), close: rect(close), closeAtFront: top === close || close.contains(top) };
+    if (panelId === "visit-print-panel") {
+      const image = document.getElementById("visit-print-image"), css = getComputedStyle(image), box = image.getBoundingClientRect();
+      const px = value => parseFloat(value) || 0;
+      const width = box.width - px(css.paddingLeft) - px(css.paddingRight) - px(css.borderLeftWidth) - px(css.borderRightWidth);
+      const height = box.height - px(css.paddingTop) - px(css.paddingBottom) - px(css.borderTopWidth) - px(css.borderBottomWidth);
+      const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+      result.image = { naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight, objectFit: css.objectFit,
+        element: rect(image), fittedWidth: image.naturalWidth * scale, fittedHeight: image.naturalHeight * scale };
+    }
+    return result;
+  }, { panelId, closeId });
+  assert.ok(layout.panel.width >= layout.dialog.width * .8 && layout.panel.height >= layout.dialog.height * .8,
+    `${panelId} uses most of the dialog, rather than only the smaller scene strip: ${JSON.stringify(layout)}`);
+  for (const [label, box] of [[panelId, layout.panel], [closeId, layout.close]]) {
+    assert.ok(box.width > 0 && box.height > 0 && box.x >= -1 && box.y >= -1
+      && box.x + box.width <= config.width + 1 && box.y + box.height <= config.height + 1,
+    `${label} remains inside the viewport: ${JSON.stringify(box)}`);
+  }
+  assert.equal(layout.closeAtFront, true, `${closeId} is visibly reachable above the overlay`);
+  if (layout.image) {
+    assert.equal(layout.image.objectFit, "contain", "The saved photograph is shown whole, without cropping");
+    if (config.width === 844 && config.height === 390) {
+      assert.ok(layout.image.fittedHeight >= 140,
+        `Landscape saved print has at least 140px of actual fitted picture height: ${JSON.stringify(layout.image)}`);
+    }
+  }
+  return layout;
+}
+async function visibleMessage(page, selector, config) {
+  const message = await page.locator(selector).evaluate(element => {
+    const box = element.getBoundingClientRect();
+    const top = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+    return { text: element.textContent, x: box.x, y: box.y, width: box.width, height: box.height,
+      atFront: top === element || element.contains(top) };
+  });
+  assert.ok(message.width > 0 && message.height > 0 && message.x >= -1 && message.y >= -1
+    && message.x + message.width <= config.width + 1 && message.y + message.height <= config.height + 1,
+  `${selector} error is on screen: ${JSON.stringify(message)}`);
+  assert.equal(message.atFront, true, `${selector} error is not hidden beneath an overlay`);
+  return message;
+}
 function unchanged(after, before) {
   assert.deepEqual(after.canonical, before.canonical, "Visit never changes the working graph or insertion ordinal");
   assert.equal(after.state.cameraHash, before.state.cameraHash, "Visit camera never replaces the working camera");
@@ -73,8 +122,22 @@ export async function checkGardenVisit({ browser, baseURL, output, cases }) {
       await page.waitForFunction(() => Boolean(window.__IKEBANA_TEST__));
       if (config.text !== 1) {
         const baseFont = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
-        await page.evaluate(size => document.documentElement.style.setProperty("font-size", `${size}px`, "important"), baseFont * config.text);
-        assert.equal(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize)), baseFont * config.text);
+        const requestedFontSize = Number((baseFont * config.text).toFixed(6));
+        await page.evaluate(size => document.documentElement.style.setProperty("font-size", `${size}px`, "important"), requestedFontSize);
+        // Match the settled text probe in rendered-evidence.mjs. Chromium can
+        // expose the prior computed value immediately after the style write;
+        // require the actual enlarged value before testing or capturing layout.
+        await page.waitForFunction(size => Math.abs(parseFloat(getComputedStyle(document.documentElement).fontSize) - size) < .001, requestedFontSize);
+        await painted(page);
+        const textProbe = await page.evaluate(({ baseline, requested }) => ({
+          baselinePx: baseline, requestedPx: requested,
+          computedPx: parseFloat(getComputedStyle(document.documentElement).fontSize),
+          inlineValue: document.documentElement.style.getPropertyValue("font-size"),
+          inlinePriority: document.documentElement.style.getPropertyPriority("font-size"),
+        }), { baseline: baseFont, requested: requestedFontSize });
+        assert.ok(Math.abs(textProbe.computedPx - requestedFontSize) < .001, "Actual Visit root text matches the requested 150% scale");
+        assert.equal(textProbe.inlinePriority, "important");
+        (result.textProbes ??= []).push(textProbe);
       }
     };
     const openVisit = async () => {
@@ -183,6 +246,7 @@ export async function checkGardenVisit({ browser, baseURL, output, cases }) {
       await page.waitForFunction(() => { const image = document.querySelector("#visit-print-image"); return image?.complete && image.naturalWidth > 0; });
       assert.equal(await page.locator("#visit-print-image").getAttribute("src"), entries[2].thumbnail,
         "Print detail displays the exact stored JPEG pixels of the selected vessel");
+      result.printLayout = await overlayLayout(page, "visit-print-panel", "visit-print-close", config);
       await capture("print"); await activate(page.locator("#visit-print-close"));
       await activate(page.locator("#visit-overview"));
       unchanged(await state(page), before); assert.deepEqual(await disk(page), beforeDisk);
@@ -195,7 +259,9 @@ export async function checkGardenVisit({ browser, baseURL, output, cases }) {
       result.checks.push("Repeated close/reopen preserves the working bowl and does not implicitly pin recent entries");
 
       await activate(page.locator("#visit-position-0")); await activate(page.locator("#visit-change"));
-      await page.locator("#visit-picker:not([hidden])").waitFor(); await capture("picker");
+      await page.locator("#visit-picker:not([hidden])").waitFor();
+      result.pickerLayout = await overlayLayout(page, "visit-picker", "visit-picker-close", config);
+      await capture("picker");
       await activate(page.locator(`#visit-choice-${entries[2].id}`));
       const swapped = [entries[2].id, entries[1].id, entries[0].id];
       assert.equal(await page.locator("#visit-scene-error").isHidden(), true, "Slot replacement rebuilds a usable scene");
@@ -206,7 +272,7 @@ export async function checkGardenVisit({ browser, baseURL, output, cases }) {
       assert.equal((await disk(page)).garden, beforeDisk.garden); assert.equal((await disk(page)).working, beforeDisk.working);
       await closeVisit(); await openVisit(); assert.deepEqual(await slotIds(page), swapped);
 
-      if (!config.mobile) {
+      if (!config.mobile || config.width === 844) {
         // Storage fault injection is explicitly diagnostic, not play evidence.
         await activate(page.locator("#visit-position-0")); await activate(page.locator("#visit-change"));
         await fault(page, DISPLAY);
@@ -214,6 +280,9 @@ export async function checkGardenVisit({ browser, baseURL, output, cases }) {
           await activate(page.locator("#visit-empty"));
           assert.equal((await disk(page)).display, preferenceRaw); assert.deepEqual(await slotIds(page), swapped);
           assert.match(await page.locator("#visit-message").textContent(), /save|storage|unchanged/i);
+          result.failurePickerLayout = await overlayLayout(page, "visit-picker", "visit-picker-close", config);
+          result.visibleSaveError = await visibleMessage(page, "#visit-picker-message", config);
+          assert.match(result.visibleSaveError.text, /save|storage|unchanged/i);
           await capture("save-failure");
         } finally { await restoreStorage(page); }
         if (await page.locator("#visit-picker").isVisible()) await activate(page.locator("#visit-picker-close"));

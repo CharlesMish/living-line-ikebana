@@ -1,4 +1,4 @@
-.garden-visit { box-sizing:border-box; width:min(1440px,calc(100vw - 24px)); height:calc(100dvh - 24px); max-width:none; max-height:none; padding:0; border:1px solid #d5d1c4; border-radius:20px; color:#354233; background:#f3f0e7; box-shadow:0 22px 90px #28302440; overflow:hidden; }
+.garden-visit { position:fixed; box-sizing:border-box; width:min(1440px,calc(100vw - 24px)); height:calc(100dvh - 24px); max-width:none; max-height:none; padding:0; border:1px solid #d5d1c4; border-radius:20px; color:#354233; background:#f3f0e7; box-shadow:0 22px 90px #28302440; overflow:hidden; }
 .garden-visit[open] { display:grid; grid-template-rows:auto minmax(120px,1fr) auto; }
 .garden-visit::backdrop { background:#20292180; backdrop-filter:blur(5px); }
 .visit-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 22px 13px; border-bottom:1px solid #d5d1c480; }
@@ -25,6 +25,8 @@
 .visit-piece-actions button { font-size:.8rem; }
 .visit-message { font-size:.76rem; color:#69755f; margin:8px 0 0; }
 .visit-message:empty { display:none; }
+/* Dialog-level absolute overlays use the full available visit height without
+   changing the underlying canvas grid row or its camera projection. */
 .visit-picker,.visit-print-panel { box-sizing:border-box; position:absolute; z-index:2; inset:12px; padding:18px; border:1px solid #d3d2c7; border-radius:16px; background:#f6f3eaf5; overflow:auto; box-shadow:0 8px 35px #29342420; }
 .visit-picker header,.visit-print-panel header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
 .visit-picker h2,.visit-print-panel h2 { font:normal 1.2rem Georgia,serif; margin:0; }

@@ -224,6 +224,16 @@ async function exercise(config) {
     assert.equal(await page.locator("#working-backdrop-choice-sage").getAttribute("aria-pressed"), "true");
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("ikebana-web-alpha:studio-v2")).scene.backdropId), "sage");
     await capture("working-backdrop-choices");
+    result.backdropTiles = await page.locator("#working-backdrop-dialog").evaluate(dialog => ({
+      closeHeight: dialog.querySelector("#working-backdrop-close").getBoundingClientRect().height,
+      labels: [...dialog.querySelectorAll(".backdrop-name")].map(label => ({
+        text: label.textContent, height: label.getBoundingClientRect().height,
+        lineHeight: parseFloat(getComputedStyle(label).lineHeight),
+      })),
+    }));
+    assert.ok(result.backdropTiles.closeHeight >= 42, "Backdrop Done retains a usable touch target");
+    assert.ok(result.backdropTiles.labels.every(label => label.height <= label.lineHeight * 2 + 5),
+      "Backdrop names remain at most two lines, including enlarged text");
     await activate(page.locator("#working-backdrop-close"));
     const afterBackdrop = await readState(page);
     assert.deepEqual(afterBackdrop.canonical, beforePhoto.canonical);

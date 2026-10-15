@@ -99,7 +99,7 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
       drawing = path("M39 67 Q42 36 43 12", stem, 1.6) + path("M40 50 L24 39 M41 35 L58 25 M42 23 L31 16", lateral, 1);
       for (const [x, y, px, py, tilt] of [[24,29,24,39,-12],[33,35,34,43,20],[58,15,58,25,12],[50,22,50,29,-18],[31,7,31,16,-15],[40,9,40,17,20]]) {
         drawing += path(`M${px} ${py} L${x} ${y+7}`, hex(a.branchColors.pedicel), .8)
-          + `<g transform="translate(${x} ${y}) rotate(${tilt})"><ellipse rx="5.4" ry="7.3" fill="${hex(a.seedpod!.color)}" stroke="${hex(a.seedpod!.rimColor)}" stroke-width=".9"/>${path("M0 6 L0 -6 M0 1 L3 -2 M0 -1 L-3 -3", hex(a.seedpod!.rimColor), .45)}</g>`;
+          + `<g transform="translate(${x} ${y}) rotate(${tilt})"><ellipse rx="5.4" ry="7.3" fill="${hex(a.seedpod!.color)}" stroke="${hex(a.seedpod!.rimColor)}" stroke-width=".9"/></g>`;
       }
       break;
     case "leafy-shoot":

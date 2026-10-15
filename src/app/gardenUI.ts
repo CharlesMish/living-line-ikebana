@@ -1,5 +1,7 @@
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
 import { GardenWall } from "./gardenWall.ts";
+import { GardenVisitUI } from "./gardenVisitUI.ts";
+import { GardenDisplayStore } from "./gardenDisplay.ts";
 import "./gardenWall.css";
 import {
   comparisonCanvasSlots,
@@ -44,6 +46,7 @@ export class GardenUI {
   private readonly viewer: HTMLElement;
   private readonly error: HTMLElement;
   private readonly wall: GardenWall;
+  private visit: GardenVisitUI | null = null;
   private entries: GardenEntry[] = [];
   private pending: (() => void) | null = null;
   private viewedEntry: GardenEntry | null = null;
@@ -55,7 +58,7 @@ export class GardenUI {
   private compareMode: ComparisonDragMode = "orbit";
   private compareDrag: ComparisonDrag | null = null;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
-  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false) {
+  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false, private readonly displayKey = `ikebana-web-alpha:${workbench ? "workbench-" : ""}garden-v2:display-v1`) {
     const host = document.createElement("div");
     host.className = "garden-host";
     host.innerHTML = `
@@ -68,6 +71,7 @@ export class GardenUI {
         <div class="panel-heading"><div><p class="eyebrow">A place for enough</p><h1 id="garden-title">Your Garden</h1></div>
           <button id="garden-close" class="icon-button" type="button" aria-label="Close Garden">×</button></div>
         <p class="garden-intro">Keep a moment. Return to it with fresh eyes.</p>
+        <section class="garden-visit-entry"><p>Your arrangements and their photographs, together in a quiet garden.</p><button id="garden-visit-open" type="button" aria-haspopup="dialog">Visit your Garden</button></section>
         <p id="garden-error" class="garden-message" role="status" aria-live="polite"></p>
         <section id="garden-choice" class="garden-choice" hidden aria-labelledby="garden-choice-title">
           <h2 id="garden-choice-title">What about your current bowl?</h2>
@@ -144,6 +148,13 @@ export class GardenUI {
     on("#garden-copy", () => { if (this.viewedEntry) this.offerReplacement(this.viewedEntry.arrangement); });
     on("#garden-new", () => this.offerReplacement(null));
     on("#garden-wall-open", () => this.wall.open(this.entries, this.find("#garden-wall-open")));
+    on("#garden-visit-open", () => {
+      this.actions.pause();
+      this.reload();
+      if (!this.loaded) return;
+      this.visit ??= new GardenVisitUI(host, new GardenDisplayStore(this.displayKey), entry => this.run(() => this.offerReplacement(entry.arrangement)));
+      this.visit.open(this.entries, this.find("#garden-visit-open"));
+    });
     on("#garden-cancel-choice", () => this.clearChoice());
     on("#garden-replace", () => this.finishReplacement());
     on("#garden-keep-first", () => { this.keep(); this.finishReplacement(); });
@@ -198,6 +209,7 @@ export class GardenUI {
     this.find("#garden-count").textContent = this.loaded ? `${this.entries.length} of ${GARDEN_LIMIT} spaces used` : "Garden unavailable";
     this.find<HTMLButtonElement>("#garden-import").disabled = !this.loaded;
     this.find<HTMLButtonElement>("#garden-wall-open").disabled = !this.loaded;
+    this.find<HTMLButtonElement>("#garden-visit-open").disabled = !this.loaded;
     this.find<HTMLButtonElement>("#garden-keep").disabled = !this.loaded || this.actions.isViewing() || !this.actions.snapshot().plants.length;
     this.find("#garden-keep-form").hidden = this.actions.isViewing() || !this.actions.snapshot().plants.length;
     this.find(".garden-copy-note").hidden = !this.entries.length;
@@ -546,6 +558,7 @@ export class GardenUI {
   destroy() {
     this.controller.abort();
     this.wall.destroy();
+    this.visit?.destroy();
     try { this.reduceCompare({ type: "interrupt" }); } catch { /* Teardown still releases the viewports. */ }
     this.comparing = false;
     this.comparison = null;

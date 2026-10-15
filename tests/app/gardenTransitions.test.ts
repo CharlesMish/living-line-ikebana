@@ -6,6 +6,7 @@ import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import { fromCanonicalPlantGraph, sampleBranch, toCanonicalPlantGraph } from "../../src/core/index.ts";
 import { CommittedStore } from "../../src/app/persistence.ts";
 import { turnCutting } from "../../src/core/turnCutting.ts";
+import { SceneCommittedStore } from "../../src/app/scenePersistence.ts";
 
 function harness(workbench = false) {
   const writes: unknown[] = [];
@@ -40,6 +41,54 @@ test("Garden pauses a live bend before reading committed state; later release is
   assert.equal(JSON.stringify(app.arrangementSnapshot()), before);
   app.handlePointerUp({ pointerId: 7 });
   assert.equal(writes.length, 0);
+});
+
+test("working backdrop is saved before apply, cancels a live edit, and preserves plants, camera, Undo and photo ownership", () => {
+  for (const posture of ["arrange", "step-back"]) {
+    const { app } = harness();
+    app.setupVesselUI = () => {};
+    moveBase(app, .4);
+    app.coordinator.commandPosture(posture);
+    const coordinator = app.coordinator, before = app.arrangementSnapshot();
+    const storage = new Map<string, string>(); let writes = 0;
+    const store = new SceneCommittedStore("backdrop-working", undefined, () => ({ scene: app.scene, camera: before.camera }), {
+      getItem: key => storage.get(key) ?? null,
+      setItem(key, value) {
+        assert.equal(app.scene.backdropId, "paper", "save must precede visual apply");
+        assert.equal(coordinator.getDebugState().active, null, "save contains committed plants only");
+        writes++; storage.set(key, value);
+      },
+    });
+    store.load(); app.store = store;
+    if (posture === "arrange") {
+      moveBase(app, -.7, false);
+      app.gesture = { kind: "base", owner: 7, capture: { hasPointerCapture: () => false } };
+    }
+    assert.equal(app.changeScene({ ...app.scene, backdropId: "hills" }), true);
+    assert.equal(app.coordinator, coordinator); assert.equal(coordinator.canUndo(), true);
+    assert.equal(coordinator.getDebugState().posture, posture);
+    assert.equal(app.photoDraftContext, 0); assert.equal(writes, 1);
+    assert.equal(app.coordinator.release(7).ok, false);
+    assert.deepEqual(app.arrangementSnapshot(), { ...before, scene: { ...before.scene, backdropId: "hills" } });
+    assert.equal(JSON.stringify(store.load()?.plants), JSON.stringify(before.plants)); assert.deepEqual(store.loaded?.camera, before.camera);
+    assert.equal(store.loaded?.scene.backdropId, "hills"); assert.equal(store.loaded?.nextSuccessfulOrdinal, before.successfulPlantOrdinal + 1);
+  }
+});
+
+test("failed backdrop save and read-only Garden viewing cannot change the working scene", () => {
+  const { app, snapshot } = harness(); let refreshed = 0;
+  app.setupVesselUI = () => { refreshed++; };
+  const before = app.arrangementSnapshot(); app.store.save = () => false;
+  moveBase(app, -.7, false);
+  app.gesture = { kind: "base", owner: 7, capture: { hasPointerCapture: () => false } };
+  assert.equal(app.changeScene({ ...app.scene, backdropId: "ink" }), false);
+  assert.deepEqual(app.arrangementSnapshot(), before); assert.equal(refreshed, 1);
+  assert.equal(app.coordinator.release(7).ok, false); assert.equal(app.photoDraftContext, 0);
+  app.viewGardenEntry({ id: "kept", title: "Kept", arrangement: snapshot });
+  const viewed = app.arrangementSnapshot();
+  app.store.save = () => { throw new Error("read-only viewing must not save"); };
+  assert.equal(app.changeScene({ ...app.scene, backdropId: "sage" }), false);
+  assert.deepEqual(app.arrangementSnapshot(), viewed);
 });
 
 function moveBase(app: any, x: number, release = true) {

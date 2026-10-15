@@ -3,6 +3,7 @@ import { BotanicalTonesUI } from "./botanicalTonesUI.ts";
 import { DEFAULT_SCENE, sceneProfile, validateScene, type SceneSettings } from "./scene.ts";
 import { SceneCommittedStore, SceneGardenStore, sceneStorageKeys } from "./scenePersistence.ts";
 import { Photograph } from "./photograph.ts";
+import { WorkingBackdropUI } from "./workingBackdropUI.ts";
 import { captureFlowerHeadTilt, flowerHeadTiltRotation, singleFlowerHead, type FlowerHeadTiltFrame } from "./flowerHeadAim.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
@@ -279,6 +280,7 @@ export class IkebanaApp {
   private readonly storageKeys = sceneStorageKeys(new URL(location.href), this.config.workbench, this.config.vesselProfile?.id);
   private suppressSave = false;
   private vesselAppearanceUI?: VesselAppearanceUI;
+  private workingBackdropUI?: WorkingBackdropUI;
   private botanicalTonesUI?: BotanicalTonesUI;
   private readonly store = new SceneCommittedStore(this.storageKeys.studio, this.storageKeys.legacyStudio, () => ({ scene: this.scene, camera: this.coordinator?.getDocumentSnapshot().camera ?? canonicalCameraPose("front") }));
   private readonly initialSaved = this.store.load();
@@ -394,7 +396,7 @@ export class IkebanaApp {
       syncComparison: (session) => this.syncGardenComparisonView(session),
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
-    }, this.config.workbench);
+    }, this.config.workbench, `${this.storageKeys.garden}:display-v1`);
     {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
@@ -429,6 +431,13 @@ export class IkebanaApp {
     this.setupVesselUI();
   }
   private setupVesselUI() {
+    if (this.workingBackdropUI) this.workingBackdropUI.update(this.scene.backdropId, !this.workingSession);
+    else this.workingBackdropUI = new WorkingBackdropUI(this.root, this.scene.backdropId,
+      () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
+      backdropId => {
+        const saved = this.changeScene({ ...this.scene, backdropId });
+        this.workingBackdropUI?.message(saved ? "Backdrop saved for this bowl." : "Could not save. Your previous backdrop is unchanged.");
+      });
     if (this.botanicalTonesUI) this.botanicalTonesUI.update(this.scene.botanicalTones, !this.workingSession);
     else this.botanicalTonesUI = new BotanicalTonesUI(this.root, this.scene.botanicalTones,
       () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
@@ -445,15 +454,16 @@ export class IkebanaApp {
     this.root.querySelector<HTMLButtonElement>("#vessel-appearance-open")!.disabled = Boolean(this.workingSession);
   }
   private changeScene(scene: SceneSettings) {
-    if (this.workingSession) return;
+    if (this.workingSession) return false;
     this.pauseForGarden();
     const snapshot = this.arrangementSnapshot();
     if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene, camera: snapshot.camera })) {
       this.ui.setStatus("Could not save the scene. Your previous setting is unchanged.", "warning");
-      this.setupVesselUI(); return;
+      this.setupVesselUI(); return false;
     }
     this.markWorkingSaved();
     this.applyScene(scene); this.syncPresentation();
+    return true;
   }
   private restoreCamera(camera: CameraPose) {
     this.suppressSave = true;
@@ -519,6 +529,7 @@ export class IkebanaApp {
     this.photograph?.destroy();
     this.gardenUI?.destroy();
     this.vesselAppearanceUI?.destroy();
+    this.workingBackdropUI?.destroy();
     this.botanicalTonesUI?.destroy();
     this.ui.destroy();
     this.studio.dispose();

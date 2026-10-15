@@ -8,7 +8,7 @@ export async function checkPrintWall({ page, activate, capture, readState }) {
   await openStudio("photo-open");
   for (const [format, title, backdrop] of [["portrait", "A line of light", "sage"], ["square", "Evening in the bowl", "dusk"]]) {
     await activate(page.locator("#photo-tab-scene"));
-    await page.locator("#photo-backdrop").selectOption(backdrop);
+    await activate(page.locator(`#photo-backdrop-choice-${backdrop}`));
     await activate(page.locator("#photo-tab-frame"));
     await page.locator("#photo-format").selectOption(format);
     await activate(page.locator("#photo-tab-save"));

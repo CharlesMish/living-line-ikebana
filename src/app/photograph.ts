@@ -9,6 +9,7 @@ import { validateArrangement, type ArrangementSnapshot } from "./garden.ts";
 import { PhotoDraftMemory, type PhotoDraft, type PhotoDraftContext } from "./photoDraft.ts";
 import { PhotoExport, photoShareData, sharePhoto, type PreparedPhoto } from "./photoExport.ts";
 import { makePhotoCover } from "./photoCover.ts";
+import { BackdropPicker } from "./backdropPicker.ts";
 
 interface PhotoActions {
   pause(): void;
@@ -49,6 +50,7 @@ export class Photograph {
   private readonly imageExport = new PhotoExport();
   private shareData: ShareData | null = null;
   private readonly abort = new AbortController();
+  private readonly backdropPicker: BackdropPicker;
   constructor(private readonly root: HTMLElement, private readonly actions: PhotoActions, private readonly createStudio: PhotoStudioFactory = createPhotoStudio) {
     this.opener = document.createElement("button"); this.opener.id = "photo-open"; this.opener.type = "button";
     this.opener.textContent = "Photograph"; this.opener.setAttribute("aria-haspopup", "dialog");
@@ -68,7 +70,7 @@ export class Photograph {
         <section id="photo-panel-scene" class="photo-panel" role="tabpanel" aria-labelledby="photo-tab-scene" tabindex="0">
         <p class="photo-intro">Choose a setting. Your working bowl stays as you left it.</p>
         <fieldset><legend>Scene</legend>
-        <label>Backdrop <select id="photo-backdrop"></select></label>
+        <div class="photo-backdrop-field"><p>Backdrop</p><select id="photo-backdrop" aria-label="Backdrop" hidden></select><div id="photo-backdrop-picker"></div></div>
         <label>Perch <select id="photo-perch"></select></label>
         <label>Lighting <select id="photo-lighting"></select></label><p id="photo-lighting-description" class="panel-note"></p>
         <label class="photo-check"><input id="photo-fibers" type="checkbox"> Subtle stem fibers</label>
@@ -121,6 +123,10 @@ export class Photograph {
         this.find<HTMLSelectElement>(id).append(option);
       }
     }
+    this.backdropPicker = new BackdropPicker("photo-backdrop", "paper", true, id => {
+      this.find<HTMLSelectElement>("photo-backdrop").value = id; this.stage();
+    });
+    this.find("photo-backdrop-picker").append(this.backdropPicker.element);
     const signal = this.abort.signal;
     for (const [index, id] of PHOTO_PANELS.entries()) {
       const tab = this.find(`photo-tab-${id}`);
@@ -292,6 +298,7 @@ export class Photograph {
   private stage() {
     this.changedFrame();
     const backdrop = this.value("photo-backdrop") as PhotoBackdrop;
+    this.backdropPicker.update(backdrop);
     this.find<HTMLSelectElement>("photo-perch").disabled = backdrop === "transparent";
     this.studio?.setPhotoStage(backdrop, this.value("photo-perch") as PhotoPerch);
     this.find("photo-size").textContent = this.sizeLabel();
@@ -441,5 +448,5 @@ export class Photograph {
     this.deliveryMessage(""); this.studio?.dispose(); this.studio = null; this.snapshot = null; this.pose = null; this.busy = false; this.graphicsReady = false;
     this.root.querySelector<HTMLButtonElement>("#more-toggle")?.focus();
   }
-  destroy() { this.abort.abort(); this.release(false); this.drafts.clear(); this.dialog.remove(); this.opener.remove(); }
+  destroy() { this.abort.abort(); this.release(false); this.drafts.clear(); this.backdropPicker.destroy(); this.dialog.remove(); this.opener.remove(); }
 }

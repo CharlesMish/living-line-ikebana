@@ -252,6 +252,48 @@ with an empty collection. See [Garden](GARDEN.md) and
 
 ## 7. Evidence and change gates
 
+### Visit your Garden — three kept moments in a shared space
+
+Visit reads cloned Garden entries and derives three independent arrangement
+groups in one disposable scene. It renders the saved graphs and vessel finishes
+at their original relative scale. Display translations never enter botanical
+state. The room uses one shared light rig; per-entry photo grading, backdrops and
+camera poses remain in the saved photographs rather than applying separately to
+the physical arrangements. Framed covers retain their stored pixels and aspect;
+a missing or unreadable cover leaves a blank mount, not regenerated evidence.
+
+Opening, approaching, orbiting, zooming, viewing a print and leaving Visit write
+no working bowl, camera, Garden entry or photo draft. Pending work is cancelled
+before entry. Make a working copy uses Garden's existing Keep/Replace/Cancel and
+save-before-replace boundary. The original and working Undo remain intact during
+inspection. Gesture interruption restores the visitor camera only. Modal panels
+interrupt a camera drag and keep keyboard focus within the panel.
+
+The initial display uses the three most recent kept entries without saving a
+preference. Explicit choices write only a separate versioned three-ID reference
+document at `<Garden key>:display-v1`; an already-displayed choice swaps slots.
+Empty positions are retained. Removing an entry from the Garden leaves its
+display position empty on the next visit; opening never repairs or overwrites
+preferences. Failed or stale writes leave accepted choices intact. Unsupported
+preferences remain untouched and Visit temporarily shows recent entries read-only.
+Display preferences are local to this browser and are not part of the existing
+Garden backup; imported artwork remains available to choose again. Each storage
+namespace, including Workbench, owns separate display preferences.
+
+### Working backdrop and visual backdrop choices
+
+Studio → Backdrop changes the current working scene through the existing
+cancel/save-before-apply command, in Arrange or Step Back. It preserves canonical
+plants, camera, insertion ordinal and botanical Undo. A failed save retains the
+previous visible setting. Kept Garden viewing cannot change the saved backdrop.
+Working and Photograph pickers share labeled wall/floor and scenic samples from
+the same authored colors. Transparent is offered only in Photograph.
+
+A new Photograph setup inherits the current working backdrop. An existing
+in-memory photo setup retains its own backdrop until deliberately changed or
+Reset photo setup is used. Ordinary backdrop changes do not replace the photo
+draft or rewrite old photographs. No new scene or botanical schema is added.
+
 ### Kept photographs and Print wall
 
 Garden's Print wall reads the same kept entries and cover pixels as the ordinary

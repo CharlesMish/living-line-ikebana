@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { BotanicalTonesUI } from "../../src/app/botanicalTonesUI.ts";
-import type { BotanicalTones } from "../../src/presentation/botanicalTones.ts";
+import { BOTANICAL_FAMILIES, type BotanicalTones } from "../../src/presentation/botanicalTones.ts";
 
 // A small DOM adapter for the production UI's event paths. It does not implement
 // layout or paint; browser/phone checks are still needed for the CSS presentation.
@@ -118,7 +118,7 @@ test("production tones chooser presents current materials first and all three vi
     h.click("botanical-tones-open");
     assert.equal(h.pauses, 1); assert.equal(h.find("botanical-tones-dialog").open, true);
     assert.deepEqual(h.families("botanical-tones-current"), ["compact-flower", "lobed-leaf"]);
-    assert.equal(h.families("botanical-tones-more").length, 11);
+    assert.equal(h.families("botanical-tones-more").length, BOTANICAL_FAMILIES.length - 2);
     assert.equal(h.find("botanical-tones-empty").hidden, true);
     assert.equal(h.find("botanical-tones-current").querySelector(".botanical-tone-count")!.textContent, "1 in bowl");
     for (const id of ["natural", "ochre", "russet"]) {
@@ -135,7 +135,7 @@ test("production tones chooser presents current materials first and all three vi
     h.versions = ["berry-twig-v1"];
     h.click("botanical-tones-open");
     assert.deepEqual(h.families("botanical-tones-current"), ["berry-twig"]);
-    assert.equal(h.families("botanical-tones-more").length, 12);
+    assert.equal(h.families("botanical-tones-more").length, BOTANICAL_FAMILIES.length - 1);
   } finally { h.close(); }
 });
 

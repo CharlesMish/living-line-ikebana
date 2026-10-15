@@ -15,6 +15,10 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { runPrunePreviewComparison } from "./prune-preview-tint.mjs";
 import { checkWorkingSaveFeedback } from "./working-save-feedback.mjs";
+import { checkPrintWall } from "./print-wall.mjs";
+import { checkPhotoDetail } from "./photo-detail.mjs";
+import { checkVioletCuttings } from "./violet-cuttings.mjs";
+import { checkFlowerCraft } from "./flower-craft.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -167,6 +171,7 @@ async function exercise(config) {
     await page.getByTestId("material-source").focus(); await page.keyboard.press("Enter");
     await page.waitForFunction(() => window.__IKEBANA_TEST__.getCanonicalSnapshot().plants.length === 1);
     await activate(page.getByTestId("materials-toggle"));
+    await activate(page.locator("#material-more > summary"));
     await activate(page.getByTestId("material-choice-single-flower"));
     await page.getByTestId("material-source").focus(); await page.keyboard.press("Enter");
     await page.waitForFunction(() => window.__IKEBANA_TEST__.getCanonicalSnapshot().plants.length === 2);
@@ -220,6 +225,7 @@ async function exercise(config) {
     await page.locator("#photo-format").selectOption("landscape");
     await page.locator("#photo-view").selectOption("three-quarter");
     await capture("photo-frame");
+    result.photoDetail = await checkPhotoDetail({ page, config, capture });
     await activate(page.locator("#photo-tab-finish"));
     for (const id of ["warmth", "saturation"]) {
       result.finishLayout.push({ id, ...(await finishVisibility(page, config, id)) });
@@ -282,6 +288,8 @@ async function exercise(config) {
     assert.equal(afterPhoto.state.cameraHash, beforePhoto.state.cameraHash);
     assert.deepEqual(afterPhoto.audit, beforePhoto.audit);
     result.checks.push("Photo return/resume/reset preserves exact working graph, camera, ordinal and commit autosave audit");
+    result.printWall = await checkPrintWall({ page, activate, capture, readState });
+    result.checks.push("Print wall preserves stored pixels and documents, displays portrait/square covers, and opens read-only originals");
     if (config.width === 390) {
       result.workingSave = await checkWorkingSaveFeedback({ page, activate, config, capture, readState });
       result.checks.push("Injected quota failure stays visible through later hints; Retry persists the current bowl and preserves Undo");
@@ -306,6 +314,8 @@ try {
   browser = await chromium.launch({ headless: true, args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   record.browser = browser.version();
   for (const config of cases) await exercise(config);
+  record.violetCuttings = await checkVioletCuttings({ browser, baseURL, output });
+  record.flowerCraft = await checkFlowerCraft({ browser, baseURL, output });
   record.prunePreview = await runPrunePreviewComparison({ browser, baseURL, output });
   assert.equal(record.prunePreview.status, "PASS", JSON.stringify(record.prunePreview));
 } catch (error) {

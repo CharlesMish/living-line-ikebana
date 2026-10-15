@@ -65,13 +65,28 @@ jobs:
           npm ci
           npm run build
 
+      - name: Check out the reported petal baseline
+        uses: actions/checkout@v7
+        with:
+          ref: 00f285f59e202a42974c8947c74c7cf89af61347
+          path: .ci-flower-baseline
+          persist-credentials: false
+
+      - name: Build the isolated petal baseline
+        working-directory: .ci-flower-baseline
+        run: |
+          npm ci
+          npm run build
+
       - name: Capture rendered workflow evidence
+        # Flower-craft matched images use a separately built owner-preview head.
         env:
           IKEBANA_RENDER_EVIDENCE: "1"
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/living-line-browser/node_modules/playwright/index.mjs
           IKEBANA_EVIDENCE_DIR: artifacts/rendered-evidence
           IKEBANA_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
           IKEBANA_PRUNE_BASELINE_DIR: ${{ github.workspace }}/.ci-prune-baseline
+          IKEBANA_FLOWER_BASELINE_DIR: ${{ github.workspace }}/.ci-flower-baseline
         run: node tests/browser/rendered-evidence.mjs
 
       - name: Upload screenshots, PNGs, and checks

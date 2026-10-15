@@ -62,7 +62,7 @@ function census(graph: PlantGraph) {
     if (!positions) return;
     const indexed = node.geometry.index ? node.geometry.index.count / 3 : positions.count / 3;
     const instances = node instanceof THREE.InstancedMesh ? node.count : 1;
-    const tuft = node instanceof THREE.InstancedMesh && node.geometry.name === "living-line/tufted-petal";
+    const tuft = node.geometry.name === "living-line/spray-cup-corolla" || (node instanceof THREE.InstancedMesh && node.geometry.name === "living-line/tufted-petal");
     if (tuft) petalMeshes += 1;
     if (!shown(node)) return;
     if (tuft) shownPetalMeshes += 1;
@@ -80,7 +80,7 @@ function census(graph: PlantGraph) {
   };
 }
 
-test("phone-front presses acquire each blossom on its own stalk, including instanced petals", () => {
+test("phone-front presses acquire each blossom on its own stalk, including authored petal surfaces", () => {
   for (const seed of [8278, 9255, 10232]) {
     const graph = createBlossomSpray("plant-1", seed, BASE);
     const { studio, plant, dispose } = fixture(graph);
@@ -116,15 +116,14 @@ test("phone-front presses acquire each blossom on its own stalk, including insta
         });
         assert.equal(acquired, true, `seed ${seed} ${organ.id} petal is not acquirable at ${PHONE.width}×${PHONE.height}`);
         const tuft = [...visual.group.children].find((child: THREE.Object3D) =>
-          child instanceof THREE.InstancedMesh && child.geometry.name === "living-line/tufted-petal");
-        assert.ok(tuft instanceof THREE.InstancedMesh);
-        assert.equal(tuft.count, 8);
+          child instanceof THREE.Mesh && child.geometry.name === "living-line/spray-cup-corolla");
+        assert.ok(tuft instanceof THREE.Mesh);
       }
     } finally { dispose(); }
   }
 });
 
-test("tuft scatter is wider on separated blossoms and stays inside the shared hit sphere", () => {
+test("authored blossoms and unchanged volume tufts stay inside the same hit sphere", () => {
   const blossom = getMaterialAppearance("blossom-spray-v1").bloom;
   const volume = getMaterialAppearance("flower-volume-v1").bloom;
   assert.equal(blossom.hitRadius, volume.hitRadius);
@@ -140,11 +139,9 @@ test("tuft scatter is wider on separated blossoms and stays inside the shared hi
     }
     return peak;
   };
-  const blossomDeviation = deviation(blossom.tuftScatter!);
+  assert.equal(blossom.tuftScatter, undefined, "authored petals never receive independent whole-petal scatter");
   const volumeDeviation = deviation(volume.tuftScatter!);
-  assert.ok(blossomDeviation > volumeDeviation);
   assert.ok(volumeDeviation > 0.01, "the packed head is not a perfect gear");
-  assert.ok(blossomDeviation < 0.3, "scatter stays a tuft, not a loose ring");
 
   const graph = createBlossomSpray("plant-1", 8278, BASE);
   const volumeGraph = createFlowerVolume("plant-1", 8278, BASE);
@@ -156,12 +153,12 @@ test("tuft scatter is wider on separated blossoms and stays inside the shared hi
         if (organ.kind !== "bloom") continue;
         const visual = plant.organs.get(organ.id);
         const tuft = [...visual.group.children].find((child: THREE.Object3D) =>
-          child instanceof THREE.InstancedMesh && child.geometry.name === "living-line/tufted-petal") as THREE.InstancedMesh;
+          child instanceof THREE.Mesh && (child.geometry.name === "living-line/tufted-petal" || child.geometry.name === "living-line/spray-cup-corolla")) as THREE.Mesh;
         const positions = tuft.geometry.getAttribute("position");
         const matrix = new THREE.Matrix4();
         const vertex = new THREE.Vector3();
-        for (let instance = 0; instance < tuft.count; instance += 1) {
-          tuft.getMatrixAt(instance, matrix);
+        for (let instance = 0; instance < (tuft instanceof THREE.InstancedMesh ? tuft.count : 1); instance += 1) {
+          if (tuft instanceof THREE.InstancedMesh) tuft.getMatrixAt(instance, matrix);
           for (let index = 0; index < positions.count; index += 1) {
             vertex.fromBufferAttribute(positions, index).applyMatrix4(matrix);
             assert.ok(
@@ -200,7 +197,7 @@ test("removing a blossom group hides those organs and does not allocate a new pe
     assert.ok(after.visibleDraws < before.visibleDraws);
     const flowering = census(createFloweringBranch("plant-1", 8278, BASE));
     const volume = census(createFlowerVolume("plant-1", 8278, BASE));
-    assert.equal(before.petalMeshes, before.organs, "each flower keeps one instanced petal mesh");
+    assert.equal(before.petalMeshes, before.organs, "each flower keeps one corolla mesh");
     assert.equal(volume.petalMeshes, 5);
     assert.equal(flowering.petalMeshes, 0, "the flowering branch still uses its separate cupped petals");
     assert.ok(before.visibleDraws < before.organs * 8, "a flower is not eight petal draw calls");

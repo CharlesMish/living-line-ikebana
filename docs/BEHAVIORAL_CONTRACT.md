@@ -19,7 +19,7 @@ An intentional contract change is allowed, but it must be named as an experiment
 
 ## 2. Graph and material invariants
 
-Each branch persistently owns its ID, kind, parent attachment, points, rest lengths, active length, radius, stiffness, reference normal, and active state. Each organ persistently owns its ID, kind, supporting branch, material distance, spin, scale, and active state. Organ kinds are `leaf`, `bloom`, `bud`, and `berry`. A berry is one fruit on one supporting branch. `berry` is another allowed kind value, not a new field, and it does not change `schemaVersion`.
+Each branch persistently owns its ID, kind, parent attachment, points, rest lengths, active length, radius, stiffness, reference normal, and active state. Each organ persistently owns its ID, kind, supporting branch, material distance, spin, scale, and active state. Organ kinds are `leaf`, `bloom`, `bud`, `berry`, and `seedpod`. A berry is one fruit on one supporting branch. `berry` and `seedpod` are allowed kind values, not new fields, and do not change `schemaVersion`. `seedpod` represents a fruit or its retained dry partition, never a flower or leaf.
 
 - `points.length === restLengths.length + 1`.
 - Every rest length is finite, positive, and matches its shaped segment length within shared tolerance.
@@ -251,6 +251,17 @@ with an empty collection. See [Garden](GARDEN.md) and
 [Workbench](development/WORKBENCH.md) for exact schemas, limits and evidence.
 
 ## 7. Evidence and change gates
+
+### Kept photographs and Print wall
+
+Garden's Print wall reads the same kept entries and cover pixels as the ordinary
+collection. Display style, print inspection and opening an original write no
+working save or Garden data. It never regenerates an old cover. Moments without
+covers remain accessible in Garden. Escape from one print returns to the wall;
+closing the wall returns to Garden. New Photograph covers preserve frame aspect
+ratio at up to 640 pixels on the long edge within the existing JPEG byte bound.
+Failed encoding cannot create an entry. Existing covers, backups, full-resolution
+PNG delivery and the saved arrangement schema remain unchanged.
 
 ### Step Back Pan extension
 
@@ -604,3 +615,76 @@ scene. It changes no plant, vessel, frame, background alpha or working gesture l
 Optional `photoLighting` is sceneVersion2 metadata: older strict readers refuse an
 unrecognized scene field rather than silently lose the choice. See the
 [camera and light report](development/reports/photo-workflow/camera-light.md).
+
+### Deliberate Photograph close-ups — October 14 owner revision
+
+Photograph's Frame panel offers Close detail and Whole view. Close detail first
+arms a single preview tap; it does not move the camera until that tap completes.
+A stationary primary press released on the same, unchanged preview centres the
+chosen point at the current camera target's depth and requests at least 3.5×
+Closer. It is framing, not picking, autofocus or depth-of-field simulation. Across
+and Height remain the precise correction controls. Pan bounds and floor clearance
+can limit an edge request. Whole view resets all six framing offsets to the chosen
+reference, preserving setting, light and Finish.
+
+Closer now reaches 4.8×. Changed framing cannot bring the camera nearer than 1.5
+world units to its target; an inherited closer camera remains exact and may back
+away, but cannot move closer again. This prevents repeated Keep/reopen/Closer
+from approaching the camera's near plane. Existing neutral frames remain exact.
+No field-of-view or lens field is added: the same camera position/target/up carries
+the close-up through preview, PNG, Garden, backups and session resume. Compare
+still owns its shared temporary camera.
+
+Movement beyond eight CSS pixels, another pointer, cancellation, leaving the
+preview, changed preview bounds, blur, hiding the page, resize, graphics loss,
+panel switches and closing discard an unfinished detail press. Escape while
+choosing cancels that choice before closing the dialog. Selecting a detail does
+not save the working bowl or Garden, consume an ordinal, or change a plant.
+### Violet cuttings — October 14 candidate
+
+`violet-sprig-v1` and `indigo-spire-v1` are additive durable generators. Their
+flowers occupy multiple persistent stations, so ordinary distal pruning can
+shorten the line while retaining lower flowers. Each bloom has an ordinary
+pedicel; no petal-editing, reattachment, new growth, or stem-shortening verb is
+introduced. Tone choices are presentation-only family recipes, validated and
+saved through the existing enhanced-scene envelope. Older strict readers refuse
+unknown materials/tones rather than discard them. Single flower moves into More
+cuttings; its generator, frame, direct-head control and saved graphs stay intact.
+Nodding v2's thinner, lobed bell is appearance only; v1's arrays and both versions'
+canonical graph, acquisition envelope and shaping remain unchanged.
+
+### Starry pincushion — additive stock study
+
+`starry-pincushion-v1` adds three independently supported heads at different
+heights and two small divided leaves. Each head is one existing bloom organ;
+its tiny florets and pointed bracts are derived visual parts, not independently
+editable graph records. Cutting above the middle arm retains both lower heads.
+The stock uses existing Aim, Bend, Prune, insertion, Undo and persistence laws.
+Its tone recipes do not change geometry or targeting. Existing generator
+versions, canonical fixtures and historical profile meanings remain frozen.
+
+### Fitted Compact and Blossom spray petals — October 14 candidate
+
+Compact and both Blossom spray versions use authored, closed petal surfaces with
+nonintersecting polar sectors. Compact's rendered flower is approximately 12%
+wider and more cupped; spray has a lighter, six-petal opening. This intentionally
+revises those derived appearances only. Canonical graph/seed/scale/spin/frame,
+pedicel acquisition, hit envelopes, pruning and saved scenes are unchanged.
+Historical flower-volume rendering remains exact. This does not add petal or
+leaf collision protection between separate organs. See the [petal report](development/reports/authored-flower-petals/README.md).
+
+### Silver seed spray — additive dried material
+
+`silver-seed-v1` adds six dry, papery seed-pod partitions on individual pedicels,
+carried by three sparse lateral arms. Its semantic organ kind is `seedpod`;
+craft cues name **seed discs** and **seed-disc stems**. Cutting one stalk removes
+one whole disc. An upper structural cut retains lower arms/discs and all inactive
+history. There is no membrane-part editing or seed scattering. Existing stock,
+frozen profiles, graph fields, Aim/Bend/prune and cancellation remain unchanged.
+
+The two-sided membrane and fibrous rim use exact surface acquisition, including
+both faces and the visible edge. Empty corners outside the oval are not a sphere
+proxy. Hits retain the existing supporting-pedicel Aim and prune grammar.
+Committed material uses opaque shading; prune and insertion use their existing
+transient opacity. Tones change presentation only. Old builds refuse the new
+generator rather than partially accepting its new organ kind.

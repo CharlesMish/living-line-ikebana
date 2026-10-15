@@ -21,6 +21,8 @@ class Element extends EventTarget {
   disabled = false;
   open = false;
   type = "";
+  rect = { left: 10, top: 20, width: 800, height: 600 };
+  getBoundingClientRect() { return { ...this.rect, right: this.rect.left + this.rect.width, bottom: this.rect.top + this.rect.height }; }
   get classList() { return { add: (name: string) => { this.className += ` ${name}`; } }; }
   constructor(readonly ownerDocument: Document, readonly tagName: string) { super(); }
   setAttribute(name: string, value: string) {
@@ -112,6 +114,7 @@ function setup(scene?: SceneSettings) {
   const encoders: BlobCallback[] = [];
   const finishes: unknown[] = [];
   const lights: unknown[] = [];
+  const captures: typeof snapshot.camera[] = [];
   const studios: { scene: SceneSettings; plants: unknown[]; pose: typeof snapshot.camera; disposed: boolean }[] = [];
   const ui = new Photograph(root as unknown as HTMLElement, {
     pause: () => { pauses++; }, snapshot: () => structuredClone(snapshot), context: () => context, returnToArrange: () => { if (context !== null) returns++; }, canKeep: () => context !== null,
@@ -121,14 +124,14 @@ function setup(scene?: SceneSettings) {
     return {
       upsertGraph(graph) { studio.plants.push(graph); }, setPhotoAdjustments(value) { finishes.push(value); }, setPhotoStage() {}, setPhotoLighting(value) { lights.push(value); }, setStemFibers() {}, setCanonicalView() {},
       getCameraPose: () => structuredClone(studio.pose), setCameraPose(pose) { studio.pose = structuredClone(pose); }, dispose: () => { disposed++; studio.disposed = true; },
-      capturePhotoFrame: (width, height) => ({ width, height, toBlob: (callback: BlobCallback) => encoders.push(callback) }) as HTMLCanvasElement,
+      capturePhotoFrame: (width, height) => { captures.push(structuredClone(studio.pose)); return { width, height, toBlob: (callback: BlobCallback) => encoders.push(callback) } as HTMLCanvasElement; },
     };
   });
   const find = (id: string) => { const node = root.querySelector(`#${id}`); assert.ok(node, id); return node; };
   const click = (id: string) => find(id).dispatchEvent(new Event("click", { cancelable: true }));
   click("photo-open");
   return {
-    ui, find, click, encoders, created, revoked, shares, document, finishes, lights, kept, studios,
+    ui, find, click, encoders, created, revoked, shares, document, finishes, lights, kept, studios, captures,
     set context(value: number | null) { context = value; },
     set snapshot(value: typeof snapshot) { snapshot = structuredClone(value); original = JSON.stringify(snapshot); },
     get returns() { return returns; },
@@ -373,7 +376,7 @@ test("lighting and angle controls invalidate stale images, survive return, and K
   try {
     assert.equal(h.find("photo-lighting").value, "studio");
     assert.equal(h.find("photo-zoom").getAttribute("min"), "0.55");
-    assert.equal(h.find("photo-zoom").getAttribute("max"), "2.8");
+    assert.equal(h.find("photo-zoom").getAttribute("max"), "4.8");
     h.click("photo-export");
     h.find("photo-lighting").value = "window"; h.find("photo-lighting").dispatchEvent(new Event("change"));
     assert.equal(h.lights.at(-1), "window"); await h.finishEncode();
@@ -484,5 +487,54 @@ test("an untouched saved saturation remains exact through other controls, Keep a
     h.click("photo-keep"); assert.equal((h.kept.at(-1) as {scene: SceneSettings}).scene.photoAdjustments?.saturation, recipe.saturation);
     h.click("photo-return"); h.click("photo-open"); h.click("photo-keep");
     assert.equal((h.kept.at(-1) as {scene: SceneSettings}).scene.photoAdjustments?.saturation, recipe.saturation);
+  } finally { h.close(); }
+});
+
+test("Close detail is explicit, prepares and keeps the same camera, resumes, and Whole view restores the reference", async () => {
+  const h = setup();
+  const pointer = (type: string, x = 490, y = 260, id = 1) => h.find("photo-canvas").dispatchEvent(Object.assign(new Event(type), {pointerId:id,clientX:x,clientY:y,button:0,isPrimary:true}));
+  try {
+    const initial = structuredClone(h.studios.at(-1)!.pose);
+    h.click("photo-tab-frame"); h.click("photo-detail");
+    assert.equal(h.find("photo-detail").getAttribute("aria-pressed"), "true");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial, "arming alone does not move the camera");
+    pointer("pointerdown"); pointer("pointerup");
+    const close = structuredClone(h.studios.at(-1)!.pose);
+    assert.notDeepEqual(close, initial); assert.equal(h.find("photo-zoom").value, "3.5");
+    assert.equal(h.find("photo-detail").getAttribute("aria-pressed"), "false");
+    assert.equal(h.saves, 0);
+    h.click("photo-export"); await h.finishEncode(); assert.deepEqual(h.captures.at(-1), close);
+    h.click("photo-keep"); assert.deepEqual((h.kept.at(-1) as {camera:typeof close}).camera, close);
+    h.click("photo-return"); h.click("photo-open");
+    assert.deepEqual(h.studios.at(-1)!.pose, close);
+    h.click("photo-tab-frame"); h.click("photo-reset");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial);
+    assert.equal(h.find("photo-zoom").value, "1");
+    assert.equal(h.saves, 1, "only explicit Keep writes the Garden");
+  } finally { h.close(); }
+});
+
+test("detail selection ignores drags, interruptions, another pointer and changing preview dimensions", () => {
+  const h = setup();
+  const pointer = (type: string, x = 490, y = 260, id = 1) => h.find("photo-canvas").dispatchEvent(Object.assign(new Event(type), {pointerId:id,clientX:x,clientY:y,button:0,isPrimary:true}));
+  try {
+    const initial = structuredClone(h.studios.at(-1)!.pose);
+    h.click("photo-tab-frame"); h.click("photo-detail");
+    pointer("pointerdown"); pointer("pointermove",520); pointer("pointerup");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial);
+    pointer("pointerdown"); pointer("pointercancel"); pointer("pointerup");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial);
+    pointer("pointerdown"); pointer("pointerup",490,260,2); pointer("pointerup");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial);
+    pointer("pointerdown"); h.find("photo-canvas").rect.width = 700; pointer("pointerup");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial);
+    const escape = new Event("cancel", {cancelable:true}); h.find("photo-dialog").dispatchEvent(escape);
+    assert.equal(escape.defaultPrevented, true); assert.equal(h.find("photo-dialog").open, true);
+    assert.equal(h.find("photo-detail").getAttribute("aria-pressed"), "false");
+    h.click("photo-detail"); pointer("pointerdown"); h.click("photo-tab-finish"); pointer("pointerup");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial);
+    h.click("photo-tab-frame"); h.click("photo-detail"); pointer("pointerdown");
+    h.document.hidden = true; h.document.dispatchEvent(new Event("visibilitychange")); pointer("pointerup");
+    assert.deepEqual(h.studios.at(-1)!.pose, initial); assert.equal(h.saves, 0);
   } finally { h.close(); }
 });

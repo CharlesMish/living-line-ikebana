@@ -10,6 +10,8 @@ export interface TonePatch {
   bloom?: number;
   bud?: number;
   berry?: number;
+  seedpod?: number;
+  seedpodRim?: number;
 }
 interface Tone { id: string; label: string; patch: TonePatch }
 const natural: Tone = { id: "natural", label: "Natural", patch: {} };
@@ -19,8 +21,14 @@ export const BOTANICAL_FAMILIES = [
   { id: "flowering-branch", label: "Flowering branch", versions: ["one-branch-v1"], tones: [natural,
     tone("porcelain", "Porcelain blossom", { bloom: 0xe8ded3, bud: 0xb7999c, branches: wood(0x594539, 0x695043, 0x785d48) }),
     tone("rose", "Deep rose", { bloom: 0xc46e87, bud: 0x934052, branches: wood(0x473b35, 0x554439, 0x655043) })] },
-  { id: "single-flower", label: "Single flower", versions: ["single-flower-v1"], tones: [natural,
+  { id: "single-flower", label: "Single flower", versions: ["single-flower-v1"], more: true, tones: [natural,
     tone("rose", "Warm rose", { bloom: 0xd8949c }), tone("lilac", "Soft lilac", { bloom: 0xb79cce })] },
+  { id: "violet-sprig", label: "Violet sprig", versions: ["violet-sprig-v1"], tones: [natural,
+    tone("lavender", "Pale lavender", { bloom: 0xc1a6df }), tone("amethyst", "Amethyst", { bloom: 0x8561b1 })] },
+  { id: "indigo-spire", label: "Indigo spire", versions: ["indigo-spire-v1"], tones: [natural,
+    tone("blue", "Blue dusk", { bloom: 0x657dba }), tone("lilac", "Silver lilac", { bloom: 0xafa0c9 })] },
+  { id: "starry-pincushion", label: "Starry pincushion", versions: ["starry-pincushion-v1"], tones: [natural,
+    tone("plum", "Muted plum", { bloom: 0xbb8fa9 }), tone("green", "Pale green", { bloom: 0xd1dfb6 })] },
   { id: "compact-flower", label: "Compact flower", versions: ["compact-flower-v1"], tones: [natural,
     tone("ivory", "Warm ivory", { bloom: 0xe7d8b7 }), tone("plum", "Muted plum", { bloom: 0x98708e })] },
   { id: "flower-volume", label: "Flower volume", versions: ["flower-volume-v1"], more: true, tones: [natural,
@@ -32,6 +40,9 @@ export const BOTANICAL_FAMILIES = [
   { id: "berry-twig", label: "Berry twig", versions: ["berry-twig-v1"], tones: [natural,
     tone("rust", "Rust berries", { berry: 0xc86d39, branches: wood(0x735641, 0x82634b, 0x82634b) }),
     tone("wine", "Dark wine", { berry: 0x7c354e, branches: wood(0x594338, 0x6a5141, 0x6a5141) })] },
+  { id: "silver-seed", label: "Silver seed spray", versions: ["silver-seed-v1"], tones: [natural,
+    tone("ivory", "Warm ivory", { seedpod: 0xe7ddbc, seedpodRim: 0xb9a67e }),
+    tone("straw", "Pale straw", { seedpod: 0xd3bc8d, seedpodRim: 0x9e855e, branches: wood(0x806545, 0x997c53, 0x997c53) })] },
   { id: "bare-branch", label: "Bare branch", versions: ["bare-branch-v1"], more: true, tones: [natural,
     tone("walnut", "Warm walnut", { branches: wood(0x604535, 0x715240, 0x80614c) }),
     tone("silver", "Weathered silver", { branches: wood(0x79786b, 0x888577, 0x95907f) })] },
@@ -81,6 +92,7 @@ export function resolveBotanicalAppearance(generatorVersion: string, base: Mater
     leaf: patch.leaf === undefined && patch.vein === undefined ? base.leaf : { ...base.leaf, color: patch.leaf ?? base.leaf.color, veinColor: patch.vein ?? base.leaf.veinColor },
     bloom: patch.bloom === undefined ? base.bloom : { ...base.bloom, color: patch.bloom },
     ...(base.berry ? { berry: patch.berry === undefined ? base.berry : { ...base.berry, color: patch.berry } } : {}),
+    ...(base.seedpod ? { seedpod: { ...base.seedpod, color: patch.seedpod ?? base.seedpod.color, rimColor: patch.seedpodRim ?? base.seedpod.rimColor } } : {}),
     budColor: patch.bud ?? 0xa64f59,
   };
 }

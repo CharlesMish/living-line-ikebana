@@ -1,0 +1,48 @@
+.garden-wall {
+  width: min(78rem, calc(100vw - 1rem));
+  height: min(58rem, calc(100dvh - 1rem));
+  max-height: calc(100dvh - 1rem);
+  padding: 0;
+  background: #e5e1d7;
+  background-image: radial-gradient(ellipse at 50% 0%, #faf7ef 0%, transparent 80%);
+}
+.garden-wall[open] { display: flex; flex-direction: column; overflow: hidden; }
+.wall-heading, .wall-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem 1rem; padding: 1.1rem 1.5rem; flex: none; }
+.wall-heading { background: #f4f0e6; border-bottom: 1px solid #cdc8bc; }
+.wall-heading p { margin: 0; }
+.garden-wall h1 { font-size: clamp(1.35rem, 3vw, 2rem); }
+.wall-toolbar { padding-block: .65rem; }
+.wall-toolbar p { margin: 0; color: #666959; font-size: .85rem; }
+.wall-finishes { display: flex; flex-wrap: wrap; gap: .35rem; }
+.wall-finishes button { background: transparent; font-size: .8rem; padding: .35rem .7rem; }
+.wall-finishes [aria-pressed="true"] { background: #fcfaf5; border-color: #818574; }
+.wall-collection, .wall-detail { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; }
+.wall-collection { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); grid-auto-rows: max-content; align-content: start; align-items: start; gap: 2.2rem; padding: 1.7rem 2rem 2.5rem; }
+.garden-wall .wall-print { background: none; border: 0; padding: 0; border-radius: 0; width: 100%; max-width: 26rem; justify-self: center; color: inherit; }
+.garden-wall .wall-print:hover { background: none; }
+.wall-mat { display: block; border: .6rem solid #836449; padding: clamp(.85rem, 2vw, 1.5rem); background: #fbf8f0; box-shadow: inset 0 0 0 1px #b9a68d, 0 2px 2px #51453740, 0 12px 20px -10px #3a32267a; }
+.wall-mat img { display: block; width: 100%; height: auto; max-height: 24rem; object-fit: contain; background: #eee9dd; box-shadow: 0 0 0 1px #c9c4b7; }
+.wall-caption { display: flex; flex-direction: column; gap: .35rem; padding: 1rem .3rem 0; text-align: center; overflow-wrap: anywhere; }
+.wall-caption strong { font: 1.1rem/1.3 Georgia, serif; }
+.wall-caption span { font-size: .75rem; color: #686c60; }
+.garden-wall[data-finish="paper"] .wall-mat { border: 0; border-bottom: .8rem solid #fbf8f0; padding: .8rem; box-shadow: 0 2px 3px #51453725, 0 10px 18px -12px #3a322690; }
+.wall-note { margin: 0; padding: .8rem 1.5rem; border-top: 1px solid #cec9bd; color: #65695d; background: #f4f0e6; font-size: .8rem; line-height: 1.4; flex: none; }
+.wall-empty { grid-column: 1 / -1; max-width: 31rem; margin: 3rem auto; text-align: center; font: 1.2rem/1.6 Georgia, serif; }
+.wall-detail { padding: 1.2rem 2rem 2rem; text-align: center; }
+.wall-detail figure { max-width: 40rem; margin: 1.4rem auto; }
+.wall-detail .wall-mat img { max-height: 42vh; }
+.wall-detail h2 { margin: 1.2rem 0 .4rem; overflow-wrap: anywhere; }
+.wall-detail figcaption p { color: #666959; font-size: .85rem; }
+.garden-wall button:focus-visible { outline: 3px solid #53634c; outline-offset: 5px; }
+@media (max-width: 520px) {
+  .wall-heading, .wall-toolbar { padding-inline: 1rem; }
+  .wall-heading { padding-block: .7rem; }
+  .wall-collection { padding: 1.2rem 1.5rem 2rem; gap: 1.8rem; }
+  .wall-detail { padding-inline: 1rem; }
+  .wall-note { font-size: .75rem; padding: .6rem 1rem; }
+}
+@media (max-height: 480px) {
+  .wall-heading { padding-block: .4rem; }
+  .wall-heading .eyebrow, .wall-note { display: none; }
+  .wall-toolbar { padding-block: .25rem; }
+}

@@ -214,3 +214,18 @@ silhouette independently of any seasonal presentation colors.
 The new leaf uses exact visible lamina-plus-vein hit geometry so an empty notch
 cannot grab its leaf. Existing materials keep their previous hit envelopes.
 See [implementation and evidence](development/reports/botanical-darkroom/lobed-leaf.md).
+
+## Silver seed spray study
+
+The authored `silver-seed-v1` stock references dried Lunaria middle partitions,
+not immature green pods or blooms. Six discs sit on three sparse arms. The
+shared shape grammar remains Aim, Bend and Prune with a separate stalk per disc.
+The opaque silver membrane, warm rim and understated veins intentionally evoke
+paper without implementing optical translucency. Natural, Warm ivory and Pale
+straw are scene recipes, not cultivar claims.
+
+Primary botanical reference, read October 14 2026:
+[Clemson Cooperative Extension, Money Plant](https://hgic.clemson.edu/factsheet/money-plant/).
+Its dried-arrangement description distinguishes the retained silvery middle
+partition from the two outer valves and the seeds that can be removed with them.
+This study uses that dried state; it is not a botanically exact reconstruction.

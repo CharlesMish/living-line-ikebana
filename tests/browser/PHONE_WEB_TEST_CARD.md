@@ -641,3 +641,19 @@ These checks need a physical phone; DOM adapter tests cover state and event rout
 - Prepare a transparent PNG under each light preset. Confirm no opaque backdrop
   appears and that Prepare, preview and Garden cover use the same light. Change
   light during preparation and confirm the older encode is not presented as current.
+
+## Close detail owner check — October 14
+
+- In Photograph → Frame, choose Close detail, then tap a flower or leaf in the
+  preview. Adjust Across / Height to refine its centre; Closer goes up to 4.8×.
+  This is an optical perspective close-up without fake background blur. Confirm
+  the chosen detail is reachable without tiny slider movements.
+- Try a detail after Turn and Tilt and in all three frame formats. Whole view
+  must return to that chosen view's original frame, without losing your finish.
+- Drag instead of tap, interrupt a held tap, and rotate the phone before release.
+  None should choose a new detail. Escape cancels an armed choice first.
+- Prepare a close-up PNG, Keep it in Garden, Return to arranging, then reopen
+  Photograph. Confirm the same close crop survives and is not applied twice.
+  Garden View and an exported/imported backup should retain the saved close view.
+- Inspect petals, leaf backs and cut ends at close distance. Nearer framing makes
+  simplified geometry more visible; it does not add material detail or collision.

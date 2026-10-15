@@ -1,3 +1,8 @@
+import { createStarryHeadGeometry } from "./starryHeadGeometry.ts";
+
+import { createAuthoredFlowerCorollaGeometry, createAuthoredFlowerCalyxGeometry, createAuthoredFlowerFilamentGeometry } from "./authoredFlowerGeometry.ts";
+import { createSeedDiscGeometry, createSeedDiscRimGeometry } from "./seedDiscGeometry.ts";
+import { createVioletFloretGeometry, createIndigoFloretGeometry } from "./violetBloomGeometry.ts";
 import { applyPhotoLighting, disposePhotoLighting, validatePhotoLighting, type PhotoLightRig, type PhotoLightingId } from "./photoLighting.ts";
 import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
 import { createOpenCupCorollaGeometry, createOpenCupCalyxGeometry, createOpenCupFilamentGeometry } from "./openCupGeometry.ts";
@@ -978,7 +983,32 @@ export class ThreeStudio {
       const bellPalette = bloom.form === "bell" && originalBloom.collarColor !== undefined
         ? { petal: originalBloom.color, collar: originalBloom.collarColor } : undefined;
       const petalMaterial = bodyMaterial(bellPalette ? 0xffffff : bloom.color, bloom.roughness, true, next => bellPalette ? 0xffffff : next.bloom.color);
-      if (bloom.form === "bell") {
+      if (bloom.form === "starry-head") {
+        const head = new THREE.Mesh(createStarryHeadGeometry(seed), petalMaterial);
+        head.castShadow = !pending;
+        group.add(head);
+        const calyx = new THREE.Mesh(new THREE.SphereGeometry(0.062, 8, 6),
+          bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
+        calyx.scale.z = 0.45;
+        calyx.position.z = -0.015;
+        group.add(calyx);
+      } else if (bloom.form === "violet-floret" || bloom.form === "indigo-floret") {
+        const violet = bloom.form === "violet-floret";
+        const corolla = new THREE.Mesh(violet ? createVioletFloretGeometry(seed) : createIndigoFloretGeometry(seed), petalMaterial);
+        corolla.castShadow = !pending;
+        group.add(corolla);
+        const calyx = new THREE.Mesh(new THREE.SphereGeometry(violet ? 0.063 : 0.057, 8, 6),
+          bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
+        calyx.scale.set(1, violet ? 1 : 1.4, violet ? 0.6 : 1);
+        if (violet) calyx.position.z = -0.013; else calyx.position.y = -0.018;
+        group.add(calyx);
+        if (violet) {
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(0.039, 8, 6), bodyMaterial(0xd8bf7f, 0.83));
+          eye.scale.z = 0.45;
+          eye.position.z = 0.032;
+          group.add(eye);
+        }
+      } else if (bloom.form === "bell") {
         // One shell. Its mouth follows local +Y, the supporting tangent.
         // Cupped, open-face, and tufted blooms keep the radial path below.
         const bell = new THREE.Mesh(createBellGeometry(seed, bellPalette), petalMaterial);
@@ -991,7 +1021,12 @@ export class ThreeStudio {
         group.add(bell);
       } else {
         const profile = bloomSurfaceProfile(bloom.form);
-        if (bloom.form === "open-cup") {
+        const authored = bloom.form === "compact-cup" || bloom.form === "spray-cup";
+        if (bloom.form === "compact-cup" || bloom.form === "spray-cup") {
+          const petals = new THREE.Mesh(createAuthoredFlowerCorollaGeometry(seed, bloom.form), petalMaterial);
+          petals.castShadow = !pending;
+          group.add(petals);
+        } else if (bloom.form === "open-cup") {
           const petals = new THREE.Mesh(createOpenCupCorollaGeometry(seed), petalMaterial);
           petals.castShadow = !pending;
           group.add(petals);
@@ -1033,8 +1068,10 @@ export class ThreeStudio {
           }
         }
         group.add(new THREE.Mesh(
-          bloom.form === "open-cup" ? createOpenCupCalyxGeometry(seed) : createCalyxGeometry(seed, bloom.form),
-          bodyMaterial(0x57734d, 0.82, bloom.form !== "open-cup"),
+          bloom.form === "compact-cup" || bloom.form === "spray-cup"
+            ? createAuthoredFlowerCalyxGeometry(seed, bloom.form)
+            : bloom.form === "open-cup" ? createOpenCupCalyxGeometry(seed) : createCalyxGeometry(seed, bloom.form),
+          bodyMaterial(0x57734d, 0.82, !authored && bloom.form !== "open-cup"),
         ));
         const center = new THREE.Mesh(
           new THREE.SphereGeometry(profile.centerRadius, 12, 8),
@@ -1045,6 +1082,9 @@ export class ThreeStudio {
         group.add(center);
         if (bloom.form === "open-cup") {
           group.add(new THREE.Mesh(createOpenCupFilamentGeometry(), bodyMaterial(0xc49b56, 0.82)));
+        }
+        if (authored) {
+          group.add(new THREE.Mesh(createAuthoredFlowerFilamentGeometry(), bodyMaterial(0xc4aa68, 0.84)));
         }
         // One instanced mesh adds a quiet ring of anthers, owned by this bloom.
         const anthers = new THREE.InstancedMesh(
@@ -1064,6 +1104,19 @@ export class ThreeStudio {
         group.add(anthers);
       }
       hitRadius = bloom.hitRadius;
+    } else if (organ.kind === "seedpod") {
+      const pod = appearance.seedpod;
+      if (!pod) throw new Error(`Missing seedpod appearance: ${graph.generatorVersion}`);
+      const membrane = new THREE.Mesh(createSeedDiscGeometry(seed),
+        bodyMaterial(pod.color, pod.roughness, true, next => next.seedpod!.color));
+      const rim = new THREE.Mesh(createSeedDiscRimGeometry(seed, membrane.geometry),
+        bodyMaterial(pod.rimColor, .96, true, next => next.seedpod!.rimColor));
+      membrane.castShadow = !pending; rim.castShadow = !pending;
+      group.add(membrane, rim);
+      // Exact surface copy, including the thin edge. Empty corners stay empty;
+      // both sides route to this disc's own supporting stalk, never a flower.
+      exactHitGeometry = mergeGeometries([membrane.geometry, rim.geometry])!;
+      hitRadius = 0;
     } else if (organ.kind === "berry") {
       const berry = appearance.berry;
       if (!berry) throw new Error(`Missing berry appearance: ${graph.generatorVersion}`);

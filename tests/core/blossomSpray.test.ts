@@ -175,13 +175,10 @@ test("blossom-spray-v1 spaces four to six flowers on two or three laterals and m
   assert.equal("materialId" in prepared.graph, false);
   assert.doesNotMatch(serializePlantGraph(prepared.graph), /"materialId"/);
   const appearance = getMaterialAppearance(BLOSSOM_SPRAY_VERSION);
-  assert.equal(appearance.bloom.form, "tufted");
+  assert.equal(appearance.bloom.form, "spray-cup");
   assert.equal(appearance.bloom.hitRadius, getMaterialAppearance("flower-volume-v1").bloom.hitRadius);
-  assert.ok(
-    (appearance.bloom.tuftScatter?.azimuth ?? 0)
-      > (getMaterialAppearance("flower-volume-v1").bloom.tuftScatter?.azimuth ?? 0),
-    "separated blossoms scatter more than the packed head",
-  );
+  assert.equal(appearance.bloom.tuftScatter, undefined, "authored petals have fitted neighbours rather than independent tilt");
+  assert.equal(getMaterialAppearance("flower-volume-v1").bloom.tuftScatter?.azimuth, 0.08);
   assert.equal(getMaterialAppearance("one-branch-v1").bloom.tuftScatter, undefined);
   assert.equal(getMaterialAppearance("single-flower-v1").bloom.tuftScatter, undefined);
   assert.notEqual(appearance.bloom.color, getMaterialAppearance("flower-volume-v1").bloom.color);

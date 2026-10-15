@@ -20,6 +20,7 @@ import { checkPhotoDetail } from "./photo-detail.mjs";
 import { checkVioletCuttings } from "./violet-cuttings.mjs";
 import { checkFlowerCraft } from "./flower-craft.mjs";
 import { checkGardenVisit } from "./garden-visit.mjs";
+import { checkSilverSeedAnatomy } from "./silver-seed-anatomy.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -350,6 +351,7 @@ try {
   record.violetCuttings = await checkVioletCuttings({ browser, baseURL, output });
   record.gardenVisit = await checkGardenVisit({ browser, baseURL, output, cases });
   record.flowerCraft = await checkFlowerCraft({ browser, baseURL, output });
+  record.silverSeedAnatomy = await checkSilverSeedAnatomy({ browser, baseURL, output });
   record.prunePreview = await runPrunePreviewComparison({ browser, baseURL, output });
   assert.equal(record.prunePreview.status, "PASS", JSON.stringify(record.prunePreview));
 } catch (error) {

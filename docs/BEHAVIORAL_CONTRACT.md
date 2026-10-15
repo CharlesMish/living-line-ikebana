@@ -730,3 +730,9 @@ proxy. Hits retain the existing supporting-pedicel Aim and prune grammar.
 Committed material uses opaque shading; prune and insertion use their existing
 transient opacity. Tones change presentation only. Old builds refuse the new
 generator rather than partially accepting its new organ kind.
+
+The Argon follow-up refines only the dry partition's derived appearance: no
+leaf-like midrib or pinnate vein ribbons, with restrained paper shading and the
+existing closed perimeter rim. Membrane shape, stock, attachment, tone recipes,
+editing and saved graph identity are preserved. Exact acquisition continues to
+derive from the visible membrane and rim. See the [checked consultation](development/reports/argon-followup/README.md).

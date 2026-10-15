@@ -6,18 +6,6 @@ import { createSeedDiscGeometry, createSeedDiscRimGeometry } from "../../src/pre
 import { studioFixture } from "./studioFixture.ts";
 const SEEDS = [8278, 9255, 10232];
 
-function surfaceZ(g: THREE.BufferGeometry, x: number, y: number, front: boolean): number {
-  const p = g.getAttribute("position"), ix = g.index!, faceTriangles = 9 * 48;
-  for (let i = (front ? 0 : faceTriangles * 3); i < (front ? faceTriangles * 3 : faceTriangles * 6); i += 3) {
-    const a = ix.getX(i), b = ix.getX(i+1), c = ix.getX(i+2);
-    const ax = p.getX(a), ay = p.getY(a), bx = p.getX(b), by = p.getY(b), cx = p.getX(c), cy = p.getY(c);
-    const d = (by-cy)*(ax-cx)+(cx-bx)*(ay-cy);
-    const u = ((by-cy)*(x-cx)+(cx-bx)*(y-cy))/d, v = ((cy-ay)*(x-cx)+(ax-cx)*(y-cy))/d;
-    if (u >= -1e-7 && v >= -1e-7 && u+v <= 1+1e-7) return u*p.getZ(a)+v*p.getZ(b)+(1-u-v)*p.getZ(c);
-  }
-  throw Error("outside membrane");
-}
-
 test("dry discs are finite thin closed surfaces with outward normals on both faces and a real edge", () => {
   for (const seed of SEEDS) {
     const g = createSeedDiscGeometry(seed), p = g.getAttribute("position"), n = g.getAttribute("normal");
@@ -35,32 +23,77 @@ test("dry discs are finite thin closed surfaces with outward normals on both fac
     assert.ok(g.boundingBox!.max.z-g.boundingBox!.min.z < .045);
     assert.ok(g.boundingBox!.max.x-g.boundingBox!.min.x > .5);
     assert.equal(g.boundingBox!.min.y,0); assert.ok(g.boundingBox!.max.y > .63);
-    const rim = createSeedDiscRimGeometry(seed,g), rp = rim.getAttribute("position"), ri = rim.index!;
+    const rim = createSeedDiscRimGeometry(seed), rp = rim.getAttribute("position"), ri = rim.index!;
     assert.ok(Array.from(rp.array).every(Number.isFinite));
+    assert.ok(Array.from(rim.getAttribute("normal").array).every(Number.isFinite));
     let rimVolume = 0;
-    for (let tri = 0; tri < 480; tri++) {
+    const rimEdges = new Map<string, number>();
+    for (let tri = 0; tri < ri.count / 3; tri++) {
+      const v = [ri.getX(tri*3), ri.getX(tri*3+1), ri.getX(tri*3+2)];
       const a = new THREE.Vector3().fromBufferAttribute(rp,ri.getX(tri*3));
       const b = new THREE.Vector3().fromBufferAttribute(rp,ri.getX(tri*3+1));
       const c = new THREE.Vector3().fromBufferAttribute(rp,ri.getX(tri*3+2));
-      rimVolume += a.dot(b.cross(c))/6;
+      rimVolume += a.dot(b.clone().cross(c))/6;
+      assert.ok(b.sub(a).cross(c.sub(a)).lengthSq() > 1e-16);
+      for (let e=0; e<3; e++) { const key = [v[e]!,v[(e+1)%3]!].sort((x,y)=>x-y).join(":"); rimEdges.set(key,(rimEdges.get(key)??0)+1); }
     }
     assert.ok(rimVolume > 0, "rim tube has outward winding independently of the membrane");
+    assert.ok([...rimEdges.values()].every(count => count === 2), "the entire accessory is a closed rim, with no open strips");
     assert.ok(rim.getAttribute("normal").getX(0) > .9);
-    // Ribbons must remain on their own side BETWEEN vertices too. Each face has
-    // seven strips with twelve rows and two triangles per row; rim is480triangles.
-    for (let tri=480;tri<ri.count/3;tri++) {
-      const side=tri<480+7*12*2?1:-1;
-      const a=new THREE.Vector3().fromBufferAttribute(rp,ri.getX(tri*3));
-      const b=new THREE.Vector3().fromBufferAttribute(rp,ri.getX(tri*3+1));
-      const c=new THREE.Vector3().fromBufferAttribute(rp,ri.getX(tri*3+2));
-      const normal=b.clone().sub(a).cross(c.clone().sub(a));
-      assert.ok(normal.z*side>0,"each ribbon faces away from its membrane");
-      for(let u=0;u<=8;u++) for(let v=0;v<=8-u;v++) {
-        const q=a.clone().multiplyScalar(u/8).addScaledVector(b,v/8).addScaledVector(c,1-(u+v)/8);
-        assert.ok(side*(q.z-surfaceZ(g,q.x,q.y,side===1))>.00015,`seed${seed} tri${tri} never pierces membrane`);
-      }
-    }
     g.dispose();rim.dispose();
+  }
+});
+
+test("seed-disc accessory stays at the perimeter rather than drawing leaf veins across the septum", () => {
+  for (const seed of SEEDS) {
+    const membrane = createSeedDiscGeometry(seed), rim = createSeedDiscRimGeometry(seed);
+    try {
+      const p = membrane.getAttribute("position"), ix = membrane.index!, faceSize = p.count / 2;
+      // Find the front face's boundary from topology, independently of its ring
+      // count. Every accessory point must be within the existing narrow rim of
+      // this perimeter; a closed interior ridge would also fail this check.
+      const edges = new Map<string, { a: number; b: number; count: number }>();
+      for (let i=0; i<ix.count; i+=3) {
+        const vertices = [ix.getX(i), ix.getX(i+1), ix.getX(i+2)];
+        if (vertices.some(v => v >= faceSize)) continue;
+        for (let e=0; e<3; e++) {
+          const a = vertices[e]!, b = vertices[(e+1)%3]!, key = [a,b].sort((x,y)=>x-y).join(":");
+          const old = edges.get(key); edges.set(key, { a, b, count: (old?.count ?? 0) + 1 });
+        }
+      }
+      const perimeter = [...edges.values()].filter(edge => edge.count === 1);
+      assert.ok(perimeter.length > 0);
+      const rp = rim.getAttribute("position");
+      for (let i=0; i<rp.count; i++) {
+        let distance = Infinity;
+        for (const { a, b } of perimeter) {
+          const dx = p.getX(b)-p.getX(a), dy = p.getY(b)-p.getY(a);
+          const t = Math.max(0, Math.min(1, ((rp.getX(i)-p.getX(a))*dx + (rp.getY(i)-p.getY(a))*dy)/(dx*dx+dy*dy)));
+          distance = Math.min(distance, Math.hypot(rp.getX(i)-p.getX(a)-t*dx, rp.getY(i)-p.getY(a)-t*dy));
+        }
+        assert.ok(distance <= .008001, `seed ${seed} accessory vertex ${i} stays at the perimeter (${distance})`);
+      }
+    } finally { membrane.dispose(); rim.dispose(); }
+  }
+});
+
+test("both septum faces have deterministic, finite, softly varying paper colour", () => {
+  for (const seed of SEEDS) {
+    const g = createSeedDiscGeometry(seed), repeat = createSeedDiscGeometry(seed);
+    try {
+      const color = g.getAttribute("color"), ix = g.index!, faceSize = color.count / 2;
+      assert.deepEqual(color.array, repeat.getAttribute("color").array);
+      assert.ok(Array.from(color.array).every(value => Number.isFinite(value) && value >= .88 && value <= 1));
+      for (let side=0; side<2; side++) {
+        const shades = Array.from({ length: faceSize }, (_, i) => color.getX(side*faceSize+i));
+        const variation = Math.max(...shades)-Math.min(...shades);
+        assert.ok(variation > .012 && variation < .065, `seed ${seed} side ${side}: restrained variation ${variation}`);
+      }
+      for (let i=0; i<ix.count; i+=3) for (let edge=0; edge<3; edge++) {
+        const a = ix.getX(i+edge), b = ix.getX(i+(edge+1)%3);
+        assert.ok(Math.abs(color.getX(a)-color.getX(b)) < .03, "neighbouring vertices do not form sharp surface markings");
+      }
+    } finally { g.dispose(); repeat.dispose(); }
   }
 });
 
@@ -104,6 +137,6 @@ test("seed discs restore opacity and identical geometry after prune/cancel, and 
     let draws=0,triangles=0;
     visual.group.traverse((n:THREE.Object3D)=>{if(n instanceof THREE.Mesh&&n.visible&&!n.userData?.targetKind){draws++;triangles+=(n.geometry.index?.count??n.geometry.getAttribute("position").count)/3;}});
     assert.equal(draws,22);assert.ok(triangles<14000,`triangles=${triangles}`);
-    assert.equal(triangles,12036);
+    assert.equal(triangles,10020);
   } finally {dispose();}
 });

@@ -221,6 +221,7 @@ export class TransactionCoordinator<
     if (this.adapters.validateInsertReservation?.(reservation) === false) {
       return fail("invalid-reservation");
     }
+    if (this.adapters.validateInput?.insert?.(input, context) === false) return fail("invalid-input");
 
     const snapshot = this.adapters.cloneGraph(reservation.graph);
     const spec: InsertSpec<Graph, Contexts["insert"]> = Object.freeze({
@@ -253,6 +254,12 @@ export class TransactionCoordinator<
   public updateInsert(owner: OwnerToken, input: Inputs["insert"]): CommandResult {
     const active = this.requireOwned("insert", owner);
     if (!active.ok) return active.result;
+    if (this.adapters.validateInput?.insert?.(input, active.value.spec.context) === false) {
+      // Preserve the last drawable ghost, but never seat stale coordinates.
+      active.value.isValid = false;
+      this.changed();
+      return fail("invalid-input");
+    }
     const placed = this.adapters.placePending(
       this.adapters.cloneGraph(active.value.snapshot),
       active.value.spec,
@@ -274,6 +281,7 @@ export class TransactionCoordinator<
     if (!finiteMaterialDistance(spec.grabbedMaterialDistance)) {
       return fail("invalid-material-distance");
     }
+    if (this.adapters.validateInput?.aim?.(input, spec.context) === false) return fail("invalid-input");
     const frozenSpec = Object.freeze({ ...spec });
     const preview = this.adapters.aim(
       this.adapters.cloneGraph(graph.snapshot),
@@ -297,6 +305,7 @@ export class TransactionCoordinator<
   public updateAim(owner: OwnerToken, input: Inputs["aim"]): CommandResult {
     const active = this.requireOwned("aim", owner);
     if (!active.ok) return active.result;
+    if (this.adapters.validateInput?.aim?.(input, active.value.spec.context) === false) return fail("invalid-input");
     active.value.preview = this.adapters.cloneGraph(
       this.adapters.aim(
         this.adapters.cloneGraph(active.value.snapshot),
@@ -322,6 +331,7 @@ export class TransactionCoordinator<
     if (!finiteMaterialDistance(stationDistance)) {
       return fail("invalid-material-distance");
     }
+    if (this.adapters.validateInput?.bend?.(input, candidate.context) === false) return fail("invalid-input");
     const spec: BendSpec<Contexts["bend"]> = Object.freeze({
       plantId: candidate.plantId,
       branchId: candidate.branchId,
@@ -349,6 +359,7 @@ export class TransactionCoordinator<
   public updateBend(owner: OwnerToken, input: Inputs["bend"]): CommandResult {
     const active = this.requireOwned("bend", owner);
     if (!active.ok) return active.result;
+    if (this.adapters.validateInput?.bend?.(input, active.value.spec.context) === false) return fail("invalid-input");
     active.value.preview = this.adapters.cloneGraph(
       this.adapters.bend(
         this.adapters.cloneGraph(active.value.snapshot),
@@ -367,6 +378,7 @@ export class TransactionCoordinator<
   ): CommandResult {
     const graph = this.acquireGraph(spec.plantId, "shape", true);
     if (!graph.ok) return graph.result;
+    if (this.adapters.validateInput?.base?.(input, spec.context) === false) return fail("invalid-input");
     const frozenSpec = Object.freeze({ ...spec });
     const preview = this.adapters.moveBase(
       this.adapters.cloneGraph(graph.snapshot),
@@ -388,6 +400,7 @@ export class TransactionCoordinator<
   public updateBase(owner: OwnerToken, input: Inputs["base"]): CommandResult {
     const active = this.requireOwned("base", owner);
     if (!active.ok) return active.result;
+    if (this.adapters.validateInput?.base?.(input, active.value.spec.context) === false) return fail("invalid-input");
     active.value.preview = this.adapters.cloneGraph(
       this.adapters.moveBase(
         this.adapters.cloneGraph(active.value.snapshot),
@@ -409,6 +422,7 @@ export class TransactionCoordinator<
     if (!finiteMaterialDistance(spec.acquiredMaterialDistance)) {
       return fail("invalid-material-distance");
     }
+    if (this.adapters.validateInput?.prune?.(input, spec.context) === false) return fail("invalid-input");
     const frozenSpec = Object.freeze({ ...spec });
     const plan = this.adapters.previewPrune(
       this.adapters.cloneGraph(graph.snapshot),
@@ -432,6 +446,7 @@ export class TransactionCoordinator<
   public updatePrune(owner: OwnerToken, input: Inputs["prune"]): CommandResult {
     const active = this.requireOwned("prune", owner);
     if (!active.ok) return active.result;
+    if (this.adapters.validateInput?.prune?.(input, active.value.spec.context) === false) return fail("invalid-input");
     active.value.plan = this.adapters.previewPrune(
       this.adapters.cloneGraph(active.value.snapshot),
       active.value.spec,
@@ -448,6 +463,7 @@ export class TransactionCoordinator<
   ): CommandResult {
     const gate = this.requireIdle("step-back");
     if (!gate.ok) return gate;
+    if (this.adapters.validateInput?.camera?.(input, context) === false) return fail("invalid-input");
     const snapshot = this.adapters.cloneCamera(this.camera);
     const spec: CameraSpec<Contexts["camera"]> = Object.freeze({ context });
     const preview = this.adapters.updateCamera(
@@ -470,6 +486,7 @@ export class TransactionCoordinator<
   public updateCamera(owner: OwnerToken, input: Inputs["camera"]): CommandResult {
     const active = this.requireOwned("camera", owner);
     if (!active.ok) return active.result;
+    if (this.adapters.validateInput?.camera?.(input, active.value.spec.context) === false) return fail("invalid-input");
     active.value.preview = this.adapters.cloneCamera(
       this.adapters.updateCamera(
         this.adapters.cloneCamera(active.value.snapshot),

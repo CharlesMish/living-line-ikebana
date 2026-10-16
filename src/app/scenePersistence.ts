@@ -12,6 +12,14 @@ export interface SceneStudioDocument {
   camera: CameraPose;
   scene: SceneSettings;
 }
+
+/** Preserve the saved cutting order without restoring unvalidated raw records.
+ * Branch/organ arrays use the validator's canonical ordering. */
+function plantsInSavedOrder(source: CanonicalPlantGraph[], checked: CanonicalPlantGraph[]): CanonicalPlantGraph[] {
+  const byId = new Map(checked.map(plant => [plant.id, plant]));
+  return source.map(plant => byId.get(plant.id)!);
+}
+
 export function parseSceneStudio(raw: string): SceneStudioDocument {
   const source = JSON.parse(raw);
   if (![1, 2].includes(source.storageVersion) || typeof source.savedAt !== "string" || !Number.isFinite(Date.parse(source.savedAt))) throw new Error("This saved bowl cannot be opened.");
@@ -20,7 +28,7 @@ export function parseSceneStudio(raw: string): SceneStudioDocument {
   const arrangement = validateArrangement({ plants: source.plants, successfulPlantOrdinal: source.nextSuccessfulOrdinal - 1,
     camera: legacy ? canonicalCameraPose("front") : source.camera }, Infinity);
   return { storageVersion: 2, savedAt: source.savedAt, nextSuccessfulOrdinal: arrangement.successfulPlantOrdinal + 1,
-    plants: structuredClone(source.plants), camera: arrangement.camera, scene: legacy ? { ...DEFAULT_SCENE } : validateScene(source.scene) };
+    plants: plantsInSavedOrder(source.plants, arrangement.plants), camera: arrangement.camera, scene: legacy ? { ...DEFAULT_SCENE } : validateScene(source.scene) };
 }
 export function parseSceneGarden(raw: string): { gardenVersion: 2; entries: GardenEntry[] } {
   if (raw.length > 1_800_000) throw new Error("Garden backup is too large.");
@@ -28,13 +36,13 @@ export function parseSceneGarden(raw: string): { gardenVersion: 2; entries: Gard
   if (source.gardenVersion === 1) {
     // Legacy has no reliable presentation identity. Never infer it from roots or thumbnail.
     const legacy = parseGarden(raw);
-    return { gardenVersion: 2, entries: legacy.entries.map((entry, index) => ({ ...entry, arrangement: { ...entry.arrangement, plants: structuredClone(source.entries[index].arrangement.plants), scene: { ...DEFAULT_SCENE } } })) };
+    return { gardenVersion: 2, entries: legacy.entries.map((entry, index) => ({ ...entry, arrangement: { ...entry.arrangement, plants: plantsInSavedOrder(source.entries[index].arrangement.plants, entry.arrangement.plants), scene: { ...DEFAULT_SCENE } } })) };
   }
   if (source.gardenVersion !== 2 || !Array.isArray(source.entries) || source.entries.length > GARDEN_LIMIT) throw new Error("This Garden version cannot be opened.");
   const entries = source.entries.map((entry: unknown) => {
     const checked = validateEntry(entry);
     checked.arrangement.scene = validateScene(checked.arrangement.scene);
-    checked.arrangement.plants = structuredClone((entry as GardenEntry).arrangement.plants);
+    checked.arrangement.plants = plantsInSavedOrder((entry as GardenEntry).arrangement.plants, checked.arrangement.plants);
     return checked;
   });
   if (new Set(entries.map((e: GardenEntry) => e.id)).size !== entries.length) throw new Error("Duplicate Garden identities.");
@@ -100,7 +108,7 @@ export class SceneGardenStore {
     this.entries = checked.entries;
   }
   keep(entry: GardenEntry) {
-    const checked = validateEntry(entry); checked.arrangement.plants = structuredClone(entry.arrangement.plants); checked.arrangement.scene ??= { ...DEFAULT_SCENE };
+    const checked = validateEntry(entry); checked.arrangement.plants = plantsInSavedOrder(entry.arrangement.plants, checked.arrangement.plants); checked.arrangement.scene ??= { ...DEFAULT_SCENE };
     if (this.entries.some(e => e.id === checked.id)) throw new Error("This Garden identity is already kept.");
     if (this.entries.length >= GARDEN_LIMIT) throw new Error(`Garden holds ${GARDEN_LIMIT} arrangements. Export a backup before removing one.`);
     this.write([checked, ...this.entries]);

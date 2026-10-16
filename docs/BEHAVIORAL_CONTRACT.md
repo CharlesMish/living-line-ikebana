@@ -84,6 +84,7 @@ Each branch persistently owns its ID, kind, parent attachment, points, rest leng
 - Exactly one transaction may be active.
 - Acquisition freezes the operation, owner/pointer, stable plant and branch IDs, material station, spatial constraint, and immutable snapshot.
 - Every update recomputes from that snapshot, never from the preceding preview.
+- Typed edit adapters reject non-finite or numerically unsafe spatial input before the coordinator calls the edit solver. Invalid acquisition creates no transaction or selection change. An invalid Aim/Bend/base/Prune update retains the last valid preview; cancellation still restores acquisition and ordinary release can commit only the visible valid preview. Invalid insertion updates additionally invalidate the pending seat until a valid update arrives, so a stale valid destination cannot be seated. Finite prune distances retain their existing clamping law.
 - Crossing another plant, branch, handle, or empty space cannot transfer ownership or give the drag to the camera.
 - Only the acquired owner's ordinary `pointerup` release commits a gesture. This remains true if capture delivers that release outside the canvas or over chrome; moving there is not itself a cancellation command. Repeated release or the normal capture loss after release is an idle no-op. Named Undo/Remove and Garden fresh/copy are separate explicit document commands, described below, not alternate ways to commit a preview.
 - `pointercancel`, premature lost capture, hidden visibility, `pagehide`, relevant viewport or orientation changes, WebGL context loss, and explicit cancellation restore the snapshot and write no save.
@@ -154,6 +155,9 @@ and the structural-stem/handle fallback retain their existing behavior.
 - Graph commits save. Ordinary owner releases of camera gestures and explicit canonical-view commands save the committed camera to v2. Camera previews/cancellation never save. Legacy v1 keys are read-only fallbacks; merely opening a save does not rewrite it.
 - Invalid/cancelled insertion and every cancelled edit write nothing.
 - Corrupt or unsupported stored data fails closed to an empty session with a terse warning; it never partially hydrates a graph.
+- Persisted plants are decoded and validated before storage or use; unrecognized plant fields are not copied back from raw input. Cutting order and every supported botanical value remain intact; branches/organs use canonical ID order. Seeds must already be UInt32 values rather than being coerced into range.
+- Import complexity is bounded, including inactive history: at most 512 branches, 1,024 organs, 8,192 points and 128 ancestry levels per plant; 4,096 branches, 8,192 organs and 32,768 points per arrangement. Existing Garden entry/plant/backup-size limits remain. Unsupported complexity is rejected atomically, never trimmed, rescaled or regenerated; unreadable stored bytes stay exportable and are not overwritten.
+- Imported geometric numbers and edit spatial components have a numerical safety envelope of ±1,000,000 world units; finite values beyond it are rejected rather than clamped. This protects arithmetic and GPU buffers from overflow and is far outside the scale of supported material and vessel geometry.
 - WebGL presentation may be discarded and rebuilt from canonical state without botanical identity or detail changing.
 
 Failed post-commit autosave leaves the committed working change in memory and

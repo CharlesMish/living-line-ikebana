@@ -13,6 +13,9 @@ export const previewPrune = (
   if (!branch?.active) {
     return { branchId, distance: 0, removedBranchIds: [], removedOrganIds: [] };
   }
+  if (!Number.isFinite(requestedDistance)) {
+    return { branchId, distance: branch.activeLength, removedBranchIds: [], removedOrganIds: [] };
+  }
 
   const minimum = branch.kind === "trunk" ? 0.62 : 0.045;
   const upper = Math.max(minimum, branch.activeLength - 0.025);
@@ -47,7 +50,9 @@ export const previewPrune = (
 export const applyPrune = (snapshot: PlantGraph, plan: CutPlan): PlantGraph => {
   const graph = clonePlantGraph(snapshot);
   const branch = graph.branches.get(plan.branchId);
-  if (!branch?.active) return graph;
+  if (!branch?.active || !Number.isFinite(plan.distance)) return graph;
+  if (plan.distance === branch.activeLength && plan.removedBranchIds.length === 0
+    && plan.removedOrganIds.length === 0) return graph;
 
   const truncated = truncateBranchGeometry(branch, plan.distance);
   branch.points = truncated.points;

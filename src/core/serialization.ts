@@ -1,3 +1,5 @@
+import { EDIT_COORDINATE_LIMIT } from "./finite.ts";
+import { countPlantImportRecords } from "./graphLimits.ts";
 import { cloneVec3 } from "./math.ts";
 import { isSupportedGeneratorVersion } from "./materialCatalog.ts";
 import {
@@ -43,7 +45,7 @@ export const toCanonicalPlantGraph = (graph: PlantGraph): CanonicalPlantGraph =>
     schemaVersion: graph.schemaVersion,
     generatorVersion: graph.generatorVersion,
     id: graph.id,
-    seed: graph.seed >>> 0,
+    seed: asSeed(graph.seed),
     rootBranchId: graph.rootBranchId,
     branches: [...graph.branches.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(canonicalBranch),
     organs: [...graph.organs.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(canonicalOrgan),
@@ -63,6 +65,18 @@ const asNumber = (value: unknown, label: string): number => {
   return value;
 };
 
+const asGeometryNumber = (value: unknown, label: string): number => {
+  const number = asNumber(value, label);
+  if (Math.abs(number) > EDIT_COORDINATE_LIMIT) throw new TypeError(`${label} is outside the supported geometry range`);
+  return number;
+};
+
+const asSeed = (value: unknown): number => {
+  const seed = asNumber(value, "seed");
+  if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff) throw new TypeError("seed must be a UInt32");
+  return seed;
+};
+
 const asString = (value: unknown, label: string): string => {
   if (typeof value !== "string") throw new TypeError(`${label} must be a string`);
   return value;
@@ -79,9 +93,9 @@ const organKinds = new Set(["leaf", "bloom", "bud", "berry", "seedpod"]);
 const decodeVec3 = (value: unknown, label: string) => {
   const record = asRecord(value, label);
   return {
-    x: asNumber(record.x, `${label}.x`),
-    y: asNumber(record.y, `${label}.y`),
-    z: asNumber(record.z, `${label}.z`),
+    x: asGeometryNumber(record.x, `${label}.x`),
+    y: asGeometryNumber(record.y, `${label}.y`),
+    z: asGeometryNumber(record.z, `${label}.z`),
   };
 };
 
@@ -99,12 +113,12 @@ const decodeBranch = (value: unknown, index: number): Branch => {
     label: asString(record.label, `branches[${index}].label`),
     kind,
     parentId,
-    parentDistance: asNumber(record.parentDistance, `branches[${index}].parentDistance`),
+    parentDistance: asGeometryNumber(record.parentDistance, `branches[${index}].parentDistance`),
     points: record.points.map((point, pointIndex) => decodeVec3(point, `branches[${index}].points[${pointIndex}]`)),
-    restLengths: record.restLengths.map((length, lengthIndex) => asNumber(length, `branches[${index}].restLengths[${lengthIndex}]`)),
-    activeLength: asNumber(record.activeLength, `branches[${index}].activeLength`),
-    radius: asNumber(record.radius, `branches[${index}].radius`),
-    stiffness: asNumber(record.stiffness, `branches[${index}].stiffness`),
+    restLengths: record.restLengths.map((length, lengthIndex) => asGeometryNumber(length, `branches[${index}].restLengths[${lengthIndex}]`)),
+    activeLength: asGeometryNumber(record.activeLength, `branches[${index}].activeLength`),
+    radius: asGeometryNumber(record.radius, `branches[${index}].radius`),
+    stiffness: asGeometryNumber(record.stiffness, `branches[${index}].stiffness`),
     referenceNormal: decodeVec3(record.referenceNormal, `branches[${index}].referenceNormal`),
     active: asBoolean(record.active, `branches[${index}].active`),
   };
@@ -118,9 +132,9 @@ const decodeOrgan = (value: unknown, index: number): Organ => {
     id: asString(record.id, `organs[${index}].id`),
     kind,
     branchId: asString(record.branchId, `organs[${index}].branchId`),
-    distance: asNumber(record.distance, `organs[${index}].distance`),
-    spin: asNumber(record.spin, `organs[${index}].spin`),
-    scale: asNumber(record.scale, `organs[${index}].scale`),
+    distance: asGeometryNumber(record.distance, `organs[${index}].distance`),
+    spin: asGeometryNumber(record.spin, `organs[${index}].spin`),
+    scale: asGeometryNumber(record.scale, `organs[${index}].scale`),
     active: asBoolean(record.active, `organs[${index}].active`),
   };
 };
@@ -135,6 +149,8 @@ export const fromCanonicalPlantGraph = (value: unknown): PlantGraph => {
   if (!Array.isArray(record.branches) || !Array.isArray(record.organs)) {
     throw new TypeError("branches and organs must be arrays");
   }
+  countPlantImportRecords(record);
+  const seed = asSeed(record.seed);
   const branches = record.branches.map(decodeBranch);
   const organs = record.organs.map(decodeOrgan);
   if (new Set(branches.map(({ id }) => id)).size !== branches.length) throw new TypeError("branch IDs must be unique");
@@ -143,7 +159,7 @@ export const fromCanonicalPlantGraph = (value: unknown): PlantGraph => {
     schemaVersion: SCHEMA_VERSION,
     generatorVersion,
     id: asString(record.id, "id"),
-    seed: asNumber(record.seed, "seed") >>> 0,
+    seed,
     rootBranchId: asString(record.rootBranchId, "rootBranchId"),
     branches: new Map(branches.map((branch) => [branch.id, branch])),
     organs: new Map(organs.map((organ) => [organ.id, organ])),

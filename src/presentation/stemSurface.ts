@@ -8,7 +8,12 @@ export function attachStemSurface(geometry: THREE.BufferGeometry, branch: Branch
   const rings = branch.points.length;
   // Visible tubes use ten facets plus two eleven-vertex caps.
   if (count !== rings * 10 + 22) return;
-  const values = new Float32Array(count * 3);
+  const existing = geometry.getAttribute("stemSurface");
+  const reusable = existing instanceof THREE.BufferAttribute && existing.array.length === count * 3;
+  // Geometry.dispose releases the renderer's old attribute bindings. It must
+  // happen before replacing an attribute, while those bindings are reachable.
+  if (existing && !reusable) geometry.dispose();
+  const values = reusable ? existing.array as Float32Array : new Float32Array(count * 3);
   let distance = 0;
   for (let ring = 0; ring < rings; ring++) {
     if (ring) distance += branch.restLengths[ring - 1];
@@ -20,7 +25,8 @@ export function attachStemSurface(geometry: THREE.BufferGeometry, branch: Branch
   for (let index = rings * 10; index < count; index++) {
     values[index * 3] = 1; values[index * 3 + 1] = 0; values[index * 3 + 2] = index < rings * 10 + 11 ? 0 : distance;
   }
-  geometry.setAttribute("stemSurface", new THREE.BufferAttribute(values, 3));
+  if (reusable) existing.needsUpdate = true;
+  else geometry.setAttribute("stemSurface", new THREE.BufferAttribute(values, 3));
 }
 
 /** Shading only: faint longitudinal fibers, anchored to the material frame.

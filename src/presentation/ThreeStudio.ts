@@ -278,6 +278,9 @@ function branchGeometrySignature(branch: Branch) {
 
 function invisibleHitMaterial(debug: boolean, color = 0x4a8ab7) {
   return new THREE.MeshBasicMaterial({
+    // Material visibility suppresses draw calls without changing raycasting.
+    // Object visibility continues to express active/pending acquisition state.
+    visible: debug,
     color,
     transparent: true,
     opacity: debug ? 0.12 : 0,
@@ -1466,7 +1469,10 @@ export class ThreeStudio {
     const retained = new Set<string>();
     for (const graph of graphs) {
       retained.add(graph.id);
-      this.upsertGraph(graph);
+      // This batch API consumes read-only presentation graphs: the coordinator
+      // replaces an edited graph and retains all unrelated graph references.
+      // upsertGraph remains an explicit resync for callers with mutable graphs.
+      if (this.plants.get(graph.id)?.graph !== graph) this.upsertGraph(graph);
     }
     for (const plantId of [...this.plants.keys()]) {
       if (!retained.has(plantId)) this.removeGraph(plantId);
@@ -1655,9 +1661,21 @@ export class ThreeStudio {
   }
 
   setSelection(selection: PlantSelection | null) {
-    this.selection = selection;
-    for (const visual of this.plants.values()) this.syncPlantVisual(visual);
+    if (this.selection?.plantId === selection?.plantId && this.selection?.branchId === selection?.branchId) return;
+    const previous = this.selection;
+    this.selection = selection ? { ...selection } : null;
+    // Selection only changes one branch's tint and the shared affordances. It
+    // does not change tube geometry, organ frames, opacity or water contacts.
+    for (const target of [previous, this.selection]) {
+      if (!target) continue;
+      const branch = this.plants.get(target.plantId)?.branches.get(target.branchId);
+      if (!branch) continue;
+      const selected = this.selection?.plantId === target.plantId && this.selection.branchId === target.branchId;
+      branch.mesh.material.emissive.setHex(selected ? 0x171009 : 0x000000);
+      if (branch.blade) branch.blade.mesh.material.emissive.copy(branch.mesh.material.emissive);
+    }
     this.updateAffordances();
+    this.requestRender();
   }
 
   getSelection() {

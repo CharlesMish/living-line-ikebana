@@ -134,7 +134,21 @@ test("production reverse has its own veins and culling, exact surface acquisitio
   // This fixture's pending root is detached; own its explicit teardown too.
   fixture.scene.add(fixture.studio.pendingRoot);
   assert.deepEqual(toCanonicalPlantGraph(graph), original);
+  // Stem topology changes release GPU bindings before replacing their arrays;
+  // that reusable geometry disposal is separate from final owner teardown.
+  // The leaf's fixed geometry and all materials remain owned throughout.
+  const beforeTeardown = [...disposals];
+  const resources = [...geometries, ...materials];
+  const organResources = new Set<THREE.BufferGeometry | THREE.Material>();
+  organs.forEach(organ => organ.group.traverse((object: THREE.Object3D) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    organResources.add(object.geometry);
+    for (const material of Array.isArray(object.material) ? object.material : [object.material]) organResources.add(material);
+  }));
+  resources.forEach((resource, index) => {
+    if (resource instanceof THREE.Material || organResources.has(resource)) assert.equal(beforeTeardown[index], 0);
+  });
   fixture.dispose();
   assert.ok(disposals.length > 30);
-  assert.ok(disposals.every(count => count === 1), "each geometry/material disposed exactly once");
+  assert.ok(disposals.every((count, index) => count === beforeTeardown[index] + 1), "owner teardown disposes each geometry/material exactly once");
 });

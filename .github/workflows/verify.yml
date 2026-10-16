@@ -91,6 +91,13 @@ jobs:
           npm ci
           npm run build
 
+      - name: Check out the rendering-efficiency baseline
+        uses: actions/checkout@v7
+        with:
+          ref: 578591453db2f6b31dd82f4347419c8f1cff7efe
+          path: .ci-render-baseline
+          persist-credentials: false
+
       - name: Capture rendered workflow evidence
         # Flower-craft matched images use a separately built owner-preview head.
         env:
@@ -101,6 +108,7 @@ jobs:
           IKEBANA_PRUNE_BASELINE_DIR: ${{ github.workspace }}/.ci-prune-baseline
           IKEBANA_FLOWER_BASELINE_DIR: ${{ github.workspace }}/.ci-flower-baseline
           IKEBANA_SEED_BASELINE_DIR: ${{ github.workspace }}/.ci-seed-baseline
+          IKEBANA_RENDER_BASELINE_DIR: ${{ github.workspace }}/.ci-render-baseline
         run: node tests/browser/rendered-evidence.mjs
 
       - name: Upload screenshots, PNGs, and checks

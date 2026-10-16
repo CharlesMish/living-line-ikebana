@@ -6,7 +6,8 @@ import {
   sampleBranch,
 } from "./arcLength.ts";
 import { clonePlantGraph } from "./clone.ts";
-import { childrenOf, descendantIds } from "./graph.ts";
+import { activeChildrenByParent, descendantIds } from "./graph.ts";
+import { safeEditQuat, safeEditVec3 } from "./finite.ts";
 import { sampleMaterialFrame, transportNormal } from "./frames.ts";
 import {
   add,
@@ -54,7 +55,9 @@ export const aimRotation = (
 ): Quat => {
   const selected = snapshot.branches.get(branchId);
   const identity = { x: 0, y: 0, z: 0, w: 1 };
-  if (!selected?.active) return identity;
+  if (!selected?.active || !safeEditVec3(grabbedPoint) || !safeEditVec3(requestedTarget)
+    || (options.rootAimFloor !== undefined && !Number.isFinite(options.rootAimFloor))
+    || (options.minimumDirectionSquared !== undefined && !Number.isFinite(options.minimumDirectionSquared))) return identity;
 
   const anchor = selected.points[0];
   const target = cloneVec3(requestedTarget);
@@ -63,7 +66,8 @@ export const aimRotation = (
   // This guards only undefined directions, not a material-size-dependent
   // interaction dead zone. Short flower and leaf stalks are valid aim targets.
   const minimumSquared = options.minimumDirectionSquared ?? GEOMETRY_EPSILON * GEOMETRY_EPSILON;
-  if (lengthSquared(startDirection) < minimumSquared || lengthSquared(targetDirection) < minimumSquared) return identity;
+  if (!Number.isFinite(lengthSquared(startDirection)) || !Number.isFinite(lengthSquared(targetDirection))
+    || lengthSquared(startDirection) < minimumSquared || lengthSquared(targetDirection) < minimumSquared) return identity;
 
   let rotation = quaternionBetween(startDirection, targetDirection, selected.referenceNormal);
   if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return identity;
@@ -97,7 +101,15 @@ export const aimRotation = (
 export const applyAimRotation = (snapshot: PlantGraph, branchId: string, rotation: Quat): PlantGraph => {
   const graph = clonePlantGraph(snapshot);
   const selected = snapshot.branches.get(branchId);
-  if (!selected?.active || (rotation.x === 0 && rotation.y === 0 && rotation.z === 0)) return graph;
+  if (!selected?.active || !safeEditQuat(rotation) || (rotation.x === 0 && rotation.y === 0 && rotation.z === 0)) return graph;
+  // Normal solver quaternions keep their exact arithmetic path. Normalize only
+  // externally supplied non-unit values before using the rigid transform.
+  const magnitude = Math.hypot(rotation.x, rotation.y, rotation.z, rotation.w);
+  if (magnitude <= Number.EPSILON) return graph;
+  if (Math.abs(magnitude - 1) > 1e-12) rotation = {
+    x: rotation.x / magnitude, y: rotation.y / magnitude,
+    z: rotation.z / magnitude, w: rotation.w / magnitude,
+  };
   const anchor = selected.points[0];
   const affected = descendantIds(snapshot, branchId);
   affected.add(branchId);
@@ -125,22 +137,30 @@ const remapActiveDescendants = (
   graph: PlantGraph,
   parentId: string,
 ): void => {
-  const oldParent = snapshot.branches.get(parentId);
-  const newParent = graph.branches.get(parentId);
-  if (!oldParent || !newParent) return;
-
-  for (const oldChild of childrenOf(snapshot, parentId)) {
-    const newChild = graph.branches.get(oldChild.id);
-    if (!newChild?.active) continue;
-    const oldAnchor = sampleBranch(oldParent, oldChild.parentDistance);
-    const newAnchor = sampleBranch(newParent, oldChild.parentDistance);
-    const oldFrame = sampleMaterialFrame(oldParent, oldChild.parentDistance);
-    const rotation = quaternionBetween(oldAnchor.tangent, newAnchor.tangent, oldFrame.normal);
-    newChild.points = oldChild.points.map((point) =>
-      add(rotateVector(subtract(point, oldAnchor.position), rotation), newAnchor.position));
-    newChild.points[0] = cloneVec3(newAnchor.position);
-    newChild.referenceNormal = normalize(rotateVector(oldChild.referenceNormal, rotation));
-    remapActiveDescendants(snapshot, graph, oldChild.id);
+  const children = activeChildrenByParent(snapshot);
+  const pending = [parentId];
+  while (pending.length > 0) {
+    const id = pending.pop()!;
+    const oldParent = snapshot.branches.get(id);
+    const newParent = graph.branches.get(id);
+    if (!oldParent || !newParent) continue;
+    const activeChildren = children.get(id) ?? [];
+    for (const oldChild of activeChildren) {
+      const newChild = graph.branches.get(oldChild.id);
+      if (!newChild?.active) continue;
+      const oldAnchor = sampleBranch(oldParent, oldChild.parentDistance);
+      const newAnchor = sampleBranch(newParent, oldChild.parentDistance);
+      const oldFrame = sampleMaterialFrame(oldParent, oldChild.parentDistance);
+      const rotation = quaternionBetween(oldAnchor.tangent, newAnchor.tangent, oldFrame.normal);
+      newChild.points = oldChild.points.map((point) =>
+        add(rotateVector(subtract(point, oldAnchor.position), rotation), newAnchor.position));
+      newChild.points[0] = cloneVec3(newAnchor.position);
+      newChild.referenceNormal = normalize(rotateVector(oldChild.referenceNormal, rotation));
+    }
+    // Parent-first traversal, retaining the original map's sibling order.
+    for (let index = activeChildren.length - 1; index >= 0; index -= 1) {
+      if (graph.branches.get(activeChildren[index].id)?.active) pending.push(activeChildren[index].id);
+    }
   }
 };
 
@@ -150,6 +170,7 @@ const remapActiveDescendants = (
  * never a point index. This is intentionally not a free-chain IK solver.
  */
 const bendParameters = (snapshot: PlantGraph, request: BendRequest): { axis: Vec3; totalRotation: number } | null => {
+  if (!Number.isFinite(request.stationDistance) || !safeEditVec3(request.target)) return null;
   const source = snapshot.branches.get(request.branchId);
   if (!source?.active) return null;
   const stationDistance = legalBendStation(source, request.stationDistance);
@@ -157,7 +178,8 @@ const bendParameters = (snapshot: PlantGraph, request: BendRequest): { axis: Vec
   const station = sampleBranch(source, stationDistance);
   const requested = subtract(request.target, station.position);
   let perpendicular = projectPerpendicular(requested, station.tangent);
-  if (lengthSquared(perpendicular) < GEOMETRY_EPSILON * GEOMETRY_EPSILON) return null;
+  if (!Number.isFinite(lengthSquared(perpendicular))
+    || lengthSquared(perpendicular) < GEOMETRY_EPSILON * GEOMETRY_EPSILON) return null;
   const rangeExtension = 1.2;
   const maximumInput = (0.55 + (1 - source.stiffness) * 0.45) * rangeExtension;
   perpendicular = scale(clampLength(perpendicular, maximumInput), 0.58 + (1 - source.stiffness) * 0.25);
@@ -191,11 +213,13 @@ export const bendInfluenceProfile = (source: Branch, stationDistance: number): n
 
 /** Same solver with a bounded rotation parameter, never interpolated vertices. */
 export const applyBendRotation = (snapshot: PlantGraph, request: BendRequest, rotation: Vec3): PlantGraph =>
-  applyBendParameters(snapshot, request, { axis: normalize(rotation), totalRotation: length(rotation) });
+  applyBendParameters(snapshot, request, safeEditVec3(rotation) && Number.isFinite(length(rotation))
+    ? { axis: normalize(rotation), totalRotation: length(rotation) } : null);
 
 const applyBendParameters = (snapshot: PlantGraph, request: BendRequest,
   parameters: { axis: Vec3; totalRotation: number } | null): PlantGraph => {
   const graph = clonePlantGraph(snapshot);
+  if (!Number.isFinite(request.stationDistance) || !safeEditVec3(request.target)) return graph;
   const source = snapshot.branches.get(request.branchId);
   const branch = graph.branches.get(request.branchId);
   if (!source?.active || !branch || !parameters || parameters.totalRotation === 0) return graph;
@@ -246,6 +270,10 @@ export const translatePlantBaseWithResult = (
 ): BaseTranslationResult => {
   const graph = clonePlantGraph(snapshot);
   const root = snapshot.branches.get(snapshot.rootBranchId);
+  if (!safeEditVec3(requestedBase) || !Number.isFinite(usableRadius)) {
+    return { graph, base: cloneVec3(root?.points[0] ?? { x: 0, y: 0, z: 0 }),
+      translation: { x: 0, y: 0, z: 0 }, clamped: false };
+  }
   if (!root?.active || root.points.length === 0) {
     return { graph, base: cloneVec3(requestedBase), translation: { x: 0, y: 0, z: 0 }, clamped: false };
   }
@@ -279,6 +307,7 @@ export const translatePlantBase = (
  */
 export const translatePendingGraph = (snapshot: PlantGraph, requestedBase: Vec3): PlantGraph => {
   const graph = clonePlantGraph(snapshot);
+  if (!safeEditVec3(requestedBase)) return graph;
   const root = snapshot.branches.get(snapshot.rootBranchId);
   if (!root?.active || root.points.length === 0) return graph;
   const translation = subtract(requestedBase, root.points[0]);

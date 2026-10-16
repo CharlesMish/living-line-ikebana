@@ -13,6 +13,7 @@ import {
   type PlantGraph,
   type Vec3,
 } from "../core/index.ts";
+import { safeEditVec3 } from "../core/finite.ts";
 import type {
   OperationContextMap,
   OperationInputMap,
@@ -55,6 +56,7 @@ export interface CameraAdapter<Camera, CameraInput> {
   readonly clone: (camera: Camera) => Camera;
   /** Must derive every update from the supplied acquisition camera. */
   readonly update: (acquisitionCamera: Camera, input: CameraInput) => Camera;
+  readonly validateInput?: (input: CameraInput) => boolean;
 }
 
 /**
@@ -76,6 +78,15 @@ export function createBotanicalTransactionAdapters<Camera, CameraInput>(
     cloneGraph: clonePlantGraph,
     graphEquals: (left, right) => serializePlantGraph(left) === serializePlantGraph(right),
     cloneCamera: camera.clone,
+    validateInput: {
+      insert: input => safeEditVec3(input.targetBase) && typeof input.isValid === "boolean",
+      aim: input => safeEditVec3(input.target),
+      bend: input => safeEditVec3(input.target),
+      base: input => safeEditVec3(input.targetBase)
+        && (input.usableRadius === undefined || Number.isFinite(input.usableRadius)),
+      prune: input => Number.isFinite(input.materialDistance),
+      camera: camera.validateInput,
+    },
     validateInsertReservation: (reservation) =>
       reservation.plantId === `plant-${reservation.ordinal}` &&
       reservation.seed === ((7301 + reservation.ordinal * 977) >>> 0) &&

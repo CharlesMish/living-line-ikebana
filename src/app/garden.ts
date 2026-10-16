@@ -1,3 +1,4 @@
+import { assertArrangementImportSize } from "../core/graphLimits.ts";
 import { validateScene, type SceneSettings } from "./scene.ts";
 import { assertValidPlantGraph, fromCanonicalPlantGraph, toCanonicalPlantGraph, type CanonicalPlantGraph } from "../core/index.ts";
 import { cloneCameraPose, type CameraPose } from "./camera.ts";
@@ -30,6 +31,7 @@ export function validateArrangement(value: unknown, maxPlants = 64): Arrangement
   const ordinal = source.successfulPlantOrdinal;
   if (!Number.isSafeInteger(ordinal) || (ordinal as number) < 0 || (ordinal as number) >= Number.MAX_SAFE_INTEGER
     || !Array.isArray(source.plants) || source.plants.length > maxPlants) throw new Error("Invalid arrangement.");
+  assertArrangementImportSize(source.plants);
   const ids = new Set<string>();
   const plants = source.plants.map((plant) => {
     const graph = fromCanonicalPlantGraph(plant);

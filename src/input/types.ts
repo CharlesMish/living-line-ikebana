@@ -128,6 +128,14 @@ export interface TransactionAdapters<
   readonly graphEquals: (left: Graph, right: Graph) => boolean;
   readonly cloneCamera: (camera: Camera) => Camera;
 
+  /** Typed constant-cost input checks, before acquisition or preview replacement.
+   * Invalid updates keep the last valid edit; no graph scan belongs here.
+   * Adapters own numeric shapes: the framework-neutral coordinator cannot infer them.
+   */
+  readonly validateInput?: {
+    readonly [Kind in TransactionKind]?: (input: Inputs[Kind], context: Contexts[Kind]) => boolean;
+  };
+
   readonly placePending: (
     acquisitionGraph: Graph,
     spec: InsertSpec<Graph, Contexts["insert"]>,
@@ -249,6 +257,7 @@ export type CommandFailure =
   | "ordinal-mismatch"
   | "invalid-reservation"
   | "invalid-material-distance"
+  | "invalid-input"
   | "nothing-to-undo"
   | "save-failed";
 

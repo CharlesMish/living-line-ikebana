@@ -1,3 +1,5 @@
+import { EDIT_COORDINATE_LIMIT } from "./finite.ts";
+import { PLANT_IMPORT_LIMITS } from "./graphLimits.ts";
 import { ATTACHMENT_TOLERANCE, sampleBranch } from "./arcLength.ts";
 import { isSupportedGeneratorVersion } from "./materialCatalog.ts";
 import { dot, length, subtract, distance } from "./math.ts";
@@ -9,6 +11,7 @@ const issue = (issues: ValidationIssue[], path: string, message: string): void =
 
 export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): ValidationIssue[] => {
   const issues: ValidationIssue[] = [];
+  const inGeometryRange = (value: number): boolean => Number.isFinite(value) && Math.abs(value) <= EDIT_COORDINATE_LIMIT;
   const branchKinds = new Set(["trunk", "lateral", "twig", "petiole", "pedicel"]);
   const organKinds = new Set(["leaf", "bloom", "bud", "berry", "seedpod"]);
   if (graph.schemaVersion !== 1) issue(issues, "schemaVersion", "must be 1");
@@ -34,7 +37,7 @@ export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): Validat
     }
     if (branch.points.length < 2) issue(issues, `${path}.points`, "must contain at least two material points");
     branch.restLengths.forEach((value, index) => {
-      if (!(value > 0) || !Number.isFinite(value)) issue(issues, `${path}.restLengths.${index}`, "must be positive and finite");
+      if (!(value > 0) || !inGeometryRange(value)) issue(issues, `${path}.restLengths.${index}`, "must be positive and within the supported geometry range");
       if (index + 1 < branch.points.length) {
         const actual = distance(branch.points[index], branch.points[index + 1]);
         if (Math.abs(actual - value) > tolerance * Math.max(1, value)) {
@@ -43,14 +46,19 @@ export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): Validat
       }
     });
     const total = branch.restLengths.reduce((sum, value) => sum + value, 0);
+    if (!Number.isFinite(branch.activeLength)) issue(issues, `${path}.activeLength`, "must be finite");
+    if (![branch.referenceNormal.x, branch.referenceNormal.y, branch.referenceNormal.z].every(Number.isFinite)) {
+      issue(issues, `${path}.referenceNormal`, "must be finite");
+    }
+    if (!inGeometryRange(branch.activeLength)) issue(issues, `${path}.activeLength`, "must be within the supported geometry range");
     if (Math.abs(total - branch.activeLength) > tolerance * Math.max(1, total)) {
       issue(issues, `${path}.activeLength`, `must equal the rest-length sum (${total})`);
     }
     if (!(branch.stiffness >= 0 && branch.stiffness <= 1)) issue(issues, `${path}.stiffness`, "must be in [0, 1]");
-    if (!(branch.radius > 0) || !Number.isFinite(branch.radius)) issue(issues, `${path}.radius`, "must be positive and finite");
-    if (!Number.isFinite(branch.parentDistance)) issue(issues, `${path}.parentDistance`, "must be finite");
+    if (!(branch.radius > 0) || !inGeometryRange(branch.radius)) issue(issues, `${path}.radius`, "must be positive and within the supported geometry range");
+    if (!inGeometryRange(branch.parentDistance)) issue(issues, `${path}.parentDistance`, "must be within the supported geometry range");
     branch.points.forEach((point, index) => {
-      if (![point.x, point.y, point.z].every(Number.isFinite)) issue(issues, `${path}.points.${index}`, "must be finite");
+      if (![point.x, point.y, point.z].every(inGeometryRange)) issue(issues, `${path}.points.${index}`, "must be within the supported geometry range");
     });
     if (branch.parentId !== null && !graph.branches.has(branch.parentId)) {
       issue(issues, `${path}.parentId`, "must resolve, including for inactive history");
@@ -86,7 +94,7 @@ export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): Validat
     const path = `organs.${key}`;
     if (organ.id !== key) issue(issues, `${path}.id`, "must match its map key");
     if (!organKinds.has(organ.kind)) issue(issues, `${path}.kind`, "is unsupported");
-    if (![organ.distance, organ.spin, organ.scale].every(Number.isFinite)) issue(issues, path, "distance, spin, and scale must be finite");
+    if (![organ.distance, organ.spin, organ.scale].every(inGeometryRange)) issue(issues, path, "distance, spin, and scale must be within the supported geometry range");
     if (!(organ.scale > 0)) issue(issues, `${path}.scale`, "must be positive");
     const branch = graph.branches.get(organ.branchId);
     if (!branch) {
@@ -100,22 +108,38 @@ export const validatePlantGraph = (graph: PlantGraph, tolerance = 1e-8): Validat
       }
     }
   }
-  // Every record, including inactive identity history, remains part of the one
-  // acyclic rooted topology. Active attachment bounds are checked above.
+  // Memoized iterative parent walks include inactive history. Each edge is
+  // visited once, including disconnected/cyclic components; never one root walk
+  // per branch. A bounded topology also limits reconstruction and presentation work.
+  type Ancestry = { state: "rooted" | "cycle" | "disconnected"; depth: number };
+  const ancestry = new Map<string, Ancestry>();
   for (const branch of graph.branches.values()) {
-    const seen = new Set<string>();
+    if (ancestry.has(branch.id)) continue;
+    const path: string[] = [];
+    const visiting = new Set<string>();
     let cursor: typeof branch | undefined = branch;
-    while (cursor && cursor.parentId !== null) {
-      if (seen.has(cursor.id)) {
-        issue(issues, `branches.${branch.id}.parentId`, "forms a parent cycle");
+    let result: Ancestry = { state: "disconnected", depth: 0 };
+    while (cursor) {
+      const known = ancestry.get(cursor.id);
+      if (known) { result = known; break; }
+      if (visiting.has(cursor.id)) { result = { state: "cycle", depth: 0 }; break; }
+      visiting.add(cursor.id);
+      path.push(cursor.id);
+      if (cursor.parentId === null) {
+        result = { state: cursor.id === graph.rootBranchId ? "rooted" : "disconnected", depth: 0 };
         break;
       }
-      seen.add(cursor.id);
       cursor = graph.branches.get(cursor.parentId);
     }
-    if (cursor && cursor.id !== graph.rootBranchId) {
-      issue(issues, `branches.${branch.id}.parentId`, "does not resolve to the canonical root");
+    for (let index = path.length - 1; index >= 0; index--) {
+      result = { state: result.state, depth: result.depth + 1 };
+      ancestry.set(path[index], result);
     }
+  }
+  for (const [id, result] of ancestry) {
+    if (result.state === "cycle") issue(issues, `branches.${id}.parentId`, "forms a parent cycle");
+    else if (result.state !== "rooted") issue(issues, `branches.${id}.parentId`, "does not resolve to the canonical root");
+    else if (result.depth > PLANT_IMPORT_LIMITS.depth) issue(issues, `branches.${id}.parentId`, `exceeds the supported ancestry depth (${PLANT_IMPORT_LIMITS.depth})`);
   }
   return issues;
 };

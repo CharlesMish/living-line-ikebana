@@ -24,6 +24,7 @@ import type {
   TransactionAdapters,
 } from "../input/index.ts";
 import { cloneCameraPose, type CameraPose } from "./camera.ts";
+import { safeEditQuat, safeEditVec3 } from "../core/finite.ts";
 
 export interface StudioInputMap extends OperationInputMap {
   insert: { base: Vec3; valid: boolean };
@@ -58,6 +59,16 @@ export function createDomainAdapters(prevention?: StemPrevention, profile?: Vess
     cloneGraph: clonePlantGraph,
     graphEquals: (left, right) => serializePlantGraph(left) === serializePlantGraph(right),
     cloneCamera: cloneCameraPose,
+    validateInput: {
+      insert: input => safeEditVec3(input.base) && typeof input.valid === "boolean",
+      aim: (input, context) => safeEditVec3(input.target)
+        && (input.headRotation === undefined || safeEditQuat(input.headRotation))
+        && (context.surfaceGrip === undefined || safeEditVec3(context.surfaceGrip)),
+      bend: input => safeEditVec3(input.target),
+      base: input => safeEditVec3(input.base),
+      prune: input => Number.isFinite(input.distance),
+      camera: input => safeEditVec3(input.pose.position) && safeEditVec3(input.pose.target) && safeEditVec3(input.pose.up),
+    },
     placePending(graph, _spec, input) {
       const vesselProfile = typeof profile === "function" ? profile() : profile;
       const placed = placePendingAt(graph, input.base);

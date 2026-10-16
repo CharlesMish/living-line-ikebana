@@ -1,7 +1,8 @@
 /**
  * Opt-in rendered evidence for GitHub Actions. This is an assisted regression
  * workflow, not a blind player, physical phone trial, or performance benchmark.
- * All edits use ordinary UI input. The test bridge is read-only throughout.
+ * App workflow edits use ordinary UI input; their test bridge is read-only.
+ * The separately labelled renderer harness invokes core APIs on test fixtures.
  *
  * The job installs pinned Playwright outside the application, builds dist, then
  * calls this script with IKEBANA_RENDER_EVIDENCE=1 and PLAYWRIGHT_MODULE set.
@@ -21,6 +22,7 @@ import { checkVioletCuttings } from "./violet-cuttings.mjs";
 import { checkFlowerCraft } from "./flower-craft.mjs";
 import { checkGardenVisit } from "./garden-visit.mjs";
 import { checkSilverSeedAnatomy } from "./silver-seed-anatomy.mjs";
+import { checkRenderingEfficiency } from "./render-efficiency.mjs";
 
 if (process.env.IKEBANA_RENDER_EVIDENCE !== "1") {
   console.log("SKIP rendered evidence (set IKEBANA_RENDER_EVIDENCE=1 to enable)");
@@ -33,7 +35,7 @@ const record = {
   testedCommit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
   proposedHead: process.env.IKEBANA_PR_HEAD ?? null,
   browser: null,
-  input: "Assisted UI regression: ordinary keyboard insertion, locator clicks/taps, select options, and arrow-key sliders. No scripted graph mutation or guessed canvas targets.",
+  input: "App workflow cases: assisted ordinary keyboard insertion, locator clicks/taps, select options, and arrow-key sliders. Separate rendering-efficiency harness explicitly constructs fixtures and invokes core edit APIs; it is not player evidence.",
   limitations: [
     "Chromium with requested SwiftShader software rendering, not a physical phone or Safari.",
     "Viewport emulation and 150% root text are layout probes, not full browser accessibility-zoom coverage.",
@@ -348,6 +350,7 @@ try {
   browser = await chromium.launch({ headless: true, args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   record.browser = browser.version();
   for (const config of cases) await exercise(config);
+  record.renderingEfficiency = await checkRenderingEfficiency({ browser, baseURL, output });
   record.violetCuttings = await checkVioletCuttings({ browser, baseURL, output });
   record.gardenVisit = await checkGardenVisit({ browser, baseURL, output, cases });
   record.flowerCraft = await checkFlowerCraft({ browser, baseURL, output });

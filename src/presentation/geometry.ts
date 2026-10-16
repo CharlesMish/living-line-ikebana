@@ -180,22 +180,31 @@ export function updateTubeGeometry(
   capEnds = false,
 ) {
   const safePoints = points.length >= 2 ? points : [points[0], points[0]].filter(Boolean) as Vec3[];
-  if (safePoints.length < 2) {
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute([], 3));
-    geometry.setAttribute("normal", new THREE.Float32BufferAttribute([], 3));
-    geometry.setIndex([]);
-    geometry.boundingSphere = new THREE.Sphere();
-    return geometry;
-  }
-
-  const data = tubeData(safePoints, baseRadius, referenceNormal, radialSegments, capEnds);
+  const data = safePoints.length < 2
+    ? { positions: new Float32Array(), normals: new Float32Array(), colors: new Float32Array(), indices: new Uint16Array() }
+    : tubeData(safePoints, baseRadius, referenceNormal, radialSegments, capEnds);
+  const existingIndex = geometry.getIndex();
+  const attributesFit = ["position", "normal", "color"].every(name => {
+    const attribute = geometry.getAttribute(name);
+    return attribute instanceof THREE.BufferAttribute && attribute.array.length === data.positions.length;
+  });
+  const indexFits = existingIndex?.array.length === data.indices.length
+    && existingIndex.array.constructor === data.indices.constructor;
+  const topology = `${safePoints.length}:${radialSegments}:${capEnds}`;
+  // A disposed BufferGeometry can be reused. Free every prior GPU binding
+  // before replacing any arrays, as in the broad-blade geometry path.
+  if ((!attributesFit || !indexFits) && (Object.keys(geometry.attributes).length || existingIndex)) geometry.dispose();
   updateAttribute(geometry, "position", data.positions);
   updateAttribute(geometry, "normal", data.normals);
   updateAttribute(geometry, "color", data.colors);
-  const existingIndex = geometry.getIndex();
-  if (!existingIndex || existingIndex.array.length !== data.indices.length) {
+  if (!indexFits) {
     geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
+  } else if (geometry.userData.tubeTopology !== topology) {
+    // Equal lengths need not imply equal topology (e.g. changed facet count).
+    existingIndex!.array.set(data.indices);
+    existingIndex!.needsUpdate = true;
   }
+  geometry.userData.tubeTopology = topology;
   geometry.computeBoundingSphere();
   geometry.computeBoundingBox();
   return geometry;
@@ -211,6 +220,8 @@ export function updateLineGeometry(
     positions[index * 3 + 1] = point.y;
     positions[index * 3 + 2] = point.z;
   });
+  const existing = geometry.getAttribute("position");
+  if (existing && (!(existing instanceof THREE.BufferAttribute) || existing.array.length !== positions.length)) geometry.dispose();
   updateAttribute(geometry, "position", positions);
   geometry.computeBoundingSphere();
   return geometry;

@@ -227,6 +227,12 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "flower-volume-v1": flowerVolume,
   "compact-flower-v1": compactFlower,
   "arching-trailer-v1": archingTrailer,
+  "arching-trailer-v2": Object.freeze({
+    ...archingTrailer,
+    // Narrow lanceolate leaves, a little lighter than v1 so they read at phone distance.
+    leaf: Object.freeze({ form: "lanceolate" as const, color: 0x3f6a4b, veinColor: 0x86995f,
+      roughness: 0.64, hitRadius: 0.56, hitCenterY: 0.5 }),
+  }),
   "foliage-fan-v1": foliageFan,
   "blossom-spray-v1": blossomSpray,
   "nodding-flower-v1": noddingFlower,

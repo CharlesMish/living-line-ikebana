@@ -740,3 +740,16 @@ leaf-like midrib or pinnate vein ribbons, with restrained paper shading and the
 existing closed perimeter rim. Membrane shape, stock, attachment, tone recipes,
 editing and saved graph identity are preserved. Exact acquisition continues to
 derive from the visible membrane and rim. See the [checked consultation](development/reports/argon-followup/README.md).
+
+### Arching trailer v2 — October 21 additive stock
+
+`arching-trailer-v2` becomes the stock behind the `arching-trailer` tray ID. It is
+about 60% longer than v1 (about 4.8 units of cane at seed 8278), crests near 2.05,
+clears the Original bowl's rim by more than 0.3 from a centered seat, and drapes past
+the outer wall with its tip below the rim and above the ground. Eight alternating
+lanceolate leaves diminish toward the tip; two short side shoots each carry a leaf
+pair and can be cut separately. Authored response: cane 0.52, shoots 0.36, stalks 0.18.
+
+`arching-trailer-v1`, its fixture and every saved v1 graph are unchanged and still
+load. Frozen workbench profiles keep building v1. No craft law, solver, schema or
+persistence field changes.

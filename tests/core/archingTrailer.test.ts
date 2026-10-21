@@ -8,7 +8,7 @@ import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 import {
   aimBranch, applyPrune, bendBranch, createArchingTrailer, createFloweringBranch,
   createLeafyShoot, deserializePlantGraph, fromCanonicalPlantGraph, getMaterialDefinition,
-  legalBendStation, organPosition, prepareMaterialInsertion, previewPrune, sampleBranch,
+  getGeneratorDefinition, legalBendStation, organPosition, previewPrune, sampleBranch, successfulSeatIdentity,
   serializePlantGraph, toCanonicalPlantGraph, validatePlantGraph, add, vec3,
 } from "../../src/core/index.ts";
 import { ARCHING_TRAILER_RESPONSE } from "../../src/core/materialResponse.ts";
@@ -57,12 +57,15 @@ const polylineSamples = (points: readonly { x: number; y: number; z: number }[])
   return samples;
 };
 
-test("arching-trailer catalog entry is additive and leaves the reference fixtures unchanged", () => {
+test("arching-trailer-v1 stays registered for saved bowls and leaves the reference fixtures unchanged", () => {
   const material = getMaterialDefinition("arching-trailer");
   assert.ok(material);
   assert.equal(material.materialId, "arching-trailer");
-  assert.equal(material.generator.generatorVersion, ARCHING_TRAILER_VERSION);
-  assert.equal(material.generator.generate, createArchingTrailer);
+  // New stock comes from v2 since October 21; v1 remains a durable generator.
+  assert.equal(material.generator.generatorVersion, "arching-trailer-v2");
+  const v1 = getGeneratorDefinition(ARCHING_TRAILER_VERSION);
+  assert.ok(v1);
+  assert.equal(v1.generate, createArchingTrailer);
 
   const flowering = toCanonicalPlantGraph(createFloweringBranch("plant-1", 8278, BASE));
   assert.equal(flowering.generatorVersion, floweringFixture.generatorVersion);
@@ -87,19 +90,19 @@ test("arching-trailer catalog entry is additive and leaves the reference fixture
 });
 
 test("arching-trailer-v1 is deterministic, valid, and fixture-identical at seed 8278", () => {
+  const prepareV1 = (ordinal: number) => {
+    const identity = successfulSeatIdentity(ordinal);
+    return { ok: true as const, seed: identity.seed, graph: createArchingTrailer(identity.id, identity.seed, BASE) };
+  };
   for (const ordinal of [1, 2, 3, 17, 64]) {
-    const prepared = prepareMaterialInsertion("arching-trailer", ordinal, BASE);
-    assert.equal(prepared.ok, true);
-    if (!prepared.ok) return;
+    const prepared = prepareV1(ordinal);
     const graph = prepared.graph;
     assert.equal(graph.generatorVersion, ARCHING_TRAILER_VERSION);
     assert.equal(graph.branches.size, 4);
     assert.equal(graph.organs.size, 3);
     assert.deepEqual(validatePlantGraph(graph), []);
     assert.equal("materialId" in graph, false);
-    const repeated = prepareMaterialInsertion("arching-trailer", ordinal, BASE);
-    assert.equal(repeated.ok, true);
-    if (!repeated.ok) return;
+    const repeated = prepareV1(ordinal);
     assert.equal(serializePlantGraph(repeated.graph), serializePlantGraph(graph));
     assert.equal(serializePlantGraph(deserializePlantGraph(serializePlantGraph(graph))), serializePlantGraph(graph));
     const trail = graph.branches.get(graph.rootBranchId)!;
@@ -113,9 +116,7 @@ test("arching-trailer-v1 is deterministic, valid, and fixture-identical at seed 
     assert.equal([...graph.organs.values()].every((organ) => organ.kind === "leaf"), true);
   }
 
-  const prepared = prepareMaterialInsertion("arching-trailer", 1, BASE);
-  assert.equal(prepared.ok, true);
-  if (!prepared.ok) return;
+  const prepared = prepareV1(1);
   assert.equal(prepared.seed, 8278);
   assert.deepEqual(JSON.parse(serializePlantGraph(prepared.graph)), fixture);
 });

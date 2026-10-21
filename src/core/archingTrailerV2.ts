@@ -115,7 +115,7 @@ export function createArchingTrailerV2(id: string, seed: number, base: Vec3): Pl
       kind: "petiole",
       parentId,
       parentDistance,
-      points: makeChain(anchor.position, 0.12 + random.next() * 0.03, 3, direction, scale(anchor.tangent, -0.06)),
+      points: makeChain(anchor.position, 0.15 + random.next() * 0.04, 3, direction, scale(anchor.tangent, -0.06)),
       radius: 0.012,
       stiffness: ARCHING_TRAILER_V2_RESPONSE.stalk,
     });
@@ -136,7 +136,7 @@ export function createArchingTrailerV2(id: string, seed: number, base: Vec3): Pl
     const t = index / (CANE_LEAVES - 1);
     const fraction = 0.3 + t * 0.66 + (random.next() - 0.5) * 0.02;
     const spin = azimuth + (index % 2 === 0 ? 0 : Math.PI) + (random.next() - 0.5) * 0.36;
-    const size = 0.48 - t * 0.16 + random.next() * 0.04;
+    const size = 0.96 - t * 0.36 + random.next() * 0.08;
     addLeaf(trail.id, trail.activeLength * fraction, `${index + 1}`, spin, size, Math.max(0, t - 0.3));
   }
 
@@ -158,8 +158,8 @@ export function createArchingTrailerV2(id: string, seed: number, base: Vec3): Pl
       stiffness: ARCHING_TRAILER_V2_RESPONSE.shoot,
     });
     const spin = azimuth + index * Math.PI;
-    addLeaf(shoot.id, shoot.activeLength * 0.55, `s${index + 1}-a`, spin, 0.34 + random.next() * 0.04, 0.2);
-    addLeaf(shoot.id, shoot.activeLength * 0.97, `s${index + 1}-b`, spin + Math.PI, 0.3 + random.next() * 0.04, 0.3);
+    addLeaf(shoot.id, shoot.activeLength * 0.55, `s${index + 1}-a`, spin, 0.72 + random.next() * 0.08, 0.2);
+    addLeaf(shoot.id, shoot.activeLength * 0.97, `s${index + 1}-b`, spin + Math.PI, 0.62 + random.next() * 0.08, 0.3);
   }
 
   return graph;

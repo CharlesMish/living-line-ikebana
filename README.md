@@ -2,7 +2,7 @@
 
 **[Open Living Line in your browser](https://charlesmish.github.io/living-line-ikebana/)**
 
-A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and twelve persistent cutting materials. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
+A mobile-first interaction study for an eventual ikebana creative game. The toy begins with an empty shallow vessel and nineteen persistent cutting materials, some under More cuttings. Every placed cutting remains the same editable botanical graph through insertion, aiming, bending, base movement, pruning, inspection, saving, and later revision.
 
 A quiet botanical arrangement study influenced by shallow-vessel moribana and the
 expressive openness of modern ikebana. These are influences, not a school curriculum.
@@ -10,7 +10,7 @@ The current experience has no score, progression, shop or correctness judgment.
 
 ## Current alpha
 
-The current palette contains twelve cutting materials, built on the protected flowering-branch and leafy-shoot reference pair. It supports repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. Garden now adds a first creative loop: keep a moment, revisit it, make a working copy, or begin a fresh bowl.
+The current palette contains nineteen cutting materials, built on the protected flowering-branch and leafy-shoot reference pair. It supports repeatable cuttings, persistent shaping and pruning, constrained camera inspection, and committed-state local autosave. Garden now adds a first creative loop: keep a moment, revisit it, make a working copy, or begin a fresh bowl.
 
 Future flowers, branch structures, and a calm core loop should extend this baseline without replacing its identity, length, pruning, transaction, or camera-ownership laws. Those laws are collected in [`docs/BEHAVIORAL_CONTRACT.md`](docs/BEHAVIORAL_CONTRACT.md); contributors and coding agents should also read [`AGENTS.md`](AGENTS.md).
 

@@ -1,6 +1,6 @@
 # Development and review index
 
-Start with the [project README](../../README.md) for the current twelve-material
+Start with the [project README](../../README.md) for the current nineteen-material
 alpha, Garden, gestures and local setup. For current contribution boundaries read
 [AGENTS.md](../../AGENTS.md), the [behavioral contract](../BEHAVIORAL_CONTRACT.md)
 and [architecture](../../ARCHITECTURE.md).
@@ -24,6 +24,8 @@ and [architecture](../../ARCHITECTURE.md).
   [material briefs](MATERIAL_BRIEFS.md), and [direction proposal](DIRECTION.md)
   preserve their original commissioning context and collaborator attribution.
 - [Reports and captures](reports/) retain the evidence for their recorded branches.
+- [October 2026 harvest](HARVEST_2026-10.md) keeps what is still useful from twelve
+  PRs closed without merging, including the opening-line and occasion copy from #86.
 
 Existing `REVIEW_*`, `*-REVIEW.md` and report paths remain unchanged, including
 those linked from Material References. A historical brief is not a fresh task;

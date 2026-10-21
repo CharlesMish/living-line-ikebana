@@ -14,9 +14,10 @@ test("insertion bindings stay on one source card; palette choices cannot insert"
 
   const choiceIds = [...html.matchAll(/data-material-choice="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(choiceIds, [
-    "flowering-branch", "reed", "arching-trailer", "foliage-fan",
-    "blossom-spray", "nodding-flower", "berry-twig", "fern-frond", "compact-flower",
-    "lobed-leaf", "broad-blade", "violet-sprig", "indigo-spire", "starry-pincushion", "silver-seed", "single-flower", "bare-branch", "leafy-shoot", "flower-volume",
+    "flowering-branch", "bare-branch", "leafy-shoot", "reed", "arching-trailer", "foliage-fan",
+    "blossom-spray", "flower-volume", "nodding-flower", "berry-twig", "fern-frond",
+    "lobed-leaf", "broad-blade", "violet-sprig", "indigo-spire", "starry-pincushion", "silver-seed",
+    "compact-flower", "single-flower",
   ]);
 
   const optionsBlock = html.slice(html.indexOf('id="material-options"'), html.indexOf("</nav>", html.indexOf('id="material-options"')));
@@ -53,11 +54,16 @@ test("material list overflow follows the scrollport edges", () => {
 });
 
 
-test("Single flower remains available with its source template under More cuttings", () => {
+test("Compact and Single flower stay available under More cuttings; promoted cuttings sit in the main tray", () => {
   const start = html.indexOf('<details id="material-more"');
   const more = html.slice(start, html.indexOf("</details>", start));
   assert.match(more, /data-material-choice="single-flower"/);
+  assert.match(more, /data-material-choice="compact-flower"/);
   assert.match(html, /id="material-template-single-flower"/);
+  assert.match(html, /id="material-template-compact-flower"/);
+  for (const id of ["bare-branch", "leafy-shoot", "flower-volume", "reed"]) {
+    assert.ok(html.indexOf(`data-material-choice="${id}"`) < start, `${id} is in the main tray`);
+  }
   for (const id of ["violet-sprig", "indigo-spire", "starry-pincushion"]) {
     assert.ok(html.indexOf(`data-material-choice="${id}"`) < start);
     const templateStart = html.indexOf(`id="material-template-${id}"`);

@@ -589,7 +589,8 @@ from CPU probes and automated geometry checks.
 ## October 13 botanical and photo candidate — physical phone still required
 
 1. Confirm Angles → Stem overlaps starts on. Prevent overlaps remains an explicit
-   opt-in. Bare branch / Leafy shoot / Flower volume remain under Materials → More cuttings.
+   opt-in. (Since October 21, Bare branch / Leafy shoot / Flower volume are back in the
+   main tray, and Compact flower / Single flower sit under More cuttings.)
 2. Single flower: grab the visible bloom and tilt left/right and up/down. Check
    sensitivity, no starting jump, Undo, and an interrupted grab. Its stalk still
    uses ordinary Aim. Report any repeated first-drag freeze; it is unresolved.

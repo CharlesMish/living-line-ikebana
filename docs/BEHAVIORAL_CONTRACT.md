@@ -610,6 +610,12 @@ More cuttings; they are neither deleted nor converted in saved bowls. Compact
 flower has one small tufted organ on its own pedicel, not a scaled copy of the
 five-organ volume head. It retains the existing stalk and tuft acquisition law.
 
+**October 21 tray revision.** Bare branch, Leafy shoot and Flower volume return to
+the main tray; Compact flower and Single flower move under More cuttings. Reed
+stays in the main tray. Tray order is presentation only: catalog registration
+order, generator versions, saved graphs and frozen workbench profiles are
+unchanged.
+
 Single flower's October 13 appearance revision replaces its shallow five-petal
 dish with a connected open cup and rear receptacle. Only derived mesh appearance
 changes: the `single-flower-v1` generator, fixture, frame, scale, 0.7 acquisition

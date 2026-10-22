@@ -20,11 +20,13 @@ function noise(x: number, y: number, periodX: number, periodY: number, seed: num
 }
 
 /** Small CPU-authored maps; no canvas, image decoding, network or random state. */
-export function createPerchSurface(kind: PerchSurface): THREE.MeshStandardMaterial {
+export function createPerchSurface(kind: PerchSurface, tint?: readonly [number, number, number]): THREE.MeshStandardMaterial {
   const width = kind === "wood" ? 256 : 128, height = 128;
   const rgb = new Uint8Array(width * height * 4), relief = new Uint8Array(width * height);
-  const base = kind === "wood" || kind === "endgrain" ? [137, 108, 79]
-    : kind === "stone" ? [158, 157, 146] : [215, 207, 189];
+  // An optional base colour reuses the same frozen relief for other rooms
+  // (the home's hinoki, juraku plaster); existing perches pass none.
+  const base = tint ?? (kind === "wood" || kind === "endgrain" ? [137, 108, 79]
+    : kind === "stone" ? [158, 157, 146] : [215, 207, 189]);
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
     const u = x / width, v = y / height;
     const fine = noise(u * 64, v * 64, 64, 64, 91) - .5;

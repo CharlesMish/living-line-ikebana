@@ -405,10 +405,28 @@ export class IkebanaApp {
         returnToArrange: () => { if (!this.workingSession) this.handleUICommand({ kind: "set-posture", posture: "arrange" }, new Event("photo-return")); },
         canKeep: () => !this.workingSession,
         keep: (snapshot, thumbnail, title) => this.gardenUI.keepPhotograph(snapshot, thumbnail, title),
+        ...(this.config.home ? { placeAtHome: (entryId: string, opener: HTMLElement) => this.gardenUI.openHome(opener, entryId) } : {}),
       });
     }
+    if (this.config.home) this.setupHome(root);
     this.setupVesselUI();
 
+  }
+
+  /** Opt-in home room: a Studio menu entry, and Visit opens the room. */
+  private setupHome(root: HTMLElement) {
+    this.gardenUI.enableHome(`${this.storageKeys.garden}:home-v1`);
+    const garden = root.querySelector<HTMLButtonElement>("#garden-open");
+    if (!garden) return;
+    const home = document.createElement("button");
+    home.type = "button"; home.id = "home-open"; home.setAttribute("aria-haspopup", "dialog");
+    home.setAttribute("aria-label", "Home — your room and the places in it");
+    home.innerHTML = "Home <span>Your room and its places</span>";
+    garden.before(home);
+    home.addEventListener("click", () => {
+      this.ui.setState({ moreMenuOpen: false });
+      this.gardenUI.openHome(root.querySelector<HTMLButtonElement>("#more-toggle") ?? home);
+    });
   }
 
   private createStudio() {

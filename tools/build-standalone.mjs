@@ -337,6 +337,15 @@ try {
     await writeFile(target, withPlaceBake(html, entry.token), "utf8");
     console.log(`Wrote ${path.relative(projectDirectory, target)}.`);
   }
+
+  // Opt-in home preview: the published tap-and-drag entry with the home room
+  // switched on, for trying it without a URL flag (for example on a phone).
+  if (process.env.LIVING_LINE_HOME === "1") {
+    const target = path.join(distributionDirectory, "home-preview.html");
+    const injection = `<script>globalThis.__LL_PLACE__="2";globalThis.__LL_HOME__="1";</script>\n`;
+    await writeFile(target, html.replace(/<script\b/i, `${injection}<script`), "utf8");
+    console.log(`Wrote ${path.relative(projectDirectory, target)}.`);
+  }
 } catch (error) {
   console.error(error instanceof Error ? error.stack ?? error.message : error);
   process.exitCode = 1;

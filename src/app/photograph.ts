@@ -18,6 +18,8 @@ interface PhotoActions {
   returnToArrange(): void;
   canKeep(): boolean;
   keep(snapshot: ArrangementSnapshot, thumbnail: string | null, title: string): string;
+  /** Opt-in home: offered after a successful keep. */
+  placeAtHome?(entryId: string, opener: HTMLElement): void;
 }
 type PhotoStudio = Pick<ThreeStudio, "upsertGraph" | "setPhotoLighting" | "setPhotoAdjustments" | "setPhotoStage" | "setStemFibers" | "setCanonicalView" | "getCameraPose" | "setCameraPose" | "capturePhotoFrame" | "dispose">;
 type PhotoStudioFactory = (canvas: HTMLCanvasElement, scene: SceneSettings) => PhotoStudio;
@@ -101,6 +103,7 @@ export class Photograph {
         <p class="panel-note">Makes a full-size image you can save or share.</p>
         <label>Garden title <input id="photo-name" type="text" maxlength="80" placeholder="A quiet afternoon"></label>
         <button id="photo-keep" type="button">Keep photo in Garden</button>
+        <button id="photo-place-home" type="button" hidden>Give it a place at home</button>
         <p class="panel-note">Garden keeps the scene and view with a small cover image.</p>
         </fieldset>
         <section id="photo-result" class="photo-result" hidden aria-labelledby="photo-result-title">
@@ -204,6 +207,11 @@ export class Photograph {
     this.find("photo-download").addEventListener("click", () => this.deliveryMessage(`Download requested. If no file appears, try ${this.shareData ? "Share image or " : ""}Open image.`), { signal });
     this.find("photo-open-image").addEventListener("click", () => { this.imageExport.preserveOpenedImage(); this.deliveryMessage("Open requested. If your browser opens a new image tab, use its save or share options."); }, { signal });
     this.find("photo-keep").addEventListener("click", () => this.keep(), { signal });
+    this.find("photo-place-home").addEventListener("click", () => {
+      const id = this.dialog.dataset.keptId, button = this.find("photo-place-home");
+      if (!id || !this.actions.placeAtHome) return;
+      button.hidden = true; this.actions.placeAtHome(id, button);
+    }, { signal });
     this.find<HTMLCanvasElement>("photo-canvas").addEventListener("webglcontextlost", (event) => {
       event.preventDefault(); this.graphicsReady = false; this.changedFrame();
       this.find<HTMLButtonElement>("photo-keep").disabled = true;
@@ -232,6 +240,7 @@ export class Photograph {
     this.graphicsReady = false; this.draftReady = false;
     this.find<HTMLButtonElement>("photo-export").disabled = true;
     this.find<HTMLButtonElement>("photo-keep").disabled = true;
+    this.find("photo-place-home").hidden = true;
     delete this.dialog.dataset.keptId;
     try {
       const scene = this.snapshot.scene ?? DEFAULT_SCENE;
@@ -436,6 +445,7 @@ export class Photograph {
       const id = this.actions.keep(snapshot, thumbnail, this.value("photo-name"));
       this.dialog.dataset.keptId = id;
       this.message("Photo kept in Garden. Your working bowl is unchanged.");
+      if (this.actions.placeAtHome) this.find("photo-place-home").hidden = false;
     } catch (error) { this.message(error instanceof Error ? error.message : String(error)); }
   }
   private release(remember = true) {

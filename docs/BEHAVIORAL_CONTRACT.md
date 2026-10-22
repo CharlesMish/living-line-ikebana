@@ -740,3 +740,33 @@ leaf-like midrib or pinnate vein ribbons, with restrained paper shading and the
 existing closed perimeter rim. Membrane shape, stock, attachment, tone recipes,
 editing and saved graph identity are preserved. Exact acquisition continues to
 derive from the visible membrane and rim. See the [checked consultation](development/reports/argon-followup/README.md).
+
+### Home room — October 22 opt-in study
+
+`?home=1` (or a build baked with `LIVING_LINE_HOME=1`, which writes
+`dist/home-preview.html`) replaces Visit your Garden with **Home**: a six-mat
+washitsu with named places. Arrangement places are the tokonoma, a low table, a
+window desk under shoji, and a lower and upper chigaidana shelf; the scroll in
+the tokonoma shows a kept photograph. Without the flag nothing changes.
+
+- **References only.** A separate per-browser key (`<garden key>:home-v1`)
+  records which kept entry stands in which place. Garden entries, their graphs,
+  photographs and the Garden schema are never copied, rewritten or deleted.
+  Opening writes nothing; a first visit seeds from the Visit display, else the
+  newest entries, and leaves a moment being placed unplaced. Stale tabs and
+  failed writes change nothing.
+- **One place per arrangement.** Placing an entry that already stands elsewhere
+  swaps the two places; a displaced piece returns to the Garden. The scroll is
+  independent and accepts only entries kept with a photograph.
+- **Fit is physical, never a judgement.** A place refuses an arrangement only
+  when its vessel is wider than the surface or its highest point exceeds the
+  place's headroom. The upper shelf is deliberately the tight place. Pieces are
+  never rescaled, rerolled or moved to fit.
+- **Keep, then place.** After Keep (Garden or Photograph) the flag offers "Give
+  it a place at home", which opens the room in placing mode with rings marking
+  where the piece fits. Placing in the tokonoma under a bare scroll also hangs
+  that piece's photograph.
+- **Static presentation.** Displayed pieces and the room are merged into one
+  batch per rendered material; originals are hidden, not removed, so their
+  builders still dispose them. Working copies go through the existing Keep
+  first / Replace / Cancel path.

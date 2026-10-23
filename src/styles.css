@@ -894,7 +894,17 @@ noscript {
 }
 
 @media (max-width: 640px) {
-  .wordmark { display: none; }
+  .wordmark {
+    display: inline-flex;
+    margin: 0;
+    font-size: 0;
+    letter-spacing: 0;
+    gap: 0;
+  }
+  .wordmark-mark {
+    width: 0.55rem;
+    height: 1.15rem;
+  }
   .top-row { justify-content: space-between; }
   .segmented button { padding-inline: 0.6rem; letter-spacing: 0; }
   .material-card { grid-template-columns: minmax(0, 1fr) auto; }

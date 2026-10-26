@@ -67,3 +67,14 @@
 }
 #garden-place-home { display:block; margin:2px 0 12px; }
 #garden-place-home[hidden], #photo-place-home[hidden] { display:none; }
+/* While arranging for a place: a quiet note of where the piece is going. */
+.place-brief { position:fixed; z-index:30; left:16px; bottom:64px; box-sizing:border-box; max-width:300px; padding:11px 13px 12px; border:1px solid #d3cbb8; border-radius:14px; background:#f6f1e6f2; color:#3a3a2e; box-shadow:0 6px 24px #2a261c1f; font-size:.82rem; }
+.place-brief[hidden] { display:none; }
+.place-brief .eyebrow { margin:0 0 3px; font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; color:#7d775f; }
+.place-brief p { margin:0; }
+.place-brief-room { margin-top:3px!important; color:#7a755f; font-size:.74rem; }
+.place-brief-room:empty { display:none; }
+.place-brief-actions { display:flex; gap:6px; margin-top:9px; }
+.place-brief button { min-height:36px; border:1px solid #d2c9b4; border-radius:12px; padding:6px 11px; background:#fbf8f0; color:#3a3a2e; font:inherit; font-size:.78rem; cursor:pointer; }
+.place-brief #place-brief-keep { background:#4d5d3c; border-color:#4d5d3c; color:#fbf8ef; }
+@media (max-width:600px) { .place-brief { left:8px; right:8px; bottom:56px; max-width:none; padding:9px 11px 10px; } }

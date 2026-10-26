@@ -231,3 +231,38 @@ test("a swap that would push a tall piece onto the upper shelf is refused and no
     assert.match(h.find("home-picker-message").textContent, /Too tall here/);
   } finally { h.finish(); }
 });
+
+test("from a place, Make starts a bowl for it: empty places start fresh, occupied ones from a copy", () => {
+  const h = setup();
+  try {
+    const made: [string, GardenEntry | null][] = [];
+    h.ui.onMakeFor = (place, entry) => made.push([place, entry]);
+    h.open();
+    h.click("home-place-shelf-low");
+    assert.equal(h.find("home-make").hidden, false);
+    assert.equal(h.find("home-make").textContent, "Make something for this place");
+    h.click("home-make");
+    h.click("home-place-table");
+    assert.equal(h.find("home-make").textContent, "Make a new version for this place");
+    assert.equal(h.find("home-copy").hidden, true, "the new-version action replaces the plain copy");
+    h.click("home-make");
+    assert.deepEqual(made.map(([place, entry]) => [place, entry?.id ?? null]), [["shelf-low", null], ["table", "c"]]);
+    assert.notEqual(made[1]![1], h.originals[2], "a clone, never the kept original");
+    h.click("home-place-scroll"); assert.equal(h.find("home-make").hidden, true);
+    assert.equal(h.writes(), 0);
+  } finally { h.finish(); }
+});
+
+test("a piece made for a place opens at that place, and placing it there reports back", () => {
+  const h = setup();
+  try {
+    const placed: [string, string][] = [];
+    h.ui.onPlaced = (entry, place) => placed.push([entry, place]);
+    h.ui.open(h.originals, h.find("home-close") as unknown as HTMLElement, "v", "shelf-high");
+    assert.equal(h.focus.at(-1), "shelf-high");
+    assert.equal(h.find("home-place-here").disabled, false);
+    h.click("home-place-here");
+    assert.deepEqual(placed, [["v", "shelf-high"]]);
+    assert.equal(JSON.parse(h.raw()!).places["shelf-high"], "v");
+  } finally { h.finish(); }
+});

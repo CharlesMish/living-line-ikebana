@@ -237,3 +237,8 @@ the scroll photograph, with on-demand rendering and a short eased camera move
 between places. `app/homeStore.ts` persists place → entry references beside the
 Garden; `app/homeUI.ts` is the dialog. `GardenUI.enableHome` and
 `IkebanaApp.setupHome` wire it only when `config.home` is set.
+
+`GardenUI` owns the optional place intent for the "make something for this
+place" loop: `HomeUI.onMakeFor` starts it through `offerReplacement(…, after)`,
+the brief card shows it while arranging, and `HomeUI.onPlaced` clears it. Places
+carry an `at` phrase so messages read naturally ("on the low table").

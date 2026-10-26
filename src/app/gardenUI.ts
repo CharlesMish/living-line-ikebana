@@ -3,6 +3,7 @@ import { GardenWall } from "./gardenWall.ts";
 import { GardenVisitUI } from "./gardenVisitUI.ts";
 import { HomeUI } from "./homeUI.ts";
 import { HomeStore } from "./homeStore.ts";
+import { homePlace, type HomePlaceId } from "../presentation/homePlaces.ts";
 import { GardenDisplayStore } from "./gardenDisplay.ts";
 import "./gardenWall.css";
 import {
@@ -51,6 +52,8 @@ export class GardenUI {
   private visit: GardenVisitUI | null = null;
   private home: HomeUI | null = null;
   private homeKey: string | null = null;
+  /** A place the working bowl is being made for (home only). Session memory. */
+  private intent: { placeId: HomePlaceId; fromId: string | null } | null = null;
   private entries: GardenEntry[] = [];
   private pending: (() => void) | null = null;
   private viewedEntry: GardenEntry | null = null;
@@ -294,10 +297,10 @@ export class GardenUI {
     this.store.keep({ id, title: title.trim().slice(0, 80), keptAt: new Date().toISOString(), thumbnail, arrangement });
     return id;
   }
-  private keep() {
+  private keep(fallbackTitle = "") {
     if (this.actions.isViewing()) throw new Error("Make a working copy before keeping another version.");
     const entry: GardenEntry = {
-      id: createGardenEntryId(), title: this.find<HTMLInputElement>("#garden-name").value.trim(),
+      id: createGardenEntryId(), title: this.find<HTMLInputElement>("#garden-name").value.trim() || fallbackTitle,
       keptAt: new Date().toISOString(), thumbnail: this.actions.thumbnail(), arrangement: this.actions.snapshot(),
     };
     this.store.keep(entry);
@@ -315,9 +318,9 @@ export class GardenUI {
     delete this.root.dataset.gardenViewing;
     this.find<HTMLButtonElement>("#more-toggle").focus();
   }
-  private offerReplacement(snapshot: ArrangementSnapshot | null) {
+  private offerReplacement(snapshot: ArrangementSnapshot | null, after?: () => void) {
     this.returnToWork(); this.open();
-    this.pending = () => { this.actions.replace(snapshot); this.dialog.close(); };
+    this.pending = () => { this.actions.replace(snapshot); this.dialog.close(); after?.(); };
     if (!this.actions.snapshot().plants.length) { this.finishReplacement(); return; }
     this.find("#garden-choice-title").textContent = "What about your current bowl?";
     this.find("#garden-choice p").textContent = "Keep it first, or replace it. Your existing Garden entries will stay as they are.";
@@ -575,6 +578,42 @@ export class GardenUI {
     place.type = "button"; place.id = "garden-place-home"; place.hidden = true; place.textContent = "Give it a place at home";
     this.error.after(place);
     place.addEventListener("click", () => this.run(() => this.openHome(place, place.dataset.entryId ?? null)), { signal: this.controller.signal });
+    const brief = document.createElement("aside");
+    brief.id = "place-brief"; brief.className = "place-brief"; brief.hidden = true;
+    brief.setAttribute("aria-label", "The place you are arranging for");
+    brief.innerHTML = `<p class="eyebrow" id="place-brief-title"></p><p id="place-brief-suits"></p><p id="place-brief-room" class="place-brief-room"></p>
+      <div class="place-brief-actions"><button id="place-brief-keep" type="button">Keep it for this place</button><button id="place-brief-close" type="button" aria-label="Set this place aside">Set aside</button></div>`;
+    this.root.append(brief);
+    brief.querySelector("#place-brief-keep")!.addEventListener("click", () => this.run(() => this.keepForPlace()), { signal: this.controller.signal });
+    brief.querySelector("#place-brief-close")!.addEventListener("click", () => this.setIntent(null), { signal: this.controller.signal });
+  }
+
+  /** From Home: start a bowl for a place (fresh, or a working copy of what stands there). */
+  private startForPlace(placeId: HomePlaceId, from: GardenEntry | null) {
+    this.home?.close();
+    this.offerReplacement(from ? from.arrangement : null, () => this.setIntent({ placeId, fromId: from?.id ?? null }));
+  }
+  private setIntent(intent: { placeId: HomePlaceId; fromId: string | null } | null) {
+    this.intent = intent;
+    const brief = this.root.querySelector<HTMLElement>("#place-brief");
+    if (!brief) return;
+    const place = intent ? homePlace(intent.placeId) : null;
+    brief.hidden = !place;
+    if (!place) return;
+    brief.querySelector("#place-brief-title")!.textContent = `${intent!.fromId ? "A new version for" : "For"} the ${place.label.toLowerCase()}`;
+    brief.dataset.place = place.id;
+    brief.querySelector("#place-brief-suits")!.textContent = place.suits;
+    brief.querySelector("#place-brief-room")!.textContent = place.clearance < 15 ? `About ${place.clearance.toFixed(1)} of headroom.` : "";
+  }
+  /** Keep the working bowl and go straight to giving it the intended place. */
+  private keepForPlace() {
+    if (!this.intent || !this.homeKey) return;
+    const place = homePlace(this.intent.placeId)!;
+    this.reload();
+    if (!this.loaded) return;
+    if (!this.actions.snapshot().plants.length) throw new Error("Place a cutting first.");
+    this.keep(`For the ${place.label.toLowerCase()}`);
+    this.openHome(this.root.querySelector<HTMLElement>("#place-brief-keep")!, this.justKeptId);
   }
   get homeEnabled() { return this.homeKey !== null; }
   private offerHomePlacement(id: string | null) {
@@ -590,16 +629,21 @@ export class GardenUI {
     this.reload();
     if (!this.loaded) return;
     this.offerHomePlacement(null);
-    this.home ??= new HomeUI(this.find(".garden-host"), new HomeStore(this.homeKey, this.displayKey),
-      entry => this.run(() => { if (!this.dialog.open) this.open(); this.offerReplacement(entry.arrangement); }),
-      () => { try { return localStorage.getItem(this.displayKey); } catch { return null; } });
-    this.home.open(this.entries, opener, placingId);
+    if (!this.home) {
+      this.home = new HomeUI(this.find(".garden-host"), new HomeStore(this.homeKey, this.displayKey),
+        entry => this.run(() => { if (!this.dialog.open) this.open(); this.offerReplacement(entry.arrangement); }),
+        () => { try { return localStorage.getItem(this.displayKey); } catch { return null; } });
+      this.home.onMakeFor = (placeId, entry) => this.run(() => this.startForPlace(placeId, entry));
+      this.home.onPlaced = (_entryId, placeId) => { if (this.intent?.placeId === placeId) this.setIntent(null); };
+    }
+    this.home.open(this.entries, opener, placingId, placingId ? this.intent?.placeId ?? null : null);
   }
   destroy() {
     this.controller.abort();
     this.wall.destroy();
     this.visit?.destroy();
     this.home?.destroy();
+    this.root.querySelector("#place-brief")?.remove();
     try { this.reduceCompare({ type: "interrupt" }); } catch { /* Teardown still releases the viewports. */ }
     this.comparing = false;
     this.comparison = null;

@@ -296,7 +296,7 @@ test("cancelled arching-trailer insertion consumes no ordinal and writes no save
   }, { onAutosave: event => saves.push(event) });
   const prepared = prepareMaterialInsertionForApp("arching-trailer", 0);
   assert.ok(prepared.ok);
-  assert.equal(prepared.graph.generatorVersion, "arching-trailer-v1");
+  assert.equal(prepared.graph.generatorVersion, "arching-trailer-v2");
   coordinator.beginInsert("cancel-trailer", reservationFrom(prepared), {}, { base: BASE, valid: true });
   coordinator.pointerCancel("cancel-trailer");
   assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 0);
@@ -307,8 +307,8 @@ test("cancelled arching-trailer insertion consumes no ordinal and writes no save
   assert.equal(coordinator.getDebugState().successfulPlantOrdinal, 1);
   assert.equal(saves.length, 1);
   const seated = coordinator.getDocumentSnapshot().plants.get("plant-1");
-  assert.equal(seated.generatorVersion, "arching-trailer-v1");
-  assert.equal(seated.branches.get("plant-1:trail").stiffness, 0.5);
+  assert.equal(seated.generatorVersion, "arching-trailer-v2");
+  assert.equal(seated.branches.get("plant-1:trail").stiffness, 0.52);
   assert.deepEqual(validatePlantGraph(seated), []);
 });
 

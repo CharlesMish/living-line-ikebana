@@ -24,6 +24,7 @@ export * from "./noddingFlower.ts";
 export * from "./berryTwig.ts";
 export * from "./fernFrond.ts";
 export * from "./fernFrondV2.ts";
+export * from "./archingTrailerV2.ts";
 export * from "./blossomSprayV2.ts";
 export * from "./noddingFlowerV2.ts";
 export * from "./broadBlade.ts";

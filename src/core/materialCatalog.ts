@@ -9,6 +9,7 @@ import { createBlossomSpray, BLOSSOM_SPRAY_VERSION } from "./blossomSpray.ts";
 import { createFoliageFan, FOLIAGE_FAN_VERSION } from "./foliageFan.ts";
 import { createFernFrond, FERN_FROND_VERSION } from "./fernFrond.ts";
 import { createFernFrondV2, FERN_FROND_V2_VERSION } from "./fernFrondV2.ts";
+import { createArchingTrailerV2, ARCHING_TRAILER_V2_VERSION } from "./archingTrailerV2.ts";
 import { createBlossomSprayV2, BLOSSOM_SPRAY_V2_VERSION } from "./blossomSprayV2.ts";
 import { createNoddingFlowerV2, NODDING_FLOWER_V2_VERSION } from "./noddingFlowerV2.ts";
 import { createNoddingFlower, NODDING_FLOWER_VERSION } from "./noddingFlower.ts";
@@ -124,6 +125,7 @@ const fernFrondV1: GeneratorDefinition = Object.freeze({
 
 const broadBladeV1: GeneratorDefinition = Object.freeze({ generatorVersion: BROAD_BLADE_VERSION, generate: createBroadBlade });
 
+const archingTrailerV2: GeneratorDefinition = Object.freeze({ generatorVersion: ARCHING_TRAILER_V2_VERSION, generate: createArchingTrailerV2 });
 const fernFrondV2: GeneratorDefinition = Object.freeze({ generatorVersion: FERN_FROND_V2_VERSION, generate: createFernFrondV2 });
 const blossomSprayV2: GeneratorDefinition = Object.freeze({ generatorVersion: BLOSSOM_SPRAY_V2_VERSION, generate: createBlossomSprayV2 });
 const noddingFlowerV2: GeneratorDefinition = Object.freeze({ generatorVersion: NODDING_FLOWER_V2_VERSION, generate: createNoddingFlowerV2 });
@@ -162,6 +164,7 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   indigoSpireV1,
   starryPincushionV1,
   silverSeedV1,
+  archingTrailerV2,
 ]);
 
 /**
@@ -179,7 +182,7 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "single-flower", generator: singleFlowerV1 }),
   Object.freeze({ materialId: "reed", generator: reedV1 }),
   Object.freeze({ materialId: "flower-volume", generator: flowerVolumeV1 }),
-  Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV1 }),
+  Object.freeze({ materialId: "arching-trailer", generator: archingTrailerV2 }),
   Object.freeze({ materialId: "foliage-fan", generator: foliageFanV1 }),
   Object.freeze({ materialId: "blossom-spray", generator: blossomSprayV2 }),
   Object.freeze({ materialId: "nodding-flower", generator: noddingFlowerV2 }),

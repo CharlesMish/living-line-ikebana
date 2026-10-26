@@ -542,6 +542,12 @@ button:focus-visible {
 .study-options:not([hidden]) { margin-top: 0.75rem; }
 .app-shell[data-tool="prune"] .studio { cursor: crosshair; }
 
+/* Curator 2026-10-26: the quiet status line speaks in the wordmark's serif voice. */
+.status-pill {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  letter-spacing: 0.02em;
+}
+
 .status-pill[data-tone="warning"] {
   color: #714b45;
   background: rgba(249, 237, 231, 0.9);

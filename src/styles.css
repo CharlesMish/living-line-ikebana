@@ -1252,3 +1252,10 @@ noscript {
   .photo-heading #photo-return { flex-basis: 106px; }
   .photo-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(65px, 29%) minmax(0, 1fr); gap: 6px; }
 }
+
+/* Curator 2026-10-26: a hairline separates the craft row (Shape/Prune, cutting, Materials)
+   from the destinations row inside the top chrome. Presentation only. */
+.craft-chrome {
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line);
+}

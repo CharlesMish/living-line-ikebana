@@ -761,7 +761,12 @@ the tokonoma shows a kept photograph. Without the flag nothing changes.
 - **Fit is physical, never a judgement.** A place refuses an arrangement only
   when its vessel is wider than the surface or its highest point exceeds the
   place's headroom. The upper shelf is deliberately the tight place. Pieces are
-  never rescaled, rerolled or moved to fit.
+  never rescaled, rerolled or moved to fit. Every place a change fills is
+  checked, including the destination of a swapped piece; if any fails, nothing
+  is saved. First-visit seeding uses the same check.
+- **Known limitation.** Fit does not test sideways reach. A branch that leans
+  far out can pass through a wall, post or the shelf above. There is no room
+  collision; that would be a separate, explicit design.
 - **Keep, then place.** After Keep (Garden or Photograph) the flag offers "Give
   it a place at home", which opens the room in placing mode with rings marking
   where the piece fits. Placing in the tokonoma under a bare scroll also hangs

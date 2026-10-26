@@ -1,6 +1,6 @@
 import type { GardenEntry, GardenStorage } from "./garden.ts";
 import { parseGardenDisplay } from "./gardenDisplay.ts";
-import { ARRANGEMENT_PLACE_IDS, HOME_PLACE_IDS, homePlace, type HomePlaceId } from "../presentation/homePlaces.ts";
+import { ARRANGEMENT_PLACE_IDS, HOME_PLACE_IDS, arrangementExtent, homePlace, placeFit, type HomePlaceId } from "../presentation/homePlaces.ts";
 
 /**
  * Which kept Garden entry sits in which place at home. References only: the
@@ -35,6 +35,36 @@ export function parseHomePlacements(raw: string): HomePlacements {
   return result as HomePlacements;
 }
 
+/** Whether one kept entry can stand (or hang) in one place. Physical only. */
+export function entryFitsPlace(placeId: HomePlaceId, entry: GardenEntry): string | null {
+  const place = homePlace(placeId);
+  if (!place) return "Choose a valid place.";
+  if (place.kind === "photograph") return entry.thumbnail ? null : "This moment was kept without a photograph.";
+  const fit = placeFit(place, arrangementExtent(entry.arrangement));
+  return fit.fits ? null : fit.reason;
+}
+
+const label = (entry: GardenEntry) => `“${entry.title || "Untitled arrangement"}”`;
+
+/**
+ * Checks every place a change would fill, not only the one chosen: a swap also
+ * moves the displaced piece, and that destination must fit too. Returns the
+ * first problem, worded for the visitor, or null.
+ */
+export function placementProblem(current: HomePlacements, placeId: HomePlaceId, entryId: string | null, entries: readonly GardenEntry[]): string | null {
+  const next = placeInHome(current, placeId, entryId);
+  for (const id of HOME_PLACE_IDS) {
+    if (next[id] === null || next[id] === current[id]) continue;
+    const entry = entries.find(item => item.id === next[id]);
+    if (!entry) return "That arrangement is no longer in your Garden.";
+    const problem = entryFitsPlace(id, entry);
+    if (!problem) continue;
+    if (id === placeId) return problem;
+    return `That would move ${label(entry)} to the ${homePlace(id)!.label.toLowerCase()}. ${problem}`;
+  }
+  return null;
+}
+
 const newest = (entries: readonly GardenEntry[]) => [...entries].sort((a, b) => Date.parse(b.keptAt) - Date.parse(a.keptAt));
 
 /**
@@ -53,8 +83,16 @@ export function initialHomePlacements(entries: readonly GardenEntry[], displayRa
       order = [centre, left, right].map(id => id !== null && known.has(id) ? id : null);
     } catch { order = []; }
   }
-  if (!order.some(id => id !== null)) order = newest(entries).slice(0, 3).map(entry => entry.id);
-  (["tokonoma", "table", "shoin"] as const).forEach((place, index) => { result[place] = order[index] ?? null; });
+  if (!order.some(id => id !== null)) order = newest(entries).map(entry => entry.id);
+  // Fill each seeded place with the first remaining candidate that fits it.
+  const candidates = order.filter((id): id is string => id !== null);
+  for (const place of ["tokonoma", "table", "shoin"] as const) {
+    const index = candidates.findIndex(id => {
+      const entry = entries.find(item => item.id === id);
+      return entry !== undefined && entryFitsPlace(place, entry) === null;
+    });
+    if (index >= 0) result[place] = candidates.splice(index, 1)[0]!;
+  }
   const withPhoto = (id: string | null) => entries.find(entry => entry.id === id && entry.thumbnail);
   result.scroll = withPhoto(result.tokonoma)?.id ?? newest(entries).find(entry => entry.thumbnail)?.id ?? null;
   return result;
@@ -112,6 +150,9 @@ export class HomeStore {
     const available = new Set(entries.map(entry => entry.id));
     const clean = Object.fromEntries(Object.entries(this.placements)
       .map(([id, entry]) => [id, entry !== null && available.has(entry) ? entry : null])) as HomePlacements;
+    // Refuse before writing if any place this change fills could not take its piece.
+    const problem = placementProblem(clean, placeId, entryId, entries);
+    if (problem) throw new Error(problem);
     const next = placeInHome(clean, placeId, entryId);
     const raw = JSON.stringify({ homeVersion: 1, places: next });
     if (raw !== this.raw) {

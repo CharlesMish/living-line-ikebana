@@ -1,6 +1,6 @@
 import type { GardenEntry } from "./garden.ts";
-import { HomeStore, emptyHomePlacements, initialHomePlacements, placeOfEntry, type HomePlacements } from "./homeStore.ts";
-import { HOME_PLACES, arrangementExtent, homePlace, placeFit, type HomePlace, type HomePlaceId } from "../presentation/homePlaces.ts";
+import { HomeStore, emptyHomePlacements, initialHomePlacements, placeOfEntry, placementProblem, type HomePlacements } from "./homeStore.ts";
+import { HOME_PLACES, homePlace, type HomePlace, type HomePlaceId } from "../presentation/homePlaces.ts";
 import { HomeStudio, type HomeEntries, type HomeMarker } from "../presentation/HomeStudio.ts";
 import "./homeRoom.css";
 
@@ -105,6 +105,8 @@ export class HomeUI {
     this.find("home-picker-message").textContent = !picker.hidden ? value : "";
   }
   private entry(id: string | null) { return id === null ? null : this.entries.find(entry => entry.id === id) ?? null; }
+  /** What would go wrong if `entryId` went to `placeId`, swaps included; null when it can. */
+  private problem(placeId: HomePlaceId, entryId: string | null) { return placementProblem(this.placements, placeId, entryId, this.entries); }
   private currentEntry() { return this.selected === null ? null : this.entry(this.placements[this.selected]); }
 
   open(entries: readonly GardenEntry[], opener: HTMLElement, placingId: string | null = null) {
@@ -128,8 +130,8 @@ export class HomeUI {
   /** The first empty place that fits, so a new keep has an obvious home. */
   private suggestedPlace(): HomePlaceId | null {
     if (!this.placing) return null;
-    const extent = arrangementExtent(this.placing.arrangement);
-    const free = HOME_PLACES.find(place => place.kind === "arrangement" && this.placements[place.id] === null && placeFit(place, extent).fits);
+    const placing = this.placing;
+    const free = HOME_PLACES.find(place => place.kind === "arrangement" && this.placements[place.id] === null && this.problem(place.id, placing.id) === null);
     return free?.id ?? null;
   }
 
@@ -158,9 +160,9 @@ export class HomeUI {
   }
   private markers(): Partial<Record<HomePlaceId, HomeMarker>> | null {
     if (!this.placing) return null;
-    const extent = arrangementExtent(this.placing.arrangement);
+    const placing = this.placing;
     return Object.fromEntries(HOME_PLACES.filter(place => place.kind === "arrangement")
-      .map(place => [place.id, placeFit(place, extent).fits ? "fits" : "blocked"]));
+      .map(place => [place.id, this.problem(place.id, placing.id) === null ? "fits" : "blocked"]));
   }
 
   private select(place: HomePlaceId | null) {
@@ -181,8 +183,7 @@ export class HomeUI {
       const label = place.kind === "photograph" ? (entry?.thumbnail ? untitled(entry) : "No photograph") : entry ? untitled(entry) : "Empty";
       this.find(`home-label-${place.id}`).textContent = label;
       button.setAttribute("aria-label", `${place.label}: ${label}`);
-      const fit = placing && place.kind === "arrangement" ? placeFit(place, arrangementExtent(placing.arrangement)) : null;
-      button.dataset.fit = fit ? (fit.fits ? "fits" : "blocked") : "";
+      button.dataset.fit = placing && place.kind === "arrangement" ? (this.problem(place.id, placing.id) === null ? "fits" : "blocked") : "";
     }
     this.find("home-overview").setAttribute("aria-pressed", String(this.selected === null));
     const place = this.selected ? homePlace(this.selected)! : null, entry = this.currentEntry();
@@ -191,17 +192,17 @@ export class HomeUI {
       : placing ? "Choose a place below, or tap one in the room. Green rings mark where it fits."
         : this.entries.length ? "Tap a place to go closer. Drag to look around." : "Keep an arrangement in your Garden, then give it a place here.";
     const fitLine = this.find("home-fit");
-    const fit = placing && place ? placeFit(place, place.kind === "arrangement" ? arrangementExtent(placing.arrangement) : null) : null;
+    const problem = placing && place ? this.problem(place.id, placing.id) : undefined;
     const swapping = Boolean(placing && entry && place?.kind === "arrangement" && placeOfEntry(this.placements, placing.id));
     const fitsText = place?.kind === "photograph" ? (placing?.thumbnail ? "Its photograph can hang here." : "This moment has no photograph to hang.")
       : entry && entry.id !== placing?.id ? (swapping ? `It fits here. “${untitled(entry)}” will trade places with it.` : `It fits here. “${untitled(entry)}” will go back to the Garden.`) : "It fits here.";
-    fitLine.hidden = !fit; fitLine.textContent = fit ? (fit.fits ? fitsText : fit.reason) : "";
-    fitLine.dataset.fits = String(Boolean(fit?.fits));
+    fitLine.hidden = problem === undefined; fitLine.textContent = problem === undefined ? "" : problem ?? fitsText;
+    fitLine.dataset.fits = String(problem === null);
 
     this.find("home-actions").hidden = place === null;
     const placeHere = this.find<HTMLButtonElement>("home-place-here");
     placeHere.hidden = !placing || !place;
-    placeHere.disabled = !fit?.fits || (place?.kind === "photograph" && !placing?.thumbnail) || !this.editable;
+    placeHere.disabled = problem !== null || !this.editable;
     placeHere.textContent = place?.kind === "photograph" ? "Hang its photograph here" : swapping ? "Swap them" : "Place it here";
     for (const id of ["home-choose", "home-clear", "home-print", "home-copy"]) this.find(id).hidden = Boolean(placing);
     this.find<HTMLButtonElement>("home-choose").disabled = !this.editable;
@@ -237,12 +238,7 @@ export class HomeUI {
   private assign(id: string | null) {
     if (!this.selected) return;
     const place = homePlace(this.selected)!;
-    const entry = this.entry(id);
-    if (entry && place.kind === "arrangement") {
-      const fit = placeFit(place, arrangementExtent(entry.arrangement));
-      if (!fit.fits) throw new Error(fit.reason);
-    }
-    if (entry && place.kind === "photograph" && !entry.thumbnail) throw new Error("This moment was kept without a photograph.");
+    // The store refuses (and writes nothing) if this, or the swap it causes, cannot fit.
     this.placements = this.store.place(this.selected, id, this.entries);
     this.updateView();
     this.hidePicker(false);
@@ -275,11 +271,11 @@ export class HomeUI {
     if (entry.thumbnail) { const image = document.createElement("img"); image.src = entry.thumbnail; image.alt = ""; button.append(image); }
     const label = document.createElement("span"); label.textContent = untitled(entry); button.append(label);
     const note = document.createElement("small");
-    const fit = place.kind === "arrangement" ? placeFit(place, arrangementExtent(entry.arrangement)) : entry.thumbnail ? { fits: true as const } : { fits: false as const, reason: "No photograph kept." };
+    const problem = this.problem(place.id, entry.id);
     const where = placeOfEntry(this.placements, entry.id);
-    note.textContent = !fit.fits ? fit.reason : where && place.kind === "arrangement" && where !== place.id ? `Now in the ${homePlace(where)!.label.toLowerCase()} · will swap` : where === place.id ? "Here now" : "";
+    note.textContent = problem ?? (where && place.kind === "arrangement" && where !== place.id ? `Now in the ${homePlace(where)!.label.toLowerCase()} · will swap` : this.placements[place.id] === entry.id ? "Here now" : "");
     if (note.textContent) button.append(note);
-    button.disabled = !fit.fits;
+    button.disabled = problem !== null;
     button.addEventListener("click", () => this.run(() => this.assign(entry.id)));
     return button;
   }

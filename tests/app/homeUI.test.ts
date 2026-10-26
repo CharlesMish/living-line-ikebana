@@ -171,7 +171,7 @@ test("the scroll only takes moments kept with a photograph", () => {
   try {
     h.open(); h.click("home-place-scroll"); h.click("home-choose");
     assert.equal(h.find("home-choice-v").disabled, true);
-    assert.match(h.find("home-choice-v").querySelector("small")!.textContent, /No photograph/);
+    assert.match(h.find("home-choice-v").querySelector("small")!.textContent, /without a photograph/);
     h.click("home-choice-a");
     assert.equal(JSON.parse(h.raw()!).places.scroll, "a");
   } finally { h.finish(); }
@@ -212,5 +212,22 @@ test("a piece placed in the tokonoma under a bare scroll hangs its own photograp
     const placed = JSON.parse(h.raw()!).places;
     assert.equal(placed.tokonoma, "a"); assert.equal(placed.scroll, "a");
     assert.match(h.find("home-message").textContent, /photograph as the scroll/);
+  } finally { h.finish(); }
+});
+
+test("a swap that would push a tall piece onto the upper shelf is refused and nothing is saved", () => {
+  const h = setup();
+  try {
+    h.open();
+    h.click("home-place-shelf-high"); h.click("home-choose"); h.click("home-choice-v"); // short violets up top
+    h.click("home-place-shelf-low"); h.click("home-choose"); h.click("home-choice-a"); // tall branch below
+    const saved = h.raw();
+    h.click("home-choose");
+    const choice = h.find("home-choice-v");
+    assert.equal(choice.disabled, true, "choosing the violets here would move the branch up");
+    assert.match(choice.querySelector("small")!.textContent, /would move “Moment a” to the upper shelf/);
+    choice.disabled = false; h.click("home-choice-v"); // even if forced, the store refuses
+    assert.equal(h.raw(), saved);
+    assert.match(h.find("home-picker-message").textContent, /Too tall here/);
   } finally { h.finish(); }
 });

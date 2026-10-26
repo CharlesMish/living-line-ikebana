@@ -64,7 +64,7 @@ test("placing swaps arrangement places, never duplicates, and the scroll is inde
 
 test("saved placements round-trip; malformed or duplicated documents are refused", () => {
   const h = setup(); h.store.load(entries);
-  const next = h.store.place("shelf-high", "d", entries);
+  const next = h.store.place("shelf-low", "d", entries);
   assert.equal(h.writes(), 1);
   assert.deepEqual(parseHomePlacements(h.raw()!), next);
   assert.throws(() => parseHomePlacements(JSON.stringify({ homeVersion: 2, places: {} })), /cannot be read/);
@@ -123,4 +123,34 @@ test("a first visit opened to place a new keep leaves that keep for the visitor 
   assert.equal(Object.values(placed).includes("b"), false);
   assert.equal(placed.tokonoma, "c");
   assert.equal(h.writes(), 0);
+});
+
+test("the store refuses any placement whose swap would leave a piece where it cannot fit", () => {
+  const short = make("s", 20); short.arrangement = createWorkbenchFixture("violet-sprig", 8278, 1);
+  const all = [...entries, short];
+  const h = setup(); h.store.load(all);
+  h.store.place("shelf-high", "s", all);
+  h.store.place("shelf-low", "a", all);
+  const saved = h.raw();
+  assert.throws(() => h.store.place("shelf-low", "s", all), /would move “a” to the upper shelf\. Too tall here/);
+  assert.equal(h.raw(), saved, "nothing written");
+  assert.throws(() => h.store.place("shelf-high", "a", all), /^Error: Too tall here/);
+  assert.throws(() => h.store.place("scroll", "a", all), /without a photograph/);
+  // Swapping with the table would put the table's tall branch on the upper shelf too.
+  assert.throws(() => h.store.place("table", "s", all), /would move “b” to the upper shelf/);
+  // Moving the short piece somewhere empty still works.
+  h.store.place("tokonoma", "s", all);
+  assert.equal(JSON.parse(h.raw()!).places["shelf-high"], null);
+  assert.equal(JSON.parse(h.raw()!).places.tokonoma, "s");
+});
+
+test("first-visit seeding only puts a piece where it fits", () => {
+  const tall = make("tall", 25);
+  tall.arrangement = { ...tall.arrangement, plants: tall.arrangement.plants.map(plant => ({ ...plant, branches: plant.branches.map(branch => ({ ...branch, points: branch.points.map(point => ({ ...point, y: point.y * 3 })) })) })) };
+  const placed = initialHomePlacements([tall, ...entries], null);
+  assert.equal(placed.tokonoma, "tall", "the tokonoma has the headroom");
+  const shoinOnly = initialHomePlacements([make("x", 1), tall], JSON.stringify({ displayVersion: 1, slots: [null, "x", "tall"] }));
+  assert.equal(shoinOnly.tokonoma, "x");
+  assert.equal(shoinOnly.table, "tall");
+  assert.notEqual(shoinOnly.shoin, "tall", "too tall for the window desk, so it is not seeded there");
 });

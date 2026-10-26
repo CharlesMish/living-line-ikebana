@@ -10,6 +10,8 @@ import {
 } from "../../src/core/index.ts";
 import { ARCHING_TRAILER_V2_RESPONSE } from "../../src/core/materialResponse.ts";
 import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
+import { VESSEL_PROFILES, vesselParts } from "../../src/study/vesselProfiles.ts";
+import { successfulSeatIdentity } from "../../src/core/index.ts";
 
 const BASE = { x: 0, y: 0.55, z: 0 };
 const SEEDS = [8278, 9255, 10232, 11209, 12186] as const;
@@ -76,7 +78,7 @@ test("arching-trailer-v2 is deterministic, valid, round-trips and matches its fi
   assert.deepEqual(JSON.parse(serializePlantGraph(first.graph)), fixture);
 });
 
-test("a centered v2 cane is longer than v1, crests higher, clears the rim and drapes outside", () => {
+test("a centered v2 cane is longer than v1, crests higher, clears the rim and reaches outside", () => {
   for (const seed of SEEDS) {
     const graph = createArchingTrailerV2("plant-1", seed, BASE);
     const v1 = createArchingTrailer("plant-1", seed, BASE);
@@ -101,7 +103,7 @@ test("a centered v2 cane is longer than v1, crests higher, clears the rim and dr
     assert.ok(rimGap > 0.2, "clears the rim with room to spare");
     const tip = trail.points.at(-1)!;
     assert.ok(Math.hypot(tip.x, tip.z) > OUTER_WALL_RADIUS, "the tip hangs beyond the bowl");
-    assert.ok(tip.y > 0.2 && tip.y < RIM_Y, "the tip drapes below the rim but stays off the ground");
+    assert.ok(tip.y > RIM_Y + .1 && tip.y < RIM_Y + .3, "the tip stays just above rim height");
 
     assert.notEqual(legalBendStation(trail, trail.activeLength * 0.54), null);
     for (const branch of graph.branches.values()) {
@@ -152,4 +154,40 @@ test("bend at the station and aim preserve stock length and leave the input unch
     assert.deepEqual(bent.branches.get(branch.id)!.restLengths, branch.restLengths);
   }
   assert.equal(serializePlantGraph(graph), before);
+});
+
+// Bowl lathe profile (local units): outer wall up to the rim top, inner wall down to the floor.
+const OUTER: [number, number][] = [[2.34, .04], [2.57, .10], [2.64, .32], [2.60, .54], [2.54, .62], [2.46, .65]];
+const INNER: [number, number][] = [[2.46, .65], [2.38, .61], [2.30, .27], [2.19, .19]];
+const radiusAt = (chain: [number, number][], y: number) => {
+  for (let i = 0; i < chain.length - 1; i++) {
+    const [r0, y0] = chain[i]!, [r1, y1] = chain[i + 1]!;
+    if (y >= Math.min(y0, y1) && y <= Math.max(y0, y1) && y0 !== y1) return r0 + (r1 - r0) * (y - y0) / (y1 - y0);
+  }
+  return null;
+};
+const inCeramic = (r: number, y: number, pad: number) => {
+  if (y < .04 - pad || y > .65 + pad) return false;
+  if (y < .19 - pad) return r < 2.34 + pad;
+  const outer = radiusAt(OUTER, Math.min(y, .65)) ?? 2.64, inner = radiusAt(INNER, Math.max(.19, Math.min(y, .65))) ?? 2.19;
+  return r > inner - pad && r < outer + pad;
+};
+
+test("seated anywhere in any vessel's planting area, the v2 cane never passes through the ceramic", () => {
+  for (const profile of VESSEL_PROFILES) for (const area of profile.areas) for (let k = -1; k < 8; k++) {
+    const angle = k * Math.PI / 4, reach = k < 0 ? 0 : .95;
+    const base = { x: area.x + Math.cos(angle) * area.rx * reach, y: .55, z: area.z + Math.sin(angle) * area.rz * reach };
+    for (const ordinal of [1, 2, 3, 5, 8, 12]) {
+      const { id, seed } = successfulSeatIdentity(ordinal);
+      const trail = createArchingTrailerV2(id, seed, base).branches.get(`${id}:trail`)!;
+      for (const point of samples(trail.points).slice(9)) {
+        assert.ok(point.y > trail.radius, `${profile.id}: stays above the ground`);
+        for (const part of vesselParts(profile)) {
+          const r = Math.hypot((point.x - part.x) / part.scaleX, (point.z - part.z) / part.scaleZ);
+          assert.equal(inCeramic(r, point.y, trail.radius / Math.min(part.scaleX, part.scaleZ)), false,
+            `${profile.id} seat (${base.x.toFixed(2)}, ${base.z.toFixed(2)}) ordinal ${ordinal} meets the bowl`);
+        }
+      }
+    }
+  }
 });

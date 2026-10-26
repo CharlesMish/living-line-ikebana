@@ -39,7 +39,7 @@ branch. The shared solver still owns all bending.
 The botanical refinement adds `fernFrondV2.ts`, `blossomSprayV2.ts`, and
 `noddingFlowerV2.ts`. Their existing tray IDs select v2 for new stock; v1
 constructors and saved graphs remain supported. `archingTrailerV2.ts` follows the same
-pattern (October 21): a longer, leafier cane that drapes past the rim, with two
+pattern (October 21): a longer, leafier cane that reaches past the rim, with two
 prunable side shoots. The fern tapers ten staggered
 pinnae along a curved rachis. Spray laterals rise in gentle arcs. Nodding v2
 separates its shapeable upper stem from its rigid terminal flower stalk.

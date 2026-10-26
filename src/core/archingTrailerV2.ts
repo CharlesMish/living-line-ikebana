@@ -50,7 +50,9 @@ const rotateY = (point: Vec3, angle: number): Vec3 => {
 
 /**
  * A longer, leafier trailing cane. From a centered seat it rises, crests well
- * above the water, clears the rim and drapes past the bowl's edge. Eight
+ * above the water, clears the rim and reaches past the bowl's edge. Its tip
+ * stays just above rim height, so no seat in any vessel puts it through the
+ * ceramic. Eight
  * alternating narrow leaves diminish toward the tip, and two short side shoots
  * give separate pruning choices. Generic, not a species.
  *
@@ -73,7 +75,7 @@ export function createArchingTrailerV2(id: string, seed: number, base: Vec3): Pl
   const azimuth = (random.next() - 0.5) * 0.62;
   const reach = 3.0 + random.next() * 0.16;
   const crest = 1.95 + random.next() * 0.2;
-  const tipDrop = -0.22 + random.next() * 0.08;
+  const tipDrop = 0.2 + random.next() * 0.08;
   const depth = (random.next() - 0.5) * 0.22;
   const controls = [
     vec3(0, 0, 0),

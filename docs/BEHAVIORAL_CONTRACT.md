@@ -745,8 +745,11 @@ derive from the visible membrane and rim. See the [checked consultation](develop
 
 `arching-trailer-v2` becomes the stock behind the `arching-trailer` tray ID. It is
 about 60% longer than v1 (about 4.8 units of cane at seed 8278), crests near 2.05,
-clears the Original bowl's rim by more than 0.3 from a centered seat, and drapes past
-the outer wall with its tip below the rim and above the ground. Eight alternating
+clears the Original bowl's rim by more than 0.3 from a centered seat, and reaches past
+the outer wall. Its tip stays just above rim height (0.2–0.28 above the seat), so
+across every vessel layout and seats at the centre and the edge of each planting
+area, the cane never passes through the ceramic (v1 did at 40 of 1,296 such seats).
+Eight alternating
 lanceolate leaves diminish toward the tip; two short side shoots each carry a leaf
 pair and can be cut separately. Authored response: cane 0.52, shoots 0.36, stalks 0.18.
 

@@ -64,6 +64,8 @@ export function createTatamiMaterial(alongZ: boolean): THREE.MeshStandardMateria
 
 export interface HomeRoomParts {
   group: THREE.Group;
+  /** Ceiling, battens, front beam and eaves: hidden when looking down from above. */
+  roof: THREE.Group;
   /** Paper mount and photo plane of the hanging scroll. */
   scroll: { group: THREE.Group; photo: THREE.Mesh; mountWidth: number; maxPhoto: { width: number; height: number } };
   dispose(): void;
@@ -123,12 +125,14 @@ export function buildHomeRoom(): HomeRoomParts {
   for (const x of [R.left + W / 2, R.right - W / 2]) for (const z of [R.back + W / 2, R.front - W / 2])
     span("home-hashira", x - W / 2, x + W / 2, 0, R.ceiling, z - W / 2, z + W / 2, hinoki);
   // Ceiling boards and battens.
-  span("home-ceiling", R.left, R.right, R.ceiling, R.ceiling + .3, R.back, R.front, hinoki).castShadow = false;
-  for (let z = R.back + 2.4; z < R.front; z += 2.4) span("home-saobuchi", R.left, R.right, R.ceiling - .35, R.ceiling, z - .18, z + .18, hinoki).castShadow = false;
+  // The roof lifts off like a dollhouse lid when the camera rises above it.
+  const roof = new THREE.Group(); roof.name = "home-roof"; group.add(roof);
+  span("home-ceiling", R.left, R.right, R.ceiling, R.ceiling + .3, R.back, R.front, hinoki, roof).castShadow = false;
+  for (let z = R.back + 2.4; z < R.front; z += 2.4) span("home-saobuchi", R.left, R.right, R.ceiling - .35, R.ceiling, z - .18, z + .18, hinoki, roof).castShadow = false;
   // Eaves over the engawa, so a camera standing outside still sees a roof line.
-  span("home-kamoi-front", R.left, R.right, R.lintel + 3.2, R.ceiling, R.front - .4, R.front, hinoki);
-  span("home-noki", R.left - 4, R.right + 4, R.ceiling + .3, R.ceiling + .7, R.front, R.front + 9, darkWood).castShadow = false;
-  for (let x = R.left - 3; x <= R.right + 3; x += 3.2) span("home-taruki", x - .22, x + .22, R.ceiling - .1, R.ceiling + .3, R.front, R.front + 9, darkWood).castShadow = false;
+  span("home-kamoi-front", R.left, R.right, R.lintel + 3.2, R.ceiling, R.front - .4, R.front, hinoki, roof).castShadow = false;
+  span("home-noki", R.left - 4, R.right + 4, R.ceiling + .3, R.ceiling + .7, R.front, R.front + 9, darkWood, roof).castShadow = false;
+  for (let x = R.left - 3; x <= R.right + 3; x += 3.2) span("home-taruki", x - .22, x + .22, R.ceiling - .1, R.ceiling + .3, R.front, R.front + 9, darkWood, roof).castShadow = false;
 
   // ---- Tokonoma: raised board floor behind a lacquered rail.
   const alcoveDepth = R.back - R.alcoveBack;
@@ -240,7 +244,7 @@ export function buildHomeRoom(): HomeRoomParts {
   const keep = new Set<THREE.Material>([washi]);
   let disposed = false;
   return {
-    group, scroll: { group: scroll, photo, mountWidth, maxPhoto },
+    group, roof, scroll: { group: scroll, photo, mountWidth, maxPhoto },
     dispose() {
       if (disposed) return; disposed = true;
       const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(keep), textures = new Set<THREE.Texture>();

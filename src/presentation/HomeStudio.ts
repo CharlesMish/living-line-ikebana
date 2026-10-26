@@ -31,6 +31,13 @@ const VIEWS: Record<HomePlaceId, { theta: number; phi: number; frame: [number, n
   "shelf-high": { theta: -.2, phi: 1.47, frame: [12, 10] },
 };
 
+/** Points the whole-room view must include: each arrangement place's surface
+ * and a typical piece above it, and the scroll. */
+const OVERVIEW_POINTS: readonly THREE.Vector3[] = HOME_PLACES.flatMap(place => place.kind === "photograph"
+  ? [new THREE.Vector3(place.x, R.alcoveCeiling - .6, place.z), new THREE.Vector3(place.x, 8.2, place.z)]
+  : [new THREE.Vector3(place.x - 2.6, place.y, place.z), new THREE.Vector3(place.x + 2.6, place.y, place.z), new THREE.Vector3(place.x, place.y + 5.5, place.z)]);
+const OVERVIEW_NARROW = { theta: .24, phi: 1.0, target: new THREE.Vector3(-3, 6.5, -5) };
+
 /** A quiet washitsu holding kept arrangements in named places. One WebGL
  * context, rendering on demand; nothing animates while the visitor is idle. */
 export class HomeStudio {
@@ -42,6 +49,7 @@ export class HomeStudio {
   private readonly abort = new AbortController();
   private readonly room: HomeRoomParts;
   private readonly roomMerge: StaticMerge;
+  private readonly roofMerge: StaticMerge;
   private readonly pieces = new Map<HomePlaceId, Piece>();
   private readonly pickers = new Map<HomePlaceId, THREE.Mesh>();
   private readonly markers = new Map<HomePlaceId, THREE.Mesh>();
@@ -73,11 +81,12 @@ export class HomeStudio {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.scene.background = new THREE.Color(0xd9d2c2);
-    this.scene.fog = new THREE.Fog(0xd9d2c2, 90, 180);
+    this.scene.fog = new THREE.Fog(0xd9d2c2, 160, 320);
     this.buildLights();
     this.room = buildHomeRoom();
     this.scene.add(this.room.group);
-    this.roomMerge = mergeStaticMeshes(this.room.group, new Set([this.room.scroll.group]));
+    this.roomMerge = mergeStaticMeshes(this.room.group, new Set([this.room.scroll.group, this.room.roof]));
+    this.roofMerge = mergeStaticMeshes(this.room.roof);
     this.markerMaterials = {
       fits: new THREE.MeshBasicMaterial({ color: 0x6d8f5c, transparent: true, opacity: .85, depthWrite: false, name: "home-marker-fits" }),
       blocked: new THREE.MeshBasicMaterial({ color: 0xa99c86, transparent: true, opacity: .55, depthWrite: false, name: "home-marker-blocked" }),
@@ -224,10 +233,14 @@ export class HomeStudio {
     const halfFov = THREE.MathUtils.degToRad(this.camera.fov) / 2, aspect = Math.max(.3, this.camera.aspect);
     const fit = (width: number, height: number) => Math.max(height / 2 / Math.tan(halfFov), width / 2 / (Math.tan(halfFov) * aspect));
     if (!place) {
-      // Standing at the open front, looking in a little from above. A wide
-      // screen takes in both walls; a narrow phone frames the two alcoves.
-      if (aspect >= 1) return { theta: .1, phi: 1.31, radius: 43 * Math.max(1, 1.55 / aspect), target: new THREE.Vector3(-1.5, 10.5, -6) };
-      return { theta: .04, phi: 1.43, radius: Math.min(fit(25, 26), 80), target: new THREE.Vector3(-4.5, 11.5, -9) };
+      // Wide screens stand at the open front and look in. Narrow ones look
+      // down from above with the roof lifted, like opening a dollhouse, so
+      // every place fits a phone. Either way, step back until all are framed.
+      const wide = aspect >= 1.3;
+      const base: Pose = wide
+        ? { theta: .1, phi: 1.31, radius: 43, target: new THREE.Vector3(-1.5, 10.5, -6) }
+        : { theta: OVERVIEW_NARROW.theta, phi: OVERVIEW_NARROW.phi, radius: 30, target: OVERVIEW_NARROW.target.clone() };
+      return { ...base, radius: this.radiusToShow(OVERVIEW_POINTS, base) };
     }
     const info = homePlace(place)!, view = VIEWS[place];
     const piece = this.pieces.get(place);
@@ -244,6 +257,23 @@ export class HomeStudio {
     return { theta: view.theta, phi: view.phi, radius: fit(width, height) * 1.1, target };
   }
 
+  /** Smallest distance, from `start.radius` outward, that keeps every point inside the frame. */
+  private radiusToShow(points: readonly THREE.Vector3[], start: Pose, margin = .9): number {
+    const probe = this.camera.clone();
+    const inFrame = (radius: number) => {
+      const offset = new THREE.Vector3().setFromSpherical(new THREE.Spherical(radius, start.phi, start.theta));
+      probe.position.copy(start.target).add(offset); probe.up.copy(UP); probe.lookAt(start.target);
+      probe.updateMatrixWorld(true); probe.updateProjectionMatrix();
+      return points.every(point => {
+        const ndc = point.clone().project(probe);
+        return ndc.z < 1 && Math.abs(ndc.x) <= margin && Math.abs(ndc.y) <= margin;
+      });
+    };
+    let radius = start.radius;
+    while (!inFrame(radius) && radius < 200) radius *= 1.04;
+    return radius;
+  }
+
   zoomBy(factor: number) {
     if (!Number.isFinite(factor) || factor <= 0 || this.disposed) return;
     this.cancelGesture(); this.tween = null;
@@ -253,12 +283,15 @@ export class HomeStudio {
     if (![horizontal, vertical].every(Number.isFinite) || this.disposed) return;
     this.cancelGesture(); this.tween = null;
     this.pose.theta = THREE.MathUtils.clamp(this.pose.theta + horizontal, this.baseTheta - .6, this.baseTheta + .6);
-    this.pose.phi = THREE.MathUtils.clamp(this.pose.phi + vertical, 1.0, 1.55); this.applyPose();
+    this.pose.phi = THREE.MathUtils.clamp(this.pose.phi + vertical, .8, 1.55); this.applyPose();
   }
 
+  /** Lift the roof off while the camera looks down from above it. */
+  private syncRoof() { this.room.roof.visible = this.camera.position.y < R.ceiling - .5; }
   private applyPose() {
     const offset = new THREE.Vector3().setFromSpherical(new THREE.Spherical(this.pose.radius, this.pose.phi, this.pose.theta));
     this.camera.position.copy(this.pose.target).add(offset); this.camera.up.copy(UP); this.camera.lookAt(this.pose.target);
+    this.syncRoof();
     this.camera.near = .2; this.camera.far = Math.max(300, this.pose.radius * 4); this.camera.updateProjectionMatrix(); this.camera.updateMatrixWorld(true);
     this.requestRender();
   }
@@ -275,6 +308,7 @@ export class HomeStudio {
       if (t >= 1) this.tween = null;
       const offset = new THREE.Vector3().setFromSpherical(new THREE.Spherical(this.pose.radius, this.pose.phi, this.pose.theta));
       this.camera.position.copy(this.pose.target).add(offset); this.camera.lookAt(this.pose.target); this.camera.updateMatrixWorld(true);
+      this.syncRoof();
       if (this.tween) this.requestRender();
     }
     this.renderNow();
@@ -317,7 +351,7 @@ export class HomeStudio {
       if (next.distanceTo(gesture.first) > 5) gesture.moved = true;
       if (gesture.moved) {
         this.pose.theta = THREE.MathUtils.clamp(this.pose.theta - delta.x * .0035, this.baseTheta - .6, this.baseTheta + .6);
-        this.pose.phi = THREE.MathUtils.clamp(this.pose.phi - delta.y * .0028, 1.0, 1.55);
+        this.pose.phi = THREE.MathUtils.clamp(this.pose.phi - delta.y * .0028, .8, 1.55);
       }
     }
     this.applyPose();
@@ -388,7 +422,7 @@ export class HomeStudio {
     this.photoTexture?.dispose(); this.photoTexture = null;
     for (const piece of this.pieces.values()) this.disposePiece(piece);
     this.pieces.clear();
-    this.roomMerge.dispose(); this.room.dispose();
+    this.roofMerge.dispose(); this.roomMerge.dispose(); this.room.dispose();
     for (const mesh of [...this.pickers.values(), ...this.markers.values()]) { mesh.geometry.dispose(); if (!Array.isArray(mesh.material)) mesh.material.dispose(); }
     Object.values(this.markerMaterials).forEach(material => material.dispose());
     this.scene.traverse(object => { if (object instanceof THREE.DirectionalLight) { object.shadow.map?.dispose(); } });

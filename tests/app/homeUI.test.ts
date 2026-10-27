@@ -3,6 +3,7 @@ import test from "node:test";
 import { HomeUI } from "../../src/app/homeUI.ts";
 import { HomeStore } from "../../src/app/homeStore.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
+import { onLongerStock } from "./homeFixtures.ts";
 import type { GardenEntry } from "../../src/app/garden.ts";
 import type { HomeEntries } from "../../src/presentation/HomeStudio.ts";
 // This is a DOM event adapter, not a browser layout or GPU test.
@@ -87,8 +88,10 @@ class Document extends EventTarget {
 }
 
 
+// Flowering branches here stand on longer stock, so the upper shelf is too low for them.
 const entry = (id: string, day: number, fixture = "flowering-branch", thumbnail: string | null = "data:image/jpeg;base64,YQ=="): GardenEntry => ({
-  id, title: `Moment ${id}`, keptAt: `2026-10-${day}T00:00:00Z`, thumbnail, arrangement: createWorkbenchFixture(fixture, 8278, 1),
+  id, title: `Moment ${id}`, keptAt: `2026-10-${day}T00:00:00Z`, thumbnail,
+  arrangement: fixture === "flowering-branch" ? onLongerStock(createWorkbenchFixture(fixture, 8278, 1)) : createWorkbenchFixture(fixture, 8278, 1),
 });
 function setup() {
   const document = new Document(), root = document.createElement("main"), opener = document.createElement("button");
@@ -145,6 +148,22 @@ test("a new keep is placed by choice: rings mark fit, a tight place refuses, and
     assert.equal(JSON.parse(h.raw()!).places["shelf-low"], "a");
     assert.equal(h.markers.at(-1), null, "rings clear once it is placed");
     assert.match(h.find("home-message").textContent, /lower shelf/);
+  } finally { h.finish(); }
+});
+
+test("a piece that only brushes a wall still fits, and the fit line says what it touches", () => {
+  const h = setup();
+  try {
+    // An ordinary branch, seated a little toward the back: its tip grazes the shoji.
+    const branch = createWorkbenchFixture("flowering-branch", 8278, 1);
+    h.originals.push({ id: "g", title: "Moment g", keptAt: "2026-10-16T00:00:00Z", thumbnail: null, arrangement: { ...branch, plants: branch.plants.map(plant => ({ ...plant,
+      branches: plant.branches.map(item => ({ ...item, points: item.points.map(point => ({ ...point, x: point.x - .2 })) })) })) } });
+    h.open("g");
+    h.click("home-place-shoin");
+    assert.equal(h.find("home-place-here").disabled, false);
+    assert.match(h.find("home-fit").textContent, /^It fits here\..*Its edge just brushes the shoji behind it\.$/);
+    h.click("home-place-table");
+    assert.doesNotMatch(h.find("home-fit").textContent, /brushes/);
   } finally { h.finish(); }
 });
 

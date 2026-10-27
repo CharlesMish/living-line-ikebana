@@ -34,7 +34,7 @@ const VIEWS: Record<HomePlaceId, { theta: number; phi: number; frame: [number, n
 /** Points the whole-room view must include: each arrangement place's surface
  * and a typical piece above it, and the scroll. */
 const OVERVIEW_POINTS: readonly THREE.Vector3[] = HOME_PLACES.flatMap(place => place.kind === "photograph"
-  ? [new THREE.Vector3(place.x, R.alcoveCeiling - .6, place.z), new THREE.Vector3(place.x, 8.2, place.z)]
+  ? [new THREE.Vector3(place.x, R.alcoveCeiling - .6, place.z), new THREE.Vector3(place.x, R.scrollBottom, place.z)]
   : [new THREE.Vector3(place.x - 2.6, place.y, place.z), new THREE.Vector3(place.x + 2.6, place.y, place.z), new THREE.Vector3(place.x, place.y + 5.5, place.z)]);
 const OVERVIEW_NARROW = { theta: .24, phi: 1.0, target: new THREE.Vector3(-3, 6.5, -5) };
 

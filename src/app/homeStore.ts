@@ -44,6 +44,14 @@ export function entryFitsPlace(placeId: HomePlaceId, entry: GardenEntry): string
   return fit.fits ? null : fit.reason;
 }
 
+/** A gentle physical note for a piece that fits but brushes something, or null. */
+export function entryPlaceNote(placeId: HomePlaceId, entry: GardenEntry): string | null {
+  const place = homePlace(placeId);
+  if (!place || place.kind !== "arrangement") return null;
+  const fit = placeFit(place, arrangementExtent(entry.arrangement));
+  return fit.fits ? fit.note ?? null : null;
+}
+
 const label = (entry: GardenEntry) => `“${entry.title || "Untitled arrangement"}”`;
 
 /**

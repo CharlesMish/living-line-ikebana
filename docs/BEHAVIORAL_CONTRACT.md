@@ -759,14 +759,23 @@ the tokonoma shows a kept photograph. Without the flag nothing changes.
   swaps the two places; a displaced piece returns to the Garden. The scroll is
   independent and accepts only entries kept with a photograph.
 - **Fit is physical, never a judgement.** A place refuses an arrangement only
-  when its vessel is wider than the surface or its highest point exceeds the
-  place's headroom. The upper shelf is deliberately the tight place. Pieces are
-  never rescaled, rerolled or moved to fit. Every place a change fills is
-  checked, including the destination of a swapped piece; if any fails, nothing
-  is saved. First-visit seeding uses the same check.
-- **Known limitation.** Fit does not test sideways reach. A branch that leans
-  far out can pass through a wall, post or the shelf above. There is no room
-  collision; that would be a separate, explicit design.
+  when its vessel is wider than the surface, its highest point exceeds the
+  place's headroom, or it reaches more than 0.4 into a wall, the shoji, the
+  scroll or a shelf beside the place. A lighter brush still fits, with a
+  one-line note naming what it touches. Pieces are never rescaled, rerolled,
+  moved or turned to fit: each keeps the front it was photographed from. Every
+  place a change fills is checked, including the destination of a swapped
+  piece; if any fails, nothing is saved. First-visit seeding uses the same
+  check.
+- **Reach is measured, not guessed.** Height and sideways reach come from the
+  active branch points and organ anchors, plus how far each species' rendered
+  stems, leaves and flowers extend beyond them (unknown generators get the
+  widest reach). A test builds every cutting and fails if an estimate falls
+  short of the rendered piece, or overestimates its height by 0.5 or more.
+  Each wall plane is probed against the room's own meshes.
+- **Known limitation.** Obstacles are flat planes beside each place. There is
+  no full collision with the room, and pieces in neighbouring places are not
+  checked against each other.
 - **Keep, then place.** After Keep (Garden or Photograph) the flag offers "Give
   it a place at home", which opens the room in placing mode with rings marking
   where the piece fits. Placing in the tokonoma under a bare scroll also hangs

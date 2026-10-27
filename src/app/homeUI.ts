@@ -1,5 +1,5 @@
 import type { GardenEntry } from "./garden.ts";
-import { HomeStore, emptyHomePlacements, initialHomePlacements, placeOfEntry, placementProblem, type HomePlacements } from "./homeStore.ts";
+import { HomeStore, emptyHomePlacements, entryPlaceNote, initialHomePlacements, placeOfEntry, placementProblem, type HomePlacements } from "./homeStore.ts";
 import { HOME_PLACES, homePlace, type HomePlace, type HomePlaceId } from "../presentation/homePlaces.ts";
 import { HomeStudio, type HomeEntries, type HomeMarker } from "../presentation/HomeStudio.ts";
 import "./homeRoom.css";
@@ -196,7 +196,8 @@ export class HomeUI {
     const swapping = Boolean(placing && entry && place?.kind === "arrangement" && placeOfEntry(this.placements, placing.id));
     const fitsText = place?.kind === "photograph" ? (placing?.thumbnail ? "Its photograph can hang here." : "This moment has no photograph to hang.")
       : entry && entry.id !== placing?.id ? (swapping ? `It fits here. “${untitled(entry)}” will trade places with it.` : `It fits here. “${untitled(entry)}” will go back to the Garden.`) : "It fits here.";
-    fitLine.hidden = problem === undefined; fitLine.textContent = problem === undefined ? "" : problem ?? fitsText;
+    const note = placing && place && problem === null ? entryPlaceNote(place.id, placing) : null;
+    fitLine.hidden = problem === undefined; fitLine.textContent = problem === undefined ? "" : problem ?? (note ? `${fitsText} ${note}` : fitsText);
     fitLine.dataset.fits = String(problem === null);
 
     this.find("home-actions").hidden = place === null;

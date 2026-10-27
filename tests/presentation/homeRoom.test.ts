@@ -3,7 +3,8 @@ import test from "node:test";
 import * as THREE from "three";
 import { buildHomeRoom } from "../../src/presentation/homeRoom.ts";
 import { mergeStaticMeshes, materialSignature } from "../../src/presentation/staticMerge.ts";
-import { HOME_PLACES, HOME_ROOM } from "../../src/presentation/homePlaces.ts";
+import { HOME_PLACES, HOME_ROOM, arrangementExtent, homePlace, type HomePlaceId } from "../../src/presentation/homePlaces.ts";
+import { VESSEL_PROFILES } from "../../src/study/vesselProfiles.ts";
 import { createKeptGardenDisplay } from "../../src/presentation/GardenVisitStudio.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
 
@@ -85,6 +86,67 @@ test("the room builds from code, merges to a handful of batches, and releases wh
   merge.dispose(); room.dispose();
   assert.equal(disposedTextures, textures.size);
   assert.equal(room.group.children.length, 0);
+});
+
+/** Boxes of every solid room mesh, before merging. */
+function roomBoxes() {
+  const room = buildHomeRoom(), boxes: { name: string; box: THREE.Box3 }[] = [];
+  room.group.updateMatrixWorld(true);
+  room.group.traverse(object => { if (object instanceof THREE.Mesh) boxes.push({ name: object.name, box: worldBox(object) }); });
+  return { boxes, dispose: () => room.dispose() };
+}
+const hits = (boxes: { name: string; box: THREE.Box3 }[], probe: THREE.Box3) => boxes.filter(item => item.box.intersectsBox(probe)).map(item => item.name);
+
+test("every place's vessel space is clear of the room, the window desk included", () => {
+  const { boxes, dispose } = roomBoxes();
+  const widest = VESSEL_PROFILES.map(profile => arrangementExtent({ plants: [], scene: { layoutId: profile.id } }));
+  for (const place of HOME_PLACES) {
+    if (place.kind !== "arrangement") continue;
+    const halfX = Math.min(place.surfaceHalfX, Math.max(...widest.map(item => item.vesselHalfX))) - .01;
+    const halfZ = Math.min(place.surfaceHalfZ, Math.max(...widest.map(item => item.vesselHalfZ))) - .01;
+    const space = new THREE.Box3(new THREE.Vector3(place.x - halfX, place.y + .01, place.z - halfZ), new THREE.Vector3(place.x + halfX, place.y + .66, place.z + halfZ));
+    assert.deepEqual(hits(boxes, space), [], `${place.id}: a bowl here would pass through the room`);
+  }
+  // The Original bowl used to reach past the shoji's inner face.
+  const shoin = homePlace("shoin")!;
+  assert.ok(shoin.x - 2.64 > HOME_ROOM.left - HOME_ROOM.shoinDepth + HOME_ROOM.shojiFrame, "the Original bowl stands clear of the shoji");
+  dispose();
+});
+
+test("each obstacle plane is where the room's walls, paper and boards are", () => {
+  const { boxes, dispose } = roomBoxes();
+  // One probe per plane: the other horizontal coordinate and height, both local to the place.
+  const probes: { place: HomePlaceId; label: string; other: number; y: number }[] = [
+    { place: "tokonoma", label: "the back of the alcove", other: 0, y: 3 },
+    { place: "tokonoma", label: "the hanging scroll", other: 4.2, y: 7 },
+    { place: "tokonoma", label: "the hanging scroll", other: 0, y: 10 },
+    { place: "tokonoma", label: "the side of the alcove", other: 0, y: 3 },
+    { place: "shoin", label: "the shoji behind it", other: 0, y: 3 },
+    { place: "shoin", label: "the side of the window bay", other: 0, y: 3 },
+    { place: "shelf-low", label: "the back wall", other: 0, y: 2 },
+    { place: "shelf-low", label: "the side of the shelf alcove", other: 0, y: 2 },
+    { place: "shelf-low", label: "the upper shelf", other: 0, y: 3.8 },
+    { place: "shelf-low", label: "the little post between the shelves", other: 2.15, y: 2 },
+    { place: "shelf-high", label: "the back wall", other: 0, y: 2 },
+    { place: "shelf-high", label: "the side wall", other: 0, y: 2 },
+  ];
+  let checked = 0;
+  for (const place of HOME_PLACES) for (const obstacle of place.obstacles) {
+    const probe = probes.find(item => item.place === place.id && item.label === obstacle.label
+      && (obstacle.minY === undefined || item.y >= obstacle.minY) && (obstacle.maxY === undefined || item.y <= obstacle.maxY)
+      && (!obstacle.across || (item.other >= obstacle.across[0] && item.other <= obstacle.across[1])));
+    assert.ok(probe, `${place.id}: a probe for ${obstacle.label}`);
+    const at = (offset: number) => {
+      const local = { x: 0, z: 0 }; local[obstacle.axis] = obstacle.sign * (obstacle.limit + offset); local[obstacle.axis === "x" ? "z" : "x"] = probe.other;
+      const centre = new THREE.Vector3(place.x + local.x, place.y + probe.y, place.z + local.z);
+      return hits(boxes, new THREE.Box3().setFromCenterAndSize(centre, new THREE.Vector3(.02, .02, .02)));
+    };
+    assert.deepEqual(at(-.05), [], `${place.id}: just inside ${obstacle.label} is open`);
+    assert.ok(at(.05).length > 0, `${place.id}: just past ${obstacle.label} is solid`);
+    checked++;
+  }
+  assert.equal(checked, 14, "every plane has been probed");
+  dispose();
 });
 
 test("a kept arrangement merges without changing what it draws", () => {

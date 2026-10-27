@@ -166,7 +166,7 @@ export function buildHomeRoom(): HomeRoomParts {
 
   // ---- Left wall with the tsukeshoin (window desk) recess.
   const shoin = HOME_PLACES.find(place => place.id === "shoin")!;
-  const z0 = shoin.z - 6.6, z1 = shoin.z + 6.6, deskBack = R.left - R.shoinDepth;
+  const z0 = shoin.z - R.shoinHalfLength, z1 = shoin.z + R.shoinHalfLength, deskBack = R.left - R.shoinDepth;
   span("home-left-wall-back", R.left - .3, R.left, 0, R.ceiling, R.back, z0, plaster);
   span("home-left-wall-front", R.left - .3, R.left, 0, R.ceiling, z1, R.front, plaster);
   span("home-left-wall-over", R.left - .3, R.left, R.shojiTop + 2, R.ceiling, z0, z1, plaster);
@@ -180,15 +180,15 @@ export function buildHomeRoom(): HomeRoomParts {
   for (let i = 0; i < 4; i++) {
     const pz0 = z0 + i * panelWidth, pz1 = pz0 + panelWidth;
     span("home-shoji-paper", deskBack + .1, deskBack + .2, shojiBottom, R.shojiTop, pz0 + .08, pz1 - .08, washi).castShadow = false;
-    span("home-shoji-stile", deskBack + .2, deskBack + .45, shojiBottom, R.shojiTop, pz0, pz0 + .22, hinoki);
+    span("home-shoji-stile", deskBack + .2, deskBack + R.shojiFrame, shojiBottom, R.shojiTop, pz0, pz0 + .22, hinoki);
     for (let k = 1; k < 3; k++) span("home-kumiko", deskBack + .2, deskBack + .32, shojiBottom, R.shojiTop, pz0 + k * panelWidth / 3 - .05, pz0 + k * panelWidth / 3 + .05, hinoki).castShadow = false;
     for (let k = 1; k < 7; k++) {
       const y = shojiBottom + k * (R.shojiTop - shojiBottom) / 7;
       span("home-kumiko", deskBack + .2, deskBack + .32, y - .05, y + .05, pz0, pz1, hinoki).castShadow = false;
     }
   }
-  span("home-shoji-rail", deskBack + .2, deskBack + .45, R.shojiTop - .25, R.shojiTop, z0, z1, hinoki);
-  span("home-shoji-sill", deskBack + .2, deskBack + .45, shojiBottom, shojiBottom + .25, z0, z1, hinoki);
+  span("home-shoji-rail", deskBack + .2, deskBack + R.shojiFrame, R.shojiTop - .25, R.shojiTop, z0, z1, hinoki);
+  span("home-shoji-sill", deskBack + .2, deskBack + R.shojiFrame, shojiBottom, shojiBottom + .25, z0, z1, hinoki);
 
   // ---- Right wall: plaster with a pair of fusuma.
   span("home-right-wall", R.right, R.right + .3, 0, R.ceiling, R.back, R.front, plaster);
@@ -223,7 +223,7 @@ export function buildHomeRoom(): HomeRoomParts {
   const scrollPlace = HOME_PLACES.find(place => place.id === "scroll")!;
   const scroll = new THREE.Group(); scroll.name = "home-scroll";
   scroll.position.set(scrollPlace.x, 0, scrollPlace.z);
-  const mountWidth = 7.4, mountTop = R.alcoveCeiling - .6, mountBottom = 8.2;
+  const mountWidth = R.scrollWidth, mountTop = R.alcoveCeiling - .6, mountBottom = R.scrollBottom;
   span("home-scroll-mount", -mountWidth / 2, mountWidth / 2, mountBottom, mountTop, 0, .06, mountFabric, scroll).castShadow = false;
   const maxPhoto = { width: 6, height: 9 };
   const photoCenter = scrollPlace.y;

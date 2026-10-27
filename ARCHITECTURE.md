@@ -227,8 +227,9 @@ there are no new persistent graph fields, texture files or alpha-sort layers.
 ## Home room (opt-in)
 
 `presentation/homePlaces.ts` is pure data and arithmetic shared by the renderer
-and the UI: room dimensions, named places, and `placeFit` (vessel footprint and
-headroom only). `presentation/homeRoom.ts` builds the washitsu from boxes and
+and the UI: room dimensions, named places with their obstacle planes, a
+per-species reach table, and `placeFit` (vessel footprint, headroom and
+sideways reach, with a refuse/brush threshold). `presentation/homeRoom.ts` builds the washitsu from boxes and
 CPU-authored maps (tatami weave, tinted wood and juraku plaster through the
 existing perch surface maker). `presentation/staticMerge.ts` batches visible
 single-material meshes by rendered material signature and hides the originals.

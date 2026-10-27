@@ -3,11 +3,13 @@ import assert from "node:assert/strict";
 import { HomeStore, initialHomePlacements, parseHomePlacements, placeInHome, placeOfEntry, emptyHomePlacements } from "../../src/app/homeStore.ts";
 import type { GardenEntry } from "../../src/app/garden.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
-import { HOME_PLACES, HOME_ROOM, arrangementExtent, homePlace, placeFit } from "../../src/presentation/homePlaces.ts";
+import { GRAZE, HOME_PLACES, HOME_ROOM, arrangementExtent, homePlace, placeFit } from "../../src/presentation/homePlaces.ts";
+import { onLongerStock } from "./homeFixtures.ts";
 
+// A flowering branch on longer stock: too tall for the upper shelf, fine elsewhere.
 const make = (id: string, day: number, thumbnail: string | null = null): GardenEntry => ({
   id, title: id, keptAt: `2026-10-${day}T12:00:00Z`, thumbnail,
-  arrangement: createWorkbenchFixture("flowering-branch", 8278, 1),
+  arrangement: onLongerStock(createWorkbenchFixture("flowering-branch", 8278, 1)),
 });
 const entries = [make("a", 12), make("b", 14, "data:image/jpeg;base64,AA=="), make("c", 13), make("d", 11)];
 function setup(initial: string | null = null, display: string | null = null) {
@@ -90,14 +92,12 @@ test("a stale tab or failed save changes nothing; missing entries are refused", 
 
 test("fit is physical: headroom and surface size, matching the room's geometry", () => {
   const branch = arrangementExtent(createWorkbenchFixture("flowering-branch", 8278, 1));
-  assert.ok(branch.height > 5.5 && branch.height < 8, `flowering branch stands about ${branch.height}`);
+  assert.ok(branch.height > 6.5 && branch.height < 7.2, `flowering branch stands about ${branch.height}`);
   assert.ok(Math.abs(branch.vesselHalfX - 2.64) < 1e-9);
-  for (const place of HOME_PLACES) {
-    if (place.id === "shelf-high") continue;
-    assert.equal(placeFit(place, branch).fits, true, `${place.id} takes a single flowering branch`);
-  }
-  // The upper shelf is deliberately the tight place: a full flowering branch is too tall for it.
-  assert.equal(placeFit(homePlace("shelf-high")!, branch).fits, false);
+  // Bare wood is no longer padded like foliage, so a full branch clears the upper shelf's cupboard.
+  for (const place of HOME_PLACES) assert.equal(placeFit(place, branch).fits, true, `${place.id} takes a single flowering branch`);
+  const longer = arrangementExtent(onLongerStock(createWorkbenchFixture("flowering-branch", 8278, 1)));
+  assert.equal(placeFit(homePlace("shelf-high")!, longer).fits, false, "on longer stock it is too tall for the upper shelf");
   const violet = arrangementExtent(createWorkbenchFixture("violet-sprig", 8278, 1));
   assert.equal(placeFit(homePlace("shelf-high")!, violet).fits, true, "a short violet sprig fits the upper shelf");
 
@@ -115,6 +115,46 @@ test("fit is physical: headroom and surface size, matching the room's geometry",
   assert.ok(Math.abs(petite.vesselHalfX - 2.64 * .64) < 1e-9);
   const pair = arrangementExtent({ plants: [], scene: { layoutId: "vessel-pair" } });
   assert.ok(Math.abs(pair.vesselHalfX - (1.65 + 2.64 * .54)) < 1e-9);
+});
+
+test("reaching sideways into a wall, the shoji or the scroll is refused; a light brush only gets a note", () => {
+  const shoin = homePlace("shoin")!, shoji = shoin.obstacles.find(item => item.label === "the shoji behind it")!;
+  const at = (x: number, y: number, z: number, side = .1) => ({ height: y + 1, vesselHalfX: 2.64, vesselHalfZ: 2.64, samples: [{ x, y, z, up: 1, side }] });
+  assert.ok(shoji.axis === "x" && shoji.sign === -1);
+  assert.deepEqual(placeFit(shoin, at(-(shoji.limit - .3), 3, 0)), { fits: true }, "clear of the paper");
+  const brush = placeFit(shoin, at(-(shoji.limit + GRAZE / 2), 3, 0, 0));
+  assert.deepEqual(brush, { fits: true, note: "Its edge just brushes the shoji behind it." });
+  const into = placeFit(shoin, at(-(shoji.limit + 1), 3, 0, 0));
+  assert.equal(into.fits, false);
+  assert.match(into.fits ? "" : into.reason, /^It reaches into the shoji behind it: about 3\.9 out, with 2\.9 of room\.$/);
+  // Leaning toward the room is open, the way a piece on the sill would be seen.
+  assert.deepEqual(placeFit(shoin, at(6, 3, 0)), { fits: true });
+
+  // The scroll is only an obstacle at its own height and width.
+  const tokonoma = homePlace("tokonoma")!;
+  assert.equal(placeFit(tokonoma, at(0, 10, -4.6)).fits, false);
+  assert.match((placeFit(tokonoma, at(0, 10, -4.6)) as { reason: string }).reason, /the hanging scroll/);
+  assert.equal(placeFit(tokonoma, at(0, 3, -4.2)).fits, true, "below the scroll the alcove runs back to its wall");
+  assert.equal(placeFit(tokonoma, at(-6, 10, -4.2)).fits, true, "beside the scroll too");
+  // The lower shelf's right side opens under the upper shelf but not through its board.
+  const low = homePlace("shelf-low")!;
+  assert.equal(placeFit(low, at(6, 1.5, 0)).fits, true);
+  assert.match((placeFit(low, at(6, 4.5, 0)) as { reason: string }).reason, /the upper shelf/);
+  // The table is open on every side.
+  assert.equal(placeFit(homePlace("table")!, at(9, 2, -9)).fits, true);
+});
+
+test("a real branch seated at the back of the pins is refused at the window desk, welcome on the table", () => {
+  // The flowering branch already leans about 2.9 toward -x; seating it a unit
+  // further back on the pin field carries its tip into the shoji.
+  const branch = createWorkbenchFixture("flowering-branch", 8278, 1);
+  const seatedBack = { ...branch, plants: branch.plants.map(plant => ({ ...plant,
+    branches: plant.branches.map(item => ({ ...item, points: item.points.map(point => ({ ...point, x: point.x - 1 })) })) })) };
+  assert.deepEqual(placeFit(homePlace("shoin")!, arrangementExtent(branch)), { fits: true }, "as kept, it clears the paper");
+  const verdict = placeFit(homePlace("shoin")!, arrangementExtent(seatedBack));
+  assert.equal(verdict.fits, false);
+  assert.match(verdict.fits ? "" : verdict.reason, /the shoji behind it/);
+  assert.equal(placeFit(homePlace("table")!, arrangementExtent(seatedBack)).fits, true);
 });
 
 test("a first visit opened to place a new keep leaves that keep for the visitor to place", () => {
@@ -146,6 +186,7 @@ test("the store refuses any placement whose swap would leave a piece where it ca
 
 test("first-visit seeding only puts a piece where it fits", () => {
   const tall = make("tall", 25);
+  tall.arrangement = createWorkbenchFixture("flowering-branch", 8278, 1);
   tall.arrangement = { ...tall.arrangement, plants: tall.arrangement.plants.map(plant => ({ ...plant, branches: plant.branches.map(branch => ({ ...branch, points: branch.points.map(point => ({ ...point, y: point.y * 3 })) })) })) };
   const placed = initialHomePlacements([tall, ...entries], null);
   assert.equal(placed.tokonoma, "tall", "the tokonoma has the headroom");

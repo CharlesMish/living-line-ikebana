@@ -784,3 +784,21 @@ the tokonoma shows a kept photograph. Without the flag nothing changes.
   batch per rendered material; originals are hidden, not removed, so their
   builders still dispose them. Working copies go through the existing Keep
   first / Replace / Cancel path.
+
+### Making something for a place — October 26 (home study)
+
+With the home on, choosing an arrangement place offers **Make something for this
+place** (empty) or **Make a new version for this place** (occupied). Either goes
+through the existing Keep first / Replace / Cancel path: empty starts a fresh
+bowl; occupied opens a working copy of the piece there, never the kept original.
+Only a completed replacement starts the intent; cancelling leaves nothing behind.
+
+While arranging, a small note names the place, what it suits and, for tight
+places, its headroom. **Keep it for this place** keeps the bowl (titled "For the
+…" when unnamed) and opens Home at that place, ready to set it down with the
+usual fit and swap checks. A Garden keep while the note is showing also opens at
+that place. Placing it there, or **Set aside**, clears the note. A revision
+replaces the earlier piece in the room; the earlier Garden entry is untouched.
+
+The intent is session memory only: it is not stored, never edits the working
+bowl, and adds no score, completion rule or new save field.

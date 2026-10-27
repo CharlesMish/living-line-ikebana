@@ -18,6 +18,8 @@ export interface HomePlace {
   readonly id: HomePlaceId;
   readonly kind: HomePlaceKind;
   readonly label: string;
+  /** How a sentence puts something there: "in the tokonoma", "on the low table". */
+  readonly at: string;
   /** One line about the place itself, shown when it is chosen. */
   readonly description: string;
   /** What the place suits. Data, not a rule; later requests can reuse it. */
@@ -112,27 +114,27 @@ const SHELF_HIGH_OBSTACLES: readonly PlaceObstacle[] = Object.freeze([
   Object.freeze({ label: "the side wall", axis: "x", sign: 1, limit: R.right - SHELF_HIGH.x }),
 ]);
 export const HOME_PLACES: readonly HomePlace[] = Object.freeze([
-  Object.freeze({ id: "tokonoma", kind: "arrangement", label: "Tokonoma",
+  Object.freeze({ id: "tokonoma", at: "in the tokonoma", kind: "arrangement", label: "Tokonoma",
     description: "The alcove. One piece, seen across the room with the scroll behind it.",
     suits: "Tall and unhurried. It shares the alcove with the scroll, so leave air above and behind it.",
     x: TOKONOMA.x, y: R.alcoveFloor, z: TOKONOMA.z, clearance: R.lintel - R.alcoveFloor - .6, surfaceHalfX: 10.5, surfaceHalfZ: 4.3, obstacles: TOKONOMA_OBSTACLES }),
-  Object.freeze({ id: "table", kind: "arrangement", label: "Low table",
+  Object.freeze({ id: "table", at: "on the low table", kind: "arrangement", label: "Low table",
     description: "Close at hand, seen from every side.",
     suits: "Seen from every cushion, so it should read from all sides and stay low enough to talk across.",
     x: R.tableX, y: R.tableTop, z: R.tableZ, clearance: R.ceiling - R.tableTop - 1, surfaceHalfX: R.tableRadius, surfaceHalfZ: R.tableRadius, obstacles: [] }),
-  Object.freeze({ id: "shoin", kind: "arrangement", label: "Window desk",
+  Object.freeze({ id: "shoin", at: "on the window desk", kind: "arrangement", label: "Window desk",
     description: "A deep sill under the shoji, lit from behind.",
     suits: "Lit through the shoji behind it, so a spare, open outline reads best against the paper.",
     x: SHOIN.x, y: R.shoinTop, z: SHOIN.z, clearance: R.shojiTop - R.shoinTop - .5, surfaceHalfX: SHOIN.half, surfaceHalfZ: R.shoinHalfLength - .1, obstacles: SHOIN_OBSTACLES }),
-  Object.freeze({ id: "shelf-low", kind: "arrangement", label: "Lower shelf",
+  Object.freeze({ id: "shelf-low", at: "on the lower shelf", kind: "arrangement", label: "Lower shelf",
     description: "The lower of the staggered shelves beside the alcove.",
     suits: "A quiet companion to the tokonoma. Keep it modest, and mind the upper shelf to its right.",
     x: SHELF_LOW.x, y: R.shelfLowTop, z: SHELF_LOW.z, clearance: R.cupboardBottom - R.shelfLowTop - .5, surfaceHalfX: 5, surfaceHalfZ: 4.3, obstacles: SHELF_LOW_OBSTACLES }),
-  Object.freeze({ id: "shelf-high", kind: "arrangement", label: "Upper shelf",
+  Object.freeze({ id: "shelf-high", at: "on the upper shelf", kind: "arrangement", label: "Upper shelf",
     description: "The higher shelf, under the little cupboard.",
     suits: "Something small, or a stem that trails; it has the least headroom in the room.",
     x: SHELF_HIGH.x, y: R.shelfHighTop, z: SHELF_HIGH.z, clearance: R.cupboardBottom - R.shelfHighTop - .5, surfaceHalfX: 5, surfaceHalfZ: 4.3, obstacles: SHELF_HIGH_OBSTACLES }),
-  Object.freeze({ id: "scroll", kind: "photograph", label: "Scroll",
+  Object.freeze({ id: "scroll", at: "as the scroll", kind: "photograph", label: "Scroll",
     description: "A kept photograph, mounted as the hanging scroll in the tokonoma.",
     suits: "Any kept photograph.",
     x: TOKONOMA.x, y: 17.6, z: SCROLL_Z, clearance: 0, surfaceHalfX: 0, surfaceHalfZ: 0, obstacles: [] }),

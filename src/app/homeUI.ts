@@ -34,6 +34,10 @@ export class HomeUI {
   private editable = true;
   private opener: HTMLElement | null = null;
   private closing = false;
+  /** Start a bowl for a place: fresh when empty, a working copy of what stands there otherwise. */
+  onMakeFor: ((place: HomePlaceId, entry: GardenEntry | null) => void) | null = null;
+  /** Told after a placing-mode placement succeeds. */
+  onPlaced: ((entryId: string, place: HomePlaceId) => void) | null = null;
 
   constructor(root: HTMLElement, private readonly store: HomeStore,
     private readonly copy: (entry: GardenEntry) => void,
@@ -60,6 +64,7 @@ export class HomeUI {
         </div>
         <div id="home-actions" class="home-actions" hidden>
           <button id="home-place-here" type="button" class="home-primary" hidden>Place it here</button>
+          <button id="home-make" type="button" class="home-primary" hidden>Make something for this place</button>
           <button id="home-choose" type="button">Choose a piece</button>
           <button id="home-clear" type="button">Return it to the Garden</button>
           <button id="home-print" type="button">View photograph</button>
@@ -77,6 +82,11 @@ export class HomeUI {
     on("home-zoom-in", () => this.view?.zoomBy(.86));
     on("home-zoom-out", () => this.view?.zoomBy(1.16));
     on("home-place-here", () => this.placeHere());
+    on("home-make", () => {
+      if (!this.selected || !this.onMakeFor) return;
+      const place = this.selected, entry = this.currentEntry();
+      this.onMakeFor(place, entry ? structuredClone(entry) : null);
+    });
     on("home-placing-cancel", () => this.stopPlacing("Kept in your Garden. You can place it from here any time."));
     on("home-choose", () => this.showPicker());
     on("home-picker-close", () => this.hidePicker());
@@ -109,7 +119,7 @@ export class HomeUI {
   private problem(placeId: HomePlaceId, entryId: string | null) { return placementProblem(this.placements, placeId, entryId, this.entries); }
   private currentEntry() { return this.selected === null ? null : this.entry(this.placements[this.selected]); }
 
-  open(entries: readonly GardenEntry[], opener: HTMLElement, placingId: string | null = null) {
+  open(entries: readonly GardenEntry[], opener: HTMLElement, placingId: string | null = null, preferredPlace: HomePlaceId | null = null) {
     this.entries = structuredClone([...entries]);
     this.opener = opener; this.editable = true; this.message("");
     try { this.placements = this.store.load(this.entries, placingId); }
@@ -124,6 +134,8 @@ export class HomeUI {
     if (!this.dialog.open) this.dialog.showModal();
     this.buildView();
     this.refresh();
+    // A piece made for a place opens looking at that place, ready to set down.
+    if (this.placing && preferredPlace && homePlace(preferredPlace)) { this.select(preferredPlace); this.find("home-place-here").focus(); return; }
     (this.placing ? this.find(`home-place-${this.suggestedPlace() ?? "tokonoma"}`) : this.find("home-close")).focus();
   }
 
@@ -206,20 +218,25 @@ export class HomeUI {
     placeHere.disabled = problem !== null || !this.editable;
     placeHere.textContent = place?.kind === "photograph" ? "Hang its photograph here" : swapping ? "Swap them" : "Place it here";
     for (const id of ["home-choose", "home-clear", "home-print", "home-copy"]) this.find(id).hidden = Boolean(placing);
+    const make = this.find<HTMLButtonElement>("home-make");
+    make.hidden = Boolean(placing) || !this.onMakeFor || place?.kind !== "arrangement";
+    make.textContent = entry ? "Make a new version for this place" : "Make something for this place";
     this.find<HTMLButtonElement>("home-choose").disabled = !this.editable;
     this.find("home-choose").textContent = place?.kind === "photograph" ? "Choose a photograph" : "Choose a piece";
     this.find<HTMLButtonElement>("home-clear").disabled = !entry || !this.editable;
     this.find("home-clear").textContent = place?.kind === "photograph" ? "Take the scroll down" : "Return it to the Garden";
     this.find<HTMLButtonElement>("home-print").disabled = !entry?.thumbnail;
     this.find<HTMLButtonElement>("home-copy").disabled = !entry;
-    this.find("home-copy").hidden = Boolean(placing) || place?.kind === "photograph";
+    this.find("home-copy").hidden = Boolean(placing) || place?.kind === "photograph" || Boolean(this.onMakeFor);
   }
 
   private placeHere() {
     if (!this.placing || !this.selected) return;
     const placed = this.placing, place = homePlace(this.selected)!;
+    const before = this.entry(this.placements[this.selected]);
     this.assign(placed.id);
     if (this.placements[this.selected] !== placed.id) return;
+    const replaced = before && before.id !== placed.id && placeOfEntry(this.placements, before.id) === null ? before : null;
     // A bare scroll above a new tokonoma piece takes that piece's photograph.
     let hung = false;
     if (place.id === "tokonoma" && this.placements.scroll === null && placed.thumbnail) {
@@ -227,7 +244,8 @@ export class HomeUI {
       catch { /* The arrangement is placed; the scroll can be chosen later. */ }
     }
     this.stopPlacing(place.kind === "photograph" ? "Its photograph hangs as the scroll."
-      : hung ? "Placed in the tokonoma, with its photograph as the scroll." : `Placed in the ${place.label.toLowerCase()}.`);
+      : hung ? "Placed in the tokonoma, with its photograph as the scroll." : `Placed ${place.at}.${replaced ? ` “${untitled(replaced)}” is still in your Garden.` : ""}`);
+    this.onPlaced?.(placed.id, place.id);
   }
 
   private stopPlacing(note: string) {
@@ -274,7 +292,7 @@ export class HomeUI {
     const note = document.createElement("small");
     const problem = this.problem(place.id, entry.id);
     const where = placeOfEntry(this.placements, entry.id);
-    note.textContent = problem ?? (where && place.kind === "arrangement" && where !== place.id ? `Now in the ${homePlace(where)!.label.toLowerCase()} · will swap` : this.placements[place.id] === entry.id ? "Here now" : "");
+    note.textContent = problem ?? (where && place.kind === "arrangement" && where !== place.id ? `Now ${homePlace(where)!.at} · will swap` : this.placements[place.id] === entry.id ? "Here now" : "");
     if (note.textContent) button.append(note);
     button.disabled = problem !== null;
     button.addEventListener("click", () => this.run(() => this.assign(entry.id)));

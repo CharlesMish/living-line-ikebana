@@ -68,7 +68,7 @@ export function placementProblem(current: HomePlacements, placeId: HomePlaceId, 
     const problem = entryFitsPlace(id, entry);
     if (!problem) continue;
     if (id === placeId) return problem;
-    return `That would move ${label(entry)} to the ${homePlace(id)!.label.toLowerCase()}. ${problem}`;
+    return `That would move ${label(entry)} ${homePlace(id)!.at.replace(/^(in|on|as) /, "to ")}. ${problem}`;
   }
   return null;
 }

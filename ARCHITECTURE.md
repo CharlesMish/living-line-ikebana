@@ -223,3 +223,18 @@ authored. `ThreeStudio` merges
 copies of those exact surfaces for picking and routes them to the existing
 supporting stalk operation. Scene tones have distinct membrane/rim colors;
 there are no new persistent graph fields, texture files or alpha-sort layers.
+
+## Home room (opt-in)
+
+`presentation/homePlaces.ts` is pure data and arithmetic shared by the renderer
+and the UI: room dimensions, named places with their obstacle planes, a
+per-species reach table, and `placeFit` (vessel footprint, headroom and
+sideways reach, with a refuse/brush threshold). `presentation/homeRoom.ts` builds the washitsu from boxes and
+CPU-authored maps (tatami weave, tinted wood and juraku plaster through the
+existing perch surface maker). `presentation/staticMerge.ts` batches visible
+single-material meshes by rendered material signature and hides the originals.
+`presentation/HomeStudio.ts` owns one renderer for the room, displayed pieces and
+the scroll photograph, with on-demand rendering and a short eased camera move
+between places. `app/homeStore.ts` persists place → entry references beside the
+Garden; `app/homeUI.ts` is the dialog. `GardenUI.enableHome` and
+`IkebanaApp.setupHome` wire it only when `config.home` is set.

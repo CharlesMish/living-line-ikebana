@@ -1,6 +1,8 @@
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
 import { GardenWall } from "./gardenWall.ts";
 import { GardenVisitUI } from "./gardenVisitUI.ts";
+import { HomeUI } from "./homeUI.ts";
+import { HomeStore } from "./homeStore.ts";
 import { GardenDisplayStore } from "./gardenDisplay.ts";
 import "./gardenWall.css";
 import {
@@ -47,6 +49,8 @@ export class GardenUI {
   private readonly error: HTMLElement;
   private readonly wall: GardenWall;
   private visit: GardenVisitUI | null = null;
+  private home: HomeUI | null = null;
+  private homeKey: string | null = null;
   private entries: GardenEntry[] = [];
   private pending: (() => void) | null = null;
   private viewedEntry: GardenEntry | null = null;
@@ -149,6 +153,7 @@ export class GardenUI {
     on("#garden-new", () => this.offerReplacement(null));
     on("#garden-wall-open", () => this.wall.open(this.entries, this.find("#garden-wall-open")));
     on("#garden-visit-open", () => {
+      if (this.homeKey) { this.openHome(this.find("#garden-visit-open")); return; }
       this.actions.pause();
       this.reload();
       if (!this.loaded) return;
@@ -176,6 +181,8 @@ export class GardenUI {
         this.keep(); this.message("Kept. Your working bowl is still open.");
         // Show the moment that was just kept, rather than leaving it below the form.
         this.find<HTMLButtonElement>(".garden-card-just-kept .garden-card-view").focus();
+        // With the home switched on, the next step is giving it a place there.
+        this.offerHomePlacement(this.justKeptId)?.focus();
       });
     }, { signal: this.controller.signal });
     this.dialog.addEventListener("close", () => {
@@ -555,10 +562,44 @@ export class GardenUI {
       requestAnimationFrame(reopen);
     }
   }
+  /**
+   * Opt-in home (`?home=1`): Visit opens the room instead, and a fresh keep
+   * offers to give the arrangement a place there. Ordinary play never calls this.
+   */
+  enableHome(key: string) {
+    this.homeKey = key;
+    const entry = this.find(".garden-visit-entry");
+    entry.querySelector("p")!.textContent = "Your kept arrangements, each in its place in a quiet tatami room.";
+    this.find("#garden-visit-open").textContent = "Go home";
+    const place = document.createElement("button");
+    place.type = "button"; place.id = "garden-place-home"; place.hidden = true; place.textContent = "Give it a place at home";
+    this.error.after(place);
+    place.addEventListener("click", () => this.run(() => this.openHome(place, place.dataset.entryId ?? null)), { signal: this.controller.signal });
+  }
+  get homeEnabled() { return this.homeKey !== null; }
+  private offerHomePlacement(id: string | null) {
+    const place = this.root.querySelector<HTMLButtonElement>("#garden-place-home");
+    if (!place) return null;
+    place.hidden = !id; place.dataset.entryId = id ?? "";
+    return id ? place : null;
+  }
+  /** Opens the room; with an entry id it starts by asking where that piece goes. */
+  openHome(opener: HTMLElement, placingId: string | null = null) {
+    if (!this.homeKey) return;
+    this.actions.pause();
+    this.reload();
+    if (!this.loaded) return;
+    this.offerHomePlacement(null);
+    this.home ??= new HomeUI(this.find(".garden-host"), new HomeStore(this.homeKey, this.displayKey),
+      entry => this.run(() => { if (!this.dialog.open) this.open(); this.offerReplacement(entry.arrangement); }),
+      () => { try { return localStorage.getItem(this.displayKey); } catch { return null; } });
+    this.home.open(this.entries, opener, placingId);
+  }
   destroy() {
     this.controller.abort();
     this.wall.destroy();
     this.visit?.destroy();
+    this.home?.destroy();
     try { this.reduceCompare({ type: "interrupt" }); } catch { /* Teardown still releases the viewports. */ }
     this.comparing = false;
     this.comparison = null;

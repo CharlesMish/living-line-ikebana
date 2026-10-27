@@ -44,6 +44,11 @@ export type ExperimentConfig = {
    * Absent keeps pointerdown on the source card as an immediate drag.
    */
   placeTap: boolean;
+  /**
+   * Opt-in home room (`?home=1`, or a baked `__LL_HOME__ = "1"`): Visit opens a
+   * tatami room of named places, and a new keep can be given a place there.
+   */
+  home: boolean;
 };
 
 /**
@@ -56,6 +61,10 @@ export function bakedPlaceMode(scope: typeof globalThis = globalThis): "off" | "
   if (token === "1") return "cue";
   if (token === "2") return "tap";
   return "off";
+}
+
+export function homeFlagFrom(url: URL, scope: typeof globalThis = globalThis): boolean {
+  return url.searchParams.get("home") === "1" || (scope as { __LL_HOME__?: unknown }).__LL_HOME__ === "1";
 }
 
 export function placeFlagsFrom(url: URL, baked = bakedPlaceMode()): { placeCue: boolean; placeTap: boolean } {
@@ -82,6 +91,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
     placeCue: place.placeCue,
     placeTap: place.placeTap,
+    home: homeFlagFrom(url),
   };
 }
 

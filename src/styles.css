@@ -473,6 +473,19 @@ button:focus-visible {
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* Curator 2026-11-02: a blossom bead before the status line, echoing the bowl's front mark. */
+.status-pill::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 0.45rem 0.1rem 0;
+  border-radius: 50%;
+  background: var(--blossom);
+  vertical-align: middle;
+  opacity: 0.85;
+}
+
 .craft-cue {
   grid-area: 1 / 1;
   display: flex;

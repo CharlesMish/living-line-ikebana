@@ -211,6 +211,11 @@ button:focus-visible {
     box-shadow 160ms ease;
 }
 
+.segmented button[aria-pressed="false"]:hover {
+  color: var(--moss-dark);
+  background: rgba(255, 255, 255, 0.45);
+}
+
 .segmented button[aria-pressed="true"] {
   color: var(--moss-dark);
   background: rgba(255, 255, 255, 0.82);

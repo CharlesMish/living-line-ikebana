@@ -18,8 +18,8 @@ was authored by hand and nothing was written to storage outside the app.
 | `closest-stock-broad-leaf.png` | The Broad leaf attempt this cutting answers: leaned flat, from above, then pruned |
 
 "The Water Between" is three cuttings in the Two islands layout: two parasol
-leaves (`plant-2`, `plant-7`) and one reed (`plant-10`). Edits were turns, one
-stalk aim, two neck aims, and one reed cut. Seven parasol stems and four reeds
+leaves (`plant-2`, `plant-7`) and one reed (`plant-10`). Edits were two base
+slides, turns, one stalk aim, three neck aims, and one reed cut. Seven parasol stems and four reeds
 were seated while choosing; the rest were removed with Edit → Remove, which is
 why the ordinal is 11.
 

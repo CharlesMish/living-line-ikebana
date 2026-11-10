@@ -126,7 +126,7 @@ function bladeSurface(
 }
 
 export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
-export type BloomForm = "cupped" | "open-face" | "open-cup" | "compact-cup" | "spray-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret" | "starry-head";
+export type BloomForm = "cupped" | "open-face" | "open-cup" | "compact-cup" | "spray-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret" | "starry-head" | "lantern";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
 export type PinnateDraw = "baseline" | "tapered" | "quilled";
@@ -155,7 +155,7 @@ export interface BloomSurfaceProfile {
 }
 
 export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
-  if (form === "violet-floret" || form === "indigo-floret" || form === "starry-head") throw new Error("this bloom uses a complete authored head, not radial petal profiles");
+  if (form === "violet-floret" || form === "indigo-floret" || form === "starry-head" || form === "lantern") throw new Error("this bloom uses a complete authored head, not radial petal profiles");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal profile");
   }

@@ -37,7 +37,7 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
   const wood = ["flowering-branch", "bare-branch", "berry-twig", "lobed-leaf", "silver-seed"].includes(familyId);
   const parts: Part[] = [{ label: wood ? "Wood" : "Stem", color: stem }];
   const leafy = !["bare-branch", "berry-twig", "blossom-spray", "silver-seed"].includes(familyId);
-  const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower", "violet-sprig", "indigo-spire", "starry-pincushion"].includes(familyId);
+  const flowering = ["flowering-branch", "single-flower", "compact-flower", "flower-volume", "blossom-spray", "nodding-flower", "violet-sprig", "indigo-spire", "starry-pincushion", "lantern-spray"].includes(familyId);
   if (leafy) parts.push({ label: "Leaves", color: leaf });
   if (flowering) parts.push({ label: "Flowers", color: bloom });
   if (familyId === "flowering-branch") parts.push({ label: "Buds", color: bud });
@@ -100,6 +100,14 @@ export function botanicalToneSample(familyId: BotanicalFamilyId, toneId: string,
       for (const [x, y, px, py, tilt] of [[24,29,24,39,-12],[33,35,34,43,20],[58,15,58,25,12],[50,22,50,29,-18],[31,7,31,16,-15],[40,9,40,17,20]]) {
         drawing += path(`M${px} ${py} L${x} ${y+7}`, hex(a.branchColors.pedicel), .8)
           + `<g transform="translate(${x} ${y}) rotate(${tilt})"><ellipse rx="5.4" ry="7.3" fill="${hex(a.seedpod!.color)}" stroke="${hex(a.seedpod!.rimColor)}" stroke-width=".9"/></g>`;
+      }
+      break;
+    case "lantern-spray":
+      drawing = path("M24 65 Q34 22 64 24", stem, 1.7) + path("M46 31 Q60 28 72 38", lateral, 1.2)
+        + blade(28, 53, -48, .48) + blade(33, 43, 42, .42);
+      for (const [px, py, x, y, s] of [[37, 36, 38, 46, 1], [47, 31, 48, 41, .94], [57, 27, 58, 37, .88], [67, 34, 68, 44, .84]]) {
+        drawing += path(`M${px} ${py} L${x} ${y - 5}`, hex(a.branchColors.pedicel), .9)
+          + `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-3 -5 Q-7 -2 -6 4 Q-4 8 0 9 Q4 8 6 4 Q7 -2 3 -5Z" fill="${bloom}" stroke="${hex(a.branchColors.pedicel)}" stroke-width=".6"/></g>`;
       }
       break;
     case "leafy-shoot":

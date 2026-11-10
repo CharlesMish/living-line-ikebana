@@ -55,3 +55,5 @@ export const INDIGO_SPIRE_RESPONSE = Object.freeze({ stem: 0.54, stalk: 0.18 });
 export const STARRY_PINCUSHION_RESPONSE = Object.freeze({ stem: 0.44, arm: 0.31, stalk: 0.18 });
 /** Dried seed stock holds its sparse structure; stalks remain rigid under Bend. */
 export const SILVER_SEED_RESPONSE = Object.freeze({ stem: 0.68, arm: 0.56, stalk: 0.18 });
+/** Arching lantern stem and distal arch yield smoothly; drooping lantern stalks stay firm under Bend. */
+export const LANTERN_SPRAY_RESPONSE = Object.freeze({ stem: 0.52, arch: 0.40, stalk: 0.18 });

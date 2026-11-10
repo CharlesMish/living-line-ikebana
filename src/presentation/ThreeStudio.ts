@@ -1,4 +1,5 @@
 import { createStarryHeadGeometry } from "./starryHeadGeometry.ts";
+import { createLanternBellGeometry } from "./lanternGeometry.ts";
 
 import { createAuthoredFlowerCorollaGeometry, createAuthoredFlowerCalyxGeometry, createAuthoredFlowerFilamentGeometry } from "./authoredFlowerGeometry.ts";
 import { createSeedDiscGeometry, createSeedDiscRimGeometry } from "./seedDiscGeometry.ts";
@@ -1033,6 +1034,15 @@ export class ThreeStudio {
           bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
         calyx.scale.z = 0.45;
         calyx.position.z = -0.015;
+        group.add(calyx);
+      } else if (bloom.form === "lantern") {
+        const lantern = new THREE.Mesh(createLanternBellGeometry(seed), petalMaterial);
+        lantern.castShadow = !pending;
+        group.add(lantern);
+        const calyx = new THREE.Mesh(new THREE.SphereGeometry(0.058, 10, 6),
+          bodyMaterial(appearance.branchColors.pedicel, 0.86, false, next => next.branchColors.pedicel));
+        calyx.scale.set(1.15, 0.55, 1.15);
+        calyx.position.y = 0.016;
         group.add(calyx);
       } else if (bloom.form === "violet-floret" || bloom.form === "indigo-floret") {
         const violet = bloom.form === "violet-floret";

@@ -229,3 +229,27 @@ Primary botanical reference, read October 14 2026:
 Its dried-arrangement description distinguishes the retained silvery middle
 partition from the two outer valves and the seeds that can be removed with them.
 This study uses that dried state; it is not a botanically exact reconstruction.
+
+## Parasol leaf study — `parasol-leaf-v1`
+
+One round blade held away from its root on a slender stalk, and a shorter
+stalk with a leaf that has not opened. It is appended after silver seed and
+changes no earlier generator, fixture, profile or order.
+
+| Cutting | Structure | Appearance | Bend response |
+| --- | --- | --- | --- |
+| Parasol leaf / `parasol-leaf-v1` | One 14-segment stalk, seeded `1.7..2.7`. A `0.15` neck at its tip carries one `leaf` organ. A 9-segment young stalk leaves the main stalk `0.17..0.22` above the base and carries one `bud` organ | Stalk `0x6f8f5c`, roughness `0.62`. Blade `0x4a7a5a`, ribs `0x94b680`, radius `0.66` at scale 1, rim `0.085` above the attachment; paler reverse. The furled leaf takes the leaf colour | Stalk `0.50`, young stalk `0.42`, neck `0.18`, copied once. Shared solver. The neck is a petiole, so it aims and does not bend |
+
+The blade's normal is the neck's tangent. In the rest pose it tilts 24–48
+degrees toward the side the stalk leans, so it reads as a disc from the level
+Front view. Pressing the blade aims the neck; the stalk tip is the pivot.
+Three cuts give three silhouettes: the young stalk (open leaf alone), the main
+stalk (furled leaf alone, because its attachment sits below the `0.62` minimum
+trunk cut), and the neck (a bare stalk beside the furled leaf).
+
+The morphological reference is [NC State Extension's American lotus entry](https://plants.ces.ncsu.edu/plants/nelumbo-lutea/),
+read 2026-11-10: round, simple leaves raised above the water in a bowl-like
+form. The central attachment, rib count, single furled companion and all
+dimensions are this study's own authored choices. It is a generic cutting, not
+a species reconstruction, and it has no flower, pod, or tone family.
+See [implementation and evidence](development/reports/parasol-leaf/README.md).

@@ -223,3 +223,14 @@ authored. `ThreeStudio` merges
 copies of those exact surfaces for picking and routes them to the existing
 supporting stalk operation. Scene tones have distinct membrane/rim colors;
 there are no new persistent graph fields, texture files or alpha-sort layers.
+
+## Parasol leaf study
+
+`core/parasolLeaf.ts` adds `parasol-leaf-v1` with existing branch kinds and
+the existing `leaf` and `bud` organ kinds. `presentation/parasolLeafGeometry.ts`
+derives a closed round blade, its ribs and a rolled young leaf from organ
+identity. `LeafForm` gains `parasol`, and `MaterialAppearance.bud` lets one
+generator draw its `bud` organs as furled leaves; every other material omits it
+and keeps the original bud sphere. Both forms supply their real surfaces as the
+pick mesh. Nothing in the serializer, validator, solver or coordinator changed.
+See the [study report](docs/development/reports/parasol-leaf/README.md).

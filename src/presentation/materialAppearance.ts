@@ -30,6 +30,10 @@ export interface MaterialAppearance {
      */
     tuftScatter?: Readonly<{ azimuth: number; scale: number; tilt: number }>;
   }>;
+  /** Present only when a generator's `bud` organs are furled young leaves. They
+   * take the leaf colour role, and their exact visible surface owns acquisition.
+   * Omitted keeps the original flower-bud sphere. */
+  readonly bud?: Readonly<{ form: "furled-leaf"; roughness: number }>;
   /** Papery dried fruit partitions. Exact visible surfaces own acquisition. */
   readonly seedpod?: Readonly<{ color: number; rimColor: number; roughness: number }>;
   /** Present only for a generator that emits berry organs. One sphere per organ. */
@@ -209,6 +213,16 @@ const silverSeed: MaterialAppearance = Object.freeze({
   leaf: flowering.leaf, bloom: flowering.bloom,
   seedpod: Object.freeze({ color: 0xe0dfce, rimColor: 0xb3a485, roughness: 0.91 }),
 });
+const parasolLeaf: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x6f8f5c, lateral: 0x86a565, twig: 0x86a565, pedicel: 0x86a565, petiole: 0x6f8f5c }),
+  stemRoughness: 0.62,
+  // One round blade across local X/Z. Only its real surface and ribs acquire,
+  // so the open water around a hovering leaf never grabs it.
+  leaf: Object.freeze({ form: "parasol", color: 0x4a7a5a, veinColor: 0x94b680, roughness: 0.66,
+    hitRadius: 0, hitCenterY: 0, surfacePicking: true }),
+  bloom: flowering.bloom,
+  bud: Object.freeze({ form: "furled-leaf", roughness: 0.6 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
@@ -217,6 +231,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "indigo-spire-v1": indigoSpire,
   "starry-pincushion-v1": starryPincushion,
   "silver-seed-v1": silverSeed,
+  "parasol-leaf-v1": parasolLeaf,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,

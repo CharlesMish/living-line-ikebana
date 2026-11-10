@@ -2,6 +2,7 @@ import { createStarryHeadGeometry } from "./starryHeadGeometry.ts";
 
 import { createAuthoredFlowerCorollaGeometry, createAuthoredFlowerCalyxGeometry, createAuthoredFlowerFilamentGeometry } from "./authoredFlowerGeometry.ts";
 import { createSeedDiscGeometry, createSeedDiscRimGeometry } from "./seedDiscGeometry.ts";
+import { createParasolFurlGeometry } from "./parasolLeafGeometry.ts";
 import { createVioletFloretGeometry, createIndigoFloretGeometry } from "./violetBloomGeometry.ts";
 import { applyPhotoLighting, disposePhotoLighting, validatePhotoLighting, type PhotoLightRig, type PhotoLightingId } from "./photoLighting.ts";
 import { isBroadBlade, updateBroadBladeGeometry, broadBladeSurfaceDistance } from "./broadBladeGeometry.ts";
@@ -1170,6 +1171,15 @@ export class ThreeStudio {
       fruit.castShadow = !pending;
       group.add(fruit);
       hitRadius = berry.hitRadius;
+    } else if (appearance.bud?.form === "furled-leaf") {
+      // A leaf that has not opened: it follows the leaf colour role, and only
+      // its own rolled surface acquires its supporting stalk.
+      const furl = new THREE.Mesh(createParasolFurlGeometry(seed),
+        bodyMaterial(appearance.leaf.color, appearance.bud.roughness, true, next => next.leaf.color));
+      furl.castShadow = !pending;
+      group.add(furl);
+      exactHitGeometry = furl.geometry.clone();
+      hitRadius = 0;
     } else {
       const bud = new THREE.Mesh(
         new THREE.SphereGeometry(0.16, 13, 9),

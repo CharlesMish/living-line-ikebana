@@ -1,3 +1,4 @@
+import { createParasolLeaf, PARASOL_LEAF_VERSION } from "./parasolLeaf.ts";
 import { createStarryPincushion, STARRY_PINCUSHION_VERSION } from "./starryPincushion.ts";
 import { createSilverSeed, SILVER_SEED_VERSION } from "./silverSeed.ts";
 import { createVioletSprig, VIOLET_SPRIG_VERSION } from "./violetSprig.ts";
@@ -135,6 +136,7 @@ const indigoSpireV1: GeneratorDefinition = Object.freeze({ generatorVersion: IND
 
 const starryPincushionV1: GeneratorDefinition = Object.freeze({ generatorVersion: STARRY_PINCUSHION_VERSION, generate: createStarryPincushion });
 const silverSeedV1: GeneratorDefinition = Object.freeze({ generatorVersion: SILVER_SEED_VERSION, generate: createSilverSeed });
+const parasolLeafV1: GeneratorDefinition = Object.freeze({ generatorVersion: PARASOL_LEAF_VERSION, generate: createParasolLeaf });
 
 // Keep both registries private and immutable. Adding a persistent generator is
 // an additive source change here; adding a tray material points it at one of
@@ -162,6 +164,7 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   indigoSpireV1,
   starryPincushionV1,
   silverSeedV1,
+  parasolLeafV1,
 ]);
 
 /**
@@ -192,6 +195,7 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "indigo-spire", generator: indigoSpireV1 }),
   Object.freeze({ materialId: "starry-pincushion", generator: starryPincushionV1 }),
   Object.freeze({ materialId: "silver-seed", generator: silverSeedV1 }),
+  Object.freeze({ materialId: "parasol-leaf", generator: parasolLeafV1 }),
 ]);
 
 export function getGeneratorDefinition(generatorVersion: string): GeneratorDefinition | null {

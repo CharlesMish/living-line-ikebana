@@ -740,3 +740,30 @@ leaf-like midrib or pinnate vein ribbons, with restrained paper shading and the
 existing closed perimeter rim. Membrane shape, stock, attachment, tone recipes,
 editing and saved graph identity are preserved. Exact acquisition continues to
 derive from the visible membrane and rim. See the [checked consultation](development/reports/argon-followup/README.md).
+
+### Parasol leaf — additive leaf held over the water
+
+`parasol-leaf-v1` adds one slender stalk with a short neck and one round open
+blade, plus a shorter young stalk that carries a leaf still furled. The open
+blade is one existing `leaf` organ at the neck's tip and the furled leaf is one
+existing `bud` organ at the young stalk's tip. No organ kind, graph field,
+schema version, solver, gesture or persistence rule changes, and this preserves
+the contract above. Existing generators, fixtures and frozen profiles are
+untouched; the catalog only gains a final entry.
+
+- The stalk and the young stalk are ordinary Bend-eligible `trunk` and
+  `lateral` records. The neck is a `petiole`: it aims and never bends. A press
+  on the blade aims the neck by the existing surface-grip law, so it tilts the
+  blade about the stalk tip. There is no leaf-surface bending, axial roll,
+  per-rib edit or new handle.
+- The young stalk attaches below the trunk's `0.62` minimum cut. A cut on the
+  main stalk therefore removes the neck and open blade and always retains the
+  furled leaf. A cut on the young stalk removes only the furled leaf. A cut on
+  the neck removes only the open blade. Inactive records are retained.
+- Craft cues name the lateral **young leaf stem** and its organ a **furled
+  leaf** for this generator only. Every other material keeps `bud` wording.
+- The blade, its ribs and the furled leaf use exact surface acquisition. The
+  open water beside a hovering blade is not a pick proxy.
+- The material has no tone family; it resolves to Natural like reed and
+  trailer, so saved scenes gain no key. A build without this generator refuses
+  a backup that contains it, whole, by the existing import law.

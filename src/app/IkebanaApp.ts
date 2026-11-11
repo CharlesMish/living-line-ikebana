@@ -94,6 +94,7 @@ import {
   type GardenComparison,
 } from "./gardenCompare.ts";
 import { createStudioComparisonViewport } from "./gardenCompareView.ts";
+import type { GuestArrangement } from "./guestArrangements.ts";
 import { GardenUI } from "./gardenUI.ts";
 import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
@@ -338,7 +339,7 @@ export class IkebanaApp {
   /** Set in the window capture phase, before menus close on the same press. */
   private chromeDismissPress = false;
 
-  constructor(root: HTMLElement) {
+  constructor(root: HTMLElement, guestArrangements: readonly GuestArrangement[] = []) {
     this.root = root;
     if (!this.config.fresh && this.initialSaved) this.scene = this.initialSaved.scene;
     this.config.vesselProfile = sceneProfile(this.scene);
@@ -396,7 +397,7 @@ export class IkebanaApp {
       syncComparison: (session) => this.syncGardenComparisonView(session),
       endComparison: () => this.endGardenComparisonView(),
       report: () => this.workbenchReport(),
-    }, this.config.workbench, `${this.storageKeys.garden}:display-v1`);
+    }, this.config.workbench, `${this.storageKeys.garden}:display-v1`, guestArrangements);
     {
       this.photograph = new Photograph(root, {
         pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
@@ -510,6 +511,7 @@ export class IkebanaApp {
     void document.fonts?.ready.then(() => this.scheduleStageMeasure());
     this.syncPresentation();
     this.root.dataset.ready = "true";
+    if (new URL(location.href).searchParams.get("gallery") === "guests") this.gardenUI.openGuests();
     if (new URL(location.href).searchParams.get("test") === "1") this.installTestBridge();
   }
 

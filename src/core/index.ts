@@ -33,3 +33,5 @@ export * from "./indigoSpire.ts";
 
 export * from "./starryPincushion.ts";
 export * from "./silverSeed.ts";
+export * from "./parasolLeaf.ts";
+export * from "./lanternSpray.ts";

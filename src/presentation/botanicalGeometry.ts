@@ -1,4 +1,5 @@
 import { createLobedLeafGeometry, createLobedLeafVeinGeometry } from "./lobedLeafGeometry.ts";
+import { createParasolBladeGeometry, createParasolRibGeometry } from "./parasolLeafGeometry.ts";
 import { createPetalBellGeometry } from "./bellGeometry.ts";
 import * as THREE from "three";
 
@@ -125,8 +126,8 @@ function bladeSurface(
   return geometry;
 }
 
-export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed";
-export type BloomForm = "cupped" | "open-face" | "open-cup" | "compact-cup" | "spray-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret" | "starry-head";
+export type LeafForm = "elliptic" | "lanceolate" | "pinnate" | "lobed" | "parasol";
+export type BloomForm = "cupped" | "open-face" | "open-cup" | "compact-cup" | "spray-cup" | "tufted" | "bell" | "violet-floret" | "indigo-floret" | "starry-head" | "lantern";
 
 /** Parallel pinna draws. `baseline` is the comb this polish started from. */
 export type PinnateDraw = "baseline" | "tapered" | "quilled";
@@ -155,7 +156,7 @@ export interface BloomSurfaceProfile {
 }
 
 export function bloomSurfaceProfile(form: BloomForm): BloomSurfaceProfile {
-  if (form === "violet-floret" || form === "indigo-floret" || form === "starry-head") throw new Error("this bloom uses a complete authored head, not radial petal profiles");
+  if (form === "violet-floret" || form === "indigo-floret" || form === "starry-head" || form === "lantern") throw new Error("this bloom uses a complete authored head, not radial petal profiles");
   if (form === "bell") {
     throw new Error("bell is one volume along the supporting tangent, not a radial petal profile");
   }
@@ -570,6 +571,7 @@ function resolvedFanLeaf(form: LeafForm, draw?: LeafDrawOptions): FanLeafDraw {
  */
 export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
   if (form === "lobed") return createLobedLeafGeometry(seed);
+  if (form === "parasol") return createParasolBladeGeometry(seed);
   if (form === "pinnate") return createPinnatePinnaGeometry(seed, resolvedPinnate(draw));
   const profile = resolvedFanLeaf(form, draw);
   if (profile === "shared") {
@@ -584,6 +586,7 @@ export function createLeafGeometry(seed = 0, form: LeafForm = "elliptic", draw?:
  */
 export function createLeafVeinGeometry(seed = 0, form: LeafForm = "elliptic", draw?: LeafDrawOptions): THREE.BufferGeometry {
   if (form === "lobed") return createLobedLeafVeinGeometry(seed);
+  if (form === "parasol") return createParasolRibGeometry(seed);
   if (form === "pinnate") return createPinnateCostaGeometry(seed, resolvedPinnate(draw));
   const profile = resolvedFanLeaf(form, draw);
   return bladeSurface("living-line/leaf-midrib", (t, across) => {

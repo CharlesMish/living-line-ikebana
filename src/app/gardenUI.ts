@@ -1,4 +1,6 @@
 import { GardenStore, GARDEN_LIMIT, createGardenEntryId, type ArrangementSnapshot, type GardenEntry } from "./garden.ts";
+import type { GuestArrangement } from "./guestArrangements.ts";
+import { parseSceneGarden } from "./scenePersistence.ts";
 import { GardenWall } from "./gardenWall.ts";
 import { GardenVisitUI } from "./gardenVisitUI.ts";
 import { GardenDisplayStore } from "./gardenDisplay.ts";
@@ -58,12 +60,12 @@ export class GardenUI {
   private compareMode: ComparisonDragMode = "orbit";
   private compareDrag: ComparisonDrag | null = null;
   private readonly compareLayout = new ResizeObserver(() => this.layoutComparisonCanvases());
-  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false, private readonly displayKey = `ikebana-web-alpha:${workbench ? "workbench-" : ""}garden-v2:display-v1`) {
+  constructor(private readonly root: HTMLElement, private readonly store: Omit<Pick<GardenStore, "load" | "exportRaw" | "keep" | "remove" | "importBackup">, "load"> & { load(): { entries: GardenEntry[] } }, private readonly actions: GardenActions, workbench = false, private readonly displayKey = `ikebana-web-alpha:${workbench ? "workbench-" : ""}garden-v2:display-v1`, private readonly guestArrangements: readonly GuestArrangement[] = []) {
     const host = document.createElement("div");
     host.className = "garden-host";
     host.innerHTML = `
       <div class="garden-viewer" hidden aria-label="Kept arrangement">
-        <p><span class="eyebrow">Saved original · view only</span><strong id="kept-title"></strong></p>
+        <p><span class="eyebrow" id="garden-view-caption">Saved original · view only</span><strong id="kept-title"></strong></p>
         <button type="button" id="garden-copy">Make a working copy</button>
         <button type="button" id="garden-return">Return to my bowl</button>
       </div>
@@ -72,6 +74,10 @@ export class GardenUI {
           <button id="garden-close" class="icon-button" type="button" aria-label="Close Garden">×</button></div>
         <p class="garden-intro">Keep a moment. Return to it with fresh eyes.</p>
         <section class="garden-visit-entry"><p>Your arrangements and their photographs, together in a quiet garden.</p><button id="garden-visit-open" type="button" aria-haspopup="dialog">Visit your Garden</button></section>
+        <details class="guest-collection" id="guest-collection">
+          <summary>Guest arrangements</summary>
+          <div class="garden-grid guest-grid" id="guest-grid"></div>
+        </details>
         <p id="garden-error" class="garden-message" role="status" aria-live="polite"></p>
         <section id="garden-choice" class="garden-choice" hidden aria-labelledby="garden-choice-title">
           <h2 id="garden-choice-title">What about your current bowl?</h2>
@@ -155,6 +161,11 @@ export class GardenUI {
       this.visit ??= new GardenVisitUI(host, new GardenDisplayStore(this.displayKey), entry => this.run(() => this.offerReplacement(entry.arrangement)));
       this.visit.open(this.entries, this.find("#garden-visit-open"));
     });
+    const guests = this.find<HTMLDetailsElement>("#guest-collection");
+    guests.hidden = this.guestArrangements.length === 0;
+    guests.addEventListener("toggle", () => {
+      if (guests.open) this.showGuests();
+    }, { signal: this.controller.signal });
     on("#garden-cancel-choice", () => this.clearChoice());
     on("#garden-replace", () => this.finishReplacement());
     on("#garden-keep-first", () => { this.keep(); this.finishReplacement(); });
@@ -197,6 +208,11 @@ export class GardenUI {
   private find<T extends HTMLElement = HTMLElement>(selector: string): T { return this.root.querySelector<T>(selector)!; }
   private message(value: unknown) { this.error.textContent = value instanceof Error ? value.message : String(value); }
   private run(action: () => void) { try { action(); } catch (error) { this.message(error); } }
+  openGuests() {
+    this.find<HTMLDetailsElement>("#guest-collection").open = true;
+    this.open();
+    this.find<HTMLElement>("#guest-collection summary").focus();
+  }
   open() {
     this.actions.pause(); this.clearChoice(); this.justKeptId = null; this.message(""); this.reload();
     if (!this.dialog.open) this.dialog.showModal();
@@ -214,6 +230,7 @@ export class GardenUI {
     this.find("#garden-keep-form").hidden = this.actions.isViewing() || !this.actions.snapshot().plants.length;
     this.find(".garden-copy-note").hidden = !this.entries.length;
     if (!this.loaded) this.find<HTMLDetailsElement>("#garden-backups").open = true;
+    if (this.find<HTMLDetailsElement>("#guest-collection").open) this.showGuests();
     const available = new Set(this.entries.map((entry) => entry.id));
     this.compareIds = this.compareIds.filter((id) => available.has(id));
     const compareBar = this.find("#garden-compare-bar");
@@ -230,14 +247,9 @@ export class GardenUI {
     for (const entry of this.entries) {
       const card = document.createElement("article"); card.className = "garden-card";
       if (entry.id === this.justKeptId) card.classList.add("garden-card-just-kept");
-      const view = document.createElement("button"); view.type = "button"; view.className = "garden-card-view";
-      view.setAttribute("aria-label", `View ${entry.title || "untitled arrangement"} in 3D. Saved original; read only.`);
-      if (entry.thumbnail) { const image = document.createElement("img"); image.src = entry.thumbnail; image.alt = ""; image.loading = "lazy"; view.append(image); }
-      else { const placeholder = document.createElement("span"); placeholder.className = "garden-placeholder"; placeholder.textContent = "Open arrangement"; view.append(placeholder); }
-      const title = document.createElement("strong"); title.textContent = entry.title || "Untitled arrangement"; view.append(title);
-      const date = document.createElement("span"); date.textContent = `${new Date(entry.keptAt).toLocaleDateString()} · ${entry.arrangement.plants.length} cutting${entry.arrangement.plants.length === 1 ? "" : "s"}`; view.append(date);
-      const viewLabel = document.createElement("span"); viewLabel.className = "garden-card-open";
-      viewLabel.textContent = entry.id === this.justKeptId ? "Just kept · View in 3D" : "View in 3D"; view.append(viewLabel);
+      const view = this.coverButton(entry, `View ${entry.title || "untitled arrangement"} in 3D. Saved original; read only.`,
+        `${new Date(entry.keptAt).toLocaleDateString()} · ${entry.arrangement.plants.length} cutting${entry.arrangement.plants.length === 1 ? "" : "s"}`,
+        entry.id === this.justKeptId ? "Just kept · View in 3D" : "View in 3D");
       view.addEventListener("click", () => this.run(() => this.view(entry)));
       const remove = document.createElement("button"); remove.type = "button"; remove.className = "garden-remove"; remove.textContent = "Remove";
       remove.setAttribute("aria-label", `Remove ${entry.title || "untitled arrangement"}`);
@@ -280,6 +292,66 @@ export class GardenUI {
       card.append(view, actions); grid.append(card);
     }
   }
+  private coverButton(entry: Pick<GardenEntry, "title" | "thumbnail">, label: string, caption: string, action = "View in 3D") {
+    const view = document.createElement("button");
+    view.type = "button";
+    view.className = "garden-card-view";
+    view.setAttribute("aria-label", label);
+    if (entry.thumbnail) {
+      const image = document.createElement("img");
+      image.src = entry.thumbnail;
+      image.alt = "";
+      image.loading = "lazy";
+      view.append(image);
+    } else {
+      const placeholder = document.createElement("span");
+      placeholder.className = "garden-placeholder";
+      placeholder.textContent = "Open arrangement";
+      view.append(placeholder);
+    }
+    const name = document.createElement("strong");
+    name.textContent = entry.title || "Untitled arrangement";
+    const credit = document.createElement("span");
+    credit.textContent = caption;
+    const open = document.createElement("span");
+    open.className = "garden-card-open";
+    open.textContent = action;
+    view.append(name, credit, open);
+    return view;
+  }
+  private showGuests() {
+    const grid = this.find("#guest-grid");
+    grid.replaceChildren();
+    for (const { artist, backup } of this.guestArrangements) {
+      const { id, title, thumbnail } = backup.entries[0];
+      const card = document.createElement("article");
+      card.className = "garden-card";
+      const view = this.coverButton({ title, thumbnail }, `View ${title} by ${artist} in 3D`, artist);
+      view.addEventListener("click", () => this.run(() => {
+        this.view(parseSceneGarden(JSON.stringify(backup)).entries[0], artist);
+      }));
+      const actions = document.createElement("div");
+      actions.className = "garden-card-actions";
+      const keep = document.createElement("button");
+      keep.type = "button";
+      keep.className = "guest-keep";
+      const previous = this.entries.find(entry => entry.id === id);
+      const saved = previous && JSON.stringify(previous) === JSON.stringify(parseSceneGarden(JSON.stringify(backup)).entries[0]);
+      keep.disabled = Boolean(saved) || !this.loaded;
+      keep.textContent = saved ? "In your Garden" : "Keep in my Garden";
+      keep.setAttribute("aria-label", `${keep.textContent} · ${title}`);
+      keep.addEventListener("click", () => this.run(() => {
+        this.store.importBackup(JSON.stringify(backup));
+        this.justKeptId = id;
+        this.reload();
+        this.message(`Kept ${title} in your Garden.`);
+        this.find<HTMLButtonElement>(".garden-card-just-kept .garden-card-view").focus();
+      }));
+      actions.append(keep);
+      card.append(view, actions);
+      grid.append(card);
+    }
+  }
   /** Explicit photo bookmark in the existing v1 format; no migration or rewriting old entries. */
   keepPhotograph(arrangement: ArrangementSnapshot, thumbnail: string | null, title: string): string {
     this.store.load();
@@ -297,8 +369,9 @@ export class GardenUI {
     this.justKeptId = entry.id;
     this.find<HTMLInputElement>("#garden-name").value = ""; this.reload();
   }
-  private view(entry: GardenEntry) {
+  private view(entry: GardenEntry, guestArtist?: string) {
     this.actions.view(entry); this.viewedEntry = entry;
+    this.find("#garden-view-caption").textContent = guestArtist ? `${guestArtist} · Guest arrangement · view only` : "Saved original · view only";
     this.find("#kept-title").textContent = entry.title || "Untitled arrangement";
     this.viewer.hidden = false; this.root.dataset.gardenViewing = "true";
     this.dialog.close(); this.find<HTMLButtonElement>("#garden-return").focus();

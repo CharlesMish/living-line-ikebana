@@ -57,6 +57,10 @@ reject the entire import. No partial recovery or silent substitution occurs.
 An entry can be removed after an explicit confirmation. Download a backup before
 removing an entry you may want again; removal has no built-in undo.
 
+## Guest arrangements
+
+Open **Studio → Garden → Guest arrangements** or follow the published gallery link with `?gallery=guests`. The cover opens the artist's arrangement in 3D. **Return to my bowl** restores your working bowl, camera and selection. **Make a working copy** uses the usual replacement choices. **Keep in my Garden** adds that individual original with its cover and pruning history for Visit, Compare and backup.
+
 ## Working-bowl recovery
 
 **Edit → Undo last edit** restores one changed botanical action, including a cut.

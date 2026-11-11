@@ -55,3 +55,8 @@ export const INDIGO_SPIRE_RESPONSE = Object.freeze({ stem: 0.54, stalk: 0.18 });
 export const STARRY_PINCUSHION_RESPONSE = Object.freeze({ stem: 0.44, arm: 0.31, stalk: 0.18 });
 /** Dried seed stock holds its sparse structure; stalks remain rigid under Bend. */
 export const SILVER_SEED_RESPONSE = Object.freeze({ stem: 0.68, arm: 0.56, stalk: 0.18 });
+/** A firm leaf stalk that still takes a broad curve, a softer young stalk, and
+ * a rigid neck: the neck is a petiole, so it aims the blade and never bends. */
+export const PARASOL_LEAF_RESPONSE = Object.freeze({ stalk: 0.5, shoot: 0.42, neck: 0.18 });
+/** Arching lantern stem and distal arch yield smoothly; drooping lantern stalks stay firm under Bend. */
+export const LANTERN_SPRAY_RESPONSE = Object.freeze({ stem: 0.52, arch: 0.40, stalk: 0.18 });

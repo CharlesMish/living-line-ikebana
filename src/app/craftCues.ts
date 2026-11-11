@@ -1,3 +1,4 @@
+import { PARASOL_LEAF_VERSION } from "../core/parasolLeaf.ts";
 import type { Branch, CutPlan, OrganKind, PlantGraph } from "../core/types.ts";
 
 export interface CraftCue {
@@ -24,6 +25,8 @@ export function materialName(branch: Branch, graph?: PlantGraph): string {
     if (graph && pedicelCarriesOnly(graph, branch.id, "seedpod")) return "Seed-disc stem";
     return "Flower stem";
   }
+  // The parasol leaf's second stalk carries a leaf that has not opened yet.
+  if (branch.kind === "lateral" && graph?.generatorVersion === PARASOL_LEAF_VERSION) return "Young leaf stem";
   return branch.kind === "twig" ? "Twig" : "Branch";
 }
 
@@ -37,7 +40,9 @@ export function cutCue(graph: PlantGraph, plan: CutPlan, acquired: boolean): Cra
   const parts: string[] = [];
   if (counts.leaf) parts.push(`${counts.leaf} ${counts.leaf === 1 ? "leaf" : "leaves"}`);
   if (counts.bloom) parts.push(`${counts.bloom} ${counts.bloom === 1 ? "flower" : "flowers"}`);
-  if (counts.bud) parts.push(`${counts.bud} ${counts.bud === 1 ? "bud" : "buds"}`);
+  // A parasol leaf's `bud` organ is a furled leaf, never a flower bud.
+  const furled = graph.generatorVersion === PARASOL_LEAF_VERSION;
+  if (counts.bud) parts.push(`${counts.bud} ${furled ? (counts.bud === 1 ? "furled leaf" : "furled leaves") : (counts.bud === 1 ? "bud" : "buds")}`);
   if (counts.berry) parts.push(`${counts.berry} ${counts.berry === 1 ? "berry" : "berries"}`);
   if (counts.seedpod) parts.push(`${counts.seedpod} ${counts.seedpod === 1 ? "seed disc" : "seed discs"}`);
   const branch = graph.branches.get(plan.branchId);

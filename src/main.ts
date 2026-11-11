@@ -1,4 +1,5 @@
 import "./styles.css";
+import { guestArrangements } from "./app/guestArrangements";
 import { IkebanaApp } from "./app/IkebanaApp";
 import { installStudioMenus } from "./app/studioMenus";
 
@@ -7,7 +8,7 @@ if (!mount) throw new Error("Missing #app mount");
 
 let app: IkebanaApp | undefined;
 try {
-  app = new IkebanaApp(mount);
+  app = new IkebanaApp(mount, guestArrangements);
   app.start();
   installStudioMenus(mount);
 } catch (error) {

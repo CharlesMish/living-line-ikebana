@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { SceneGardenStore, parseSceneGarden } from "../../src/app/scenePersistence.ts";
+import { guestArrangements } from "../../src/app/guestArrangements.ts";
 import { GardenUI } from "../../src/app/gardenUI.ts";
 import { GardenStore, type ArrangementSnapshot, type GardenEntry } from "../../src/app/garden.ts";
 import { createWorkbenchFixture } from "../../src/app/workbench.ts";
@@ -91,7 +93,7 @@ const kept = (id: string, title: string): GardenEntry => ({
   arrangement: createWorkbenchFixture("mixed", 8278, 2),
 });
 
-function setup(entries: GardenEntry[] = [kept("a", "First"), kept("b", "Second")]) {
+function setup(entries: GardenEntry[] = [kept("a", "First"), kept("b", "Second")], version2 = false) {
   const document = new Document(), root = document.createElement("main");
   for (const id of ["garden-open", "more-toggle"]) { const button = document.createElement("button"); button.id = id; root.append(button); }
   const originals = new Map(["document", "window", "ResizeObserver", "requestAnimationFrame"].map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
@@ -102,7 +104,8 @@ function setup(entries: GardenEntry[] = [kept("a", "First"), kept("b", "Second")
     requestAnimationFrame: { configurable: true, value: () => 1 },
   });
   let raw: string | null = null, writes = 0, fail = false;
-  const store = new GardenStore("test", { getItem: () => raw, setItem: (_key, value) => { if (fail) throw new Error("quota"); raw = value; writes++; } });
+  const storage = { getItem: () => raw, setItem: (_key: string, value: string) => { if (fail) throw new Error("quota"); raw = value; writes++; } };
+  const store = version2 ? new SceneGardenStore("test", undefined, storage) : new GardenStore("test", storage);
   store.load(); for (const entry of entries.toReversed()) store.keep(entry);
   writes = 0;
   let working = createWorkbenchFixture("leafy-shoot", 9255, 1), viewing = false, pauses = 0;
@@ -113,7 +116,7 @@ function setup(entries: GardenEntry[] = [kept("a", "First"), kept("b", "Second")
     replace(snapshot) { replacements.push(snapshot); working = snapshot ? structuredClone(snapshot) : { ...working, plants: [] }; },
     beginComparison() { throw new Error("This test does not render comparison canvases."); },
     syncComparison: (session) => session, endComparison() {},
-  });
+  }, false, undefined, guestArrangements);
   const find = (selector: string) => { const element = root.querySelector(selector); assert.ok(element, `Missing ${selector}`); return element; };
   return {
     ui, root, document, find, store, replacements, views,
@@ -262,5 +265,67 @@ test("empty print wall gives a keep path; closing restores focus and preserves t
     assert.equal(h.find("#garden-dialog").open, true);
     assert.equal(h.writes, 0);
     assert.equal(h.views.length, 0);
+  } finally { h.close(); }
+});
+
+test("guest collection opens authentic arrangements without writing and protects a working bowl on copy", () => {
+  const h = setup(undefined, true);
+  try {
+    h.ui.open();
+    const before = h.store.exportRaw();
+    const details = h.find("#guest-collection");
+    details.open = true;
+    details.dispatchEvent(new Event("toggle"));
+    const cards = h.root.querySelectorAll("#guest-grid .garden-card-view");
+    assert.equal(cards.length, guestArrangements.length);
+    for (const [i, { artist, backup }] of guestArrangements.entries()) {
+      const [entry] = parseSceneGarden(JSON.stringify(backup)).entries;
+      const card = h.root.querySelectorAll("#guest-grid .garden-card-view")[i];
+      assert.match(card.getAttribute("aria-label")!, new RegExp(artist));
+      click(card);
+      assert.equal(h.views.at(-1), entry.id);
+      assert.equal(h.find("#kept-title").textContent, entry.title);
+      assert.equal(h.find("#garden-view-caption").textContent, `${artist} · Guest arrangement · view only`);
+      click(h.find("#garden-copy"));
+      assert.equal(h.find("#garden-choice").hidden, false);
+      click(h.find("#garden-cancel-choice"));
+      assert.equal(h.replacements.length, 0);
+    }
+    assert.equal(h.store.exportRaw(), before);
+    assert.equal(h.writes, 0);
+  } finally { h.close(); }
+});
+
+test("keeping guest bowls adds each individual authored snapshot once and preserves prior moments", () => {
+  const h = setup(undefined, true);
+  try {
+    h.ui.open();
+    const before = h.store.load().entries;
+    const details = h.find("#guest-collection");
+    details.open = true;
+    details.dispatchEvent(new Event("toggle"));
+    for (const [i, { backup }] of guestArrangements.entries()) {
+      const [entry] = parseSceneGarden(JSON.stringify(backup)).entries;
+      click(h.root.querySelectorAll(".guest-keep")[i]);
+      assert.equal(h.root.querySelectorAll(".guest-keep")[i].disabled, true);
+      assert.deepEqual(h.store.load().entries[0], entry);
+    }
+    assert.equal(h.writes, guestArrangements.length);
+    assert.deepEqual(h.store.load().entries.slice(guestArrangements.length), before);
+    assert.equal(h.replacements.length, 0);
+    assert.equal(new Set(guestArrangements.map(({ backup }) => backup.entries[0].id)).size, guestArrangements.length);
+  } finally { h.close(); }
+});
+
+test("a conflicting guest identity preserves the player’s original and reports the normal import error", () => {
+  const [original] = parseSceneGarden(JSON.stringify(guestArrangements[0].backup)).entries;
+  const h = setup([{ ...original, title: "Personal edition" }], true);
+  try {
+    h.ui.openGuests();
+    const before = h.store.exportRaw();
+    click(h.find(".guest-keep"));
+    assert.match(h.find("#garden-error").textContent, /identity differs/);
+    assert.equal(h.store.exportRaw(), before);
+    assert.equal(h.writes, 0);
   } finally { h.close(); }
 });

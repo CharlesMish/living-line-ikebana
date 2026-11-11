@@ -1020,6 +1020,9 @@ noscript {
 .garden-copy-note { margin-block: .7rem 0; }
 .garden-message { color: #764526; line-height: 1.5; }
 .garden-message:empty { display: none; }
+.guest-collection { margin: .7rem 0 1rem; border-block: 1px solid #d8dbce; }
+.guest-collection summary { cursor: pointer; min-height: 44px; padding: .7rem 0; box-sizing: border-box; font-weight: 600; }
+.guest-grid { padding-bottom: .8rem; }
 .garden-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
 .garden-card { border: 1px solid #d5d8c9; border-radius: .75rem; overflow: hidden; background: #eeeee4; min-width: 0; }
 .garden-card-just-kept { border-color: #879776; }

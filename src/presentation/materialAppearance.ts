@@ -223,6 +223,13 @@ const parasolLeaf: MaterialAppearance = Object.freeze({
   bloom: flowering.bloom,
   bud: Object.freeze({ form: "furled-leaf", roughness: 0.6 }),
 });
+const lanternSpray: MaterialAppearance = Object.freeze({
+  branchColors: Object.freeze({ trunk: 0x455f3c, lateral: 0x516e46, twig: 0x5c7a4f, pedicel: 0x678556, petiole: 0x56744a }),
+  stemRoughness: 0.82,
+  leaf: Object.freeze({ form: "lanceolate", color: 0x4c6e42, veinColor: 0x88a771, roughness: 0.78,
+    hitRadius: 0.56, hitCenterY: 0.5 }),
+  bloom: Object.freeze({ form: "lantern", color: 0xe68a2e, roughness: 0.74, hitRadius: 0.36, hitCenterY: 0.20 }),
+});
 const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze({
   "one-branch-v1": flowering,
   "leafy-shoot-v1": leafy,
@@ -232,6 +239,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "starry-pincushion-v1": starryPincushion,
   "silver-seed-v1": silverSeed,
   "parasol-leaf-v1": parasolLeaf,
+  "lantern-spray-v1": lanternSpray,
   "bare-branch-v1": bare,
   "single-flower-v1": singleFlower,
   "reed-v1": reed,

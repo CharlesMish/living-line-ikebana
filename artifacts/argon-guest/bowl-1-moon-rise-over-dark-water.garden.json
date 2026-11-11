@@ -1,0 +1,2316 @@
+{
+  "gardenVersion": 2,
+  "entries": [
+    {
+      "id": "1a4487df-6bef-4c70-a70e-36885b0f3716",
+      "title": "Moon-Rise Over Dark Water",
+      "keptAt": "2026-11-10T08:12:06.876Z",
+      "thumbnail": "data:image/jpeg;base64,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",
+      "arrangement": {
+        "plants": [
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "bare-branch-v1",
+            "id": "plant-1",
+            "seed": 8278,
+            "rootBranchId": "plant-1:trunk",
+            "branches": [
+              {
+                "id": "plant-1:answering",
+                "label": "answering fork",
+                "kind": "lateral",
+                "parentId": "plant-1:trunk",
+                "parentDistance": 1.711023830885382,
+                "points": [
+                  {
+                    "x": 0.08095994251174976,
+                    "y": 1.9951129510008843,
+                    "z": -0.32947231927138254
+                  },
+                  {
+                    "x": 0.3239523862969651,
+                    "y": 1.9370671871608993,
+                    "z": -0.29359849022272244
+                  },
+                  {
+                    "x": 0.5652863291530241,
+                    "y": 1.8729451036711893,
+                    "z": -0.25688532526002816
+                  },
+                  {
+                    "x": 0.8052411200013097,
+                    "y": 1.8041788782877528,
+                    "z": -0.21954266008249768
+                  },
+                  {
+                    "x": 1.0443060718015191,
+                    "y": 1.732578611884081,
+                    "z": -0.1818210387125486
+                  },
+                  {
+                    "x": 1.28308066506244,
+                    "y": 1.6600781933292275,
+                    "z": -0.1439798842700108
+                  },
+                  {
+                    "x": 1.5221655846931037,
+                    "y": 1.5885402590036366,
+                    "z": -0.10626655499881615
+                  },
+                  {
+                    "x": 1.7620579944170134,
+                    "y": 1.5195714711202961,
+                    "z": -0.06889667271575783
+                  },
+                  {
+                    "x": 2.003061213870084,
+                    "y": 1.454305256819017,
+                    "z": -0.03202745071250332
+                  }
+                ],
+                "restLengths": [
+                  0.2523916996398475,
+                  0.2523916996398474,
+                  0.25239169963984753,
+                  0.25239169963984737,
+                  0.2523916996398475,
+                  0.25239169963984753,
+                  0.25239169963984764,
+                  0.2523916996398475
+                ],
+                "activeLength": 2.01913359711878,
+                "radius": 0.044,
+                "stiffness": 0.66,
+                "referenceNormal": {
+                  "x": -0.11877458824428397,
+                  "y": 0.11248455123268443,
+                  "z": 0.9865291799644765
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:counter",
+                "label": "counter fork",
+                "kind": "lateral",
+                "parentId": "plant-1:trunk",
+                "parentDistance": 3.0960461915734876,
+                "points": [
+                  {
+                    "x": 0.9737423929030964,
+                    "y": 3.0443290868082,
+                    "z": -0.46286817321823137
+                  },
+                  {
+                    "x": 0.9420211172830701,
+                    "y": 3.2347705121068118,
+                    "z": -0.5042157356890871
+                  },
+                  {
+                    "x": 0.9060707660438503,
+                    "y": 3.4243734736681755,
+                    "z": -0.5459540386247217
+                  },
+                  {
+                    "x": 0.9021605256455045,
+                    "y": 3.443265093978153,
+                    "z": -0.5501557846047673
+                  }
+                ],
+                "restLengths": [
+                  0.19744314806801935,
+                  0.1974431480680194,
+                  0.01974431480680039
+                ],
+                "activeLength": 0.41463061094283915,
+                "radius": 0.036,
+                "stiffness": 0.6,
+                "referenceNormal": {
+                  "x": 0.21691198294958086,
+                  "y": -0.17248018237010151,
+                  "z": -0.9608328566105853
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:distal",
+                "label": "distal fork",
+                "kind": "twig",
+                "parentId": "plant-1:trunk",
+                "parentDistance": 4.276998158090769,
+                "points": [
+                  {
+                    "x": 1.7763860960924467,
+                    "y": 3.902701404418376,
+                    "z": -0.5790996367191663
+                  },
+                  {
+                    "x": 1.9420703511895858,
+                    "y": 3.9227495321471575,
+                    "z": -0.5445683778914084
+                  },
+                  {
+                    "x": 2.1079601024929167,
+                    "y": 3.9384850408679046,
+                    "z": -0.5088109754889389
+                  },
+                  {
+                    "x": 2.273922253741512,
+                    "y": 3.9513805125804216,
+                    "z": -0.4722612995532556
+                  },
+                  {
+                    "x": 2.4398954453828523,
+                    "y": 3.9635073525959696,
+                    "z": -0.4354992667425239
+                  },
+                  {
+                    "x": 2.605847977970692,
+                    "y": 3.9769271070216865,
+                    "z": -0.3990949432686627
+                  },
+                  {
+                    "x": 2.771722451457091,
+                    "y": 3.9930918130601696,
+                    "z": -0.36345831922747796
+                  }
+                ],
+                "restLengths": [
+                  0.17042771971939735,
+                  0.1704277197193974,
+                  0.17042771971939735,
+                  0.17042771971939752,
+                  0.17042771971939777,
+                  0.1704277197193977
+                ],
+                "activeLength": 1.0225663183163851,
+                "radius": 0.028,
+                "stiffness": 0.5,
+                "referenceNormal": {
+                  "x": -0.22145368219050462,
+                  "y": 0.17907715759213952,
+                  "z": 0.958587313849389
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:spur",
+                "label": "restrained spur",
+                "kind": "twig",
+                "parentId": "plant-1:answering",
+                "parentDistance": 1.0116185126854842,
+                "points": [
+                  {
+                    "x": 1.0462470912829243,
+                    "y": 1.7319892496621496,
+                    "z": -0.18151342466966103
+                  },
+                  {
+                    "x": 1.1195697765626345,
+                    "y": 1.7834125342903526,
+                    "z": -0.08532011473088646
+                  },
+                  {
+                    "x": 1.191729119956593,
+                    "y": 1.8339159025860716,
+                    "z": 0.012230703857669584
+                  },
+                  {
+                    "x": 1.2632994131128805,
+                    "y": 1.8839540542878166,
+                    "z": 0.11045289975734399
+                  },
+                  {
+                    "x": 1.335014875250623,
+                    "y": 1.934106821388051,
+                    "z": 0.20851061591531614
+                  },
+                  {
+                    "x": 1.407452051595828,
+                    "y": 1.9848297480363895,
+                    "z": 0.30574108156738733
+                  }
+                ],
+                "restLengths": [
+                  0.13142953722644593,
+                  0.13142953722644582,
+                  0.13142953722644587,
+                  0.13142953722644587,
+                  0.13142953722644587
+                ],
+                "activeLength": 0.6571476861322294,
+                "radius": 0.02,
+                "stiffness": 0.42,
+                "referenceNormal": {
+                  "x": -0.821956946454607,
+                  "y": 0.3823460046268566,
+                  "z": 0.42213541775228725
+                },
+                "active": true
+              },
+              {
+                "id": "plant-1:trunk",
+                "label": "main line",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.8200000000000005,
+                    "y": 0.5500000000000007,
+                    "z": -0.17999999999999575
+                  },
+                  {
+                    "x": -0.6548613564477639,
+                    "y": 0.853508759093399,
+                    "z": -0.2087775598229689
+                  },
+                  {
+                    "x": -0.48057673384353466,
+                    "y": 1.1517801807287815,
+                    "z": -0.2383666752095615
+                  },
+                  {
+                    "x": -0.2976213367054885,
+                    "y": 1.4447356818488033,
+                    "z": -0.2687127361010324
+                  },
+                  {
+                    "x": -0.1063923495476029,
+                    "y": 1.7322837519462586,
+                    "z": -0.2997621844673094
+                  },
+                  {
+                    "x": 0.0940163732824758,
+                    "y": 2.013429306804501,
+                    "z": -0.3315427947056272
+                  },
+                  {
+                    "x": 0.30465144702546687,
+                    "y": 2.2869082009465806,
+                    "z": -0.36407964394094133
+                  },
+                  {
+                    "x": 0.525492965245095,
+                    "y": 2.5521261403532387,
+                    "z": -0.3973205049013374
+                  },
+                  {
+                    "x": 0.7550089037555798,
+                    "y": 2.809801060113443,
+                    "z": -0.4311222221103158
+                  },
+                  {
+                    "x": 0.9903417036421913,
+                    "y": 3.062127018013455,
+                    "z": -0.4652773192031565
+                  },
+                  {
+                    "x": 1.2279607113199218,
+                    "y": 3.31228419027168,
+                    "z": -0.4995567991885742
+                  },
+                  {
+                    "x": 1.4647230698903237,
+                    "y": 3.5632624158520296,
+                    "z": -0.5337620946670845
+                  },
+                  {
+                    "x": 1.6989807227889975,
+                    "y": 3.81660558239727,
+                    "z": -0.5677779499890769
+                  },
+                  {
+                    "x": 1.9296915148836342,
+                    "y": 4.073218714623367,
+                    "z": -0.601522833604668
+                  },
+                  {
+                    "x": 2.155983911811596,
+                    "y": 4.333780557820887,
+                    "z": -0.6349258776599662
+                  },
+                  {
+                    "x": 2.3772039594328183,
+                    "y": 4.598712335137208,
+                    "z": -0.6679308816522651
+                  },
+                  {
+                    "x": 2.592961878083691,
+                    "y": 4.868164005068961,
+                    "z": -0.7005008755190797
+                  }
+                ],
+                "restLengths": [
+                  0.34672249190101856,
+                  0.3467224919010186,
+                  0.3467224919010187,
+                  0.3467224919010186,
+                  0.3467224919010187,
+                  0.3467224919010189,
+                  0.3467224919010187,
+                  0.3467224919010187,
+                  0.3467224919010189,
+                  0.3467224919010185,
+                  0.3467224919010186,
+                  0.34672249190101834,
+                  0.3467224919010189,
+                  0.3467224919010186,
+                  0.34672249190101867,
+                  0.34672249190101895
+                ],
+                "activeLength": 5.547559870416299,
+                "radius": 0.078,
+                "stiffness": 0.86,
+                "referenceNormal": {
+                  "x": -0.028805019518642064,
+                  "y": -0.07880910388983622,
+                  "z": -0.9964734798250338
+                },
+                "active": true
+              }
+            ],
+            "organs": []
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "silver-seed-v1",
+            "id": "plant-2",
+            "seed": 9255,
+            "rootBranchId": "plant-2:stem",
+            "branches": [
+              {
+                "id": "plant-2:arm-1",
+                "label": "seed spray arm",
+                "kind": "lateral",
+                "parentId": "plant-2:stem",
+                "parentDistance": 0.9284673670215298,
+                "points": [
+                  {
+                    "x": -0.14465057418659757,
+                    "y": 1.3802229280790186,
+                    "z": -0.10176924651891874
+                  },
+                  {
+                    "x": -0.22686016903378436,
+                    "y": 1.5262909482701768,
+                    "z": -0.04300241994518078
+                  },
+                  {
+                    "x": -0.30268055180625353,
+                    "y": 1.6765387331211499,
+                    "z": 0.01378399230865901
+                  },
+                  {
+                    "x": -0.3738610950764818,
+                    "y": 1.8295817098459264,
+                    "z": 0.0690922326352665
+                  },
+                  {
+                    "x": -0.4427552857350465,
+                    "y": 1.983931131499142,
+                    "z": 0.12366026761794037
+                  },
+                  {
+                    "x": -0.511858046115311,
+                    "y": 2.1381632731625917,
+                    "z": 0.17829614318321768
+                  },
+                  {
+                    "x": -0.5833975483527194,
+                    "y": 2.2909969440117863,
+                    "z": 0.23371989790476966
+                  },
+                  {
+                    "x": -0.6589288533772906,
+                    "y": 2.4414246392454437,
+                    "z": 0.2904151744366474
+                  }
+                ],
+                "restLengths": [
+                  0.17761707100684623,
+                  0.17761707100684623,
+                  0.17761707100684626,
+                  0.1776170710068462,
+                  0.17761707100684612,
+                  0.17761707100684618,
+                  0.17761707100684618
+                ],
+                "activeLength": 1.2433194970479233,
+                "radius": 0.0115,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": -0.38190434321841105,
+                  "y": 0.15183499548344895,
+                  "z": -0.9116442325696222
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:arm-2",
+                "label": "seed spray arm",
+                "kind": "lateral",
+                "parentId": "plant-2:stem",
+                "parentDistance": 1.7071819329105546,
+                "points": [
+                  {
+                    "x": 0.26378683872062353,
+                    "y": 2.0425194187220717,
+                    "z": -0.11922729140842003
+                  },
+                  {
+                    "x": 0.4002156975490284,
+                    "y": 2.0365713356448065,
+                    "z": -0.17034335603413195
+                  },
+                  {
+                    "x": 0.5371815992892615,
+                    "y": 2.0381781478646936,
+                    "z": -0.22033160656673023
+                  },
+                  {
+                    "x": 0.6743008026703237,
+                    "y": 2.0452718596860375,
+                    "z": -0.2694138700951523
+                  },
+                  {
+                    "x": 0.8114221227077398,
+                    "y": 2.055067651852561,
+                    "z": -0.31802303922363795
+                  },
+                  {
+                    "x": 0.9485452618356733,
+                    "y": 2.06461702458484,
+                    "z": -0.36667609126003475
+                  },
+                  {
+                    "x": 1.085659726195537,
+                    "y": 2.071286368205153,
+                    "z": -0.41583103806416355
+                  },
+                  {
+                    "x": 1.222641002924662,
+                    "y": 2.0732350879853563,
+                    "z": -0.4657649703468515
+                  }
+                ],
+                "restLengths": [
+                  0.1458117460163443,
+                  0.14581174601634425,
+                  0.1458117460163443,
+                  0.14581174601634436,
+                  0.14581174601634422,
+                  0.14581174601634442,
+                  0.14581174601634436
+                ],
+                "activeLength": 1.0206822221144103,
+                "radius": 0.0115,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0.33997533924486767,
+                  "y": -0.16244739472006633,
+                  "z": 0.9262977991196999
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:arm-3",
+                "label": "seed spray arm",
+                "kind": "lateral",
+                "parentId": "plant-2:stem",
+                "parentDistance": 2.425995378346578,
+                "points": [
+                  {
+                    "x": 0.6686845087718817,
+                    "y": 2.63616465688339,
+                    "z": -0.13735196583585182
+                  },
+                  {
+                    "x": 0.6178413197197523,
+                    "y": 2.737953991700893,
+                    "z": -0.1385012077453428
+                  },
+                  {
+                    "x": 0.5715580537776932,
+                    "y": 2.841896327568646,
+                    "z": -0.1396278934329331
+                  },
+                  {
+                    "x": 0.5285759835766257,
+                    "y": 2.9472468398959393,
+                    "z": -0.14073717525190577
+                  },
+                  {
+                    "x": 0.4872176196761785,
+                    "y": 3.0532453972446856,
+                    "z": -0.14183757881866452
+                  },
+                  {
+                    "x": 0.44571121557235915,
+                    "y": 3.1591860647996097,
+                    "z": -0.14293880038314086
+                  },
+                  {
+                    "x": 0.40247404464656317,
+                    "y": 3.2644321231677518,
+                    "z": -0.1440494582286347
+                  },
+                  {
+                    "x": 0.35639669913568695,
+                    "y": 3.3684659182033845,
+                    "z": -0.1451750841443764
+                  }
+                ],
+                "restLengths": [
+                  0.11378672731275276,
+                  0.11378672731275281,
+                  0.11378672731275259,
+                  0.1137867273127526,
+                  0.11378672731275262,
+                  0.11378672731275258,
+                  0.11378672731275281
+                ],
+                "activeLength": 0.7965070911892689,
+                "radius": 0.0115,
+                "stiffness": 0.56,
+                "referenceNormal": {
+                  "x": 0.008315680370529667,
+                  "y": -0.007136083582606857,
+                  "z": -0.9999399610832028
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-stalk-1-1",
+                "label": "seed disc stalk",
+                "kind": "pedicel",
+                "parentId": "plant-2:arm-1",
+                "parentDistance": 0.534627383730607,
+                "points": [
+                  {
+                    "x": -0.3745500369830674,
+                    "y": 1.8311252040624584,
+                    "z": 0.06963791298509318
+                  },
+                  {
+                    "x": -0.34259300694403205,
+                    "y": 1.8877513773724854,
+                    "z": 0.06381200393729643
+                  },
+                  {
+                    "x": -0.31074611599637075,
+                    "y": 1.94444763800383,
+                    "z": 0.058065173830471745
+                  },
+                  {
+                    "x": -0.27892228187864454,
+                    "y": 2.001158517718905,
+                    "z": 0.052334886501194305
+                  },
+                  {
+                    "x": -0.2470358501618974,
+                    "y": 2.0578296648664174,
+                    "z": 0.046559677219749004
+                  }
+                ],
+                "restLengths": [
+                  0.06528182357200416,
+                  0.0652818235720041,
+                  0.06528182357200425,
+                  0.06528182357200417
+                ],
+                "activeLength": 0.2611272942880167,
+                "radius": 0.006,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.25738100092476535,
+                  "y": 0.04594811855927197,
+                  "z": -0.9652169656423519
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-stalk-1-2",
+                "label": "seed disc stalk",
+                "kind": "pedicel",
+                "parentId": "plant-2:arm-1",
+                "parentDistance": 1.2433194970479233,
+                "points": [
+                  {
+                    "x": -0.6589288533772906,
+                    "y": 2.4414246392454437,
+                    "z": 0.2904151744366473
+                  },
+                  {
+                    "x": -0.6444124180599214,
+                    "y": 2.5195625584249433,
+                    "z": 0.29412388810746437
+                  },
+                  {
+                    "x": -0.6296957365585217,
+                    "y": 2.59766544366655,
+                    "z": 0.29778100003357705
+                  },
+                  {
+                    "x": -0.6149371822610462,
+                    "y": 2.6757609321806104,
+                    "z": 0.30142731514829874
+                  },
+                  {
+                    "x": -0.6090792484120173,
+                    "y": 2.7070071400448037,
+                    "z": 0.30289756803360557
+                  }
+                ],
+                "restLengths": [
+                  0.07956139682733934,
+                  0.07956139682733926,
+                  0.07956139682733905,
+                  0.03182455873093504
+                ],
+                "activeLength": 0.2705087492129527,
+                "radius": 0.006,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.2403849315189543,
+                  "y": 0.0905297568953277,
+                  "z": -0.9664468158233542
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-stalk-2-1",
+                "label": "seed disc stalk",
+                "kind": "pedicel",
+                "parentId": "plant-2:arm-2",
+                "parentDistance": 0.4388933555091964,
+                "points": [
+                  {
+                    "x": 0.6756720158706979,
+                    "y": 2.045369817607703,
+                    "z": -0.26989996178643716
+                  },
+                  {
+                    "x": 0.6963984555974879,
+                    "y": 2.1176826676041474,
+                    "z": -0.2704411682830473
+                  },
+                  {
+                    "x": 0.7172875128051239,
+                    "y": 2.1899485702795394,
+                    "z": -0.27100070587370384
+                  },
+                  {
+                    "x": 0.7382105657354704,
+                    "y": 2.2622046077580693,
+                    "z": -0.27156407680279826
+                  },
+                  {
+                    "x": 0.7590412848729545,
+                    "y": 2.334487398641403,
+                    "z": -0.27211703716298297
+                  }
+                ],
+                "restLengths": [
+                  0.0752265012002317,
+                  0.07522650120023174,
+                  0.07522650120023186,
+                  0.07522650120023155
+                ],
+                "activeLength": 0.3009060048009269,
+                "radius": 0.006,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.23608926115616327,
+                  "y": 0.06040972999461773,
+                  "z": -0.9698518058387654
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-stalk-2-2",
+                "label": "seed disc stalk",
+                "kind": "pedicel",
+                "parentId": "plant-2:arm-2",
+                "parentDistance": 1.0206822221144103,
+                "points": [
+                  {
+                    "x": 1.222641002924662,
+                    "y": 2.0732350879853563,
+                    "z": -0.4657649703468515
+                  },
+                  {
+                    "x": 1.2627033168031854,
+                    "y": 2.1302243135433114,
+                    "z": -0.4751223664689393
+                  },
+                  {
+                    "x": 1.3026377983742579,
+                    "y": 2.1873197228403027,
+                    "z": -0.4843783431349111
+                  },
+                  {
+                    "x": 1.342545500584488,
+                    "y": 2.244437288793539,
+                    "z": -0.4936130953817174
+                  },
+                  {
+                    "x": 1.382525891841123,
+                    "y": 2.3014946429386436,
+                    "z": -0.5029054760298046
+                  }
+                ],
+                "restLengths": [
+                  0.07028742195572704,
+                  0.07028742195572722,
+                  0.07028742195572713,
+                  0.07028742195572722
+                ],
+                "activeLength": 0.2811496878229086,
+                "radius": 0.006,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.2553443924792418,
+                  "y": 0.02078600337555039,
+                  "z": -0.966626703176091
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-stalk-3-1",
+                "label": "seed disc stalk",
+                "kind": "pedicel",
+                "parentId": "plant-2:arm-3",
+                "parentDistance": 0.3424980492113856,
+                "points": [
+                  {
+                    "x": 0.5281623999376213,
+                    "y": 2.9483068254694267,
+                    "z": -0.14074817928757336
+                  },
+                  {
+                    "x": 0.577471880450658,
+                    "y": 3.0133154163163627,
+                    "z": -0.13433986979032678
+                  },
+                  {
+                    "x": 0.6266180564870784,
+                    "y": 3.078455871175493,
+                    "z": -0.12801668192935112
+                  },
+                  {
+                    "x": 0.6757300241008098,
+                    "y": 3.143623846891119,
+                    "z": -0.1217113063483271
+                  },
+                  {
+                    "x": 0.724934847530966,
+                    "y": 3.2087170378989778,
+                    "z": -0.11535756582765576
+                  }
+                ],
+                "restLengths": [
+                  0.08184502540156254,
+                  0.0818450254015623,
+                  0.08184502540156234,
+                  0.08184502540156256
+                ],
+                "activeLength": 0.32738010160624975,
+                "radius": 0.006,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.1658879771512863,
+                  "y": 0.22057482675532258,
+                  "z": -0.9611596770768704
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-stalk-3-2",
+                "label": "seed disc stalk",
+                "kind": "pedicel",
+                "parentId": "plant-2:arm-3",
+                "parentDistance": 0.7965070911892689,
+                "points": [
+                  {
+                    "x": 0.35639669913568695,
+                    "y": 3.3684659182033845,
+                    "z": -0.1451750841443764
+                  },
+                  {
+                    "x": 0.37445278989211495,
+                    "y": 3.43174937043859,
+                    "z": -0.141532317530902
+                  },
+                  {
+                    "x": 0.3926702311630089,
+                    "y": 3.494989301541271,
+                    "z": -0.1379373993844108
+                  },
+                  {
+                    "x": 0.4109214063060012,
+                    "y": 3.5582200736415546,
+                    "z": -0.13435249292648566
+                  },
+                  {
+                    "x": 0.42908096126113054,
+                    "y": 3.6214756729784563,
+                    "z": -0.1307404014033921
+                  }
+                ],
+                "restLengths": [
+                  0.06590969191864146,
+                  0.0659096919186412,
+                  0.06590969191864152,
+                  0.0659096919186414
+                ],
+                "activeLength": 0.26363876767456557,
+                "radius": 0.006,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.21895898070245676,
+                  "y": 0.11822564686429919,
+                  "z": -0.9685451260489929
+                },
+                "active": true
+              },
+              {
+                "id": "plant-2:stem",
+                "label": "dry seed stem",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.5599999999999995,
+                    "y": 0.5500000000000007,
+                    "z": -0.09999999999999529
+                  },
+                  {
+                    "x": -0.46780882272288016,
+                    "y": 0.7430406351230437,
+                    "z": -0.0981983802234077
+                  },
+                  {
+                    "x": -0.3737522228087303,
+                    "y": 0.9351872048174512,
+                    "z": -0.09775388328282464
+                  },
+                  {
+                    "x": -0.2779292600873233,
+                    "y": 1.1264576842842533,
+                    "z": -0.09859608878025039
+                  },
+                  {
+                    "x": -0.17961275042782482,
+                    "y": 1.316449140966058,
+                    "z": -0.10065912696897444
+                  },
+                  {
+                    "x": -0.07678282030656819,
+                    "y": 1.5040191030630012,
+                    "z": -0.10392418446881058
+                  },
+                  {
+                    "x": 0.03208687826463939,
+                    "y": 1.6881260718712043,
+                    "z": -0.10830123593506212
+                  },
+                  {
+                    "x": 0.14696242252013256,
+                    "y": 1.8685230820271412,
+                    "z": -0.11356183182064208
+                  },
+                  {
+                    "x": 0.26617101047981717,
+                    "y": 2.046070364368907,
+                    "z": -0.1193429130326604
+                  },
+                  {
+                    "x": 0.38715792123622056,
+                    "y": 2.2224076628566047,
+                    "z": -0.12521406266037505
+                  },
+                  {
+                    "x": 0.5079712907543813,
+                    "y": 2.3988731040968796,
+                    "z": -0.13080187115851644
+                  },
+                  {
+                    "x": 0.628131129753837,
+                    "y": 2.5757998940310762,
+                    "z": -0.13586841884642473
+                  },
+                  {
+                    "x": 0.7474057739245563,
+                    "y": 2.7533433141849386,
+                    "z": -0.14023179234473973
+                  },
+                  {
+                    "x": 0.8656262828194422,
+                    "y": 2.9316088311220443,
+                    "z": -0.14376202718808967
+                  },
+                  {
+                    "x": 0.9826980574632858,
+                    "y": 3.1106463738393257,
+                    "z": -0.1463895145367035
+                  }
+                ],
+                "restLengths": [
+                  0.21393257304643554,
+                  0.2139325730464354,
+                  0.21393257304643537,
+                  0.21393257304643548,
+                  0.21393257304643554,
+                  0.21393257304643548,
+                  0.21393257304643523,
+                  0.21393257304643548,
+                  0.21393257304643534,
+                  0.21393257304643562,
+                  0.2139325730464353,
+                  0.2139325730464354,
+                  0.21393257304643543,
+                  0.2139325730464355
+                ],
+                "activeLength": 2.995056022650096,
+                "radius": 0.022,
+                "stiffness": 0.68,
+                "referenceNormal": {
+                  "x": -0.22668575964365417,
+                  "y": 0.11728296695094806,
+                  "z": -0.9668806917287999
+                },
+                "active": true
+              }
+            ],
+            "organs": [
+              {
+                "id": "plant-2:disc-1-1",
+                "kind": "seedpod",
+                "branchId": "plant-2:disc-stalk-1-1",
+                "distance": 0.2611272942880167,
+                "spin": -0.3276114549580962,
+                "scale": 1.0375760224927217,
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-1-2",
+                "kind": "seedpod",
+                "branchId": "plant-2:disc-stalk-1-2",
+                "distance": 0.3182455873093568,
+                "spin": 0.38396525916177776,
+                "scale": 1.0178847901849077,
+                "active": false
+              },
+              {
+                "id": "plant-2:disc-2-1",
+                "kind": "seedpod",
+                "branchId": "plant-2:disc-stalk-2-1",
+                "distance": 0.3009060048009269,
+                "spin": 0.14602232340257615,
+                "scale": 0.9552601157408208,
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-2-2",
+                "kind": "seedpod",
+                "branchId": "plant-2:disc-stalk-2-2",
+                "distance": 0.2811496878229086,
+                "spin": -0.6164627964748071,
+                "scale": 0.9672749881260098,
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-3-1",
+                "kind": "seedpod",
+                "branchId": "plant-2:disc-stalk-3-1",
+                "distance": 0.32738010160624975,
+                "spin": 0.6420395582448691,
+                "scale": 0.8544614684581757,
+                "active": true
+              },
+              {
+                "id": "plant-2:disc-3-2",
+                "kind": "seedpod",
+                "branchId": "plant-2:disc-stalk-3-2",
+                "distance": 0.26363876767456557,
+                "spin": -0.0655044318549335,
+                "scale": 0.892652962366119,
+                "active": true
+              }
+            ]
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "lobed-leaf-v1",
+            "id": "plant-3",
+            "seed": 10232,
+            "rootBranchId": "plant-3:wood",
+            "branches": [
+              {
+                "id": "plant-3:fork",
+                "label": "leaf-bearing fork",
+                "kind": "lateral",
+                "parentId": "plant-3:wood",
+                "parentDistance": 1.7366467333711686,
+                "points": [
+                  {
+                    "x": -1.8785513701011345,
+                    "y": 1.9680850780192654,
+                    "z": 0.1666603986907963
+                  },
+                  {
+                    "x": -1.8532429456717674,
+                    "y": 2.1610888245624134,
+                    "z": 0.27317281946143956
+                  },
+                  {
+                    "x": -1.8265853535122978,
+                    "y": 2.355151092262794,
+                    "z": 0.3774084531979707
+                  },
+                  {
+                    "x": -1.7989552959337356,
+                    "y": 2.5499585409083556,
+                    "z": 0.4799876722222127
+                  },
+                  {
+                    "x": -1.7708472075674506,
+                    "y": 2.745126793942428,
+                    "z": 0.581747913383644
+                  },
+                  {
+                    "x": -1.7427827093955095,
+                    "y": 2.94026229708415,
+                    "z": 0.6835829646243402
+                  },
+                  {
+                    "x": -1.7152277527437134,
+                    "y": 3.135012731315999,
+                    "z": 0.7862905643219036
+                  },
+                  {
+                    "x": -1.6885094379636465,
+                    "y": 3.3291219672772336,
+                    "z": 0.8904231455588567
+                  }
+                ],
+                "restLengths": [
+                  0.2218915462680159,
+                  0.22189154626801605,
+                  0.2218915462680161,
+                  0.22189154626801622,
+                  0.22189154626801597,
+                  0.221891546268016,
+                  0.22189154626801616
+                ],
+                "activeLength": 1.5532408238761124,
+                "radius": 0.027,
+                "stiffness": 0.49,
+                "referenceNormal": {
+                  "x": -0.4641412343504849,
+                  "y": -0.3805472932134575,
+                  "z": 0.7998479056692712
+                },
+                "active": true
+              },
+              {
+                "id": "plant-3:petiole-1",
+                "label": "lobed leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-3:wood",
+                "parentDistance": 3.177694022764266,
+                "points": [
+                  {
+                    "x": -2.82792100172214,
+                    "y": 3.050668097129946,
+                    "z": 0.2229836601885561
+                  },
+                  {
+                    "x": -2.7793504958731776,
+                    "y": 3.1111220482160804,
+                    "z": 0.2265778212122204
+                  },
+                  {
+                    "x": -2.728374636084642,
+                    "y": 3.1695672080655664,
+                    "z": 0.23008741418012144
+                  },
+                  {
+                    "x": -2.6784538804545686,
+                    "y": 3.2289138492662497,
+                    "z": 0.2336351697146434
+                  }
+                ],
+                "restLengths": [
+                  0.0776317733522349,
+                  0.07763177335223494,
+                  0.07763177335223495
+                ],
+                "activeLength": 0.2328953200567048,
+                "radius": 0.011,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.058152517467179324,
+                  "y": -0.10573985486669539,
+                  "z": 0.9926919803267273
+                },
+                "active": true
+              },
+              {
+                "id": "plant-3:petiole-2",
+                "label": "lobed leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-3:wood",
+                "parentDistance": 3.177694022764266,
+                "points": [
+                  {
+                    "x": -2.82792100172214,
+                    "y": 3.050668097129946,
+                    "z": 0.2229836601885561
+                  },
+                  {
+                    "x": -2.8944684598543042,
+                    "y": 3.0134456512939205,
+                    "z": 0.22045287360226926
+                  },
+                  {
+                    "x": -2.9594555851746103,
+                    "y": 2.9735696439659858,
+                    "z": 0.21779634940726839
+                  },
+                  {
+                    "x": -3.025146880280393,
+                    "y": 2.9348609088973583,
+                    "z": 0.2151949814354113
+                  }
+                ],
+                "restLengths": [
+                  0.07629206733739313,
+                  0.07629206733739316,
+                  0.07629206733739317
+                ],
+                "activeLength": 0.22887620201217945,
+                "radius": 0.011,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.030878756127180218,
+                  "y": 0.12265087495815896,
+                  "z": -0.991969387275654
+                },
+                "active": true
+              },
+              {
+                "id": "plant-3:petiole-3",
+                "label": "lobed leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-3:fork",
+                "parentDistance": 1.24259265910089,
+                "points": [
+                  {
+                    "x": -1.7262497354044317,
+                    "y": 3.05711255762326,
+                    "z": 0.7452075244428782
+                  },
+                  {
+                    "x": -1.7298037686560304,
+                    "y": 3.1094542595082495,
+                    "z": 0.6810651732419257
+                  },
+                  {
+                    "x": -1.7338060290261368,
+                    "y": 3.159172654607804,
+                    "z": 0.6148942640233626
+                  },
+                  {
+                    "x": -1.7376105691866965,
+                    "y": 3.2100629518161172,
+                    "z": 0.549608513278094
+                  }
+                ],
+                "restLengths": [
+                  0.08286450462144179,
+                  0.08286450462144168,
+                  0.08286450462144172
+                ],
+                "activeLength": 0.2485935138643252,
+                "radius": 0.011,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.8421175580638923,
+                  "y": 0.4397484184966277,
+                  "z": 0.3121847959626186
+                },
+                "active": true
+              },
+              {
+                "id": "plant-3:petiole-4",
+                "label": "lobed leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-3:fork",
+                "parentDistance": 1.24259265910089,
+                "points": [
+                  {
+                    "x": -1.7262497354044317,
+                    "y": 3.05711255762326,
+                    "z": 0.7452075244428782
+                  },
+                  {
+                    "x": -1.7186480065617589,
+                    "y": 3.032120859072604,
+                    "z": 0.825263666868675
+                  },
+                  {
+                    "x": -1.71142294091017,
+                    "y": 3.0039135374215986,
+                    "z": 0.9042795048351904
+                  },
+                  {
+                    "x": -1.7040295922478903,
+                    "y": 2.97712478065181,
+                    "z": 0.9837720084077338
+                  }
+                ],
+                "restLengths": [
+                  0.08421019663879027,
+                  0.08421019663879023,
+                  0.08421019663879033
+                ],
+                "activeLength": 0.25263058991637083,
+                "radius": 0.011,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.8719900358130932,
+                  "y": -0.48470526404322023,
+                  "z": -0.06851411862873757
+                },
+                "active": true
+              },
+              {
+                "id": "plant-3:wood",
+                "label": "lobed-leaf wood",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.88,
+                    "y": 0.5500000000000007,
+                    "z": 0.12000000000000524
+                  },
+                  {
+                    "x": -1.0202356616128911,
+                    "y": 0.7735451980336032,
+                    "z": 0.12441954873066276
+                  },
+                  {
+                    "x": -1.1638431092403936,
+                    "y": 0.9949178077539396,
+                    "z": 0.1298137506542476
+                  },
+                  {
+                    "x": -1.3106319826388506,
+                    "y": 1.2141690661440547,
+                    "z": 0.13613364809276013
+                  },
+                  {
+                    "x": -1.4611835825290862,
+                    "y": 1.4308252352048039,
+                    "z": 0.1433689049148183
+                  },
+                  {
+                    "x": -1.6173141704167528,
+                    "y": 1.6434601091490457,
+                    "z": 0.1515956096888154
+                  },
+                  {
+                    "x": -1.780273927547574,
+                    "y": 1.8508656390498728,
+                    "z": 0.1608201685016521
+                  },
+                  {
+                    "x": -1.94971779401923,
+                    "y": 2.0529681200315837,
+                    "z": 0.17088953089672831
+                  },
+                  {
+                    "x": -2.123681122478724,
+                    "y": 2.251165993238942,
+                    "z": 0.18149104825251638
+                  },
+                  {
+                    "x": -2.2993590578825,
+                    "y": 2.447838241031796,
+                    "z": 0.19222970381284932
+                  },
+                  {
+                    "x": -2.4745718323773,
+                    "y": 2.6449354768878868,
+                    "z": 0.2027744671859056
+                  },
+                  {
+                    "x": -2.648622519426222,
+                    "y": 2.843079080895816,
+                    "z": 0.21294792733559761
+                  },
+                  {
+                    "x": -2.82109719481423,
+                    "y": 3.0426209475739405,
+                    "z": 0.22262049448613735
+                  },
+                  {
+                    "x": -2.9916923675119866,
+                    "y": 3.243799686474103,
+                    "z": 0.23169963704660793
+                  },
+                  {
+                    "x": -3.160236411670908,
+                    "y": 3.4467276616412517,
+                    "z": 0.24013591798000342
+                  }
+                ],
+                "restLengths": [
+                  0.26392807498042076,
+                  0.2639280749804206,
+                  0.26392807498042076,
+                  0.26392807498042087,
+                  0.2639280749804208,
+                  0.2639280749804208,
+                  0.26392807498042065,
+                  0.263928074980421,
+                  0.26392807498042087,
+                  0.26392807498042087,
+                  0.2639280749804206,
+                  0.26392807498042087,
+                  0.2639280749804207,
+                  0.2639280749804203
+                ],
+                "activeLength": 3.6949930497258907,
+                "radius": 0.043,
+                "stiffness": 0.7,
+                "referenceNormal": {
+                  "x": 0.37477191470941507,
+                  "y": 0.25273921123943666,
+                  "z": -0.8920027483405566
+                },
+                "active": true
+              }
+            ],
+            "organs": [
+              {
+                "id": "plant-3:leaf-1",
+                "kind": "leaf",
+                "branchId": "plant-3:petiole-1",
+                "distance": 0.2328953200567048,
+                "spin": -0.07962947860360145,
+                "scale": 0.9332636184897274,
+                "active": true
+              },
+              {
+                "id": "plant-3:leaf-2",
+                "kind": "leaf",
+                "branchId": "plant-3:petiole-2",
+                "distance": 0.22887620201217945,
+                "spin": 0.30582014605402946,
+                "scale": 0.9602931469678879,
+                "active": true
+              },
+              {
+                "id": "plant-3:leaf-3",
+                "kind": "leaf",
+                "branchId": "plant-3:petiole-3",
+                "distance": 0.2485935138643252,
+                "spin": -0.15698501028120518,
+                "scale": 0.844008231716603,
+                "active": true
+              },
+              {
+                "id": "plant-3:leaf-4",
+                "kind": "leaf",
+                "branchId": "plant-3:petiole-4",
+                "distance": 0.25263058991637083,
+                "spin": 0.12621801607310773,
+                "scale": 0.8099319680891932,
+                "active": true
+              }
+            ]
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "nodding-flower-v2",
+            "id": "plant-4",
+            "seed": 11209,
+            "rootBranchId": "plant-4:stem",
+            "branches": [
+              {
+                "id": "plant-4:flower-stalk",
+                "label": "flower stalk",
+                "kind": "pedicel",
+                "parentId": "plant-4:neck",
+                "parentDistance": 1.5512760385380724,
+                "points": [
+                  {
+                    "x": 2.0074339184778114,
+                    "y": 1.80790060685546,
+                    "z": 0.44794510699294254
+                  },
+                  {
+                    "x": 2.0297033199746073,
+                    "y": 1.769187256534857,
+                    "z": 0.45345421435517796
+                  },
+                  {
+                    "x": 2.0519727214714014,
+                    "y": 1.7304739062142487,
+                    "z": 0.4589633217174137
+                  }
+                ],
+                "restLengths": [
+                  0.04500000000000015,
+                  0.04500000000000015
+                ],
+                "activeLength": 0.0900000000000003,
+                "radius": 0.013,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.09585026574574677,
+                  "y": 0.08598368762356368,
+                  "z": 0.9916751141473317
+                },
+                "active": true
+              },
+              {
+                "id": "plant-4:neck",
+                "label": "arching upper stem",
+                "kind": "lateral",
+                "parentId": "plant-4:stem",
+                "parentDistance": 2.421639671809971,
+                "points": [
+                  {
+                    "x": 1.0288605273958562,
+                    "y": 2.542985243635528,
+                    "z": 0.15189990068777307
+                  },
+                  {
+                    "x": 1.1248455363704717,
+                    "y": 2.6857200298973645,
+                    "z": 0.15490758493184265
+                  },
+                  {
+                    "x": 1.281615470711603,
+                    "y": 2.722286183280649,
+                    "z": 0.19546835425997472
+                  },
+                  {
+                    "x": 1.4235357632337862,
+                    "y": 2.6396769879226056,
+                    "z": 0.24769041072944967
+                  },
+                  {
+                    "x": 1.5408427607875215,
+                    "y": 2.5207451165411556,
+                    "z": 0.29402835515670067
+                  },
+                  {
+                    "x": 1.6451208314130055,
+                    "y": 2.388169521345103,
+                    "z": 0.3345961808734079
+                  },
+                  {
+                    "x": 1.7417109983437222,
+                    "y": 2.248457996204652,
+                    "z": 0.37004853922994385
+                  },
+                  {
+                    "x": 1.8333290001422409,
+                    "y": 2.1043237156043495,
+                    "z": 0.40071660776603807
+                  },
+                  {
+                    "x": 1.9215607657824878,
+                    "y": 1.9571833544814945,
+                    "z": 0.4267014099946068
+                  },
+                  {
+                    "x": 2.0074339184778114,
+                    "y": 1.80790060685546,
+                    "z": 0.44794510699294254
+                  }
+                ],
+                "restLengths": [
+                  0.1720330994942001,
+                  0.16600925243811687,
+                  0.17231596492834506,
+                  0.17335779993732253,
+                  0.17348185189910287,
+                  0.17351034642872046,
+                  0.17351968051334857,
+                  0.17352331337954885,
+                  0.17352472951936712
+                ],
+                "activeLength": 1.5512760385380724,
+                "radius": 0.022,
+                "stiffness": 0.62,
+                "referenceNormal": {
+                  "x": -0.8228124867670749,
+                  "y": 0.5503287880356319,
+                  "z": 0.14183735995644678
+                },
+                "active": true
+              },
+              {
+                "id": "plant-4:petiole",
+                "label": "leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-4:stem",
+                "parentDistance": 0.7957276402643765,
+                "points": [
+                  {
+                    "x": 0.06950198736962027,
+                    "y": 1.2313655640422287,
+                    "z": 0.11425452271653386
+                  },
+                  {
+                    "x": 0.1145615207339607,
+                    "y": 1.2418540134998133,
+                    "z": 0.05735629199938887
+                  },
+                  {
+                    "x": 0.15892849873624476,
+                    "y": 1.2504113757170776,
+                    "z": -0.0004028682490523072
+                  },
+                  {
+                    "x": 0.20360827058690084,
+                    "y": 1.2598278299623977,
+                    "z": -0.057786020433268664
+                  }
+                ],
+                "restLengths": [
+                  0.07333333333333336,
+                  0.07333333333333338,
+                  0.07333333333333336
+                ],
+                "activeLength": 0.22000000000000008,
+                "radius": 0.012,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.7507307749853623,
+                  "y": -0.40839656361108634,
+                  "z": 0.5192451736131337
+                },
+                "active": true
+              },
+              {
+                "id": "plant-4:stem",
+                "label": "supporting stem",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.34000000000000025,
+                    "y": 0.5500000000000007,
+                    "z": 0.08000000000000451
+                  },
+                  {
+                    "x": -0.2377632906878043,
+                    "y": 0.7238211992204056,
+                    "z": 0.0876433158205206
+                  },
+                  {
+                    "x": -0.1347277727375018,
+                    "y": 0.8971285909768486,
+                    "z": 0.09617585995635274
+                  },
+                  {
+                    "x": -0.03082156400814401,
+                    "y": 1.06987519725048,
+                    "z": 0.10548629037456025
+                  },
+                  {
+                    "x": 0.07555646579471076,
+                    "y": 1.2411114305728,
+                    "z": 0.11478368135188521
+                  },
+                  {
+                    "x": 0.18659408951810236,
+                    "y": 1.409421969743956,
+                    "z": 0.12295575745991429
+                  },
+                  {
+                    "x": 0.3029550580071116,
+                    "y": 1.574172979930092,
+                    "z": 0.12942135573739366
+                  },
+                  {
+                    "x": 0.42325673300359073,
+                    "y": 1.7361206145746733,
+                    "z": 0.1344258469408044
+                  },
+                  {
+                    "x": 0.5449913090631442,
+                    "y": 1.8970141062218655,
+                    "z": 0.13873300880378978
+                  },
+                  {
+                    "x": 0.6665798608562061,
+                    "y": 2.0580253540441293,
+                    "z": 0.1427550050396868
+                  },
+                  {
+                    "x": 0.7878142628131086,
+                    "y": 2.2193133004530923,
+                    "z": 0.14635950659608274
+                  },
+                  {
+                    "x": 0.9085931582751001,
+                    "y": 2.380953677469658,
+                    "z": 0.1494289096426082
+                  },
+                  {
+                    "x": 1.0288605273958564,
+                    "y": 2.542985243635528,
+                    "z": 0.15189990068777307
+                  }
+                ],
+                "restLengths": [
+                  0.2018033059841643,
+                  0.20180330598416432,
+                  0.20180330598416435,
+                  0.20180330598416418,
+                  0.20180330598416424,
+                  0.2018033059841642,
+                  0.20180330598416432,
+                  0.20180330598416438,
+                  0.20180330598416407,
+                  0.20180330598416432,
+                  0.20180330598416418,
+                  0.20180330598416435
+                ],
+                "activeLength": 2.421639671809971,
+                "radius": 0.031,
+                "stiffness": 0.48,
+                "referenceNormal": {
+                  "x": -0.8621404745101894,
+                  "y": 0.5057322113286189,
+                  "z": 0.030801503794629887
+                },
+                "active": true
+              }
+            ],
+            "organs": [
+              {
+                "id": "plant-4:bloom",
+                "kind": "bloom",
+                "branchId": "plant-4:flower-stalk",
+                "distance": 0.0900000000000003,
+                "spin": 0.12724699303507805,
+                "scale": 1.0785380373382942,
+                "active": true
+              },
+              {
+                "id": "plant-4:leaf",
+                "kind": "leaf",
+                "branchId": "plant-4:petiole",
+                "distance": 0.22000000000000008,
+                "spin": -0.35,
+                "scale": 0.5514793020393699,
+                "active": true
+              }
+            ]
+          },
+          {
+            "schemaVersion": 1,
+            "generatorVersion": "starry-pincushion-v1",
+            "id": "plant-5",
+            "seed": 12186,
+            "rootBranchId": "plant-5:stem",
+            "branches": [
+              {
+                "id": "plant-5:arm-1",
+                "label": "starry flowering arm",
+                "kind": "lateral",
+                "parentId": "plant-5:stem",
+                "parentDistance": 1.0254175019431857,
+                "points": [
+                  {
+                    "x": -0.40125122316913275,
+                    "y": 1.5534641320502849,
+                    "z": 0.22883334932866373
+                  },
+                  {
+                    "x": -0.2804217294644514,
+                    "y": 1.6077682474855994,
+                    "z": 0.18752346518831428
+                  },
+                  {
+                    "x": -0.16198154582263352,
+                    "y": 1.6679065643617697,
+                    "z": 0.1473922333105796
+                  },
+                  {
+                    "x": -0.10952812733247308,
+                    "y": 1.6968233585381434,
+                    "z": 0.1297389635200263
+                  }
+                ],
+                "restLengths": [
+                  0.13876314362910172,
+                  0.13876314362910172,
+                  0.062443414633095884
+                ],
+                "activeLength": 0.3399697018912993,
+                "radius": 0.012,
+                "stiffness": 0.31,
+                "referenceNormal": {
+                  "x": 0.34281011617387824,
+                  "y": -0.049130379303907,
+                  "z": 0.9381190916287263
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:arm-2",
+                "label": "starry flowering arm",
+                "kind": "lateral",
+                "parentId": "plant-5:stem",
+                "parentDistance": 1.754003621744923,
+                "points": [
+                  {
+                    "x": -0.2415366374160401,
+                    "y": 2.263422733329713,
+                    "z": 0.264665640997275
+                  },
+                  {
+                    "x": -0.2671431281514706,
+                    "y": 2.3323078272315123,
+                    "z": 0.35920094018529847
+                  },
+                  {
+                    "x": -0.29114826105441194,
+                    "y": 2.4054391245392006,
+                    "z": 0.4509251914529927
+                  },
+                  {
+                    "x": -0.31397541164288606,
+                    "y": 2.4815265774853805,
+                    "z": 0.5405209057611362
+                  },
+                  {
+                    "x": -0.33621748436906795,
+                    "y": 2.5590325920167203,
+                    "z": 0.6290414075362813
+                  },
+                  {
+                    "x": -0.358513055377722,
+                    "y": 2.6364102280304604,
+                    "z": 0.7176607072431496
+                  },
+                  {
+                    "x": -0.3814317884179844,
+                    "y": 2.7122727016050474,
+                    "z": 0.8074236623036135
+                  },
+                  {
+                    "x": -0.4053638974300313,
+                    "y": 2.785591253509034,
+                    "z": 0.8990174144221416
+                  }
+                ],
+                "restLengths": [
+                  0.11974043311351634,
+                  0.11974043311351643,
+                  0.11974043311351643,
+                  0.11974043311351631,
+                  0.11974043311351651,
+                  0.11974043311351638,
+                  0.11974043311351638
+                ],
+                "activeLength": 0.8381830317946146,
+                "radius": 0.012,
+                "stiffness": 0.31,
+                "referenceNormal": {
+                  "x": -0.9311681861492288,
+                  "y": 0.12425441840563098,
+                  "z": -0.3427632544632427
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:arm-3",
+                "label": "starry flowering arm",
+                "kind": "lateral",
+                "parentId": "plant-5:stem",
+                "parentDistance": 2.5635437548579643,
+                "points": [
+                  {
+                    "x": -0.07194482618447207,
+                    "y": 3.053664429055237,
+                    "z": 0.3100636963933116
+                  },
+                  {
+                    "x": -0.08693950156056696,
+                    "y": 3.105332897508398,
+                    "z": 0.2515337353249143
+                  },
+                  {
+                    "x": -0.1008824134099412,
+                    "y": 3.159439813072755,
+                    "z": 0.19498053769763674
+                  },
+                  {
+                    "x": -0.11406065693564726,
+                    "y": 3.2152280418568915,
+                    "z": 0.13989664993266718
+                  },
+                  {
+                    "x": -0.12686172647844207,
+                    "y": 3.2718184776809713,
+                    "z": 0.08554701832030777
+                  },
+                  {
+                    "x": -0.13969721474748997,
+                    "y": 3.3283364351449487,
+                    "z": 0.031130127655800865
+                  },
+                  {
+                    "x": -0.15293465070467244,
+                    "y": 3.383997165389873,
+                    "z": -0.024068429050684792
+                  },
+                  {
+                    "x": -0.16682994679755686,
+                    "y": 3.438210972670552,
+                    "z": -0.08053090429949367
+                  }
+                ],
+                "restLengths": [
+                  0.07949985700992064,
+                  0.07949985700992054,
+                  0.07949985700992065,
+                  0.0794998570099206,
+                  0.0794998570099206,
+                  0.07949985700992054,
+                  0.07949985700992081
+                ],
+                "activeLength": 0.5564989990694444,
+                "radius": 0.012,
+                "stiffness": 0.31,
+                "referenceNormal": {
+                  "x": 0.9305533797558491,
+                  "y": -0.12130310431464965,
+                  "z": -0.3454793254430657
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:head-stalk-1",
+                "label": "starry head stalk",
+                "kind": "pedicel",
+                "parentId": "plant-5:arm-1",
+                "parentDistance": 0.9713420054037121,
+                "points": [
+                  {
+                    "x": 0.4209006252117763,
+                    "y": 1.9888375870307247,
+                    "z": -0.04879868054698899
+                  },
+                  {
+                    "x": 0.475690831217357,
+                    "y": 2.018411009985306,
+                    "z": -0.06727147739499179
+                  },
+                  {
+                    "x": 0.5297649024278291,
+                    "y": 2.049475238632623,
+                    "z": -0.08540450703827168
+                  },
+                  {
+                    "x": 0.5841561875732194,
+                    "y": 2.0798910523569267,
+                    "z": -0.1036874121272705
+                  }
+                ],
+                "restLengths": [
+                  0.06494457824000462,
+                  0.06494457824000477,
+                  0.06494457824000462
+                ],
+                "activeLength": 0.19483373472001397,
+                "radius": 0.009,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.34281011617387813,
+                  "y": -0.049130379303906985,
+                  "z": 0.9381190916287263
+                },
+                "active": false
+              },
+              {
+                "id": "plant-5:head-stalk-2",
+                "label": "starry head stalk",
+                "kind": "pedicel",
+                "parentId": "plant-5:arm-2",
+                "parentDistance": 0.8381830317946146,
+                "points": [
+                  {
+                    "x": -0.4053638974300313,
+                    "y": 2.785591253509034,
+                    "z": 0.8990174144221416
+                  },
+                  {
+                    "x": -0.4187984236060298,
+                    "y": 2.829336226992398,
+                    "z": 0.951372237687914
+                  },
+                  {
+                    "x": -0.4316908559765934,
+                    "y": 2.874402403952095,
+                    "z": 1.002733328015435
+                  },
+                  {
+                    "x": -0.4448208331241167,
+                    "y": 2.9188955204419935,
+                    "z": 1.0545320056331682
+                  }
+                ],
+                "restLengths": [
+                  0.06953514735602472,
+                  0.06953514735602473,
+                  0.06953514735602474
+                ],
+                "activeLength": 0.2086054420680742,
+                "radius": 0.009,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.9311681861492289,
+                  "y": 0.124254418405631,
+                  "z": -0.3427632544632425
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:head-stalk-3",
+                "label": "starry head stalk",
+                "kind": "pedicel",
+                "parentId": "plant-5:arm-3",
+                "parentDistance": 0.5564989990694444,
+                "points": [
+                  {
+                    "x": -0.16682994679755686,
+                    "y": 3.438210972670552,
+                    "z": -0.08053090429949367
+                  },
+                  {
+                    "x": -0.17720673307631185,
+                    "y": 3.4811681021800203,
+                    "z": -0.12356383162612361
+                  },
+                  {
+                    "x": -0.1871134967368181,
+                    "y": 3.5251296899922453,
+                    "z": -0.16568342723517693
+                  },
+                  {
+                    "x": -0.19722579915640265,
+                    "y": 3.568656377134389,
+                    "z": -0.20820394404379594
+                  }
+                ],
+                "restLengths": [
+                  0.06168326761340727,
+                  0.06168326761340738,
+                  0.06168326761340734
+                ],
+                "activeLength": 0.185049802840222,
+                "radius": 0.009,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.9305533797558493,
+                  "y": -0.12130310431464968,
+                  "z": -0.3454793254430654
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:leaf-stalk-1",
+                "label": "divided leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-5:stem",
+                "parentDistance": 0.5127087509715929,
+                "points": [
+                  {
+                    "x": -0.506626537419793,
+                    "y": 1.0526266002821225,
+                    "z": 0.1986406458528282
+                  },
+                  {
+                    "x": -0.4366520952486135,
+                    "y": 1.0591859757540996,
+                    "z": 0.16800847625895757
+                  },
+                  {
+                    "x": -0.3666319954721827,
+                    "y": 1.064832172771701,
+                    "z": 0.13729880572482628
+                  },
+                  {
+                    "x": -0.2966308256915026,
+                    "y": 1.070881816441954,
+                    "z": 0.10662282459011539
+                  }
+                ],
+                "restLengths": [
+                  0.07666666666666665,
+                  0.07666666666666667,
+                  0.07666666666666666
+                ],
+                "activeLength": 0.22999999999999998,
+                "radius": 0.009,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": 0.40485913578866,
+                  "y": -0.057208428983901945,
+                  "z": 0.9125876811691321
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:leaf-stalk-2",
+                "label": "divided leaf stalk",
+                "kind": "petiole",
+                "parentId": "plant-5:stem",
+                "parentDistance": 1.214310199669562,
+                "points": [
+                  {
+                    "x": -0.3603686191682341,
+                    "y": 1.7376253851766452,
+                    "z": 0.23849663378212016
+                  },
+                  {
+                    "x": -0.42232270632496693,
+                    "y": 1.7686041083168986,
+                    "z": 0.27135675512932833
+                  },
+                  {
+                    "x": -0.48462047564749533,
+                    "y": 1.7987623694069457,
+                    "z": 0.30433015354743786
+                  },
+                  {
+                    "x": -0.5467673950079565,
+                    "y": 1.8292837678795166,
+                    "z": 0.33725404194265446
+                  }
+                ],
+                "restLengths": [
+                  0.07666666666666665,
+                  0.07666666666666669,
+                  0.07666666666666665
+                ],
+                "activeLength": 0.22999999999999998,
+                "radius": 0.009,
+                "stiffness": 0.18,
+                "referenceNormal": {
+                  "x": -0.4432120167285356,
+                  "y": 0.062190888214475985,
+                  "z": -0.8942568991349852
+                },
+                "active": true
+              },
+              {
+                "id": "plant-5:stem",
+                "label": "starry pincushion stem",
+                "kind": "trunk",
+                "parentId": null,
+                "parentDistance": 0,
+                "points": [
+                  {
+                    "x": -0.6000000000000006,
+                    "y": 0.5500000000000007,
+                    "z": 0.16000000000000536
+                  },
+                  {
+                    "x": -0.5608678388060344,
+                    "y": 0.770690110409533,
+                    "z": 0.17822311950684583
+                  },
+                  {
+                    "x": -0.5190401772339214,
+                    "y": 0.9910332212041135,
+                    "z": 0.19455998608580322
+                  },
+                  {
+                    "x": -0.4747057493263199,
+                    "y": 1.2110095750541463,
+                    "z": 0.2091337709680353
+                  },
+                  {
+                    "x": -0.4282175591413458,
+                    "y": 1.4306365878023393,
+                    "z": 0.22218583599520403
+                  },
+                  {
+                    "x": -0.3800633877623938,
+                    "y": 1.6499714882450995,
+                    "z": 0.23405639551923932
+                  },
+                  {
+                    "x": -0.330826466276994,
+                    "y": 1.8691062305739659,
+                    "z": 0.24515699117644146
+                  },
+                  {
+                    "x": -0.28113956180977384,
+                    "y": 2.0881553883168786,
+                    "z": 0.2559371105370195
+                  },
+                  {
+                    "x": -0.2316359063176066,
+                    "y": 2.3072395695829213,
+                    "z": 0.2668477736123389
+                  },
+                  {
+                    "x": -0.18290030545906422,
+                    "y": 2.5264679994678807,
+                    "z": 0.278305072420317
+                  },
+                  {
+                    "x": -0.13542363741763352,
+                    "y": 2.7459240068457014,
+                    "z": 0.2906565814095863
+                  },
+                  {
+                    "x": -0.08956384569103404,
+                    "y": 2.9656562326695393,
+                    "z": 0.30415329931200785
+                  },
+                  {
+                    "x": -0.045516296924628885,
+                    "y": 3.1856767236337844,
+                    "z": 0.3189292920152673
+                  }
+                ],
+                "restLengths": [
+                  0.2248722591980671,
+                  0.22487225919806714,
+                  0.22487225919806716,
+                  0.22487225919806714,
+                  0.22487225919806714,
+                  0.22487225919806708,
+                  0.22487225919806725,
+                  0.22487225919806694,
+                  0.22487225919806697,
+                  0.22487225919806705,
+                  0.22487225919806714,
+                  0.22487225919806703
+                ],
+                "activeLength": 2.6984671103768045,
+                "radius": 0.021,
+                "stiffness": 0.44,
+                "referenceNormal": {
+                  "x": 0.0036011813125392434,
+                  "y": 0.08165848671280027,
+                  "z": -0.9966538632047386
+                },
+                "active": true
+              }
+            ],
+            "organs": [
+              {
+                "id": "plant-5:head-1",
+                "kind": "bloom",
+                "branchId": "plant-5:head-stalk-1",
+                "distance": 0.19483373472001397,
+                "spin": -0.11008186140563339,
+                "scale": 1.0275035871984437,
+                "active": false
+              },
+              {
+                "id": "plant-5:head-2",
+                "kind": "bloom",
+                "branchId": "plant-5:head-stalk-2",
+                "distance": 0.2086054420680742,
+                "spin": 0.11334669054951518,
+                "scale": 1.0693488927325234,
+                "active": true
+              },
+              {
+                "id": "plant-5:head-3",
+                "kind": "bloom",
+                "branchId": "plant-5:head-stalk-3",
+                "distance": 0.185049802840222,
+                "spin": 0.06609613541979342,
+                "scale": 1.020285589506384,
+                "active": true
+              },
+              {
+                "id": "plant-5:leaf-1",
+                "kind": "leaf",
+                "branchId": "plant-5:leaf-stalk-1",
+                "distance": 0.22999999999999998,
+                "spin": 0.028658699160441756,
+                "scale": 0.31928344145067966,
+                "active": true
+              },
+              {
+                "id": "plant-5:leaf-2",
+                "kind": "leaf",
+                "branchId": "plant-5:leaf-stalk-2",
+                "distance": 0.22999999999999998,
+                "spin": 0.009815183761529624,
+                "scale": 0.3242171846644487,
+                "active": true
+              }
+            ]
+          }
+        ],
+        "successfulPlantOrdinal": 5,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 3.5749318546716484,
+            "z": 13.891946582499864
+          },
+          "target": {
+            "x": 0,
+            "y": 2.5101170398568335,
+            "z": 0.0030576936109760885
+          },
+          "up": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          }
+        },
+        "scene": {
+          "sceneVersion": 2,
+          "layoutId": "offset",
+          "colorId": "charcoal",
+          "finishId": "stoneware",
+          "backdropId": "hills",
+          "perchId": "bench",
+          "photoFormat": "landscape",
+          "stemFibers": true,
+          "botanicalTones": {
+            "bare-branch": "walnut",
+            "silver-seed": "ivory",
+            "lobed-leaf": "ochre",
+            "nodding-flower": "pearl",
+            "starry-pincushion": "plum"
+          },
+          "photoAdjustments": {
+            "version": 1,
+            "exposure": 0,
+            "contrast": 0.05,
+            "warmth": 0.06,
+            "saturation": 0,
+            "vignette": 0
+          },
+          "photoLighting": "evening"
+        }
+      }
+    }
+  ]
+}

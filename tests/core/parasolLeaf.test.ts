@@ -24,7 +24,7 @@ const tipTangent = (points: readonly { x: number; y: number; z: number }[]) => {
   return { x: d.x / length, y: d.y / length, z: d.z / length };
 };
 
-test("parasol-leaf is deterministic, additive, registered last, and holds one open and one furled leaf", () => {
+test("parasol-leaf is deterministic, additive, registered, and holds one open and one furled leaf", () => {
   for (const seed of SEEDS) {
     const graph = createParasolLeaf("plant-1", seed, BASE), bytes = serializePlantGraph(graph);
     assert.equal(serializePlantGraph(createParasolLeaf("plant-1", seed, BASE)), bytes);
@@ -50,7 +50,7 @@ test("parasol-leaf is deterministic, additive, registered last, and holds one op
   const prepared = prepareMaterialInsertion("parasol-leaf", 1, BASE); assert.ok(prepared.ok);
   assert.deepEqual(JSON.parse(serializePlantGraph(prepared.graph)),
     JSON.parse(readFileSync("fixtures/plant-1-parasol-leaf-v1.json", "utf8")));
-  assert.equal(getMaterialDefinitions().at(-1)!.materialId, "parasol-leaf");
+  assert.equal(getMaterialDefinitions().find(entry => entry.materialId === "parasol-leaf")?.generator.generatorVersion, "parasol-leaf-v1");
   assert.equal(isSupportedGeneratorVersion("parasol-leaf-v1"), true);
   const future = JSON.parse(serializePlantGraph(prepared.graph)); future.generatorVersion = "parasol-leaf-v2";
   assert.throws(() => deserializePlantGraph(JSON.stringify(future)), /Unsupported generatorVersion/);

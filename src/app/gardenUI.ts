@@ -393,6 +393,34 @@ export class GardenUI {
     this.find("#garden-choice").hidden = false;
     this.find<HTMLButtonElement>("#garden-cancel-choice").focus();
   }
+  /**
+   * The same Keep first / Replace / Cancel choice, for another explicit bowl
+   * command (an invitation's fresh bowl). `begin` performs the replacement.
+   */
+  offerFreshBowl(begin: () => void, reason: string) {
+    this.returnToWork(); this.open();
+    this.pending = () => { begin(); this.dialog.close(); };
+    if (!this.actions.snapshot().plants.length) { this.finishReplacement(); return; }
+    this.find("#garden-choice-title").textContent = "What about your current bowl?";
+    this.find("#garden-choice p").textContent = `${reason} Keep your current bowl first, or replace it. Your Garden entries stay as they are.`;
+    this.find("#garden-keep-first").hidden = false;
+    this.find<HTMLButtonElement>("#garden-keep-first").disabled = !this.loaded;
+    this.find("#garden-replace").textContent = "Replace without keeping";
+    this.find("#garden-choice").hidden = false;
+    this.find<HTMLButtonElement>("#garden-cancel-choice").focus();
+  }
+  /** Opens one guest arrangement in the read-only viewer. */
+  viewGuest(guest: GuestArrangement) {
+    this.run(() => this.view(parseSceneGarden(JSON.stringify(guest.backup)).entries[0], guest.artist));
+  }
+  /** Opens one kept entry in the read-only viewer, if it is still in the Garden. */
+  viewKept(entryId: string): boolean {
+    this.reload();
+    const entry = this.entries.find((item) => item.id === entryId);
+    if (!entry) return false;
+    this.run(() => this.view(entry));
+    return true;
+  }
   private finishReplacement() { const action = this.pending; action?.(); this.clearChoice(); }
   private clearChoice() { this.pending = null; this.find("#garden-choice").hidden = true; }
   private setupWorkbench(on: (selector: string, action: () => void) => void) {

@@ -1,0 +1,41 @@
+/* Invitations reuse the Garden dialog frame; only their own blocks are styled here. */
+.invitations-dialog h2 { font: 1.15rem Georgia, serif; margin: 1.2rem 0 .5rem; }
+.invitations-dialog h3 { font: 1.2rem Georgia, serif; margin: 0; }
+.invitations-list-heading { color: var(--ink-muted); }
+.invitation-list { display: grid; gap: .75rem; }
+.invitation-card {
+  border: 1px solid #d5d8c9; border-radius: .75rem; padding: .85rem .9rem;
+  background: #eeeee4; min-width: 0; overflow-wrap: anywhere;
+}
+.invitation-card[data-state="active"] { border-color: #879776; background: #e9ecdf; }
+.invitation-card[data-state="waiting"] { background: transparent; border-style: dashed; }
+.invitation-card .eyebrow { margin: .15rem 0 .5rem; }
+.invitation-brief { font: 1rem/1.45 Georgia, serif; margin: .3rem 0 .5rem; }
+.invitation-meta { color: var(--ink-muted); font-size: .85rem; margin: 0 0 .6rem; }
+.invitation-card .garden-actions { margin-top: .4rem; }
+.invitation-active, .invitation-reply {
+  margin-block: .6rem 1rem; padding: .9rem; border: 1px solid #c9d0bb; border-radius: .75rem; background: #f7f6ef;
+}
+.invitation-active h2 { margin-top: .1rem; }
+.invitation-reply blockquote {
+  margin: .4rem 0 .8rem; padding-left: .9rem; border-left: 3px solid #879776;
+  font: 1.1rem/1.5 Georgia, serif;
+}
+.invitation-reply blockquote:focus { outline: none; }
+.invitation-reply blockquote:focus-visible { outline: 2px solid var(--moss); outline-offset: 4px; border-radius: .2rem; }
+.invitation-guests { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .5rem; }
+.invitation-guests-heading { flex: 1 1 100%; margin: 0; color: var(--ink-muted); font-size: .85rem; }
+
+/* Kit display in the tray. */
+.material-kit-heading {
+  margin: .2rem .55rem .35rem; color: var(--ink-muted); font-size: .8rem; letter-spacing: .02em;
+}
+.material-kit-left {
+  display: block; color: var(--moss-dark); font-size: .72rem; font-variant-numeric: tabular-nums;
+}
+/* Choices are grid items; author display would otherwise override [hidden]. */
+.material-options [data-material-choice][hidden], .material-more[hidden], .material-more summary[hidden] { display: none; }
+[data-kit="invitation"] .material-options button { grid-template-columns: 2.6rem minmax(0, 1fr) auto; }
+[data-kit="invitation"] .material-more { border-top: 0; margin-top: 0; padding-top: 0; }
+.material-options .material-kit-left { padding-left: .5rem; white-space: nowrap; }
+[data-kit="invitation"] .material-card[data-kit-left="0"] { opacity: .55; }

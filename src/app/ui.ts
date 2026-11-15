@@ -44,6 +44,11 @@ export interface UIState {
   canRetryWorkingSave: boolean;
   /** Source card is armed for a scene tap. Only used when tap placement is on. */
   placeReady: boolean;
+  /**
+   * An invitation's kit: cuttings left per material. Null is the open studio
+   * palette. Display only; the app refuses an insertion the kit cannot supply.
+   */
+  kit: { readonly title: string; readonly remaining: Readonly<Record<string, number>> } | null;
 }
 
 export type UICommand =
@@ -151,6 +156,7 @@ const DEFAULT_STATE: UIState = {
   experimentPanelOpen: false,
   trayEnabled: true,
   trayDragging: false,
+  kit: null,
   activeMaterialId: null,
   status: "Place a cutting.",
   statusTone: "quiet",
@@ -341,6 +347,76 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
   }
 
   const moreCuttings = root.querySelector<HTMLDetailsElement>("#material-more");
+  const moreCuttingsSummary = moreCuttings?.querySelector<HTMLElement>("summary") ?? null;
+  const materialsToggleLabel = materialsToggle.querySelector<HTMLElement>("span");
+  const openPaletteLabel = materialsToggleLabel?.textContent ?? "Materials";
+  let kitHeading: HTMLElement | null = null;
+  let moreCuttingsWasOpen: boolean | null = null;
+  /** The open palette is untouched until an invitation first supplies a kit. */
+  let kitShown = false;
+
+  function kitBadge(host: HTMLElement): HTMLElement {
+    let badge = host.querySelector<HTMLElement>(".material-kit-left");
+    if (!badge) {
+      badge = host.ownerDocument.createElement("span");
+      badge.className = "material-kit-left";
+      (host.querySelector(".material-copy") ?? host).append(badge);
+    }
+    return badge;
+  }
+
+  function leftLabel(left: number): string {
+    return left === 0 ? "none left" : `${left} left`;
+  }
+
+  /** Kit display: only kit materials, each with what is left. */
+  function renderKit(): void {
+    const kit = currentState.kit;
+    if (!kit && !kitShown) return;
+    kitShown = Boolean(kit);
+    root.dataset.kit = kit ? "invitation" : "open";
+    if (!kitHeading) {
+      kitHeading = root.ownerDocument.createElement("p");
+      kitHeading.className = "material-kit-heading";
+      kitHeading.dataset.testid = "material-kit-heading";
+      materialOptions.prepend(kitHeading);
+    }
+    kitHeading.hidden = !kit;
+    kitHeading.textContent = kit ? `Your kit · ${kit.title}` : "";
+    if (materialsToggleLabel) materialsToggleLabel.textContent = kit ? "Kit" : openPaletteLabel;
+    let visibleInMore = 0;
+    for (const choice of paletteChoices) {
+      const id = choice.dataset.materialChoice ?? "";
+      const left = kit ? kit.remaining[id] : undefined;
+      const inKit = !kit || left !== undefined;
+      choice.hidden = !inKit;
+      if (inKit && moreCuttings?.contains(choice)) visibleInMore += 1;
+      if (left === undefined) choice.querySelector(".material-kit-left")?.remove();
+      else {
+        kitBadge(choice).textContent = leftLabel(left);
+        if (left === 0) choice.disabled = true;
+      }
+    }
+    if (moreCuttings) {
+      if (kit) {
+        // Kit materials stay visible without a disclosure, wherever the open palette files them.
+        moreCuttingsWasOpen ??= moreCuttings.open;
+        moreCuttings.open = true;
+        moreCuttings.hidden = visibleInMore === 0;
+        if (moreCuttingsSummary) moreCuttingsSummary.hidden = true;
+      } else if (moreCuttingsWasOpen !== null) {
+        moreCuttings.open = moreCuttingsWasOpen;
+        moreCuttingsWasOpen = null;
+        moreCuttings.hidden = false;
+        if (moreCuttingsSummary) moreCuttingsSummary.hidden = false;
+      }
+    }
+    const sourceLeft = kit ? kit.remaining[currentState.selectedMaterialId] : undefined;
+    if (sourceLeft === undefined) sourceCard.querySelector(".material-kit-left")?.remove();
+    else kitBadge(sourceCard).textContent = leftLabel(sourceLeft);
+    if (sourceLeft === 0 && !currentState.trayDragging) sourceCard.disabled = true;
+    sourceCard.dataset.kitLeft = sourceLeft === undefined ? "" : String(sourceLeft);
+  }
   let materialMenuWasOpen = false;
 
   function syncMaterialScrollCues(): void {
@@ -481,6 +557,7 @@ export function createUIBindings(options: CreateUIBindingsOptions = {}): UIBindi
       setPlacementInstruction(sourceCard, ready);
       if (placeCancel) placeCancel.hidden = !ready;
     }
+    renderKit();
 
     status.textContent = currentState.status;
     status.dataset.tone = currentState.statusTone;

@@ -5,6 +5,7 @@ The botanical graph is authoritative. Three.js is a replaceable presentation ada
 - `src/core/` contains deterministic, renderer-free geometry, generation, pruning, shaping, serialization, and transaction snapshots.
 - `src/presentation/` owns Three.js entities, projection, candidate collection, and canonical cameras. `stageLens.ts` derives the main studio's projection from canvas size and the top-controls inset only, never from plant geometry.
 - `src/input/` owns one deterministic gesture transaction at a time. Ordinary release commits; every interruption rolls back. It also owns one transient botanical undo checkpoint and explicit Undo/Remove document commands.
+- `src/loop/` holds invitations: authored request data, the kit rule, practical measurements of committed stems, and versioned progress. It imports `core` only, never edits a graph, and has no DOM. `app/invitationsUI.ts` presents it. See [Invitations](docs/INVITATIONS.md).
 - `src/app/` owns the small DOM shell, tray, posture/tool/view commands, autosave, experiment flags, and the acquisition-telemetry/export diagnostic layer (`metrics.ts`, `telemetry.ts`, `telemetrySummary.ts`). That layer is strictly observational: it never touches `src/core/` and never gates a craft operation.
 
 Material law and UI experiments are deliberately separated. The fixed-bead and touch-located bend variants use the same broad, stiffness-capped, rest-length-preserving solver.

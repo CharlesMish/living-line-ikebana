@@ -1,0 +1,70 @@
+{
+  "invitationsDataVersion": 1,
+  "invitations": [
+    {
+      "id": "across-the-table",
+      "title": "Across the table",
+      "from": "Noor, hosting dinner on Saturday",
+      "brief": "Could you make something low for the middle of the table? Eight of us will be talking across it all evening.",
+      "layoutId": "compact",
+      "kit": [
+        { "materialId": "reed", "count": 2 },
+        { "materialId": "nodding-flower", "count": 2 },
+        { "materialId": "parasol-leaf", "count": 1 },
+        { "materialId": "arching-trailer", "count": 1 }
+      ],
+      "reading": {
+        "measure": "height",
+        "bands": [
+          { "id": "low", "upTo": 2.7, "note": "Everyone could see everyone. Halfway through, someone moved the bread basket just to get a better look at it." },
+          { "id": "middle", "upTo": 3.7, "note": "It sat in the middle all evening. When people leaned in to talk, a stem or two was in the way, and nobody minded." },
+          { "id": "tall", "note": "It was too tall to talk across, so we moved it to the sideboard. People kept getting up to go and look at it." }
+        ]
+      }
+    },
+    {
+      "id": "windowsill",
+      "title": "Above the sink",
+      "from": "Ines, in her kitchen",
+      "opensAfter": "across-the-table",
+      "brief": "It's for the windowsill above the sink. The glass is right behind it and the tap is just in front, so it can't be deep. Wide is fine.",
+      "layoutId": "long-bed",
+      "kit": [
+        { "materialId": "lantern-spray", "count": 1 },
+        { "materialId": "silver-seed", "count": 1 },
+        { "materialId": "violet-sprig", "count": 2 },
+        { "materialId": "reed", "count": 1 }
+      ],
+      "reading": {
+        "measure": "depth",
+        "bands": [
+          { "id": "fits", "upTo": 2.1, "note": "It fits the sill exactly. In the mornings the light comes through it from behind." },
+          { "id": "touches", "upTo": 2.9, "note": "One stem rests against the glass and has left a little mark on the window. I've decided I like it." },
+          { "id": "too-deep", "note": "It was too deep for the sill, so it lives on the kitchen table now. That turns out to suit it." }
+        ]
+      }
+    },
+    {
+      "id": "coming-home",
+      "title": "Coming home",
+      "from": "Theo, in the front hall",
+      "opensAfter": "windowsill",
+      "brief": "It goes on a low chest by the front door. The door opens on the left. I'd like it to turn toward whoever comes in.",
+      "layoutId": "islands",
+      "kit": [
+        { "materialId": "bare-branch", "count": 1 },
+        { "materialId": "reed", "count": 1 },
+        { "materialId": "parasol-leaf", "count": 1 },
+        { "materialId": "berry-twig", "count": 1 }
+      ],
+      "reading": {
+        "measure": "lean",
+        "bands": [
+          { "id": "toward-door", "upTo": -0.45, "note": "When I come in, it's already turned toward me. My neighbour stopped in the doorway the first time she saw it." },
+          { "id": "upright", "upTo": 0.45, "note": "It stands quite straight, as if it's waiting to see who it will be. I like that more than I expected." },
+          { "id": "toward-window", "note": "It leans away from the door, toward the window. Visitors look where it looks, so now everyone notices the garden." }
+        ]
+      }
+    }
+  ]
+}

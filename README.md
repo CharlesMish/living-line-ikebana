@@ -20,6 +20,14 @@ Appearance tuning is an initial pass; numeric checks do not establish phone feel
 See [material extension notes](docs/MATERIAL_REFERENCES.md) and the
 [short direction brief for external review](docs/DIRECTION_REVIEW.md).
 
+## Invitations
+
+**Studio → Invitations** offers requests from people and places, each with a
+vessel and a small kit. Arrange the bowl, choose the view they will see, and
+deliver it. A short note says how it went, and the next request opens. There
+is no score, and open play is unchanged outside an invitation. See
+[Invitations](docs/INVITATIONS.md).
+
 ## Garden and developer workbench
 
 Open **Garden** in the top rail to keep the current arrangement and view with an

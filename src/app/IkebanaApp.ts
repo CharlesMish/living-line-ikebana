@@ -7,7 +7,7 @@ import { WorkingBackdropUI } from "./workingBackdropUI.ts";
 import { captureFlowerHeadTilt, flowerHeadTiltRotation, singleFlowerHead, type FlowerHeadTiltFrame } from "./flowerHeadAim.ts";
 import { VesselAppearanceUI } from "../study/vesselAppearanceUI.ts";
 import { readVesselAppearance, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
-import { keyboardPlantingPoint } from "../study/vesselProfiles.ts";
+import { keyboardPlantingPoint, VESSEL_PROFILES } from "../study/vesselProfiles.ts";
 import { StemPrevention } from "./stemPrevention.ts";
 import { stemOverlapPreview } from "./stemOverlapPreview.ts";
 import {
@@ -96,6 +96,18 @@ import {
 import { createStudioComparisonViewport } from "./gardenCompareView.ts";
 import type { GuestArrangement } from "./guestArrangements.ts";
 import { GardenUI } from "./gardenUI.ts";
+import { InvitationsUI } from "./invitationsUI.ts";
+import {
+  DELIVERY_LIMIT,
+  InvitationProgressStore,
+  getInvitation,
+  kitRemaining,
+  newlySpent,
+  observeArrangement,
+  respond,
+  type Invitation,
+  type ReadingBand,
+} from "../loop/index.ts";
 import { clearLastWorkbenchFixtureLoad, fixtureLoadIdentitiesMatch, getLastWorkbenchFixtureLoad } from "./workbench.ts";
 import { createWorkbenchReport, describeWorkbenchCaptureEnvironment } from "./workbenchReport.ts";
 
@@ -204,6 +216,7 @@ interface IkebanaTestBridge {
   getStageLens(): unknown;
   getVesselPresentation(): unknown;
   getScreenTargets(): unknown[];
+  projectPointForTest(point: Vec3): { x: number; y: number };
   resolveHitForTest(candidates: TestHitCandidate[]): { stableId: string } | null;
   getMetrics(): unknown;
   resetMetrics(): void;
@@ -338,6 +351,12 @@ export class IkebanaApp {
   private suppressPlantingCue = false;
   /** Set in the window capture phase, before menus close on the same press. */
   private chromeDismissPress = false;
+  /** Invitation progress lives beside the Garden, never inside a graph or Garden entry. */
+  private readonly invitationStore = new InvitationProgressStore(`${this.storageKeys.garden}:invitations-v1`);
+  private invitationsUI: InvitationsUI | null = null;
+  /** Last committed working plants seen by the kit, to notice cut cuttings leaving the bowl. */
+  private kitPlants = new Map<string, PlantGraph>();
+  private kitSyncKey: { coordinator: Coordinator; sequence: number } | null = null;
 
   constructor(root: HTMLElement, guestArrangements: readonly GuestArrangement[] = []) {
     this.root = root;
@@ -409,7 +428,21 @@ export class IkebanaApp {
       });
     }
     this.setupVesselUI();
-
+    try { this.invitationStore.load(); } catch { /* Shown as unavailable in the dialog; stored bytes stay untouched. */ }
+    this.kitPlants = new Map(this.coordinator.getDocumentSnapshot().plants);
+    this.invitationsUI = new InvitationsUI(root, this.invitationStore, {
+      pause: () => { this.pauseForGarden(); this.ui.setState({ moreMenuOpen: false }); },
+      isViewing: () => Boolean(this.workingSession),
+      plantsInBowl: () => (this.workingSession?.coordinator ?? this.coordinator).getDocumentSnapshot().plants.size,
+      kitRemaining: () => this.currentKitRemaining(),
+      begin: (invitation) => this.beginInvitation(invitation),
+      setAside: () => this.setAsideInvitation(),
+      deliver: (invitation, title) => this.deliverInvitation(invitation, title),
+      viewGuest: (guest) => this.gardenUI.viewGuest(guest),
+      viewKept: (entryId) => this.gardenUI.viewKept(entryId),
+      layoutLabel: (layoutId) => VESSEL_PROFILES.find((profile) => profile.id === layoutId)?.label ?? layoutId,
+    }, guestArrangements);
+    this.syncKit();
   }
 
   private createStudio() {
@@ -530,6 +563,7 @@ export class IkebanaApp {
     this.endGardenComparisonView();
     this.photograph?.destroy();
     this.gardenUI?.destroy();
+    this.invitationsUI?.destroy();
     this.vesselAppearanceUI?.destroy();
     this.workingBackdropUI?.destroy();
     this.botanicalTonesUI?.destroy();
@@ -830,7 +864,7 @@ export class IkebanaApp {
 
   /** Explicit bowl replacement, separate from gesture commits. Persist first;
    * a failed write must not destroy the current in-memory working bowl. */
-  private replaceWorkingBowl(value: ArrangementSnapshot | null) {
+  private replaceWorkingBowl(value: ArrangementSnapshot | null, fresh?: { scene: SceneSettings; status: string }) {
     this.interruptActive("system-interruption", false);
     const snapshot = value ? validateArrangement(value) : {
       plants: [], successfulPlantOrdinal: this.coordinator.getDebugState().successfulPlantOrdinal,
@@ -838,10 +872,16 @@ export class IkebanaApp {
     };
     if (this.workingSession) throw new Error("Return to the working bowl before replacing it.");
     if (!this.config.workbench) snapshot.successfulPlantOrdinal = Math.max(snapshot.successfulPlantOrdinal, this.coordinator.getDebugState().successfulPlantOrdinal);
-    if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene: snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene), camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
+    const scene = snapshot.scene ?? (value ? DEFAULT_SCENE : fresh?.scene ?? this.scene);
+    if (!this.store.save(snapshot.successfulPlantOrdinal + 1, snapshot.plants, { scene, camera: snapshot.camera })) throw new Error("The new bowl could not be saved. Your current bowl is unchanged.");
     this.markWorkingSaved();
+    // Replacing the bowl by any other command ends the invitation it was made for.
+    if (this.invitationStore?.progress.active) {
+      try { this.invitationStore.setAside(); } catch { /* The kit stays shown; delivering or setting aside can retry. */ }
+    }
+    this.kitPlants = new Map();
     this.photoDraftContext++;
-    this.applyScene(snapshot.scene ?? (value ? DEFAULT_SCENE : this.scene));
+    this.applyScene(scene);
     const loaded = getLastWorkbenchFixtureLoad();
     if (!value || !loaded || !fixtureLoadIdentitiesMatch(loaded, snapshot)) clearLastWorkbenchFixtureLoad();
     this.assignSelectedBranch(null);
@@ -850,8 +890,112 @@ export class IkebanaApp {
     this.replaceCoordinator(new Map(snapshot.plants.map((plant) => [plant.id, fromCanonicalPlantGraph(plant)])), snapshot.successfulPlantOrdinal);
     this.restoreCamera(snapshot.camera);
     this.ui.setState({ posture: "arrange", tool: "shape", trayEnabled: true, viewMenuOpen: false, materialMenuOpen: false });
-    this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : "A fresh bowl. Place a cutting.");
+    this.ui.setStatus(value ? "A working copy. Your kept arrangement stays as it was." : fresh?.status ?? "A fresh bowl. Place a cutting.");
     this.syncPresentation();
+  }
+
+  private activeInvitation(): Invitation | null {
+    // Prototype-built test doubles may omit the store; they have no invitation.
+    const id = this.invitationStore?.progress.active?.invitationId;
+    return id ? getInvitation(id) : null;
+  }
+
+  /** Cuttings left in the active kit, from the committed working bowl. */
+  private currentKitRemaining(): Map<string, number> | null {
+    const invitation = this.activeInvitation();
+    const active = this.invitationStore?.progress.active;
+    if (!invitation || !active) return null;
+    const coordinator = this.workingSession?.coordinator ?? this.coordinator;
+    return kitRemaining(invitation, coordinator.getDocumentSnapshot().plants.values(), active.spent);
+  }
+
+  /**
+   * Reads committed plants after each commit. A cut cutting that leaves the
+   * bowl is recorded as spent; the tray then shows what the kit has left.
+   */
+  private syncKit() {
+    if (!this.ui || !this.invitationStore) return;
+    const invitation = this.workingSession ? null : this.activeInvitation();
+    if (!invitation) {
+      if (this.ui.state.kit !== null) this.ui.setState({ kit: null });
+      this.invitationsUI?.syncOpener();
+      return;
+    }
+    const sequence = this.coordinator.getDebugState().commitSequence;
+    if (this.kitSyncKey?.coordinator !== this.coordinator || this.kitSyncKey.sequence !== sequence) {
+      const plants = this.coordinator.getDocumentSnapshot().plants;
+      const spent = newlySpent(this.kitPlants, plants, this.invitationStore.progress.active?.spent ?? []);
+      if (spent.length) {
+        try { this.invitationStore.addSpent(spent); } catch { this.ui.setStatus("The kit could not be saved on this device.", "warning"); }
+      }
+      this.kitPlants = new Map(plants);
+      this.kitSyncKey = { coordinator: this.coordinator, sequence };
+    }
+    const remaining = Object.fromEntries(this.currentKitRemaining() ?? []);
+    // After a reload the tray may still hold a material from open play.
+    if (!(this.ui.state.selectedMaterialId in remaining) && !this.gesture && !this.placeArm) {
+      const next = invitation.kit.find((item) => (remaining[item.materialId] ?? 0) > 0) ?? invitation.kit[0];
+      if (next) this.ui.setState({ selectedMaterialId: next.materialId });
+    }
+    const current = this.ui.state.kit;
+    if (current?.title !== invitation.title || JSON.stringify(current.remaining) !== JSON.stringify(remaining)) {
+      this.ui.setState({ kit: { title: invitation.title, remaining } });
+    }
+    this.invitationsUI?.syncOpener();
+  }
+
+  /** Starts an invitation in a fresh bowl, through the Garden's Keep/Replace choice. */
+  private beginInvitation(invitation: Invitation) {
+    const scene = validateScene({ ...this.scene, layoutId: invitation.layoutId });
+    const layout = VESSEL_PROFILES.find((profile) => profile.id === invitation.layoutId)?.label ?? "vessel";
+    this.gardenUI.offerFreshBowl(() => {
+      this.replaceWorkingBowl(null, { scene, status: `${invitation.title}: a fresh ${layout.toLowerCase()} and your kit. Deliver from Studio → Invitations.` });
+      try { this.invitationStore.begin(invitation.id); }
+      catch { this.ui.setStatus("The invitation could not be started on this device. Your fresh bowl is open.", "warning"); }
+      this.kitPlants = new Map();
+      this.kitSyncKey = null;
+      const first = invitation.kit[0]?.materialId;
+      if (first) this.ui.setState({ selectedMaterialId: first });
+      this.syncPresentation();
+    }, `“${invitation.title}” begins with a fresh bowl.`);
+  }
+
+  private setAsideInvitation() {
+    if (this.workingSession) throw new Error("Return to your working bowl first.");
+    this.invitationStore.setAside();
+    this.kitSyncKey = null;
+    this.ui.setStatus("Invitation set aside. Every material is back.");
+    this.syncPresentation();
+  }
+
+  /**
+   * Delivery is an ordinary Garden Keep of the committed bowl and current
+   * view, plus one progress record. The note is chosen from what the bowl is,
+   * never from a judgement of it.
+   */
+  private deliverInvitation(invitation: Invitation, title: string): ReadingBand {
+    if (this.workingSession) throw new Error("Return to your working bowl to deliver it.");
+    if (this.activeInvitation()?.id !== invitation.id) throw new Error("That invitation is not in progress.");
+    this.pauseForGarden();
+    const snapshot = this.arrangementSnapshot();
+    if (!snapshot.plants.length) throw new Error("Place a cutting from your kit before delivering.");
+    if (this.invitationStore.progress.deliveries.length >= DELIVERY_LIMIT) throw new Error(`Invitations can record ${DELIVERY_LIMIT} deliveries on this device, and that many are recorded.`);
+    const plants = this.coordinator.getDocumentSnapshot().plants.values();
+    const observations = observeArrangement(plants, snapshot.camera);
+    const band = respond(invitation, observations);
+    const gardenEntryId = this.gardenUI.keepPhotograph(snapshot, this.studio.captureThumbnail(), title);
+    try {
+      this.invitationStore.deliver({
+        invitationId: invitation.id, gardenEntryId, title: title.slice(0, 80),
+        deliveredAt: new Date().toISOString(), noteId: band.id, observations,
+      });
+    } catch (error) {
+      throw new Error(`Kept in your Garden, but the delivery could not be recorded here. ${error instanceof Error ? error.message : ""}`.trim());
+    }
+    this.kitSyncKey = null;
+    this.ui.setStatus(`Delivered “${title}”. It is in your Garden.`);
+    this.syncPresentation();
+    return band;
   }
 
   private workbenchReport() {
@@ -2188,6 +2332,15 @@ export class IkebanaApp {
   private preventDefault = (event: Event) => event.preventDefault();
 
   private prepareMaterialInsertion(materialId: string) {
+    // The kit is authoritative here, for pointer, tap and keyboard insertion alike.
+    const kit = this.currentKitRemaining();
+    if (kit && !this.workingSession) {
+      const left = kit.get(materialId);
+      if (left === undefined || left <= 0) {
+        this.ui.setStatus(left === undefined ? "That cutting is not in this kit." : "None of that cutting is left in your kit.", "warning");
+        return null;
+      }
+    }
     const prepared = prepareMaterialInsertionForApp(
       materialId,
       this.coordinator.getDebugState().successfulPlantOrdinal,
@@ -2334,6 +2487,7 @@ export class IkebanaApp {
       this.ui.setTrayDragging(dragging, activeMaterialId);
     }
     this.syncPlantingCue();
+    this.syncKit();
   }
 
   /** Drag keeps the validity outline. Ready uses the stronger idle line. */
@@ -2477,6 +2631,8 @@ export class IkebanaApp {
       getStageLens: () => this.studio.getStageLens(),
       getVesselPresentation: () => this.studio.getVesselPresentation(),
       getScreenTargets: () => this.screenTargets(),
+      // Read-only: where a world point lands on screen, so scripted play can aim real pointer input.
+      projectPointForTest: (point: Vec3) => { const projected = this.studio.projectPoint(point); return { x: projected.clientX, y: projected.clientY }; },
       resolveHitForTest: (candidates) => {
         const tier = { "selected-handle": 0, "selected-plant": 1, "other-plant": 2 } as const;
         const ranked = candidates.map((candidate): HitCandidate => ({

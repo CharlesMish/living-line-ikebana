@@ -767,3 +767,34 @@ untouched; the catalog only gains a final entry.
 - The material has no tone family; it resolves to Natural like reed and
   trailer, so saved scenes gain no key. A build without this generator refuses
   a backup that contains it, whole, by the existing import law.
+
+## 10. Invitations — November 15 additive loop (proposed on a branch)
+
+Invitations are the first structured loop. They consume committed domain state
+and never change a gesture, graph, generator, solver or schema law. With no
+invitation in progress, play is exactly as above. See [Invitations](INVITATIONS.md).
+
+- **Revision, scoped:** while an invitation is in progress, insertion is
+  limited to the invitation's kit. This intentionally narrows "repeatable
+  cuttings" for that bowl only. The limit is checked where every insertion is
+  prepared, so it covers pointer drag, tap-to-place and keyboard activation
+  alike. A refused insertion reserves nothing and advances no ordinal. The tray
+  display mirrors the limit and is never its authority.
+- A kit count is used by a cutting in the bowl, and by a cutting that pruning
+  changed before it was removed. Removing an uncut cutting returns it. Undo
+  that restores a removed cutting counts it once, in the bowl. Spent cuttings
+  are found by comparing consecutive committed documents. Previews never count.
+- Beginning an invitation is an explicit bowl replacement through the Garden's
+  Keep first / Replace / Cancel choice and the existing save-before-replace
+  boundary. Any other replacement (fresh bowl, working copy, guest copy) sets
+  the invitation aside.
+- Delivering cancels any live gesture first, then performs an ordinary Garden
+  Keep of the committed bowl and current view. After that it records one
+  delivery. Garden entries and backups gain no fields. If recording fails after
+  the Keep, the moment stays in the Garden and the failure is reported.
+- The host's note is chosen from one practical measurement of committed stems
+  (height, depth or lean in the delivered view). Nothing is shown or scored
+  while arranging, and every note is a valid outcome.
+- Progress lives at `<Garden key>:invitations-v1`. It is allowlisted, bounded
+  and fail-closed, and unreadable bytes stay untouched. It is never written
+  while a kept or guest arrangement is being viewed.

@@ -7,6 +7,8 @@ import copperBeech from "../../artifacts/guest-astra/astra-copper-beech.json";
 
 export interface GuestArrangement {
   artist: string;
+  /** Set when the guest answered an invitation with its kit and vessel. */
+  invitationId?: string;
   backup: { gardenVersion: number; entries: { id: string; title: string; thumbnail: string | null }[] };
 }
 

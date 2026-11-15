@@ -4,6 +4,7 @@ import moonRise from "../../artifacts/argon-guest/bowl-1-moon-rise-over-dark-wat
 import lanterns from "../../artifacts/argon-guest/bowl-2-lanterns-across-the-ford.garden.json";
 import lastFerry from "../../artifacts/guest-astra/astra-last-ferry.json";
 import copperBeech from "../../artifacts/guest-astra/astra-copper-beech.json";
+import roomToTalk from "../../artifacts/guest-opus/room-to-talk.garden.json";
 
 export interface GuestArrangement {
   artist: string;
@@ -20,4 +21,6 @@ export const guestArrangements = [
   { artist: "Gemini Argon", backup: lanterns },
   { artist: "Astra", backup: lastFerry },
   { artist: "Astra", backup: copperBeech },
+  // Made inside the "Across the table" invitation, with its kit and vessel.
+  { artist: "Opus 5.5", invitationId: "across-the-table", backup: roomToTalk },
 ] satisfies GuestArrangement[];

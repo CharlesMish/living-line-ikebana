@@ -7,6 +7,9 @@ import { pruneBranch } from "../../src/core/prune.ts";
 import type { PlantGraph } from "../../src/core/types.ts";
 import { VESSEL_PROFILES } from "../../src/study/vesselProfiles.ts";
 import { canonicalCameraPose } from "../../src/app/camera.ts";
+import { guestArrangements } from "../../src/app/guestArrangements.ts";
+import { parseSceneGarden } from "../../src/app/scenePersistence.ts";
+import { fromCanonicalPlantGraph } from "../../src/core/serialization.ts";
 import {
   getInvitation,
   getInvitations,
@@ -207,3 +210,23 @@ test("a failed progress write keeps the previous progress", () => {
   assert.equal(store.progress.active?.invitationId, "across-the-table");
 });
 
+test("guest answers to an invitation keep to its vessel and kit", () => {
+  const answers = guestArrangements.filter((guest) => guest.invitationId);
+  assert.ok(answers.length >= 1);
+  for (const guest of answers) {
+    const invitation = getInvitation(guest.invitationId!);
+    assert.ok(invitation, `${guest.artist} answers a known invitation`);
+    const [entry] = parseSceneGarden(JSON.stringify(guest.backup)).entries;
+    assert.equal(entry.arrangement.scene?.layoutId, invitation.layoutId, `${entry.title} uses the invitation's vessel`);
+    const graphs = entry.arrangement.plants.map(fromCanonicalPlantGraph);
+    const counts = new Map<string, number>();
+    for (const graph of graphs) {
+      const materialId = materialIdForGraph(graph);
+      assert.ok(materialId && invitation.kit.some((item) => item.materialId === materialId), `${entry.title} uses only kit cuttings`);
+      counts.set(materialId!, (counts.get(materialId!) ?? 0) + 1);
+    }
+    for (const item of invitation.kit) assert.ok((counts.get(item.materialId) ?? 0) <= item.count, `${entry.title} stays within ${item.materialId}`);
+    // The note it would receive is reproducible from its saved graphs and view.
+    assert.ok(respond(invitation, observeArrangement(graphs, entry.arrangement.camera)));
+  }
+});

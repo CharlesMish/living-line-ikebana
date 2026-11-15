@@ -15,8 +15,9 @@ test("insertion bindings stay on one source card; palette choices cannot insert"
   const choiceIds = [...html.matchAll(/data-material-choice="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(choiceIds, [
     "flowering-branch", "reed", "arching-trailer", "foliage-fan",
-    "blossom-spray", "nodding-flower", "berry-twig", "fern-frond", "compact-flower",
-    "lobed-leaf", "broad-blade", "violet-sprig", "indigo-spire", "starry-pincushion", "silver-seed", "parasol-leaf", "lantern-spray", "single-flower", "bare-branch", "leafy-shoot", "flower-volume",
+    "blossom-spray", "nodding-flower", "berry-twig", "fern-frond",
+    "lobed-leaf", "broad-blade", "violet-sprig", "indigo-spire", "starry-pincushion", "silver-seed", "parasol-leaf", "lantern-spray",
+    "compact-flower", "single-flower", "bare-branch", "leafy-shoot", "flower-volume",
   ]);
 
   const optionsBlock = html.slice(html.indexOf('id="material-options"'), html.indexOf("</nav>", html.indexOf('id="material-options"')));
@@ -65,4 +66,12 @@ test("Single flower remains available with its source template under More cuttin
     assert.match(template, /class="material-name"/);
     assert.match(template, /class="material-verb"/);
   }
+});
+
+test("Compact flower stays available under More cuttings with its source template", () => {
+  const start = html.indexOf('<details id="material-more"');
+  const more = html.slice(start, html.indexOf("</details>", start));
+  assert.match(more, /data-material-choice="compact-flower"/);
+  assert.ok(html.indexOf('data-material-choice="compact-flower"') > start, "listed after the main shelf");
+  assert.match(html, /id="material-template-compact-flower"/);
 });

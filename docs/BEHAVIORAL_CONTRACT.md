@@ -609,6 +609,9 @@ remain registered. Bare branch, Leafy shoot, and original Flower volume move und
 More cuttings; they are neither deleted nor converted in saved bowls. Compact
 flower has one small tufted organ on its own pedicel, not a scaled copy of the
 five-organ volume head. It retains the existing stalk and tuft acquisition law.
+On November 15 Compact flower also moved under More cuttings, ahead of Single
+flower. Only its tray position changed. The generator, source template, tones
+and saved bowls are untouched.
 
 Single flower's October 13 appearance revision replaces its shallow five-petal
 dish with a connected open cup and rear receptacle. Only derived mesh appearance

@@ -6,6 +6,7 @@ export type BendVariant = "bead" | "touch";
 
 const PINNATE_DRAWS = ["baseline", "tapered", "quilled"] as const;
 const FAN_LEAF_DRAWS = ["shared", "spray", "separated"] as const;
+const SURFACE_DRAWS = ["natural", "baseline"] as const;
 
 function drawParam<T extends string>(url: URL, key: string, allowed: readonly T[]): T | undefined {
   const value = url.searchParams.get(key);
@@ -27,6 +28,8 @@ export type ExperimentConfig = {
    */
   pinnateDraw?: PinnateDraw;
   fanLeafDraw?: FanLeafDraw;
+  /** `?surface=baseline` shows uniform stems and the authored flat surfaces, for comparison. */
+  surfaceDraw?: "natural" | "baseline";
   /**
    * Explicitly wipes accumulated acquisition telemetry (see
    * `docs/BEHAVIORAL_CONTRACT.md` §8). Deliberately a separate flag from
@@ -80,6 +83,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     clearStudyData: url.searchParams.get("clearStudyData") === "1",
     pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
+    surfaceDraw: drawParam(url, "surface", SURFACE_DRAWS),
     placeCue: place.placeCue,
     placeTap: place.placeTap,
   };

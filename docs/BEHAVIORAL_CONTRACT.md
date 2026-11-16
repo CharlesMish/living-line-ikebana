@@ -767,3 +767,23 @@ untouched; the catalog only gains a final entry.
 - The material has no tone family; it resolves to Natural like reed and
   trailer, so saved scenes gain no key. A build without this generator refuses
   a backup that contains it, whole, by the existing import law.
+
+### Natural surface pass — November 16, presentation only
+
+The accepted surface draw is `natural`; `?surface=baseline` restores the earlier
+uniform stems and authored flat surfaces for comparison. No graph, generator,
+schema, gesture, acquisition proxy or persistence law changes. See the
+[polish report](development/reports/botanical-polish/README.md).
+
+- Visible stems taper and vary by stock coordinates only (distance from the
+  branch base along original rest lengths, uncut stock length and identity).
+  Bend and aim never change a ring's radius, and a cut never re-tapers retained
+  stock. Ring centres stay exactly on the graph's points.
+- An uncut tip closes in its own colour. Only a real cut, and the base, show
+  the pale cut face. Hit proxies keep their uniform radius.
+- Leaf, parasol, seed-disc and broad-blade surfaces are bent by a seeded,
+  deterministic field per organ. Sphere-acquired leaves stay inside their
+  polygonal proxy, by uniform scaling of the field. Exact-surface organs
+  acquire the bent surface itself.
+- Repeated flowers vary in vertex colour only. Their geometry, head transforms
+  and acquisition are unchanged.

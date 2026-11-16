@@ -414,7 +414,7 @@ export class IkebanaApp {
 
   private createStudio() {
     const studio = new ThreeStudio(this.canvas, {
-      debugHitTargets: this.config.debug, pinnateDraw: this.config.pinnateDraw, fanLeafDraw: this.config.fanLeafDraw,
+      debugHitTargets: this.config.debug, pinnateDraw: this.config.pinnateDraw, fanLeafDraw: this.config.fanLeafDraw, surfaceDraw: this.config.surfaceDraw,
       vesselProfile: sceneProfile(this.scene), vesselAppearance: this.scene, botanicalTones: this.scene.botanicalTones, photoAdjustments: this.scene.photoAdjustments, photoLighting: this.scene.photoLighting, stageLens: true,
       placeCue: this.config.placeCue,
       onCanvasResize: () => this.onViewportChanged(),

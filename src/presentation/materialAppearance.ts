@@ -237,6 +237,7 @@ const appearances: Readonly<Record<string, MaterialAppearance>> = Object.freeze(
   "violet-sprig-v1": violetSprig,
   "indigo-spire-v1": indigoSpire,
   "starry-pincushion-v1": starryPincushion,
+  "starry-pincushion-v2": starryPincushion,
   "silver-seed-v1": silverSeed,
   "parasol-leaf-v1": parasolLeaf,
   "lantern-spray-v1": lanternSpray,

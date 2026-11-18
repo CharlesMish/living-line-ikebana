@@ -59,6 +59,7 @@ export type WorkbenchFixtureProfileId =
   | "references-plus-fern-frond"
   | "round5-candidates"
   | "round5-palette"
+  | "starry-bowed-axis"
   | "botanical-refinements"
   | "all-registered-materials";
 
@@ -253,6 +254,14 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
     kind: "dynamic",
     materialIds: "catalog",
     notes: "Not a stable comparison scene. Cycles whatever the live catalog returns. Label reports as dynamic.",
+  }),
+  Object.freeze({
+    id: "starry-bowed-axis",
+    label: "Starry pincushion · bowed stem study",
+    kind: "stable",
+    materialIds: ["starry-pincushion"],
+    generatorVersions: Object.freeze({ "starry-pincushion": "starry-pincushion-v2" }),
+    notes: "Compare with a single ordinary Starry pincushion at the same seed. The top arm continues the bowed stem.",
   }),
   Object.freeze({
     id: "botanical-refinements",

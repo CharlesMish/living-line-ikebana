@@ -1,4 +1,5 @@
 import { createParasolLeaf, PARASOL_LEAF_VERSION } from "./parasolLeaf.ts";
+import { createStarryPincushionV2, STARRY_PINCUSHION_V2_VERSION } from "./starryPincushionV2.ts";
 import { createStarryPincushion, STARRY_PINCUSHION_VERSION } from "./starryPincushion.ts";
 import { createSilverSeed, SILVER_SEED_VERSION } from "./silverSeed.ts";
 import { createLanternSpray, LANTERN_SPRAY_VERSION } from "./lanternSpray.ts";
@@ -165,6 +166,7 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   violetSprigV1,
   indigoSpireV1,
   starryPincushionV1,
+  Object.freeze({ generatorVersion: STARRY_PINCUSHION_V2_VERSION, generate: createStarryPincushionV2 }),
   silverSeedV1,
   parasolLeafV1,
   lanternSprayV1,

@@ -64,23 +64,32 @@ export function stemCharacter(generatorVersion: string): StemCharacter {
 }
 
 const STOCK_LIMIT = 96;
-const stockCache = new Map<string, ReadonlyMap<string, number>>();
+type StockTip = "pointed" | "receptacle" | "attached";
+interface BranchStock { length: number; tip: StockTip }
+
+function stockTip(graph: PlantGraph, branch: Branch): StockTip {
+  const threshold = branch.activeLength - Math.max(0.02, (branch.restLengths.at(-1) ?? 0) * 0.5);
+  const organ = [...graph.organs.values()].find(item => item.active && item.branchId === branch.id && item.distance >= threshold);
+  if (!organ) return "pointed";
+  return ["bloom", "berry", "seedpod"].includes(organ.kind) ? "receptacle" : "attached";
+}
+const stockCache = new Map<string, ReadonlyMap<string, BranchStock>>();
 
 /**
  * Uncut length of every branch, from the deterministic generator. Rest lengths
  * do not depend on where the cutting is seated, so a fixed base is used and the
  * result is cached by identity. Unknown generators fall back to active length.
  */
-export function stockBranchLengths(graph: PlantGraph): ReadonlyMap<string, number> {
+function branchStock(graph: PlantGraph): ReadonlyMap<string, BranchStock> {
   const key = `${graph.generatorVersion}|${graph.id}|${graph.seed}`;
   const cached = stockCache.get(key);
   if (cached) return cached;
-  const lengths = new Map<string, number>();
+  const lengths = new Map<string, BranchStock>();
   const definition = getGeneratorDefinition(graph.generatorVersion);
   if (definition) {
     try {
       const stock = definition.generate(graph.id, graph.seed, { x: 0, y: 0.55, z: 0 });
-      for (const branch of stock.branches.values()) lengths.set(branch.id, branch.restLengths.reduce((sum, length) => sum + length, 0));
+      for (const branch of stock.branches.values()) lengths.set(branch.id, { length: branch.activeLength, tip: stockTip(stock, branch) });
     } catch { /* Presentation never fails on an unreadable stock. */ }
   }
   if (stockCache.size >= STOCK_LIMIT) stockCache.delete(stockCache.keys().next().value!);
@@ -118,23 +127,19 @@ export interface StemShape {
  * Builds the shape of one branch. `parentShape` lets a side branch fit inside
  * its parent where it leaves; callers memoise per graph with stemShapes().
  */
-function buildShape(graph: PlantGraph, branch: Branch, stock: ReadonlyMap<string, number>, parentShape: StemShape | null): StemShape {
+function buildShape(graph: PlantGraph, branch: Branch, stock: ReadonlyMap<string, BranchStock>, parentShape: StemShape | null): StemShape {
   const character = stemCharacter(graph.generatorVersion);
   const seed = botanicalSeed(`stem:${branch.id}`, graph.seed);
-  const stockLength = Math.max(branch.activeLength, stock.get(branch.id) ?? branch.activeLength, 1e-6);
+  const stockLength = Math.max(branch.activeLength, stock.get(branch.id)?.length ?? branch.activeLength, 1e-6);
   const fitted = parentShape ? Math.min(branch.radius, 0.9 * parentShape.meanRadiusAt(branch.parentDistance)) : branch.radius;
   const baseRadius = Math.max(fitted, branch.radius * 0.45);
   const kindScale = KIND_SCALE[branch.kind];
   const tipRatio = 1 - (1 - character.tipRatio) * kindScale;
 
   const cut = branch.activeLength < stockLength - 1e-5;
-  const lastSegment = branch.restLengths.at(-1) ?? 0;
-  const tipOrgan = [...graph.organs.values()].find((organ) => organ.active && organ.branchId === branch.id
-    && organ.distance >= branch.activeLength - Math.max(0.02, lastSegment * 0.5));
-  const tip: StemTip = cut ? "cut"
-    : !tipOrgan ? "pointed"
-    : tipOrgan.kind === "bloom" || tipOrgan.kind === "berry" || tipOrgan.kind === "seedpod" ? "receptacle"
-    : "attached";
+  // Pruning exposes a new face; the wood below it still belongs to the original tip.
+  const originalTip = stock.get(branch.id)?.tip ?? stockTip(graph, branch);
+  const tip: StemTip = cut ? "cut" : originalTip;
 
   // Stock-coordinate features, fixed by identity.
   const phase1 = channel(seed, 1) * Math.PI * 2;
@@ -162,10 +167,10 @@ function buildShape(graph: PlantGraph, branch: Branch, stock: ReadonlyMap<string
       const x = (s - at) / collarWidth;
       if (Math.abs(x) < 3) radius *= 1 + character.collar * Math.exp(-x * x);
     }
-    if (tip === "pointed") {
+    if (originalTip === "pointed") {
       const v = clamp01((s - (stockLength - closeLength)) / closeLength);
       radius *= 1 - character.tipClose * Math.pow(v, character.tipRound);
-    } else if (tip === "receptacle") {
+    } else if (originalTip === "receptacle") {
       const v = clamp01((s - (stockLength - closeLength * 0.6)) / (closeLength * 0.6));
       radius *= 1 + 0.16 * smooth(v);
     }
@@ -202,7 +207,7 @@ function buildShape(graph: PlantGraph, branch: Branch, stock: ReadonlyMap<string
 
 /** Shapes for every branch of a graph, parents first. */
 export function stemShapes(graph: PlantGraph): ReadonlyMap<string, StemShape> {
-  const stock = stockBranchLengths(graph);
+  const stock = branchStock(graph);
   const shapes = new Map<string, StemShape>();
   const resolve = (branch: Branch, depth = 0): StemShape => {
     const existing = shapes.get(branch.id);

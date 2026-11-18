@@ -7,7 +7,7 @@ import { prepareMaterialInsertion } from "../../src/core/materialCatalog.ts";
 import type { Branch, PlantGraph } from "../../src/core/types.ts";
 import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
 import { botanicalSeed, createLeafGeometry, createLeafVeinGeometry } from "../../src/presentation/botanicalGeometry.ts";
-import { updateTubeGeometry } from "../../src/presentation/geometry.ts";
+import { splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
 import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
 import { naturalizeLeaf, naturalizeSeedDisc } from "../../src/presentation/organNaturalism.ts";
 import { createSeedDiscGeometry } from "../../src/presentation/seedDiscGeometry.ts";
@@ -80,6 +80,29 @@ test("a cut keeps the remaining stock exactly and shows a pale face; an uncut ti
   // Every retained ring except the new cut end keeps its radius.
   for (let index = 0; index < shortened.rings.length - 1; index += 1) {
     assert.ok(Math.abs(shortened.rings[index].radius - whole.rings[index].radius) < 1e-6, `ring ${index} is not re-tapered by the cut`);
+  }
+});
+
+test("near-tip preview and commit keep the same cut surface, including flower receptacles", () => {
+  for (const material of ["reed", "bare-branch", "flowering-branch", "starry-pincushion"]) {
+    const graph = seat(material);
+    const branch = material === "starry-pincushion"
+      ? graph.branches.get("plant-1:head-stalk-1")! : graph.branches.get(graph.rootBranchId)!;
+    const distance = branch.activeLength - 0.025;
+    const split = splitBranchAtMaterialDistance(branch, distance);
+    const preview = new THREE.BufferGeometry();
+    updateTubeGeometry(preview, split.proximal, branch.radius, branch.referenceNormal, 10, true,
+      tubeSkin(stemShapes(graph).get(branch.id)!, split.proximalDistances, "cut"));
+    const cut = pruneBranch(graph, branch.id, distance), kept = cut.branches.get(branch.id)!;
+    const committed = new THREE.BufferGeometry();
+    updateTubeGeometry(committed, kept.points, kept.radius, kept.referenceNormal, 10, true,
+      tubeSkin(stemShapes(cut).get(branch.id)!, pointDistances(kept.restLengths, kept.points.length), "natural"));
+    for (const attribute of ["position", "color"]) {
+      const a = preview.getAttribute(attribute).array, b = committed.getAttribute(attribute).array;
+      assert.equal(a.length, b.length);
+      assert.ok(a.every((value, i) => Math.abs(value - b[i]) < 1e-6), material + ": " + attribute);
+    }
+    preview.dispose(); committed.dispose();
   }
 });
 

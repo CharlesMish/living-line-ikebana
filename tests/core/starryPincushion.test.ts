@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { createStarryPincushion, prepareMaterialInsertion, serializePlantGraph, deserializePlantGraph,
+import { createStarryPincushion, serializePlantGraph, deserializePlantGraph,
   validatePlantGraph, applyPrune, previewPrune, sampleBranch, bendBranch, aimBranch, add, organPosition,
 } from "../../src/core/index.ts";
 import { SceneCommittedStore, SceneGardenStore } from "../../src/app/scenePersistence.ts";
@@ -29,9 +29,7 @@ test("starry stock is deterministic, separately versioned and reloadable across 
     assertAttachmentCoincidence(graph);
   }
   assert.equal(unique.size, 3);
-  const prepared = prepareMaterialInsertion("starry-pincushion", 1, BASE);
-  assert.ok(prepared.ok);
-  assert.deepEqual(JSON.parse(serializePlantGraph(prepared.graph)), JSON.parse(readFileSync("fixtures/plant-1-starry-pincushion-v1.json", "utf8")));
+  assert.deepEqual(JSON.parse(serializePlantGraph(createStarryPincushion("plant-1", 8278, BASE))), JSON.parse(readFileSync("fixtures/plant-1-starry-pincushion-v1.json", "utf8")));
 });
 
 test("upper starry cuts retain two unchanged lower heads; a head-stalk cut affects only its own bloom", () => {
@@ -104,16 +102,26 @@ test("cancelled starry insertion, Aim, Bend and prune preserve document and succ
 test("starry material and plum tone survive working save, Garden backup/import and working copy", () => {
   const items = new Map<string, string>();
   const storage = { getItem: (k: string) => items.get(k) ?? null, setItem: (k: string, v: string) => { items.set(k, v); } };
-  const plants = [JSON.parse(serializePlantGraph(createStarryPincushion("plant-1", 8278, BASE)))];
+  const old = JSON.parse(readFileSync("fixtures/plant-1-starry-pincushion-v1.json", "utf8"));
+  const next = prepareMaterialInsertionForApp("starry-pincushion", 1); assert.ok(next.ok);
+  assert.equal(next.graph.generatorVersion, "starry-pincushion-v2");
+  const branch = next.graph.branches.get(next.graph.rootBranchId)!;
+  const grip = sampleBranch(branch, branch.activeLength).position;
+  const aimed = aimBranch(next.graph, branch.id, grip, add(grip, { x: .8, y: 0, z: -.2 }));
+  const station = branch.activeLength / 2;
+  const mid = sampleBranch(aimed.branches.get(branch.id)!, station).position;
+  const bent = bendBranch(aimed, { branchId: branch.id, stationDistance: station, target: add(mid, { x: -.3, y: .1, z: .4 }) });
+  assert.notDeepEqual(bent.branches.get(branch.id)!.points, aimed.branches.get(branch.id)!.points);
+  const plants = [old, JSON.parse(serializePlantGraph(bent))];
   const scene = withBotanicalTones(DEFAULT_SCENE, { "starry-pincushion": "plum" }), camera = canonicalCameraPose("front");
   const working = new SceneCommittedStore("working", undefined, () => ({ scene, camera }), storage);
-  working.load(); assert.equal(working.save(2, plants), true); assert.deepEqual(working.load()?.plants, plants);
+  working.load(); assert.equal(working.save(3, plants), true); assert.deepEqual(working.load()?.plants, plants);
   const garden = new SceneGardenStore("garden", undefined, storage); garden.load();
   garden.keep({ id: "starry", title: "Starry study", thumbnail: null, keptAt: "2026-10-14T00:00:00Z",
-    arrangement: { successfulPlantOrdinal: 1, plants, camera, scene } });
+    arrangement: { successfulPlantOrdinal: 2, plants, camera, scene } });
   const imported = new SceneGardenStore("import", undefined, storage); imported.load();
   assert.equal(imported.importBackup(garden.exportRaw()), 1);
   const entry = imported.load()!.entries[0]!; assert.deepEqual(entry.arrangement.plants, plants);
   const copy = new SceneCommittedStore("copy", undefined, () => ({ scene: entry.arrangement.scene!, camera }), storage);
-  copy.load(); assert.ok(copy.save(2, entry.arrangement.plants)); assert.deepEqual(copy.load()?.scene, scene);
+  copy.load(); assert.ok(copy.save(3, entry.arrangement.plants)); assert.deepEqual(copy.load()?.scene, scene);
 });

@@ -136,6 +136,7 @@ const lobedLeafV1: GeneratorDefinition = Object.freeze({ generatorVersion: LOBED
 const violetSprigV1: GeneratorDefinition = Object.freeze({ generatorVersion: VIOLET_SPRIG_VERSION, generate: createVioletSprig });
 const indigoSpireV1: GeneratorDefinition = Object.freeze({ generatorVersion: INDIGO_SPIRE_VERSION, generate: createIndigoSpire });
 
+const starryPincushionV2: GeneratorDefinition = Object.freeze({ generatorVersion: STARRY_PINCUSHION_V2_VERSION, generate: createStarryPincushionV2 });
 const starryPincushionV1: GeneratorDefinition = Object.freeze({ generatorVersion: STARRY_PINCUSHION_VERSION, generate: createStarryPincushion });
 const silverSeedV1: GeneratorDefinition = Object.freeze({ generatorVersion: SILVER_SEED_VERSION, generate: createSilverSeed });
 const parasolLeafV1: GeneratorDefinition = Object.freeze({ generatorVersion: PARASOL_LEAF_VERSION, generate: createParasolLeaf });
@@ -166,7 +167,7 @@ const generatorRegistry: readonly GeneratorDefinition[] = Object.freeze([
   violetSprigV1,
   indigoSpireV1,
   starryPincushionV1,
-  Object.freeze({ generatorVersion: STARRY_PINCUSHION_V2_VERSION, generate: createStarryPincushionV2 }),
+  starryPincushionV2,
   silverSeedV1,
   parasolLeafV1,
   lanternSprayV1,
@@ -198,7 +199,7 @@ const materialCatalog: readonly MaterialDefinition[] = Object.freeze([
   Object.freeze({ materialId: "lobed-leaf", generator: lobedLeafV1 }),
   Object.freeze({ materialId: "violet-sprig", generator: violetSprigV1 }),
   Object.freeze({ materialId: "indigo-spire", generator: indigoSpireV1 }),
-  Object.freeze({ materialId: "starry-pincushion", generator: starryPincushionV1 }),
+  Object.freeze({ materialId: "starry-pincushion", generator: starryPincushionV2 }),
   Object.freeze({ materialId: "silver-seed", generator: silverSeedV1 }),
   Object.freeze({ materialId: "parasol-leaf", generator: parasolLeafV1 }),
   Object.freeze({ materialId: "lantern-spray", generator: lanternSprayV1 }),

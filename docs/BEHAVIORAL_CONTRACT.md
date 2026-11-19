@@ -729,6 +729,11 @@ The stock uses existing Aim, Bend, Prune, insertion, Undo and persistence laws.
 Its tone recipes do not change geometry or targeting. Existing generator
 versions, canonical fixtures and historical profile meanings remain frozen.
 
+New tray cuttings of Starry pincushion use the bowed v2 stock. Existing v1
+graphs keep their straight form; the original single-Starry Workbench fixture
+still provides the v1 comparison. Backups containing v2 require a build that
+registers v2 (#122 or later).
+
 ### Fitted Compact and Blossom spray petals — October 14 candidate
 
 Compact and both Blossom spray versions use authored, closed petal surfaces with

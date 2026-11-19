@@ -276,6 +276,8 @@ export const WORKBENCH_FIXTURE_PROFILES: readonly WorkbenchFixtureProfile[] = Ob
 /** Stable profiles freeze versions as well as order. Singles/dynamic use the
  * current catalog. Do not silently regenerate an older comparison with v2. */
 export function workbenchGeneratorVersion(fixtureId: string, materialId: string): string | null {
+  // Preserve the original single-Starry comparison after the tray promotion.
+  if (fixtureId === "starry-pincushion" && materialId === fixtureId) return "starry-pincushion-v1";
   const profile = getWorkbenchFixtureProfile(fixtureId);
   if (!profile || profile.kind === "dynamic") return null;
   return profile.generatorVersions?.[materialId]
@@ -433,7 +435,7 @@ export function listWorkbenchFixtureOptions(
 ): WorkbenchFixtureOption[] {
   const singles: WorkbenchFixtureOption[] = catalog.map((material) => ({
     id: material.materialId,
-    label: material.materialId.replaceAll("-", " "),
+    label: material.materialId === "starry-pincushion" ? "Starry pincushion · straight stem (v1)" : material.materialId.replaceAll("-", " "),
     kind: "single-material",
     materialIds: [material.materialId],
     available: true,

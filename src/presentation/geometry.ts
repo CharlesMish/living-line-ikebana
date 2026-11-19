@@ -63,12 +63,30 @@ function transportedNormals(
   return result;
 }
 
+/**
+ * Optional visible-stem skin. Radius and tone are functions of stock material
+ * distance (see stemShape.ts), so bending never changes them and a cut never
+ * re-tapers the stock that remains. Topology is unchanged: the same rings,
+ * facets and caps as a uniform tube.
+ */
+export interface TubeSkin {
+  /** Stock material distance of each point from the branch's own base. */
+  readonly distances: readonly number[];
+  radius(distance: number, angle: number): number;
+  tone(distance: number): readonly [number, number, number];
+  /** Far end: a fresh pale cut face, the plant's own closed end, or a growing point. */
+  readonly endCap: "cut" | "closed" | "point";
+  /** For a growing point: how far the cap reaches past the last ring, in ring radii. */
+  readonly tipReach?: number;
+}
+
 function tubeData(
   points: readonly Vec3[],
   baseRadius: number,
   referenceNormal: Vec3,
   radialSegments = DEFAULT_RADIAL_SEGMENTS,
   capEnds = false,
+  skin?: TubeSkin,
 ) {
   const tangents = pointTangents(points);
   const normalsAtPoints = transportedNormals(tangents, referenceNormal);
@@ -78,15 +96,18 @@ function tubeData(
   const colors = new Float32Array(vertexCount * 3);
 
   let offset = 0;
-  points.forEach((plainPoint, pointIndex) => {
-    const point = toThree(plainPoint);
+  // Ring centres stay exactly on the graph's points; a skin changes only radius and tone.
+  const centers = points.map((plainPoint) => toThree(plainPoint));
+  points.forEach((_plainPoint, pointIndex) => {
+    const point = centers[pointIndex];
     const tangent = tangents[pointIndex];
     const normal = normalsAtPoints[pointIndex];
     const binormal = tangent.clone().cross(normal).normalize();
-    // Branch.radius is the only persisted radial material property. Keeping it
-    // constant avoids a prune preview/commit re-tapering untouched proximal
-    // stock merely because the active point count changed.
-    const radius = baseRadius;
+    // Branch.radius is the only persisted radial material property. Without a
+    // skin the tube stays uniform. A skin tapers by stock distance, so a prune
+    // preview or commit never re-tapers untouched proximal stock.
+    const distance = skin?.distances[pointIndex] ?? 0;
+    const tint = skin?.tone(distance);
 
     for (let radial = 0; radial < radialSegments; radial += 1) {
       const angle = (radial / radialSegments) * Math.PI * 2;
@@ -94,11 +115,14 @@ function tubeData(
         .multiplyScalar(Math.cos(angle))
         .addScaledVector(binormal, Math.sin(angle))
         .normalize();
+      const radius = skin ? Math.max(1e-4, skin.radius(distance, angle)) : baseRadius;
       const vertex = point.clone().addScaledVector(surfaceNormal, radius);
       // Longitudinal tone stays in the material frame; neither pruning nor a
       // changed number of points re-scales or re-seeds the remaining surface.
       const tone = 0.94 + 0.06 * Math.cos(angle * 3);
-      colors.set([tone, tone * 0.99, tone * 0.96], offset);
+      colors.set(tint
+        ? [tone * tint[0], tone * 0.99 * tint[1], tone * 0.96 * tint[2]]
+        : [tone, tone * 0.99, tone * 0.96], offset);
       positions[offset] = vertex.x;
       normals[offset] = surfaceNormal.x;
       offset += 1;
@@ -135,17 +159,29 @@ function tubeData(
     for (let end = 0; end < 2; end += 1) {
       const pointIndex = end === 0 ? 0 : points.length - 1;
       const center = points.length * radialSegments + end * (radialSegments + 1);
-      const point = points[pointIndex];
+      const point = centers[pointIndex];
       const normal = tangents[pointIndex].clone().multiplyScalar(end === 0 ? -1 : 1);
-      positions.set([point.x, point.y, point.z], center * 3);
+      // The base and any cut show a pale fresh face. An uncut end keeps its own
+      // stem colour, and a growing point closes slightly beyond the last ring.
+      const own = end === 1 && skin && skin.endCap !== "cut";
+      const ringColor = own ? colors.subarray(pointIndex * radialSegments * 3, pointIndex * radialSegments * 3 + 3) : null;
+      let reach = 0;
+      if (own && skin.endCap === "point") {
+        for (let radial = 0; radial < radialSegments; radial += 1) {
+          const source = (pointIndex * radialSegments + radial) * 3;
+          reach += Math.hypot(positions[source] - point.x, positions[source + 1] - point.y, positions[source + 2] - point.z);
+        }
+        reach = (reach / radialSegments) * (skin.tipReach ?? 1.2);
+      }
+      positions.set([point.x + normal.x * reach, point.y + normal.y * reach, point.z + normal.z * reach], center * 3);
       normals.set(normal.toArray(), center * 3);
-      colors.set([1.6, 1.38, 1.12], center * 3);
+      colors.set(ringColor ? [ringColor[0] * 1.04, ringColor[1] * 1.04, ringColor[2] * 1.02] : [1.6, 1.38, 1.12], center * 3);
       for (let radial = 0; radial < radialSegments; radial += 1) {
         const vertex = center + 1 + radial;
         const source = (pointIndex * radialSegments + radial) * 3;
         positions.set(positions.subarray(source, source + 3), vertex * 3);
         normals.set(normal.toArray(), vertex * 3);
-        colors.set([1.25, 1.12, 0.95], vertex * 3);
+        colors.set(ringColor ? [ringColor[0], ringColor[1], ringColor[2]] : [1.25, 1.12, 0.95], vertex * 3);
         const next = center + 1 + (radial + 1) % radialSegments;
         indices[indexOffset++] = center;
         indices[indexOffset++] = end === 0 ? next : vertex;
@@ -178,11 +214,13 @@ export function updateTubeGeometry(
   referenceNormal: Vec3,
   radialSegments = DEFAULT_RADIAL_SEGMENTS,
   capEnds = false,
+  skin?: TubeSkin,
 ) {
   const safePoints = points.length >= 2 ? points : [points[0], points[0]].filter(Boolean) as Vec3[];
+  const fittedSkin = skin && skin.distances.length === safePoints.length ? skin : undefined;
   const data = safePoints.length < 2
     ? { positions: new Float32Array(), normals: new Float32Array(), colors: new Float32Array(), indices: new Uint16Array() }
-    : tubeData(safePoints, baseRadius, referenceNormal, radialSegments, capEnds);
+    : tubeData(safePoints, baseRadius, referenceNormal, radialSegments, capEnds, fittedSkin);
   const existingIndex = geometry.getIndex();
   const attributesFit = ["position", "normal", "color"].every(name => {
     const attribute = geometry.getAttribute(name);
@@ -243,6 +281,9 @@ export function splitBranchAtMaterialDistance(branch: Branch, requestedDistance:
   const distance = THREE.MathUtils.clamp(requestedDistance, 0, branch.activeLength);
   const proximal: Vec3[] = [{ ...branch.points[0] }];
   const distal: Vec3[] = [];
+  // Stock distance of every returned point, for skins on either side of the cut.
+  const proximalDistances: number[] = [0];
+  const distalDistances: number[] = [];
   let cursor = 0;
 
   for (let index = 0; index < branch.restLengths.length; index += 1) {
@@ -253,6 +294,7 @@ export function splitBranchAtMaterialDistance(branch: Branch, requestedDistance:
 
     if (segmentEnd < distance - EPSILON) {
       proximal.push({ ...end });
+      proximalDistances.push(segmentEnd);
       cursor = segmentEnd;
       continue;
     }
@@ -264,16 +306,21 @@ export function splitBranchAtMaterialDistance(branch: Branch, requestedDistance:
     const prior = proximal[proximal.length - 1];
     if (Math.hypot(prior.x - cutPoint.x, prior.y - cutPoint.y, prior.z - cutPoint.z) > EPSILON) {
       proximal.push(cutPoint);
+      proximalDistances.push(distance);
     }
     distal.push(cutPoint);
-    if (t < 1 - EPSILON) distal.push({ ...end });
+    distalDistances.push(distance);
+    if (t < 1 - EPSILON) { distal.push({ ...end }); distalDistances.push(segmentEnd); }
+    let tailDistance = segmentEnd;
     for (let tail = index + 2; tail < branch.points.length; tail += 1) {
+      tailDistance += branch.restLengths[tail - 1];
       distal.push({ ...branch.points[tail] });
+      distalDistances.push(tailDistance);
     }
     break;
   }
 
-  return { proximal, distal };
+  return { proximal, distal, proximalDistances, distalDistances };
 }
 
 export function disposeObject(root: THREE.Object3D) {

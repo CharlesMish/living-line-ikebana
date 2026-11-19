@@ -17,6 +17,8 @@ import { createPhotoPerch, PHOTO_COLORS, type PhotoBackdrop, type PhotoPerch } f
 import { disposePhotoPerch } from "./perchSurfaces.ts";
 import { createAtmosphericBackdrop, fitAtmosphericBackdrop, isAtmosphericBackdrop, type AtmosphericBackdrop } from "./atmosphericBackdrops.ts";
 import { attachStemSurface, installStemSurface } from "./stemSurface.ts";
+import { pointDistances, stemShapes, tubeSkin } from "./stemShape.ts";
+import { ACCEPTED_SURFACE_DRAW, naturalizeLeaf, naturalizeSeedDisc, tintBloom, type SurfaceDraw } from "./organNaturalism.ts";
 import { applyVesselAppearance, createVesselGrain, createVesselFinishTextures, type VesselFinishTextures } from "./vesselAppearance.ts";
 import { DEFAULT_VESSEL_APPEARANCE, resolveVesselAppearance, resolveVesselPresentation, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import type { StemOverlap } from "../core/stemOverlaps.ts";
@@ -179,6 +181,11 @@ export interface ThreeStudioOptions {
   pinnateDraw?: PinnateDraw;
   /** Comparison override for foliage-fan leaves. Absent uses the appearance profile. */
   fanLeafDraw?: FanLeafDraw;
+  /**
+   * Comparison override for the natural stem and organ surface pass.
+   * Absent uses the accepted `natural` draw; `baseline` is the earlier look.
+   */
+  surfaceDraw?: SurfaceDraw;
   /**
    * Main studio only: derive a stage lens from the canvas size and the top
    * inset supplied by setStageTopInset. Comparison panes leave this off so
@@ -410,7 +417,7 @@ export class ThreeStudio {
   private readonly touchCue: THREE.Group;
   private readonly cutCollar: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
   private readonly options: Required<Pick<ThreeStudioOptions, "maxPixelRatio" | "debugHitTargets">>
-    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "stageLens" | "onCanvasResize" | "photography" | "vesselProfile" | "vesselAppearance" | "placeCue">;
+    & Pick<ThreeStudioOptions, "onViewChange" | "pinnateDraw" | "fanLeafDraw" | "surfaceDraw" | "stageLens" | "onCanvasResize" | "photography" | "vesselProfile" | "vesselAppearance" | "placeCue">;
   private photoPerch: THREE.Group | null = null;
   private atmosphericBackdrop: { id: AtmosphericBackdrop; texture: THREE.DataTexture } | null = null;
   private photoGrade?: PhotoGrade;
@@ -448,6 +455,7 @@ export class ThreeStudio {
       onViewChange: options.onViewChange,
       pinnateDraw: options.pinnateDraw,
       fanLeafDraw: options.fanLeafDraw,
+      surfaceDraw: options.surfaceDraw,
       vesselProfile: options.vesselProfile,
       vesselAppearance: options.vesselAppearance,
       stageLens: options.stageLens ?? false,
@@ -965,6 +973,10 @@ export class ThreeStudio {
     return { mesh, hit, selection, doomed, blade, geometrySignature: "", mainSignature: "" };
   }
 
+  private naturalSurfaces(): boolean {
+    return (this.options?.surfaceDraw ?? ACCEPTED_SURFACE_DRAW) === "natural";
+  }
+
   private createOrganVisual(graph: PlantGraph, organ: Organ, pending: boolean): OrganVisual {
     const appearance = this.botanicalAppearance(graph.generatorVersion);
     const group = new THREE.Group();
@@ -1001,6 +1013,12 @@ export class ThreeStudio {
       );
       leaf.castShadow = !pending;
       const vein = new THREE.Mesh(createLeafVeinGeometry(seed, appearance.leaf.form, draw), bodyMaterial(appearance.leaf.veinColor, 0.8, true, next => next.leaf.veinColor));
+      // Before the reverse veins and any exact hit copy, so both follow the bent lamina.
+      // Sphere-acquired leaves keep every curl inside their proxy; exact-surface
+      // leaves acquire whatever is drawn.
+      if (this.naturalSurfaces()) naturalizeLeaf([leaf.geometry, vein.geometry], seed, appearance.leaf.form,
+        appearance.leaf.surfacePicking ? undefined
+          : { center: new THREE.Vector3(0, appearance.leaf.hitCenterY, 0), radius: appearance.leaf.hitRadius });
       group.add(leaf, vein);
       let reverseVein: THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial> | undefined;
       if (appearance.leaf.form === "lobed") {
@@ -1022,6 +1040,7 @@ export class ThreeStudio {
       }
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
+      const firstBloomChild = group.children.length;
       const bloom = appearance.bloom;
       const originalBloom = getMaterialAppearance(graph.generatorVersion).bloom;
       const bellPalette = bloom.form === "bell" && originalBloom.collarColor !== undefined
@@ -1156,6 +1175,13 @@ export class ThreeStudio {
         anthers.instanceMatrix.needsUpdate = true;
         group.add(anthers);
       }
+      if (this.naturalSurfaces() && bloom.form !== "bell") {
+        // Repeated heads differ a little in colour. Bells keep their exact
+        // natural buffer for tone reset; shapes and acquisition are untouched.
+        for (const child of group.children.slice(firstBloomChild)) {
+          if (child instanceof THREE.Mesh && (child.material as THREE.MeshStandardMaterial).vertexColors) tintBloom(child.geometry, seed);
+        }
+      }
       hitRadius = bloom.hitRadius;
     } else if (organ.kind === "seedpod") {
       const pod = appearance.seedpod;
@@ -1165,6 +1191,11 @@ export class ThreeStudio {
       const rim = new THREE.Mesh(createSeedDiscRimGeometry(seed),
         bodyMaterial(pod.rimColor, .96, true, next => next.seedpod!.rimColor));
       membrane.castShadow = !pending; rim.castShadow = !pending;
+      if (this.naturalSurfaces()) {
+        naturalizeSeedDisc([membrane.geometry, rim.geometry], seed);
+        // A dry septum is satin, not chalk: a soft sheen lets its twist read.
+        membrane.material.roughness = Math.min(pod.roughness, 0.62);
+      }
       group.add(membrane, rim);
       // Exact surface copy, including the thin edge. Empty corners stay empty;
       // both sides route to this disc's own supporting stalk, never a flower.
@@ -1178,6 +1209,10 @@ export class ThreeStudio {
         bodyMaterial(berry.color, berry.roughness, true, next => next.berry!.color),
       );
       fruit.position.y = berry.centerY;
+      if (this.naturalSurfaces()) {
+        const size = 0.9 + 0.2 * ((botanicalSeed(`${organ.id}:size`, graph.seed) % 1000) / 1000);
+        fruit.scale.set(size, size * 0.96, size);
+      }
       fruit.castShadow = !pending;
       group.add(fruit);
       hitRadius = berry.hitRadius;
@@ -1245,6 +1280,8 @@ export class ThreeStudio {
     const plan = pending ? null : this.previewForPlant(graph.id);
     const removedBranches = new Set(plan?.removedBranchIds ?? []);
     const removedOrgans = new Set(plan?.removedOrganIds ?? []);
+    // Built lazily: only when some branch's tube actually needs a rebuild.
+    let shapes: ReturnType<typeof stemShapes> | undefined;
 
     for (const [branchId, branch] of graph.branches) {
       let branchVisual = visual.branches.get(branchId);
@@ -1285,6 +1322,8 @@ export class ThreeStudio {
       const isCutBranch = Boolean(plan && plan.branchId === branch.id);
       const mainSignature = `${geometrySignature}|${isCutBranch ? plan!.distance.toPrecision(12) : "full"}`;
       if (mainSignature !== branchVisual.mainSignature) {
+        // Stock-coordinate skin: taper and tone never move under bend or prune.
+        const shape = this.naturalSurfaces() ? (shapes ??= stemShapes(graph)).get(branch.id) : undefined;
         if (isCutBranch) {
           const split = splitBranchAtMaterialDistance(branch, plan!.distance);
           updateTubeGeometry(
@@ -1293,6 +1332,7 @@ export class ThreeStudio {
             branch.radius,
             branch.referenceNormal,
             10, true,
+            shape && tubeSkin(shape, split.proximalDistances, "cut"),
           );
           if (split.distal.length >= 2) {
             updateTubeGeometry(
@@ -1301,6 +1341,7 @@ export class ThreeStudio {
               branch.radius,
               branch.referenceNormal,
               10, true,
+              shape && tubeSkin(shape, split.distalDistances, "natural"),
             );
           }
         } else {
@@ -1310,14 +1351,15 @@ export class ThreeStudio {
             branch.radius,
             branch.referenceNormal,
             10, true,
+            shape && tubeSkin(shape, pointDistances(branch.restLengths, branch.points.length), "natural"),
           );
         }
         if (!isCutBranch) attachStemSurface(branchVisual.mesh.geometry, branch);
         if (branchVisual.blade) {
           updateBroadBladeGeometry(branchVisual.blade.mesh.geometry, branch, graph.seed,
-            0, isCutBranch ? plan!.distance : branch.activeLength);
+            0, isCutBranch ? plan!.distance : branch.activeLength, this.naturalSurfaces());
           if (isCutBranch) updateBroadBladeGeometry(branchVisual.blade.doomed.geometry,
-            branch, graph.seed, plan!.distance, branch.activeLength);
+            branch, graph.seed, plan!.distance, branch.activeLength, this.naturalSurfaces());
         }
         branchVisual.mainSignature = mainSignature;
       }

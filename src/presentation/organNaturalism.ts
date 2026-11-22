@@ -40,10 +40,34 @@ export interface BladeWarp {
   readonly ripplePhase: number;
   /** Sideways (in-plane) curve of the midrib, times length. */
   readonly sweep: number;
+  /**
+   * How far each half folds up from the midrib (rise per half-width at the
+   * margin). The two halves are never the same, so a blade is a lopsided V or
+   * a lopsided roof, not a plate.
+   */
+  readonly foldLeft: number;
+  readonly foldRight: number;
+  /** How far each margin turns back down beyond the fold. */
+  readonly reflexLeft: number;
+  readonly reflexRight: number;
+  /** Divided blades: how much the fold differs from leaflet to leaflet. */
+  readonly leafletVary: number;
+  readonly leafletPhaseLeft: number;
+  readonly leafletPhaseRight: number;
 }
 
-export function bladeWarp(seed: number, strength = 1): BladeWarp {
+export function bladeWarp(seed: number, strength = 1, divided = false): BladeWarp {
+  // Most blades fold up a little; some lie nearly flat, a few roof downward.
+  const fold = (-0.12 + 0.6 * channel(seed, 9)) * (divided ? 1.5 : 1);
+  const lopsided = 0.65 * signed(seed, 10);
   return {
+    foldLeft: (fold * (1 + lopsided) + 0.07 * signed(seed, 11)) * strength,
+    foldRight: (fold * (1 - lopsided) + 0.07 * signed(seed, 12)) * strength,
+    reflexLeft: 0.16 * channel(seed, 13) * strength,
+    reflexRight: 0.16 * channel(seed, 14) * strength,
+    leafletVary: divided ? 0.75 : 0,
+    leafletPhaseLeft: channel(seed, 15) * TAU,
+    leafletPhaseRight: channel(seed, 16) * TAU,
     arch: (-0.05 - 0.12 * channel(seed, 1) + 0.06 * Math.max(0, signed(seed, 2) - 0.6)) * strength,
     cup: (-0.04 + 0.16 * channel(seed, 3)) * strength,
     twist: 0.15 * signed(seed, 4) * strength,
@@ -87,8 +111,16 @@ function bladeField(frame: BladeFrame, warp: BladeWarp): Field {
     const across = Math.max(-1.4, Math.min(1.4, x / frame.halfWidth));
     const belly = Math.pow(Math.sin(Math.PI * Math.min(1, along)), 0.6);
     const margin = Math.pow(Math.min(1, Math.abs(across)), 2.4);
+    // Each half folds about the midrib by its own amount, and its margin turns back.
+    const left = across < 0;
+    const reach = Math.min(1, Math.abs(across));
+    const leaflet = 1 + warp.leafletVary * Math.sin(11 * along + (left ? warp.leafletPhaseLeft : warp.leafletPhaseRight));
+    const fold = frame.halfWidth * belly * (
+      (left ? warp.foldLeft : warp.foldRight) * leaflet * reach
+      - (left ? warp.reflexLeft : warp.reflexRight) * reach * reach * reach
+    );
     // Surface form across the blade first, then the midrib's two bends.
-    const lift = z + length * (
+    const lift = z + fold + length * (
       warp.cup * across * across * belly * 0.5
       + warp.twist * across * along * 0.5
       + warp.ripple * margin * Math.sin(warp.rippleCount * Math.PI * along + warp.ripplePhase) * belly
@@ -99,6 +131,10 @@ function bladeField(frame: BladeFrame, warp: BladeWarp): Field {
   };
 }
 
+/** Main vein directions of the lobed lamina, in radians from +Y (see lobedLeafGeometry). */
+const LOBE_VEINS = [-108, -49, 0, 49, 108].map((degrees) => (degrees * Math.PI) / 180);
+const LOBE_HALF_GAP = (27 * Math.PI) / 180;
+
 /** Radial laminae (lobed): origin at the petiole tip, +Y along, +Z the upper face. */
 function radialField(radius: number, seed: number): Field {
   const droop = 0.08 + 0.08 * channel(seed, 20);
@@ -106,15 +142,25 @@ function radialField(radius: number, seed: number): Field {
   const phase1 = channel(seed, 23) * TAU, phase2 = channel(seed, 24) * TAU;
   const cup = -0.03 + 0.09 * channel(seed, 25);
   const twist = 0.08 * signed(seed, 26);
+  // Pleats: each main vein is a ridge and each sinus a valley, by its own depth.
+  const pleats = LOBE_VEINS.map((_, index) => 0.05 + 0.09 * channel(seed, 27 + index));
   return (x, y) => {
     const r = Math.hypot(x, y) / radius;
     const angle = Math.atan2(x, y);
+    let nearest = 0, gap = Infinity;
+    for (let index = 0; index < LOBE_VEINS.length; index += 1) {
+      const distance = Math.abs(angle - LOBE_VEINS[index]);
+      if (distance < gap) { gap = distance; nearest = index; }
+    }
+    const valley = Math.min(1, gap / LOBE_HALF_GAP);
+    const pleat = -pleats[nearest] * r * valley * valley * (3 - 2 * valley);
     // Each lobe sits at its own height: the outer lobes droop, some lift.
     const dz = radius * (
       -droop * r * r * (0.4 + 0.6 * Math.abs(Math.sin(angle)))
       + r * r * (lobe1 * Math.sin(2.5 * angle + phase1) + lobe2 * Math.sin(5 * angle + phase2))
       + cup * (x / radius) * (x / radius)
       + twist * (x / radius) * Math.max(0, y / radius)
+      + pleat
     );
     return [0, 0, dz];
   };
@@ -167,6 +213,11 @@ function seedDiscField(seed: number): Field {
 export interface SurfaceBound {
   readonly center: THREE.Vector3;
   readonly radius: number;
+  /**
+   * The checked geometry's own rotation about +Z inside the organ. The faceted
+   * proxy is not symmetric about Z, so its faces are turned into that frame.
+   */
+  readonly turnZ?: number;
 }
 
 function proxyPlanes(bound: SurfaceBound): THREE.Plane[] {
@@ -182,7 +233,13 @@ function proxyPlanes(bound: SurfaceBound): THREE.Plane[] {
     if (normal.lengthSq() < 1e-20) continue;
     normal.normalize();
     if (normal.dot(a) < 0) normal.negate();
-    planes.push(new THREE.Plane().setFromNormalAndCoplanarPoint(normal, a.clone().add(bound.center)));
+    const point = a.clone().add(bound.center);
+    if (bound.turnZ) {
+      const back = new THREE.Matrix4().makeRotationZ(-bound.turnZ);
+      normal.applyMatrix4(back);
+      point.applyMatrix4(back);
+    }
+    planes.push(new THREE.Plane().setFromNormalAndCoplanarPoint(normal, point));
   }
   sphere.dispose();
   return planes;
@@ -190,8 +247,9 @@ function proxyPlanes(bound: SurfaceBound): THREE.Plane[] {
 
 /**
  * Applies a field to every geometry in place. With a bound, the whole field is
- * scaled down uniformly (never reshaped) until every vertex that started inside
- * the proxy stays inside it, so a curl never carries visible surface out of
+ * scaled down uniformly until every vertex that started inside the proxy stays
+ * inside it. A vertex the authored shape already rests on a proxy face only
+ * slides along that face. So a curl never carries visible surface out of
  * acquisition.
  */
 function applyField(geometries: readonly THREE.BufferGeometry[], field: Field, bound?: SurfaceBound): number {
@@ -213,10 +271,19 @@ function applyField(geometries: readonly THREE.BufferGeometry[], field: Field, b
       for (let index = 0; index < position.count; index += 1) {
         p.fromBufferAttribute(position, index);
         d.set(offsets[index * 3], offsets[index * 3 + 1], offsets[index * 3 + 2]);
+        // A vertex the authored shape already rests on (or past) a face may
+        // slide along that face but never move further out through it.
+        let adjusted = false;
+        for (const plane of planes) {
+          if (-plane.distanceToPoint(p) - margin >= 0) continue;
+          const toward = plane.normal.dot(d);
+          if (toward > 0) { d.addScaledVector(plane.normal, -toward); adjusted = true; }
+        }
+        if (adjusted) { offsets[index * 3] = d.x; offsets[index * 3 + 1] = d.y; offsets[index * 3 + 2] = d.z; }
         for (const plane of planes) {
           const inside = -plane.distanceToPoint(p) - margin;
           const toward = plane.normal.dot(d);
-          if (inside < 0 || toward <= 0) continue; // Already at/over this face, or moving inward.
+          if (inside < 0 || toward <= 0) continue; // Resting on this face, or moving inward.
           scale = Math.min(scale, inside / toward);
         }
       }
@@ -254,7 +321,7 @@ export function naturalizeLeaf(geometries: readonly THREE.BufferGeometry[], seed
     : bladeField({
       y0: box.min.y, y1: Math.max(box.max.y, box.min.y + 1e-3),
       halfWidth: Math.max(box.max.x, -box.min.x, 1e-3),
-    }, bladeWarp(seed, form === "pinnate" ? 0.55 : 1));
+    }, bladeWarp(seed, form === "pinnate" ? 0.55 : 1, form === "pinnate"));
   const kept = applyField(geometries, field, bound);
   tintLeaf(lamina, seed);
   return kept;
@@ -263,6 +330,67 @@ export function naturalizeLeaf(geometries: readonly THREE.BufferGeometry[], seed
 /** Bends a seed disc and its rim together, in place. Its proxy is the exact surface. */
 export function naturalizeSeedDisc(geometries: readonly THREE.BufferGeometry[], seed: number): void {
   applyField(geometries, seedDiscField(seed));
+}
+
+/**
+ * A flower that faces +Z with its petals spread in X/Y. No corolla is a
+ * surface of revolution: some petals reflex and others reach forward, the
+ * whole face tips slightly, and petals differ a little in length. Low angular
+ * harmonics keep every petal smooth and joined; the centre barely moves, so
+ * calyx, eye and anthers stay seated.
+ */
+function corollaField(radius: number, seed: number): Field {
+  const lift = [1, 2, 3].map((harmonic) => ({
+    harmonic,
+    amount: [0.1, 0.085, 0.07][harmonic - 1] * signed(seed, 100 + harmonic),
+    phase: channel(seed, 110 + harmonic) * TAU,
+  }));
+  const open = 0.1 * signed(seed, 120);
+  const reach = [1, 2].map((harmonic) => ({
+    harmonic,
+    amount: 0.05 * signed(seed, 121 + harmonic),
+    phase: channel(seed, 125 + harmonic) * TAU,
+  }));
+  return (x, y) => {
+    const r = Math.min(1.3, Math.hypot(x, y) / radius);
+    if (r < 1e-6) return [0, 0, 0];
+    const angle = Math.atan2(y, x);
+    let dz = open;
+    for (const term of lift) dz += term.amount * Math.sin(term.harmonic * angle + term.phase);
+    let stretch = 0;
+    for (const term of reach) stretch += term.amount * Math.sin(term.harmonic * angle + term.phase);
+    const grow = stretch * r; // nothing at the centre, full at the petal tips
+    return [x * grow, y * grow, radius * dz * r * r];
+  };
+}
+
+export interface CorollaPart {
+  readonly geometry: THREE.BufferGeometry;
+  /** The mesh's rotation about +Z inside the bloom (separate petals). */
+  readonly angle: number;
+}
+
+/**
+ * Shapes a +Z-facing corolla in place. Each part is bounded on its own by the
+ * bloom's acquisition sphere, exactly as leaves are.
+ */
+export function naturalizeCorolla(parts: readonly CorollaPart[], seed: number, bound?: SurfaceBound): void {
+  let radius = 0;
+  for (const { geometry } of parts) {
+    const position = geometry.getAttribute("position") as THREE.BufferAttribute;
+    for (let index = 0; index < position.count; index += 1) radius = Math.max(radius, Math.hypot(position.getX(index), position.getY(index)));
+  }
+  if (!(radius > 1e-4)) return;
+  const field = corollaField(radius, seed);
+  for (const { geometry, angle } of parts) {
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+    // The part's local frame is the bloom frame turned by `angle` about +Z.
+    const local: Field = (x, y, z) => {
+      const [dx, dy, dz] = field(x * cos - y * sin, x * sin + y * cos, z);
+      return [dx * cos + dy * sin, -dx * sin + dy * cos, dz];
+    };
+    applyField([geometry], local, bound ? { ...bound, turnZ: angle } : undefined);
+  }
 }
 
 /**

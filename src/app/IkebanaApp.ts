@@ -2191,6 +2191,7 @@ export class IkebanaApp {
     const prepared = prepareMaterialInsertionForApp(
       materialId,
       this.coordinator.getDebugState().successfulPlantOrdinal,
+      this.config?.cuttingPose,
     );
     if (!prepared.ok) {
       this.ui.setStatus(

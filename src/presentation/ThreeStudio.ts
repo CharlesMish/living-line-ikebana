@@ -18,7 +18,7 @@ import { disposePhotoPerch } from "./perchSurfaces.ts";
 import { createAtmosphericBackdrop, fitAtmosphericBackdrop, isAtmosphericBackdrop, type AtmosphericBackdrop } from "./atmosphericBackdrops.ts";
 import { attachStemSurface, installStemSurface } from "./stemSurface.ts";
 import { pointDistances, stemShapes, tubeSkin } from "./stemShape.ts";
-import { ACCEPTED_SURFACE_DRAW, naturalizeLeaf, naturalizeSeedDisc, tintBloom, type SurfaceDraw } from "./organNaturalism.ts";
+import { ACCEPTED_SURFACE_DRAW, naturalizeCorolla, naturalizeLeaf, naturalizeSeedDisc, tintBloom, type CorollaPart, type SurfaceDraw } from "./organNaturalism.ts";
 import { applyVesselAppearance, createVesselGrain, createVesselFinishTextures, type VesselFinishTextures } from "./vesselAppearance.ts";
 import { DEFAULT_VESSEL_APPEARANCE, resolveVesselAppearance, resolveVesselPresentation, type VesselAppearanceChoice } from "../study/vesselAppearance.ts";
 import type { StemOverlap } from "../core/stemOverlaps.ts";
@@ -1041,6 +1041,8 @@ export class ThreeStudio {
       hitRadius = appearance.leaf.hitRadius;
     } else if (organ.kind === "bloom") {
       const firstBloomChild = group.children.length;
+      // +Z-facing corolla meshes that take the natural petal field.
+      const corollaParts: CorollaPart[] = [];
       const bloom = appearance.bloom;
       const originalBloom = getMaterialAppearance(graph.generatorVersion).bloom;
       const bellPalette = bloom.form === "bell" && originalBloom.collarColor !== undefined
@@ -1049,6 +1051,7 @@ export class ThreeStudio {
       if (bloom.form === "starry-head") {
         const head = new THREE.Mesh(createStarryHeadGeometry(seed), petalMaterial);
         head.castShadow = !pending;
+        corollaParts.push({ geometry: head.geometry, angle: 0 });
         group.add(head);
         const calyx = new THREE.Mesh(new THREE.SphereGeometry(0.062, 8, 6),
           bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
@@ -1068,6 +1071,7 @@ export class ThreeStudio {
         const violet = bloom.form === "violet-floret";
         const corolla = new THREE.Mesh(violet ? createVioletFloretGeometry(seed) : createIndigoFloretGeometry(seed), petalMaterial);
         corolla.castShadow = !pending;
+        if (violet) corollaParts.push({ geometry: corolla.geometry, angle: 0 });
         group.add(corolla);
         const calyx = new THREE.Mesh(new THREE.SphereGeometry(violet ? 0.063 : 0.057, 8, 6),
           bodyMaterial(appearance.branchColors.pedicel, 0.88, false, next => next.branchColors.pedicel));
@@ -1096,10 +1100,12 @@ export class ThreeStudio {
         const authored = bloom.form === "compact-cup" || bloom.form === "spray-cup";
         if (bloom.form === "compact-cup" || bloom.form === "spray-cup") {
           const petals = new THREE.Mesh(createAuthoredFlowerCorollaGeometry(seed, bloom.form), petalMaterial);
+          corollaParts.push({ geometry: petals.geometry, angle: 0 });
           petals.castShadow = !pending;
           group.add(petals);
         } else if (bloom.form === "open-cup") {
           const petals = new THREE.Mesh(createOpenCupCorollaGeometry(seed), petalMaterial);
+          corollaParts.push({ geometry: petals.geometry, angle: 0 });
           petals.castShadow = !pending;
           group.add(petals);
         } else if (bloom.form === "tufted") {
@@ -1135,6 +1141,7 @@ export class ThreeStudio {
               petalMaterial,
             );
             petal.rotation.z = angle;
+            corollaParts.push({ geometry: petal.geometry, angle });
             petal.castShadow = !pending;
             group.add(petal);
           }
@@ -1174,6 +1181,11 @@ export class ThreeStudio {
         }
         anthers.instanceMatrix.needsUpdate = true;
         group.add(anthers);
+      }
+      if (this.naturalSurfaces() && corollaParts.length) {
+        // Petals reflex, reach and tip unevenly, inside the bloom's own proxy.
+        naturalizeCorolla(corollaParts, seed,
+          { center: new THREE.Vector3(0, bloom.hitCenterY ?? 0, 0), radius: bloom.hitRadius });
       }
       if (this.naturalSurfaces() && bloom.form !== "bell") {
         // Repeated heads differ a little in colour. Bells keep their exact

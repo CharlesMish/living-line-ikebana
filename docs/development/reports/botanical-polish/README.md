@@ -113,7 +113,10 @@ above.
 
 Highest value first:
 
-1. **Natural curvature in generators (new versions, additive).** Straight
+1. **Natural curvature in generators (new versions, additive).** *Second pass:
+   new tray cuttings now settle into a seeded natural pose, which covers the
+   sway and the uneven arms. Authored kinks at nodes and less regular
+   branching are still generator work.* Straight
    stalks are now the most "drawn" thing left. Examples are the starry
    pincushion's trunk and pedicels, the silver seed stalks, indigo and lantern
    pedicels, and the reed. Versioned generators (for example
@@ -133,10 +136,124 @@ Highest value first:
    how much they can recurve. A slightly larger or ellipsoidal proxy would let
    them keep their full form. That is an acquisition change and needs phone
    checks.
-5. **Petal-level variation** in compact, spray and violet heads: individual
+5. **Petal-level variation** in compact, spray and violet heads *(second pass:
+   the whole corolla now warps; per-petal cupping is still open)*: individual
    petal cupping and slight unevenness inside the authored corollas.
 6. **Lighting response.** Leaves are opaque and evenly matte. A little
    transmission or back-lighting on thin leaves, and a soft sheen on glossy
    ones, would do as much for "not plastic" as more shape.
 7. **Phone review.** Nothing here has been looked at on a phone. Thin tapered
    tips may need a minimum on-screen width at small sizes.
+
+## Second pass — November 22
+
+Claude Fable 5.2 · branch `experiment/botanical-polish-2`, from `main` at
+`80989c2`. Not merged, no pull request.
+
+The owner's note: cuttings were still "slightly too perfectly symmetric", with
+stems lacking any slight natural variation, and flat parts that were all flat
+in parallel. He asked for slight curvature in petals and leaves with two
+folds, without losing what makes each plant read as itself.
+
+### What changed
+
+**1. A natural pose for new cuttings (revises the contract; see its note).**
+The first pass learned that the drawn tube cannot leave the graph, so the
+variation has to be in the graph. Twenty-one new generator versions would be
+heavy and would leave older builds unable to open new saves. Instead
+`src/core/naturalPose.ts` settles the generator's stock, once, when the app
+prepares a tray cutting:
+
+- Each bendable stem takes two broad seeded bends through the shared Bend
+  law, the upper one mostly answering the lower, so a stem sways instead of
+  arcing. Stiffer stock sways less.
+- Each side branch, twig and stalk is aimed a few degrees off its drawn
+  angle through the shared Aim law, carrying everything it bears. Paired arms
+  stop mirroring each other.
+- Leaf and flower stalks with no side shoots take a slight fixed curve. Their
+  first segment keeps its direction.
+- Each organ rolls a little about its stalk and differs in size by up to 7%.
+
+Everything is seeded by the graph's own seed and record ids. Topology, ids,
+rest lengths, stations, radii and stiffness are the generator's, so taper,
+collars and cut faces from the first pass are unaffected, and the result is a
+graph of the same generator version that any build can open. Per-generator
+profiles temper the pose where a gesture is authored: nodding flowers and
+lantern stalks are disturbed less, the reed sways more, fern pinnae vary more.
+`?pose=stock` seats the stock design for comparison. Generators, Workbench
+fixtures, the golden fixture and saved arrangements are untouched, so existing
+bowls and the guest arrangements look as they did.
+
+**2. Depth in leaves and flowers (presentation only, `organNaturalism.ts`).**
+
+- **Two folds, never alike.** Each half of a blade folds from the midrib by
+  its own seeded amount and turns back down a little at its margin. Most
+  blades are a lopsided V, some lie nearly flat, a few roof downward.
+- **Divided blades** (fern pinnae) vary the fold from leaflet to leaflet.
+- **Lobed leaves** pleat along their five main veins, each lobe by its own
+  depth, instead of lying as one plate.
+- **Flowers that face forward** (cupped, open-face, open-cup, compact, spray,
+  violet and starry heads) take a low seeded warp across the whole corolla:
+  some petals reflex, others reach forward, the face tips slightly, petals
+  differ a little in reach. It fades to nothing at the centre so the eye,
+  calyx and anthers stay seated. Separate petals share one field, so the
+  flower reads as one thing.
+
+All of it is bounded by the existing acquisition proxies. Separate petals
+needed the proxy's faces turned into each petal's own frame, and vertices
+already resting on a proxy face may now only slide along it. Bell, lantern,
+indigo and tufted heads are untouched: they are bodies of revolution about a
+different axis and want their own treatment.
+
+### Evidence
+
+Automated: `npm run verify` passes (722 tests, typecheck, build, dist
+validation). New `tests/core/naturalPose.test.ts` checks, for every tray
+material at three ordinals: unchanged identities, order, stations, radii and
+rest lengths; every segment at its stock length; every child still attached
+at its parent station; the cut end unmoved; a valid graph; repeatability;
+different cuttings settling differently; a bounded departure from the design;
+and that a settled cutting seats elsewhere, bends and prunes under the same
+laws. It also covers `?pose=stock`, zero strength and that core insertion is
+untouched. `naturalSurfaces.test.ts` gains the uneven folds and the corolla
+(repeatable, one field across turned petals, quiet centre, inside its proxy).
+The existing all-materials proxy containment test passes with the new fields.
+
+Played in headless Chrome with software WebGL (not a phone, no GPU timing):
+blossom spray, silver seed and fern frond were each seated by a pointer drag
+from the tray, had the trunk dragged and a side branch dragged in Shape, a
+stalk cut in Prune, and the page reloaded. Each edit reported "Set." or
+"Cut.", stock lengths held after every step, pruned records were kept, and
+the reloaded bowl was identical to the one before reload. No page errors. Two
+404 resource loads appeared in the console during those runs and were not
+traced; they do not appear on first load.
+
+Rendered, same build and camera, `main` on the left:
+
+- [`pass2-cuttings-before-after-1.jpg`](pass2-cuttings-before-after-1.jpg),
+  [`pass2-cuttings-before-after-2.jpg`](pass2-cuttings-before-after-2.jpg):
+  all 21 tray cuttings.
+- [`pass2-stems-close-before-after.jpg`](pass2-stems-close-before-after.jpg)
+  and [`pass2-leaves-petals-before-after.jpg`](pass2-leaves-petals-before-after.jpg):
+  closer, against `?pose=stock&surface=baseline`.
+
+Inferred, not checked: organ picking on resized organs (the organ frame
+scales the drawn surface and its proxy together, and the containment test
+runs on stock scale); the Home room and the invitations branch, which seat
+through the same app path and should simply receive settled cuttings; cost on
+a phone (about 2 ms for the largest cutting in Node here, once per insertion).
+
+### What to look at
+
+1. **Amounts.** They are set to be felt more than seen: clearest in the
+   silver seed stalks, starry pincushion, fern, blossom spray and the plain
+   single stems. `settleNaturalPose` takes a strength, and the limits are
+   named constants at the top of the file.
+2. **Parasol leaf.** Its drip tip can now turn enough to show its darker
+   underside as a small dark fleck from some angles.
+3. **Single-segment stalks** cannot curve, only aim. A curve there needs more
+   points from the generator.
+4. **The bowed-axis starry study (#122)** would stack with the pose if
+   promoted. Not tried together.
+5. **A phone pass** for touch picking on the smallest flowers, since petals
+   now leave their plane slightly.

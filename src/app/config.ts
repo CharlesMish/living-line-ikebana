@@ -7,6 +7,7 @@ export type BendVariant = "bead" | "touch";
 const PINNATE_DRAWS = ["baseline", "tapered", "quilled"] as const;
 const FAN_LEAF_DRAWS = ["shared", "spray", "separated"] as const;
 const SURFACE_DRAWS = ["natural", "baseline"] as const;
+const CUTTING_POSES = ["natural", "stock"] as const;
 
 function drawParam<T extends string>(url: URL, key: string, allowed: readonly T[]): T | undefined {
   const value = url.searchParams.get(key);
@@ -30,6 +31,8 @@ export type ExperimentConfig = {
   fanLeafDraw?: FanLeafDraw;
   /** `?surface=baseline` shows uniform stems and the authored flat surfaces, for comparison. */
   surfaceDraw?: "natural" | "baseline";
+  /** `?pose=stock` seats tray cuttings exactly as generated, without their natural pose. */
+  cuttingPose?: "natural" | "stock";
   /**
    * Explicitly wipes accumulated acquisition telemetry (see
    * `docs/BEHAVIORAL_CONTRACT.md` §8). Deliberately a separate flag from
@@ -84,6 +87,7 @@ export function readExperimentConfig(url = new URL(window.location.href)): Exper
     pinnateDraw: drawParam(url, "pinnate", PINNATE_DRAWS),
     fanLeafDraw: drawParam(url, "fanLeaf", FAN_LEAF_DRAWS),
     surfaceDraw: drawParam(url, "surface", SURFACE_DRAWS),
+    cuttingPose: drawParam(url, "pose", CUTTING_POSES),
     placeCue: place.placeCue,
     placeTap: place.placeTap,
   };

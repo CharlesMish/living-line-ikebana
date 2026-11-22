@@ -9,7 +9,7 @@ import { ThreeStudio } from "../../src/presentation/ThreeStudio.ts";
 import { botanicalSeed, createLeafGeometry, createLeafVeinGeometry } from "../../src/presentation/botanicalGeometry.ts";
 import { splitBranchAtMaterialDistance, updateTubeGeometry } from "../../src/presentation/geometry.ts";
 import { getMaterialAppearance } from "../../src/presentation/materialAppearance.ts";
-import { naturalizeLeaf, naturalizeSeedDisc } from "../../src/presentation/organNaturalism.ts";
+import { bladeWarp, naturalizeCorolla, naturalizeLeaf, naturalizeSeedDisc } from "../../src/presentation/organNaturalism.ts";
 import { createSeedDiscGeometry } from "../../src/presentation/seedDiscGeometry.ts";
 import { pointDistances, stemShapes, tubeSkin } from "../../src/presentation/stemShape.ts";
 
@@ -192,4 +192,88 @@ test("the baseline surface draw leaves leaves exactly as authored, and the URL s
   assert.equal(JSON.stringify(toCanonicalPlantGraph(graph)), snapshot, "no surface draw touches the graph");
   assert.equal(readExperimentConfig(new URL("https://example.test/?surface=baseline")).surfaceDraw, "baseline");
   assert.equal(readExperimentConfig(new URL("https://example.test/?surface=chrome")).surfaceDraw, undefined);
+});
+
+test("the two halves of a blade never fold alike, and leaflets of a divided blade differ", () => {
+  let roofed = 0;
+  for (let seed = 1; seed <= 400; seed += 1) {
+    const warp = bladeWarp(seed);
+    assert.ok(Math.abs(warp.foldLeft - warp.foldRight) > 1e-6, `seed ${seed}: a blade is not a mirrored V`);
+    assert.ok(Math.abs(warp.foldLeft) < 1 && Math.abs(warp.foldRight) < 1, `seed ${seed}: a fold, not a closed book`);
+    assert.ok(warp.reflexLeft >= 0 && warp.reflexRight >= 0);
+    assert.equal(warp.leafletVary, 0, "an entire blade has no leaflets to vary");
+    if (warp.foldLeft + warp.foldRight < 0) roofed += 1;
+  }
+  assert.ok(roofed > 0 && roofed < 200, `most blades fold up, a few roof down (${roofed} of 400)`);
+  assert.ok(bladeWarp(7, 1, true).leafletVary > 0);
+  const still = bladeWarp(7, 0);
+  assert.equal(still.foldLeft, 0);
+  assert.equal(still.reflexRight, 0);
+
+  // On a real blade the two margins end up at different heights at the same station.
+  const seed = 8278;
+  const flat = createLeafGeometry(seed, "elliptic"), shaped = createLeafGeometry(seed, "elliptic");
+  naturalizeLeaf([shaped], seed, "elliptic");
+  const before = flat.getAttribute("position"), after = shaped.getAttribute("position");
+  const rows = new Map<string, { left: number; right: number }>();
+  for (let index = 0; index < before.count; index += 1) {
+    const key = before.getY(index).toFixed(5);
+    const row = rows.get(key) ?? { left: index, right: index };
+    if (before.getX(index) < before.getX(row.left)) row.left = index;
+    if (before.getX(index) > before.getX(row.right)) row.right = index;
+    rows.set(key, row);
+  }
+  let uneven = 0;
+  for (const { left, right } of rows.values()) {
+    if (left === right) continue;
+    uneven = Math.max(uneven, Math.abs((after.getZ(left) - before.getZ(left)) - (after.getZ(right) - before.getZ(right))));
+  }
+  assert.ok(uneven > 0.002, `the two margins of a row lift by different amounts (${uneven})`);
+});
+
+test("a corolla is shaped as one flower: repeatable, continuous across petals, quiet at the centre, inside its proxy", () => {
+  const petal = () => {
+    const geometry = new THREE.PlaneGeometry(0.05, 0.11, 4, 8);
+    geometry.translate(0, 0.065, 0);
+    return geometry;
+  };
+  const angles = [0, 1, 2, 3, 4].map((index) => (index * Math.PI * 2) / 5);
+  const bound = { center: new THREE.Vector3(0, 0, 0), radius: 0.13 };
+  const make = (seed: number) => {
+    const parts = angles.map((angle) => ({ geometry: petal(), angle }));
+    naturalizeCorolla(parts, seed, bound);
+    return parts;
+  };
+  const one = make(31), again = make(31), other = make(32);
+  const flatten = (parts: { geometry: THREE.BufferGeometry }[]) => parts.flatMap((part) => Array.from(part.geometry.getAttribute("position").array));
+  assert.deepEqual(flatten(one), flatten(again));
+  assert.notDeepEqual(flatten(one), flatten(other));
+
+  const authored = petal().getAttribute("position");
+  const lifts = one.map(({ geometry }) => {
+    const position = geometry.getAttribute("position");
+    let tip = 0, base = 0;
+    for (let index = 0; index < position.count; index += 1) {
+      assert.ok(Number.isFinite(position.getX(index) + position.getY(index) + position.getZ(index)));
+      assert.ok(Math.hypot(position.getX(index), position.getY(index), position.getZ(index)) <= bound.radius + 1e-6, "petals stay inside the bloom proxy");
+      if (authored.getY(index) > 0.119) tip = Math.max(tip, Math.abs(position.getZ(index)));
+      if (authored.getY(index) < 0.011) base = Math.max(base, Math.abs(position.getZ(index)));
+    }
+    return { tip, base };
+  });
+  assert.ok(lifts.some(({ tip }) => tip > 0.002), "some petal leaves the plane");
+  assert.ok(Math.max(...lifts.map(({ tip }) => tip)) - Math.min(...lifts.map(({ tip }) => tip)) > 5e-4, "petals do not all lift alike");
+  for (const { tip, base } of lifts) assert.ok(base <= Math.max(tip, 1e-4) * 0.2 + 1e-5, "the centre barely moves, so the eye stays seated");
+
+  // One field for the whole flower: a single disc gives the same surface as petal parts do in their own frames.
+  const disc = new THREE.CircleGeometry(0.12, 40);
+  naturalizeCorolla([{ geometry: disc, angle: 0 }], 31);
+  const turned = new THREE.CircleGeometry(0.12, 40);
+  turned.rotateZ(-angles[2]);
+  naturalizeCorolla([{ geometry: turned, angle: angles[2] }], 31);
+  turned.rotateZ(angles[2]);
+  const a = disc.getAttribute("position"), b = turned.getAttribute("position");
+  for (let index = 0; index < a.count; index += 1) {
+    assert.ok(Math.hypot(a.getX(index) - b.getX(index), a.getY(index) - b.getY(index), a.getZ(index) - b.getZ(index)) < 1e-6, "a turned part sees the same flower");
+  }
 });

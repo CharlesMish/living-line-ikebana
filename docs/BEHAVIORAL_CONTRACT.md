@@ -654,6 +654,39 @@ schema, gesture, acquisition proxy or persistence law changes. See the
 - Repeated flowers vary in vertex colour only. Their geometry, head transforms
   and acquisition are unchanged.
 
+### Natural pose and surface depth — November 22
+
+This **revises** one thing and preserves the rest. A cutting taken from the
+tray is no longer seated exactly as its generator drew it: the app applies a
+seeded **natural pose** (`settleNaturalPose` in `src/core/naturalPose.ts`) to
+the prepared graph before it becomes the ghost. `?pose=stock` seats the stock
+design instead. See the
+[second-pass report](development/reports/botanical-polish/README.md#second-pass--november-22).
+
+- The pose is built from the shared Aim and Bend laws applied to the
+  generator's stock, plus a slight fixed curve in leaf and flower stalks that
+  carry no side shoots. Identities, record order, generator version, seed,
+  rest lengths, active lengths, attachment stations, radii and stiffness are
+  exactly the generator's. Only branch points, reference normals, and organ
+  roll (`spin`) and size (`scale`, within 7%) differ. The cut end stays where
+  it is seated.
+- It is a function of the stock graph alone (its seed and record ids), so the
+  same ordinal gives the same cutting on every device, by pointer or keyboard.
+  It runs once, at preparation. No edit, restore, import, Undo or Garden
+  operation applies or re-applies it, and a committed graph is saved and
+  restored as any other.
+- Generators, their versions, the catalog's `prepareMaterialInsertion`,
+  Workbench fixtures, the golden fixture and every saved arrangement are
+  unchanged. Seat identity and the ordinal law are unchanged.
+- Presentation, under the existing `natural` surface draw and still restored
+  by `?surface=baseline`: each half of a leaf blade folds from the midrib by
+  its own amount, divided blades vary the fold leaflet to leaflet, lobed
+  leaves pleat along their main veins, and flowers that face +Z (cupped,
+  open-face, open-cup, compact, spray, violet and starry heads) take a low,
+  seeded warp of the whole corolla that fades to nothing at its centre. All
+  of it stays inside the same acquisition proxies by the same rule as before.
+  Bell, lantern, indigo and tufted heads are untouched.
+
 ### Quiet scenic photo backdrops
 
 `hills` (Mist hills) and `garden` (Garden shade) are additive, static painted photo backdrops. Their centre crop preserves aspect instead of stretching, and the same rendering path is used in preview, PNG, Garden covers and restored scenes. They add no world geometry, move no botanical material and alter no lighting. The existing floor/perch receives real scene shadows; the backdrop itself is unlit. Each renderer owns its procedural texture and releases it on replacement or close. Transparent omits it. All older backdrop IDs and default paper appearance remain unchanged; older readers reject unknown new IDs. See the [backdrop report](development/reports/photo-workflow/backdrops.md) for automated evidence and unrun GPU/phone checks.

@@ -177,12 +177,14 @@ prepares a tray cutting:
 Everything is seeded by the graph's own seed and record ids. Topology, ids,
 rest lengths, stations, radii and stiffness are the generator's, so taper,
 collars and cut faces from the first pass are unaffected, and the result is a
-graph of the same generator version that any build can open. Per-generator
+graph that builds recognizing that generator version can open. Per-generator
 profiles temper the pose where a gesture is authored: nodding flowers and
 lantern stalks are disturbed less, the reed sways more, fern pinnae vary more.
 `?pose=stock` seats the stock design for comparison. Generators, Workbench
-fixtures, the golden fixture and saved arrangements are untouched, so existing
-bowls and the guest arrangements look as they did.
+fixtures and the golden fixture are unchanged. Reopening an existing bowl or
+guest arrangement restores its saved stems and edits without applying a new
+pose. Its live leaves and petals can catch the light differently under the new
+surface draw. Previously saved covers and exported photographs do not change.
 
 **2. Depth in leaves and flowers (presentation only, `organNaturalism.ts`).**
 

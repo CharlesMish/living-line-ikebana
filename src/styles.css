@@ -126,7 +126,7 @@ button:focus-visible {
   border: 1px solid var(--line);
   border-radius: 1.25rem;
   background: var(--paper);
-  box-shadow: var(--shadow);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), var(--shadow);
   /* The rail owns its spacing too; a press in a gap must not hit a branch. */
   pointer-events: auto;
 }

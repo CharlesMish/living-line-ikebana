@@ -749,6 +749,8 @@ button:focus-visible {
   touch-action: none;
 }
 
+.material-card:hover:not(:disabled) { border-color: rgba(83, 99, 76, 0.42); }
+
 .material-card:active,
 .material-card[data-dragging="true"] {
   cursor: grabbing;
